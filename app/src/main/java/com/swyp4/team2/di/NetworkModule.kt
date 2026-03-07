@@ -1,6 +1,6 @@
-package com.example.swypapp.di
+package com.swyp4.team2.di
 
-import com.example.swypapp.data.api.AuthInterceptor
+import com.swyp4.team2.data.api.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -1,6 +1,6 @@
-package com.example.swypapp.data.api
+package com.swyp4.team2.data.api
 
-import com.example.swypapp.data.local.TokenManager
+import com.swyp4.team2.data.local.TokenManager
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject

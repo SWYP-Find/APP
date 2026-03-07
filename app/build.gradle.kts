@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -7,17 +9,26 @@ plugins {
 }
 
 android {
-    namespace = "com.example.swypapp"
+    namespace = "com.swyp4.team2"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.swypapp"
-        minSdk = 26   //Media3, Toss 등을 위해 26 이상 권장
+        applicationId = "com.swyp4.team2"
+        minSdk = 26   //Media3 등을 위해 26 이상 권장
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Kakao Social Login
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+        val kakaoKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
+
+        buildConfigField("String", "KAKAO_DEBUG_APPKEY", "\"$kakaoKey\"")
+
+        manifestPlaceholders["kakaoDebugAppKey"] = kakaoKey
     }
 
     buildTypes {
@@ -35,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     kotlinOptions{
         jvmTarget = "17"
