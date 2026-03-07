@@ -1,4 +1,4 @@
-package com.example.swypapp.ui.theme
+package com.swyp4.team2.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

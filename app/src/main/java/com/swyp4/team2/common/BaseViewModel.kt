@@ -1,4 +1,4 @@
-package com.example.swypapp.common
+package com.swyp4.team2.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
