@@ -1,6 +1,9 @@
 package com.swyp4.team2.di
 
 import com.swyp4.team2.data.api.AuthInterceptor
+import com.swyp4.team2.data.remote.AuthApi
+import com.swyp4.team2.data.repository.AuthRepositoryImpl
+import com.swyp4.team2.domain.repository.AuthRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,5 +39,17 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthApi(retrofit: Retrofit): AuthApi{
+        return retrofit.create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(api: AuthApi): AuthRepository {
+        return AuthRepositoryImpl(api)
     }
 }
