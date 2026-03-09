@@ -1,6 +1,7 @@
 package com.swyp4.team2.di
 
 import com.swyp4.team2.data.api.AuthInterceptor
+import com.swyp4.team2.data.local.TokenManager
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.repository.AuthRepositoryImpl
 import com.swyp4.team2.domain.repository.AuthRepository
@@ -49,7 +50,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(api: AuthApi): AuthRepository {
-        return AuthRepositoryImpl(api)
+    fun provideAuthRepository(
+        api: AuthApi,
+        tokenManager: TokenManager
+    ): AuthRepository {
+        return AuthRepositoryImpl(api, tokenManager)
     }
 }

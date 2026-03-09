@@ -27,7 +27,7 @@ fun MainScreen(){
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(mainNavController)
+            CustomBottomNavigationBar(mainNavController)
         }
     ){ innerPadding ->
         NavHost(
@@ -52,7 +52,7 @@ fun MainScreen(){
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun CustomBottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Explore,
