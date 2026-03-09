@@ -13,7 +13,9 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager
 ) : AuthRepository {
 
-    override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
+    override suspend fun refreshAccessToken(
+        refreshToken: String
+    ): Result<Unit> {
         return try {
             val request = TokenRefreshRequest(refreshToken)
             val response = api.refreshAccessToken(request)
@@ -27,7 +29,6 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
-
 
     override suspend fun loginWithSocialToken(
         provider: String,
