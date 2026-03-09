@@ -36,6 +36,24 @@ fun LoginScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
+    // 구글 로그인 결과를 처리하는 Launcher 설정
+    /*val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            // 구글은 보통 accessToken 대신 idToken을 서버로 보냅니다.
+            account.idToken?.let { token ->
+                // ViewModel에 구글 로그인 성공 처리 함수가 필요합니다.
+                // 이전에 우리가 하나로 통합했던 viewModel.loginWithSocialToken("GOOGLE", token) 형태를 추천해요!
+                viewModel.handleGoogleLoginSuccess(token)
+            }
+        } catch (e: ApiException) {
+            Log.e("GoogleLogin", "구글 로그인 실패: ${e.statusCode}", e)
+        }
+    }*/
+
     LaunchedEffect(uiState){
         if(uiState is LoginUiState.Success){
             onNavigateToMain()
@@ -51,16 +69,29 @@ fun LoginScreen(
         ){
             Text("SWYP0402", style = MaterialTheme.typography.titleLarge)
             Spacer(modifier = Modifier.height(32.dp))
+
             Button(
                 onClick = {
                     loginWithKakao(context){ token ->
-                        viewModel.handleKakaoLoginSuccess(token)
+                        viewModel.handleSocialLoginSuccess("KAKAO", token)
                     }
                 },
                 colors = ButtonDefaults.buttonColors(Color(0xFFFEE500)),
                 modifier = Modifier.fillMaxWidth(0.8f).height(50.dp)
             ){
                 Text("카카오로 로그인하기", color = Color.Black)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    // val intent = getGoogleSignInIntent(context)
+                    // googleSignInLauncher.launch(intent)
+                },
+                colors = ButtonDefaults.buttonColors(Color(0xFFF2F2F2)), // 구글 버튼용 밝은 회색
+                modifier = Modifier.fillMaxWidth(0.8f).height(50.dp)
+            ) {
+                Text("구글로 로그인하기", color = Color.Black)
             }
 
             if(uiState is LoginUiState.Loading){
@@ -75,6 +106,17 @@ fun LoginScreen(
         }
     }
 }
+
+/*private fun getGoogleSignInIntent(context: Context): Intent {
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        // 백엔드 개발자에게 받은 구글 웹 클라이언트 ID를 여기에 넣어야 합니다!
+        .requestIdToken("여기에_구글_웹_클라이언트_ID_입력.apps.googleusercontent.com")
+        .requestEmail()
+        .build()
+
+    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+    return googleSignInClient.signInIntent
+}*/
 
 // 카카오 SDK 실행 헬퍼 함수
 private fun loginWithKakao(context: Context, onSuccess: (String)->Unit){
