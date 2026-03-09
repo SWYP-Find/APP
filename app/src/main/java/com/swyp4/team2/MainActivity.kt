@@ -18,6 +18,7 @@ import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.login.LoginScreen
 import com.swyp4.team2.ui.main.MainScreen
+import com.swyp4.team2.ui.splash.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,9 +42,24 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // TODO : startDestination 바꾸기
-    NavHost(navController = navController, startDestination = "main") {
-        // 1. 로그인 화면
+    NavHost(navController = navController, startDestination = "splash") {
+        // 스플래시 화면
+        composable("splash"){
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate("login"){
+                        popUpTo("splash") {inclusive=true}
+                    }
+                },
+                onNavigateToMain = {
+                    navController.navigate("main"){
+                        popUpTo("splash") {inclusive=true}
+                    }
+                }
+            )
+        }
+
+        // 로그인 화면
         composable("login") {
             LoginScreen(
                 onNavigateToMain = {
@@ -56,14 +72,14 @@ fun AppNavigation() {
             )
         }
 
-        // 2. 온보딩 화면
+        // 온보딩 화면
         composable("onboarding") {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = "온보딩 화면 스크린")
             }
         }
 
-        // 3. 메인 화면
+        // 메인 화면
         composable("main") {
             MainScreen()
         }
