@@ -25,17 +25,17 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    // UI에서 카카오 SDK를 통해 얻어온 토큰을 이 함수로 넘겨준다.
-    fun handleKakaoLoginSuccess(kakaoAccessToken: String){
-        viewModelScope.launch{
+    fun handleSocialLoginSuccess(provider: String, token: String) {
+        viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
 
-            val result = authRepository.loginWithKakaoToken(kakaoAccessToken)
+            val result = authRepository.loginWithSocialToken(provider, token)
 
-            result.onSuccess { token ->
-                // TODO: 여기서 받아온 자체 토큰(token)을 SP에 저장
+            result.onSuccess { authToken ->
+                // TODO: 여기서 받아온 자체 토큰(authToken)을 TokenManager 등에 저장
+                // 여기서 authToken.isNewUser 값에 따라 온보딩으로 갈지, 메인으로 갈지 상태를 나눌 수도 있습니다!
                 _uiState.value = LoginUiState.Success
-            }.onFailure { error->
+            }.onFailure { error ->
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")
             }
         }
