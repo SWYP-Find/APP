@@ -83,6 +83,10 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.dynamic.links)
 
+    // Paging3
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
     // [Social & Security & Payment]
     implementation(libs.kakao.sdk.user)
     implementation(libs.androidx.security.crypto)

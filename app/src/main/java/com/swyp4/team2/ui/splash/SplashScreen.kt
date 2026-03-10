@@ -27,11 +27,9 @@ fun SplashScreen(
 
     LaunchedEffect(uiState) {
         when(uiState){
-            is SplashUiState.NavigateToLogin -> onNavigateToLogin()
-            is SplashUiState.NavigateToMain -> onNavigateToMain()
-            SplashUiState.Loading -> {
-                // 로고 띄우기
-            }
+            SplashUiState.NavigateToLogin -> onNavigateToLogin()
+            SplashUiState.NavigateToMain -> onNavigateToMain()
+            SplashUiState.Loading -> { } // 로고 띄우기
         }
     }
 

@@ -1,4 +1,4 @@
-package com.swyp4.team2.data.api
+package com.swyp4.team2.data.remote
 
 import com.swyp4.team2.data.local.TokenManager
 import okhttp3.Interceptor

@@ -23,7 +23,7 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun submitProfile(onSuccess:()->Unit){
-        val characterId =  _selectedCharacterId.value ?: return
+        val characterId = _selectedCharacterId.value ?: return
 
         viewModelScope.launch{
             // 백엔드에 PATCH 요청 보내기
