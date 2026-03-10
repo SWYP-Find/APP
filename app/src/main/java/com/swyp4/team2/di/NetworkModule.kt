@@ -1,6 +1,6 @@
 package com.swyp4.team2.di
 
-import com.swyp4.team2.data.api.AuthInterceptor
+import com.swyp4.team2.data.remote.AuthInterceptor
 import com.swyp4.team2.data.local.TokenManager
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.repository.AuthRepositoryImpl
@@ -40,20 +40,5 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthApi(retrofit: Retrofit): AuthApi{
-        return retrofit.create(AuthApi::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAuthRepository(
-        api: AuthApi,
-        tokenManager: TokenManager
-    ): AuthRepository {
-        return AuthRepositoryImpl(api, tokenManager)
     }
 }

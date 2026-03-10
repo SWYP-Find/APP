@@ -4,8 +4,8 @@ import com.swyp4.team2.data.local.TokenManager
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.remote.SocialLoginRequest
 import com.swyp4.team2.data.remote.TokenRefreshRequest
+import com.swyp4.team2.domain.model.AuthToken
 import com.swyp4.team2.domain.repository.AuthRepository
-import com.swyp4.team2.domain.repository.AuthToken
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
