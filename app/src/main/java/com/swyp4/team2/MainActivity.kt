@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.kakao.sdk.common.util.Utility
+import com.swyp4.team2.ui.debate.DebateScreen
 import com.swyp4.team2.ui.login.LoginScreen
 import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
@@ -43,7 +44,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "main") {
+    NavHost(navController = navController, startDestination = "debate") {
         // 스플래시 화면
         composable("splash"){
             SplashScreen(
@@ -87,6 +88,10 @@ fun AppNavigation() {
         // 메인 화면
         composable("main") {
             MainScreen()
+        }
+
+        composable("debate"){
+            DebateScreen()
         }
     }
 }
