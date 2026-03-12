@@ -65,7 +65,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .drawWithCache {
-                        // 📸 [카메라 설치] 여기서부터 아래에 적힌 모든 디자인을 녹화합니다!
+                        // 📸 [카메라 설치]
                         val width = this.size.width.toInt()
                         val height = this.size.height.toInt()
                         onDrawWithContent {
@@ -79,7 +79,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     }
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    // 🌟 [카드 스타일 변경] 배경색을 짙은 네이비로, 모서리를 둥글게, 골드 테두리 추가
+                    // 🌟 [카드 스타일 변경]
                     .clip(RoundedCornerShape(32.dp))
                     .background(Color(0xFF1B264F))
                     .border(2.dp, Color(0xFFEBC17B), RoundedCornerShape(32.dp))
