@@ -14,7 +14,6 @@ okhttp = "4.12.0"
 coil = "2.7.0"
 media3 = "1.4.1"
 firebaseBom = "33.5.1"
-tossPayments = "0.1.15"
 securityCrypto = "1.1.0-alpha06"
 kakao = "2.20.1"
 hiltNavigationCompose = "1.2.0"
@@ -50,9 +49,9 @@ androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.re
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database" }
 firebase-dynamic-links = { group = "com.google.firebase", name = "firebase-dynamic-links" }
-toss-payments = { group = "com.github.tosspayments", name = "payment-sdk-android", version.ref = "tossPayments" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 kakao-sdk-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao" }
+kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakao" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]

@@ -15,26 +15,27 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.media3.common.Player
+import kotlinx.coroutines.flow.StateFlow
 
 @HiltViewModel
 class DebateViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ): ViewModel(){
     private val _scripts = MutableStateFlow<List<DebateMessage>>(DebateDummyData.debateScripts)
-    val scripts = _scripts.asStateFlow()
+    val scripts : StateFlow<List<DebateMessage>> = _scripts.asStateFlow()
 
     private val _activeIndex = MutableStateFlow(-1)
-    val activeIndex = _activeIndex.asStateFlow()
+    val activeIndex : StateFlow<Int> = _activeIndex.asStateFlow()
 
     // 오디오 관련 상태들
     private val _isPlaying = MutableStateFlow(false)
-    val isPlaying = _isPlaying.asStateFlow()
+    val isPlaying : StateFlow<Boolean> = _isPlaying.asStateFlow()
 
     private val _currentPositionMs = MutableStateFlow(0L)
-    val currentPositionMs = _currentPositionMs.asStateFlow()
+    val currentPositionMs : StateFlow<Long> = _currentPositionMs.asStateFlow()
 
     private val _totalDurationMs = MutableStateFlow(0L)
-    val totalDurationMs = _totalDurationMs.asStateFlow()
+    val totalDurationMs : StateFlow<Long> = _totalDurationMs.asStateFlow()
 
     private var player: ExoPlayer? = null
 
