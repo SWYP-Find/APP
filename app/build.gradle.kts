@@ -90,8 +90,8 @@ dependencies {
 
     // [Social & Security & Payment]
     implementation(libs.kakao.sdk.user)
+    implementation(libs.kakao.share)
     implementation(libs.androidx.security.crypto)
-    implementation(libs.toss.payments)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
@@ -19,10 +20,10 @@ class ExploreViewModel @Inject constructor(
     private val exploreRepository: ExploreRepository
 ) : ViewModel() {
     private val _categoryList = MutableStateFlow(listOf("전체", "철학", "문학", "예술", "과학","사회"))
-    val categoryList = _categoryList.asStateFlow()
+    val categoryList : StateFlow<List<String>> = _categoryList.asStateFlow()
 
     private val _selectedCategory = MutableStateFlow("전체")
-    val selectedCategory = _selectedCategory.asStateFlow()
+    val selectedCategory : StateFlow<String> = _selectedCategory.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val explorePagingData: Flow<PagingData<ContentCard>> = _selectedCategory

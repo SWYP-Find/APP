@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "debate") {
+    NavHost(navController = navController, startDestination = "main") {
         // 스플래시 화면
         composable("splash"){
             SplashScreen(
