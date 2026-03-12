@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.swyp4.team2.ui.component.ChattingLoadingAnimation
 import com.swyp4.team2.ui.component.CopyLinkButton
 import com.swyp4.team2.ui.component.InstagramShareButton
 import com.swyp4.team2.ui.component.KakaoShareButton
@@ -61,7 +62,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.padding(4.dp))*/
 
-            Box(
+            /*Box(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .drawWithCache {
@@ -123,7 +124,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             InstagramShareButton(
                 picture = picture,
                 modifier = Modifier.fillMaxWidth().padding(16.dp)
-            )
+            )*/
+
+            ChattingLoadingAnimation()
         }
     }
 }
