@@ -33,6 +33,9 @@ import com.swyp4.team2.ui.component.ChattingLoadingAnimation
 import com.swyp4.team2.ui.component.CopyLinkButton
 import com.swyp4.team2.ui.component.InstagramShareButton
 import com.swyp4.team2.ui.component.KakaoShareButton
+import com.swyp4.team2.ui.theme.Spacing
+import com.swyp4.team2.ui.theme.SwypAppTheme
+import com.swyp4.team2.ui.theme.SwypTheme
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -62,7 +65,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.padding(4.dp))*/
 
-            /*Box(
+            Box(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .drawWithCache {
@@ -92,22 +95,21 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 ) {
                     Text(
                         text = "내 딜레마",
-                        color = Color.White,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold,
+                        color = SwypTheme.colors.onBackground,
+                        style = SwypTheme.typography.headlineLarge,
                         textAlign = TextAlign.Center
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "성향 리포트",
-                        color = Color.White,
-                        fontSize = 28.sp,
+                        color = SwypTheme.colors.onBackground,
+                        style = SwypTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center
                     )
                     Box(
                         modifier = Modifier
-                            .padding(top = 32.dp)
-                            .clip(RoundedCornerShape(20.dp))
+                            .padding(SwypTheme.spacing.space08)
+                            .clip(RoundedCornerShape(SwypTheme.spacing.space09))
                             .background(Color(0xFF2E3D59))
                             .padding(vertical = 12.dp, horizontal = 24.dp)
                     ) {
@@ -123,10 +125,12 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
             InstagramShareButton(
                 picture = picture,
-                modifier = Modifier.fillMaxWidth().padding(16.dp)
-            )*/
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(SwypTheme.spacing.space03)
+            )
 
-            ChattingLoadingAnimation()
+            // ChattingLoadingAnimation()
         }
     }
 }

@@ -1,57 +1,62 @@
 package com.swyp4.team2.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+    // 1. 핵심 포인트 컬러
+    primary = Primary500,
+    onPrimary = Color.White, // Primary 위에는 흰색 글씨 쓰겠다!
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
+    // 2. 서브 포인트 컬러
+    secondary = Secondary500,
     onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+
+    // 3. 배경 및 표면(카드) 컬러
+    background = Beige50,
+    onBackground = Gray900, // 배경 위에는 진한 회색 글씨 쓰겠다!
+    surface = Color.White,
+    onSurface = Gray900,
+
+    // 4. (추가하면 좋은 것들) 보조 표면, 테두리, 에러
+    surfaceVariant = Beige100, // 살짝 색깔 있는 카드 배경용
+    outline = Gray300,         // 텍스트 입력창이나 버튼의 연한 테두리용
+    error = Color(0xFFB3261E)  // 에러 났을 때 쓸 빨간색 (Material 기본 에러색)
 )
 
 @Composable
 fun SwypAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    CompositionLocalProvider(
+        LocalSpacing provides Spacing(),
+        LocalElevation provides Elevation()
+    ) {
+        MaterialTheme(
+            colorScheme = LightColorScheme,
+            typography = Typography,
+            content = content
+        )
     }
+}
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+object SwypTheme {
+    val colors
+        @Composable
+        get() = MaterialTheme.colorScheme
+
+    val typography
+        @Composable
+        get() = MaterialTheme.typography
+
+    val spacing: Spacing
+        @Composable
+        get() = LocalSpacing.current
+
+    val elevation: Elevation
+        @Composable
+        get() = LocalElevation.current
 }
