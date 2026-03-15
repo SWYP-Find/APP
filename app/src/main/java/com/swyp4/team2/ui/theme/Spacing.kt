@@ -5,7 +5,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 // 1. Space Style (여백 시스템)
-data class Spacing(
+/*data class Spacing(
     val space01: Dp = 2.dp,
     val space02: Dp = 4.dp,
     val space03: Dp = 8.dp,
@@ -19,7 +19,7 @@ data class Spacing(
     val space11: Dp = 56.dp,
     val space12: Dp = 64.dp,
     val space13: Dp = 80.dp,
-)
+)*/
 
 // 2. Elevation Style (깊이/그림자 시스템)
 data class Elevation(
@@ -30,5 +30,5 @@ data class Elevation(
 )
 
 // 3. Compose 트리 전체에서 이 값들을 쉽게 꺼내 쓸 수 있도록 Local Provider 생성
-val LocalSpacing = staticCompositionLocalOf { Spacing() }
+// val LocalSpacing = staticCompositionLocalOf { Spacing() }
 val LocalElevation = staticCompositionLocalOf { Elevation() }

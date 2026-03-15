@@ -15,11 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
@@ -30,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.swyp4.team2.R
 
 @Composable
 fun AudioPlayerBar(
@@ -104,9 +101,9 @@ fun AudioPlayerBar(
             }
 
             // 15초 뒤로 가기
-            IconButton(onClick = { onRewindClick }){
+            IconButton(onClick = { onRewindClick() }){
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    painter = painterResource(R.drawable.ic_eye),
                     contentDescription = "15초 뒤로",
                     tint = Color.Gray
                 )
@@ -122,7 +119,7 @@ fun AudioPlayerBar(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = if (isPlaying) Icons.Default.Clear else Icons.Default.PlayArrow,
+                    painter = if(isPlaying) painterResource(R.drawable.ic_eye) else painterResource(R.drawable.ic_alarm),
                     contentDescription = "재생/일시정지",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
@@ -132,7 +129,7 @@ fun AudioPlayerBar(
             // 15초 앞으로 가기
             IconButton(onClick = { onForwardClick }){
                 Icon(
-                    imageVector = Icons.Default.ArrowForward,
+                    painter = painterResource(R.drawable.ic_eye),
                     contentDescription = "15초 앞으로",
                     tint = Color.Gray
                 )

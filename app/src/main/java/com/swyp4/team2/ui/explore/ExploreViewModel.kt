@@ -19,7 +19,7 @@ import javax.inject.Inject
 class ExploreViewModel @Inject constructor(
     private val exploreRepository: ExploreRepository
 ) : ViewModel() {
-    private val _categoryList = MutableStateFlow(listOf("전체", "철학", "문학", "예술", "과학","사회"))
+    private val _categoryList = MutableStateFlow(listOf("전체", "철학", "문학", "예술", "과학", "사회", "역사"))
     val categoryList : StateFlow<List<String>> = _categoryList.asStateFlow()
 
     private val _selectedCategory = MutableStateFlow("전체")

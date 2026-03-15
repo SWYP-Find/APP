@@ -16,6 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.swyp4.team2.R
+import com.swyp4.team2.ui.theme.SwypAppTheme
+import com.swyp4.team2.ui.theme.SwypTheme
 
 @Composable
 fun SplashScreen(
@@ -36,7 +38,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(SwypTheme.colors.background),
         contentAlignment = Alignment.Center
     ){
         Image(

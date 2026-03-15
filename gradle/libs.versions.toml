@@ -19,6 +19,9 @@ kakao = "2.20.1"
 hiltNavigationCompose = "1.2.0"
 paging = "3.3.2"
 foundation = "1.10.4"
+uiGraphics = "1.10.5"
+material3 = "1.4.0"
+ui = "1.10.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +56,9 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 kakao-sdk-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao" }
 kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakao" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

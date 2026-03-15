@@ -1,0 +1,18 @@
+package com.swyp4.team2
+
+sealed class AppRoute(val route: String){
+    object Splash : AppRoute("splash_screen")
+    object Login : AppRoute("login_screen")
+    object Onboarding : AppRoute("onboarding_screen")
+    object Main : AppRoute("main_screen")
+    object Debate : AppRoute("debate_screen")
+    object Alarm : AppRoute("alarm_screen")
+    object Setting : AppRoute("setting_screen")
+
+    object DiscussionHistory : AppRoute("discussion_history_screen") // 마이-내 토론 기록
+    object PhilosopherType : AppRoute("philosopher_type_screen")     // 마이-나는 어떤 철학자 일까?
+    object ContentActivity : AppRoute("content_activity_screen")     // 마이-내 콘텐츠 활동
+    object NoticeEvent : AppRoute("notice_event_screen")             // 마이-공지방 · 이벤트
+    object SettingProfile : AppRoute("setting_profile_screen")       // 설정-프로필 편집
+    object SettingAlarm : AppRoute("setting_alarm_screen")         // 설정-알림 설정
+}

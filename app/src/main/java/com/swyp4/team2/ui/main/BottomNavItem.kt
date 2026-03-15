@@ -1,16 +1,11 @@
 package com.swyp4.team2.ui.main
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.ui.graphics.vector.ImageVector
+import com.swyp4.team2.R
 
 
-sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector){
-    object Home : BottomNavItem("tab_home", "홈", Icons.Filled.Home)
-    object Explore : BottomNavItem("tab_explore", "탐색", Icons.Default.Search)
-    object Battle : BottomNavItem("tab_battle", "오늘의 배틀", Icons.Default.PlayArrow)
-    object Profile : BottomNavItem("tab_profile", "마이페이지", Icons.Default.Person)
+sealed class BottomNavItem(val route: String, val title: String, val icon: Int){
+    object Home : BottomNavItem("tab_home", "홈", R.drawable.ic_nav_home)
+    object Explore : BottomNavItem("tab_explore", "탐색", R.drawable.ic_nav_explore)
+    object Battle : BottomNavItem("tab_battle", "빠른배틀", R.drawable.ic_nav_battle)
+    object My : BottomNavItem("tab_my", "마이", R.drawable.ic_nav_my)
 }
