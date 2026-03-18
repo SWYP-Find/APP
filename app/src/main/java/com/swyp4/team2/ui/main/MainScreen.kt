@@ -17,7 +17,7 @@ import com.swyp4.team2.ui.explore.ExploreScreen
 import com.swyp4.team2.ui.home.HomeScreen
 import com.swyp4.team2.ui.my.MyScreen
 import com.swyp4.team2.ui.my.content.ContentActivityScreen
-import com.swyp4.team2.ui.my.history.DiscussionHistoryScreen
+import com.swyp4.team2.ui.my.discussion.DiscussionHistoryScreen
 import com.swyp4.team2.ui.my.notice.NoticeEventScreen
 import com.swyp4.team2.ui.my.philosopher.PhilosopherTypeScreen
 import com.swyp4.team2.ui.my.setting.SettingScreen
@@ -35,7 +35,7 @@ fun MainScreen(
     val showBottomBar = currentRoute != BottomNavItem.Battle.route
 
     Scaffold(
-        containerColor = SwypTheme.colors.background,
+        containerColor = SwypTheme.colors.surface,
         bottomBar = {
             if (showBottomBar) {
                 CustomBottomNavigationBar(mainNavController)

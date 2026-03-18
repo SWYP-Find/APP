@@ -56,13 +56,6 @@ fun SettingScreen(
                 .padding(horizontal = 16.dp)
         ){
             SettingMenuItem(
-                iconResId =  R.drawable.ic_user_profile,
-                title = stringResource(R.string.my_setting_profile),
-                onClick = {
-                    onNavigateToSettingProfile()
-                }
-            )
-            SettingMenuItem(
                 iconResId =  R.drawable.ic_alarm_setting,
                 title = stringResource(R.string.my_setting_alarm),
                 onClick = {
@@ -71,7 +64,14 @@ fun SettingScreen(
             )
             SettingMenuItem(
                 iconResId =  R.drawable.ic_help,
-                title = stringResource(R.string.help_and_opinion),
+                title = stringResource(R.string.setting_footer_privacy),
+                onClick = {
+                    // 웹 링크 열기
+                }
+            )
+            SettingMenuItem(
+                iconResId =  R.drawable.ic_help,
+                title = stringResource(R.string.setting_footer_terms),
                 onClick = {
                     // 웹 링크 열기
                 }
@@ -84,25 +84,6 @@ fun SettingScreen(
                 }
             )
             Spacer(modifier = Modifier.weight(1f))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                FooterLinkText(R.string.setting_footer_privacy) {
-                    onOpenWebLink("https://privacy-policy.com")
-                }
-                Text(
-                    text = " ${stringResource(R.string.setting_footer_divider)} ",
-                    style = SwypTheme.typography.b4Regular,
-                    color = Gray300
-                )
-                FooterLinkText(R.string.setting_footer_terms) {
-                    onOpenWebLink("https://terms-of-service.com")
-                }
-            }
         }
     }
 }
@@ -132,27 +113,16 @@ fun SettingMenuItem(
     ){
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                // modifier = Modifier.weight(1f, fill=false)
-            ){
-                Icon(
-                    painter = painterResource(id = iconResId),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = Gray900
-                )
-                Spacer(modifier = Modifier.width(12.dp)) // 아이콘과 글자 사이 고정 간격
-                Text(
-                    text = title,
-                    style = SwypTheme.typography.b1Medium,
-                    color = Gray900
-                )
-            }
+            Text(
+                text = title,
+                style = SwypTheme.typography.b1Medium,
+                color = Gray900
+            )
+
             Icon(
                 painterResource(R.drawable.ic_arrow_right),
                 contentDescription = null,
