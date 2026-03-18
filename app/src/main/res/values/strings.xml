@@ -6,12 +6,12 @@
 
 
     <!-- 마이   -->
-    <string name="my_credit_title">내 크레딧 %d</string>
+    <string name="my_credit_title">내 크레딧</string>
     <string name="my_charge_free">무료 충전하기</string>
     <string name="my_menu_discussion">내 토론 기록</string>
-    <string name="my_menu_philosopher">나는 어떤 철학자 일까?</string>
+    <string name="my_menu_philosopher">나의 철학자 유형</string>
     <string name="my_menu_content">내 콘텐츠 활동</string>
-    <string name="my_menu_notice">공지사항 · 이벤트</string>
+    <string name="my_menu_notice">공지방 · 이벤트</string>
     <string name="my_setting_profile">프로필 편집</string>
     <string name="my_setting_alarm">알림 설정</string>
     <string name="help_and_opinion">도움말 및 의견</string>
@@ -33,4 +33,23 @@
     <!-- tts & 투표  -->
     <string name="prevote">사전 투표하기</string>
     <string name="postvote">사후 투표하기</string>
+
+    <!-- 설정   -->
+    <string name="setting_alarm_category_function">기능별 알림 설정</string>
+    <string name="setting_alarm_new_battle_title">새 배틀 알림</string>
+    <string name="setting_alarm_new_battle_desc">관심 분야의 새로운 배틀이 열리면 알려드려요</string>
+    <string name="setting_alarm_vote_result_title">투표 결과 알림</string>
+    <string name="setting_alarm_vote_result_desc">참여한 배틀의 최종 결과를 알려드려요</string>
+
+    <string name="setting_alarm_category_social">소셜 알림 설정</string>
+    <string name="setting_alarm_reply_title">내 댓글에 답글 알림</string>
+    <string name="setting_alarm_reply_desc">내 의견에 답글이 달리면 알려드려요</string>
+    <string name="setting_alarm_new_comment_title">새 댓글 알림</string>
+    <string name="setting_alarm_new_comment_desc">참여한 배틀에 새 댓글이 달리면 알려드려요</string>
+    <string name="setting_alarm_like_title">좋아요 알림</string>
+    <string name="setting_alarm_like_desc">내 댓글에 좋아요를 받으면 알려드려요</string>
+
+    <string name="setting_alarm_category_marketing">마케팅 알림 설정</string>
+    <string name="setting_alarm_marketing_title">이벤트 및 소식 알림</string>
+    <string name="setting_alarm_marketing_desc">내 의견에 답글이 달리면 알려드려요</string>
 </resources>

@@ -65,6 +65,7 @@ import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary50
 import com.swyp4.team2.ui.theme.SwypTheme
 import kotlinx.coroutines.launch
 
@@ -161,17 +162,67 @@ fun ExploreList(
     category: String,
     onNavigateToVote: (Int) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+    var selectedSort by remember { mutableStateOf("인기순") }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        items(dummyExploreList) { item ->
-            ExploreCard(
-                item = item,
-                onClick = {id -> onNavigateToVote(id)}
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(top = 12.dp, start = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            SortButton(
+                text = "인기순",
+                isSelected = selectedSort == "인기순",
+                onClick = { selectedSort = "인기순" }
+            )
+            SortButton(
+                text = "최신순",
+                isSelected = selectedSort == "최신순",
+                onClick = { selectedSort = "최신순" }
             )
         }
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(dummyExploreList) { item ->
+                ExploreCard(
+                    item = item,
+                    onClick = { id -> onNavigateToVote(id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SortButton(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    // 선택 여부에 따라 색상 반전 처리
+    val backgroundColor = if (isSelected) SwypTheme.colors.primary else Primary50
+    val contentColor = if (isSelected) Primary50 else SwypTheme.colors.primary
+    val borderColor = SwypTheme.colors.primary
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = SwypTheme.typography.b4Medium, // 폰트 사이즈가 작아 보여서 b4Medium으로 설정했습니다. 필요시 조정하세요!
+            color = contentColor
+        )
     }
 }
 

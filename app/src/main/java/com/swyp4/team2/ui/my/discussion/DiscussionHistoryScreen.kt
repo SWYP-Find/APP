@@ -1,4 +1,4 @@
-package com.swyp4.team2.ui.my.history
+package com.swyp4.team2.ui.my.discussion
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,22 +31,16 @@ import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.CustomTopAppBar
-import com.swyp4.team2.ui.my.content.MyCommentList
-import com.swyp4.team2.ui.my.content.MyLikeList
-import com.swyp4.team2.ui.my.history.model.DiscussionHistoryItem
-import com.swyp4.team2.ui.my.history.model.dummyAgreeList
-import com.swyp4.team2.ui.my.history.model.dummyDisagreeList
-import com.swyp4.team2.ui.theme.Beige100
+import com.swyp4.team2.ui.my.discussion.model.DiscussionHistoryItem
+import com.swyp4.team2.ui.my.discussion.model.dummyAgreeList
+import com.swyp4.team2.ui.my.discussion.model.dummyDisagreeList
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige600
-import com.swyp4.team2.ui.theme.Gray200
-import com.swyp4.team2.ui.theme.Gray400
-import com.swyp4.team2.ui.theme.Gray50
 import com.swyp4.team2.ui.theme.Gray500
+import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Secondary900
 import com.swyp4.team2.ui.theme.SwypTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -132,17 +126,34 @@ fun DisagreeDiscussionList() {
 fun DiscussionHistoryCard(
     item: DiscussionHistoryItem
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-            .background(SwypTheme.colors.surface)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
+            .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(16.dp)
     ) {
-        // 제목, 태그들
-        Column(modifier = Modifier.weight(1f)) {
+        // [상단] 카테고리 뱃지 & 토론 주제
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // 카테고리 뱃지
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(Beige400)
+                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            ) {
+                Text(
+                    text = "#${item.category}",
+                    style = SwypTheme.typography.label,
+                    color = SwypTheme.colors.primary
+                )
+            }
+
+            // 토론 주제
             Text(
                 text = item.title,
                 style = SwypTheme.typography.labelMedium,
@@ -150,53 +161,26 @@ fun DiscussionHistoryCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Beige400)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = item.category,
-                        style = SwypTheme.typography.b4Regular,
-                        color = Secondary900
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(6.dp))
-
-                // 시간 태그
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Beige400)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = item.timeAgo,
-                        style = SwypTheme.typography.b4Regular,
-                        color = Secondary900
-                    )
-                }
-            }
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // 찬성/반대 뱃지
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(2.dp))
-                .background(Beige600)
-                .padding(horizontal = 12.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = item.stance,
-                style = SwypTheme.typography.h5SemiBold,
-                color = SwypTheme.colors.primary
-            )
-        }
+        // [중단] 내가 쓴 댓글 내용
+        Text(
+            text = item.description,
+            style = SwypTheme.typography.b4Regular,
+            color = Gray700,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // [하단] 작성 날짜
+        Text(
+            text = item.date,
+            style = SwypTheme.typography.label,
+            color = Gray500
+        )
     }
 }
