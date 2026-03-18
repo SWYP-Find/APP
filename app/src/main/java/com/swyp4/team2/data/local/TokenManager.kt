@@ -26,7 +26,7 @@ class TokenManager @Inject constructor(
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
     )
 
-    // 3. Access Token 관리
+    // Access Token 관리
     fun saveAccessToken(token: String) {
         prefs.edit().putString("access_token", token).apply()
     }
@@ -34,7 +34,7 @@ class TokenManager @Inject constructor(
         return prefs.getString("access_token", null)
     }
 
-    // 4. Refresh Token 관리
+    // Refresh Token 관리
     fun saveRefreshToken(token: String) {
         prefs.edit().putString("refresh_token", token).apply()
     }
@@ -42,11 +42,20 @@ class TokenManager @Inject constructor(
         return prefs.getString("refresh_token", null)
     }
 
-    // 5. 토큰 삭제 (로그아웃, 회원탈퇴, 인증 만료 시 호출)
-    fun deleteToken() {
+    // 유저 상태(PENDING/ACTIVE) 관리
+    fun saveUserStatus(status: String) {
+        prefs.edit().putString("user_status", status).apply()
+    }
+    fun getUserStatus(): String? {
+        return prefs.getString("user_status", null)
+    }
+
+    // 토큰 삭제 (로그아웃, 회원탈퇴, 인증 만료 시 호출)
+    fun clearAll() {
         prefs.edit()
             .remove("access_token")
             .remove("refresh_token")
+            .remove("user_status")
             .apply()
     }
 }

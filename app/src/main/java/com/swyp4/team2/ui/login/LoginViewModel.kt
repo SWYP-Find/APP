@@ -9,12 +9,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.swyp4.team2.BuildConfig
 
 // 화면 상태 정의
-sealed class LoginUiState{
+sealed class LoginUiState {
     object Idle : LoginUiState()
     object Loading : LoginUiState()
-    object Success : LoginUiState()
+    data class Success(val isNewUser: Boolean) : LoginUiState()
     data class Error(val message: String) : LoginUiState()
 }
 
@@ -25,16 +26,27 @@ class LoginViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    fun handleSocialLoginSuccess(provider: String, token: String) {
+    fun handleSocialLoginSuccess(provider: String, authCode: String) {
         viewModelScope.launch {
             _uiState.value = LoginUiState.Loading
 
-            val result = authRepository.loginWithSocialToken(provider, token)
+            // TODO: 서비스에 맞는 리다이렉트 URI를 넣어야 합니다. (보통 카카오는 개발자 센터에 등록한 URI)
+            val redirectUri = if (provider == "KAKAO") {
+                "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
+            } else {
+                "" // 구글은 보통 안드로이드 클라이언트에서 빈 문자열이거나 특정 설정을 따릅니다.
+            }
+
+            val result = authRepository.login(
+                provider = provider,
+                authCode = authCode,
+                redirectUri = redirectUri
+            )
 
             result.onSuccess { authToken ->
-                // TODO: 여기서 받아온 자체 토큰(authToken)을 TokenManager 등에 저장
-                // 여기서 authToken.isNewUser 값에 따라 온보딩으로 갈지, 메인으로 갈지 상태를 나눌 수도 있습니다!
-                _uiState.value = LoginUiState.Success
+                // 🌟 4. 성공 시, 이 유저가 신규 유저인지 정보를 Success 상태에 실어 보냅니다.
+                // TokenManager 저장 로직은 이미 RepositoryImpl에 넣어두었으니 여기선 상태만 넘기면 끝!
+                _uiState.value = LoginUiState.Success(isNewUser = authToken.isNewUser)
             }.onFailure { error ->
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")
             }

@@ -36,7 +36,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://api.swyp.com/")
+            .baseUrl("http://api.swyp.com/") // TODO 서버 주소 넣기
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

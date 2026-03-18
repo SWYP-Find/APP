@@ -3,7 +3,10 @@
 
     <string name="alarm">알림 설정</string>
     <string name="setting">설정</string>
-
+    <string name="login_your_think">당신의 생각을</string>
+    <string name="login_with_kakao">카카오로 로그인</string>
+    <string name="login_with_google">구글로 로그인</string>
+    <string name="onboarding_start">시작하기</string>
 
     <!-- 마이   -->
     <string name="my_credit_title">내 크레딧</string>

@@ -12,10 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.swyp4.team2.R
+import com.swyp4.team2.ui.theme.Primary500
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
 
@@ -23,6 +25,7 @@ import com.swyp4.team2.ui.theme.SwypTheme
 fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
     onNavigateToLogin: ()->Unit,
+    onNavigateToOnboarding: () -> Unit,
     onNavigateToMain: ()->Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -38,13 +41,13 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SwypTheme.colors.background),
+            .background(Color(0xFF893825)),
         contentAlignment = Alignment.Center
     ){
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.ic_splash_logo),
             contentDescription = "로고 이미지",
-            modifier = Modifier.size(120.dp)
+            modifier = Modifier.size(200.dp)
         )
     }
 }
