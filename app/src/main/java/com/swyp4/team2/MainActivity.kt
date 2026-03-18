@@ -133,7 +133,9 @@ fun AppNavigation() {
                 onBackClick = {
                     rootNavController.popBackStack()
                 },
-                onVoteSubmit = { /* TTS 화면으로 이동 */ }
+                onVoteSubmit = {
+                    rootNavController.navigate(AppRoute.Debate.route)
+                }
             )
         }
 

@@ -675,7 +675,7 @@ fun NewBattleCard(
                 Text(
                     text = "#${item.category}",
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                    style = SwypTheme.typography.h4SemiBold,
+                    style = SwypTheme.typography.labelXSmall,
                     color = SwypTheme.colors.primary
                 )
             }
@@ -712,7 +712,7 @@ fun NewBattleCard(
             // 가운데 VS 원형 뱃지
             Surface(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(40.dp)
                     .padding(6.dp),
                 shape = CircleShape,
                 color = Secondary200,

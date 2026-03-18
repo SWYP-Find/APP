@@ -164,36 +164,38 @@ fun ExploreList(
 ) {
     var selectedSort by remember { mutableStateOf("인기순") }
 
-    Column(
+    LazyColumn(
         modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        // contentPadding = PaddingValues(horizontal = 16.dp, top = 12.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(top = 12.dp, start = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            SortButton(
-                text = "인기순",
-                isSelected = selectedSort == "인기순",
-                onClick = { selectedSort = "인기순" }
-            )
-            SortButton(
-                text = "최신순",
-                isSelected = selectedSort == "최신순",
-                onClick = { selectedSort = "최신순" }
-            )
-        }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(dummyExploreList) { item ->
-                ExploreCard(
-                    item = item,
-                    onClick = { id -> onNavigateToVote(id) }
+        // 🌟 1. 필터 버튼 영역을 LazyColumn의 첫 번째 item으로 넣습니다!
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SortButton(
+                    text = "인기순",
+                    isSelected = selectedSort == "인기순",
+                    onClick = { selectedSort = "인기순" }
+                )
+                SortButton(
+                    text = "최신순",
+                    isSelected = selectedSort == "최신순",
+                    onClick = { selectedSort = "최신순" }
                 )
             }
+        }
+
+        // 🌟 2. 그 아래에 카드 리스트를 그립니다.
+        items(dummyExploreList) { item ->
+            ExploreCard(
+                item = item,
+                onClick = { id -> onNavigateToVote(id) }
+            )
         }
     }
 }

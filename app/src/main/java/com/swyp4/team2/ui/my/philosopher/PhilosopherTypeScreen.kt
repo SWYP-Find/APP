@@ -65,6 +65,7 @@ fun PhilosopherTypeScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
+        containerColor = SwypTheme.colors.background,
         topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_philosopher),
@@ -88,10 +89,9 @@ fun PhilosopherTypeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SwypTheme.colors.background)
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
                 .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // 1. 철학자 유형 헤더
