@@ -15,4 +15,8 @@ sealed class AppRoute(val route: String){
     object NoticeEvent : AppRoute("notice_event_screen")             // 마이-공지방 · 이벤트
     object SettingProfile : AppRoute("setting_profile_screen")       // 설정-프로필 편집
     object SettingAlarm : AppRoute("setting_alarm_screen")         // 설정-알림 설정
+
+    object PreVote : AppRoute("pre_vote_screen")
+    object PostVote : AppRoute("post_vote_screen")
+
 }
