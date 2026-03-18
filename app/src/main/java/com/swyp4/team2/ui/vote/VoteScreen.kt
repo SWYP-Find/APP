@@ -1,6 +1,8 @@
 package com.swyp4.team2.ui.vote
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +25,10 @@ import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,8 +46,10 @@ import com.swyp4.team2.ui.theme.Beige100
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Beige600
+import com.swyp4.team2.ui.theme.Beige900
 import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary300
 import com.swyp4.team2.ui.theme.Secondary200
 import com.swyp4.team2.ui.theme.SwypTheme
 import com.swyp4.team2.ui.vote.model.VoteTopicItem
@@ -59,6 +67,8 @@ fun VoteScreen(
     val bgColor = if (isPreVote) SwypTheme.colors.surface else Color.Black
     val titleColor = if (isPreVote) Color.Black else SwypTheme.colors.surface
     val descText = if (isPreVote) item.preDescription else item.postDescription
+
+    var selectedSide by remember { mutableStateOf<Int?>(null) }
 
     Box(
         modifier = Modifier
@@ -158,6 +168,8 @@ fun VoteScreen(
                 VoteOptionCard(
                     modifier = Modifier.weight(1f),
                     profile = item.leftProfile,
+                    isSelected = selectedSide == 0,      // 0번이면 선택된 상태
+                    onClick = { selectedSide = 0 }
                 )
 
                 // VS 뱃지
@@ -178,7 +190,9 @@ fun VoteScreen(
                 // 오른쪽 카드
                 VoteOptionCard(
                     modifier = Modifier.weight(1f),
-                    profile = item.rightProfile
+                    profile = item.rightProfile,
+                    isSelected = selectedSide == 1,      // 1번이면 선택된 상태
+                    onClick = { selectedSide = 1 }
                 )
             }
 
@@ -187,10 +201,16 @@ fun VoteScreen(
             // 투표 버튼
             Button(
                 onClick = onVoteSubmit,
+                enabled = selectedSide != null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8C3E26)), // 갈색
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = SwypTheme.colors.primary,
+                    disabledContainerColor = Primary300,
+                    contentColor = SwypTheme.colors.surface,
+                    disabledContentColor = Color.White
+                ),
                 shape = RoundedCornerShape(4.dp)
             ) {
                 Text(
@@ -210,11 +230,18 @@ fun VoteScreen(
 fun VoteOptionCard(
     modifier: Modifier = Modifier,
     profile: BattleProfile,
+    isSelected: Boolean,
+    onClick: () -> Unit
 ) {
+    val borderColor = if (isSelected) Beige900 else Color.Transparent
+    val borderWidth = if (isSelected) 2.dp else 0.dp
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
             .background(Beige500)
+            .border(borderWidth, borderColor, RoundedCornerShape(2.dp)) // 선택 시 테두리 그리기
+            .clickable { onClick() }
             .padding(vertical = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

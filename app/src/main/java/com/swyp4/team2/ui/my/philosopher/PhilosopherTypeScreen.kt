@@ -17,6 +17,7 @@ fun PhilosopherTypeScreen(
         topBar={
             CustomTopAppBar(
                 title = "나는 어떤 철학자일까?",
+                centerTitle = true,
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},

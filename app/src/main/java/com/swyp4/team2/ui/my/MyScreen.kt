@@ -65,6 +65,7 @@ fun MyScreen(
         topBar = {
             CustomTopAppBar(
                 backgroundColor = SwypTheme.colors.background,
+                centerTitle = false,
                 actions = {
                     IconButton(
                         onClick = {

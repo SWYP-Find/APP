@@ -52,15 +52,28 @@ fun MainScreen(
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
-                    /*onNavigateToBattleIntro= {
-                        rootNavController.navigate(AppRoute.Debate.route)
-                    }*/
+                    onNavigateToVote = { id ->
+                        // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
+                        rootNavController.navigate(AppRoute.PreVote.route)
+
+                        // 나중에 API 연결 시 라우트 예시:
+                        // rootNavController.navigate("pre_vote_route/$id")
+                    }
                 )
             }
             composable(BottomNavItem.Explore.route){
                 ExploreScreen(
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
+                    },
+                    onNavigateToVote = { id ->
+                        // 🔥 여기서 VoteScreen으로 이동!
+                        // 지금은 더미데이터라 단순히 화면만 넘기지만,
+                        // 나중에는 API 통신을 위해 라우트에 id를 붙여서 넘길 수 있습니다.
+                        rootNavController.navigate(AppRoute.PreVote.route)
+
+                        // 💡 나중에 API 연결 시 라우트 예시:
+                        // rootNavController.navigate("pre_vote_route/$id")
                     }
                 )
             }

@@ -41,6 +41,7 @@ fun SettingScreen(
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.setting),
+                centerTitle = true,
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },

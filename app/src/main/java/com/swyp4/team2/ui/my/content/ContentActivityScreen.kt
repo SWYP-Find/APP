@@ -67,6 +67,7 @@ fun ContentActivityScreen(
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_content),
+                centerTitle = true,
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},

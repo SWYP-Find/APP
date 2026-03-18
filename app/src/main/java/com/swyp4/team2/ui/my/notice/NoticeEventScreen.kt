@@ -19,6 +19,7 @@ fun NoticeEventScreen(
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_notice),
+                centerTitle = true,
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},

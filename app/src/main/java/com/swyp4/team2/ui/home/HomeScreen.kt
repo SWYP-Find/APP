@@ -101,6 +101,7 @@ import com.swyp4.team2.ui.theme.SwypTheme
 @Composable
 fun HomeScreen(
     onNavigateToAlarm: ()->Unit,
+    onNavigateToVote: (Int) -> Unit
 ) {
     // 🌟 가상의 '새 알림' 상태 변수 (나중에는 서버에서 이 값을 받아오게 됩니다!)
     var hasUnreadNotification by remember { mutableStateOf(true) }
@@ -111,6 +112,7 @@ fun HomeScreen(
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
+                centerTitle = false,
                 backgroundColor = SwypTheme.colors.background,
                 actions = {
                     IconButton(
@@ -146,7 +148,10 @@ fun HomeScreen(
                 .verticalScroll(scrollState)
         ){
             // 에디터 픽 섹션
-            EditorPickSection(items = dummyEditorPickList)
+            EditorPickSection(
+                items = dummyEditorPickList,
+                onItemClick = onNavigateToVote
+            )
             Spacer(modifier = Modifier.height(24.dp))
 
             // 지금 뜨는 배틀
@@ -165,7 +170,10 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ){
                     items(dummyTrendingList){item ->
-                        TrendingBattleCard(item = item)
+                        TrendingBattleCard(
+                            item = item,
+                            onClick = { onNavigateToVote(item.id)}
+                        )
                     }
                 }
             }
@@ -184,7 +192,10 @@ fun HomeScreen(
                 )
 
                 dummyBestBattleList.take(3).forEach { item ->
-                    BestBattleRankItem(item = item)
+                    BestBattleRankItem(
+                        item = item,
+                        onClick = { onNavigateToVote(item.id)}
+                    )
                 }
             }
 
@@ -225,7 +236,10 @@ fun HomeScreen(
 
                 // 리스트 형태 (여기선 take(3) 등으로 제한하거나 전체 리스트 출력)
                 dummyNewBattleList.forEach { item ->
-                    NewBattleCard(item = item)
+                    NewBattleCard(
+                        item = item,
+                        onClick = { onNavigateToVote(item.id)}
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
             }
@@ -237,7 +251,8 @@ fun HomeScreen(
 @Composable
 fun EditorPickSection(
     items: List<EditorPickItem>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onItemClick: (Int) -> Unit
 ) {
     val pagerState = rememberPagerState(pageCount = { items.size })
 
@@ -249,7 +264,8 @@ fun EditorPickSection(
         EditorPickCard(
             item = item,
             currentIndex = page + 1,
-            totalCount = items.size
+            totalCount = items.size,
+            modifier = Modifier.clickable { onItemClick(item.id) }
         )
     }
 }
@@ -445,12 +461,14 @@ fun HomeSectionHeader(
 @Composable
 fun TrendingBattleCard(
     item: TrendingBattleItem,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .width(160.dp)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
+            .clickable { onClick() }
             .padding(12.dp)
     ){
         // 썸네일
@@ -526,9 +544,13 @@ fun TrendingBattleCard(
 @Composable
 fun BestBattleRankItem(
     item: BestBattleItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxWidth()){
+    Column(
+        modifier = modifier.fillMaxWidth()
+            .clickable{ onClick() }
+    ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -627,7 +649,8 @@ fun BestBattleRankItem(
 @Composable
 fun NewBattleCard(
     item: NewBattleItem,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -635,6 +658,7 @@ fun NewBattleCard(
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .clickable { onClick() }
             .padding(12.dp)
     ){
         // 1. 상단 태그 및 메타 정보
