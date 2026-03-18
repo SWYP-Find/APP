@@ -9,15 +9,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.swyp4.team2.ui.alarm.AlarmScreen
+import com.swyp4.team2.ui.battle.BattleScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.debate.DebateScreen
 import com.swyp4.team2.ui.login.LoginScreen
+import com.swyp4.team2.ui.main.BottomNavItem
 import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
 import com.swyp4.team2.ui.my.setting.SettingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
 import com.swyp4.team2.ui.splash.SplashScreen
+import com.swyp4.team2.ui.vote.VoteScreen
+import com.swyp4.team2.ui.vote.model.VoteType
+import com.swyp4.team2.ui.vote.model.dummyVoteItem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -120,5 +125,28 @@ fun AppNavigation() {
             )
         }
 
+        // 사전 투표 화면
+        composable(AppRoute.PreVote.route) {
+            VoteScreen(
+                voteType = VoteType.PRE,
+                item = dummyVoteItem,
+                onBackClick = {
+                    rootNavController.popBackStack()
+                },
+                onVoteSubmit = { /* TTS 화면으로 이동 */ }
+            )
+        }
+
+        // 사후 투표 화면
+        composable(AppRoute.PostVote.route) {
+            VoteScreen(
+                voteType = VoteType.POST,
+                item = dummyVoteItem,
+                onBackClick = {
+                    rootNavController.popBackStack()
+                },
+                onVoteSubmit = { /* 결과 화면으로 이동 */ }
+            )
+        }
     }
 }

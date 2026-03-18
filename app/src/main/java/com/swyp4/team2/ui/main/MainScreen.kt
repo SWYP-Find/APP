@@ -3,10 +3,12 @@ package com.swyp4.team2.ui.main
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.ui.battle.BattleScreen
@@ -27,10 +29,17 @@ fun MainScreen(
 ){
     val mainNavController = rememberNavController()
 
+    val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val showBottomBar = currentRoute != BottomNavItem.Battle.route
+
     Scaffold(
         containerColor = SwypTheme.colors.background,
         bottomBar = {
-            CustomBottomNavigationBar(mainNavController)
+            if (showBottomBar) {
+                CustomBottomNavigationBar(mainNavController)
+            }
         }
     ){ innerPadding ->
         NavHost(
@@ -42,7 +51,10 @@ fun MainScreen(
                 HomeScreen(
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
-                    }
+                    },
+                    /*onNavigateToBattleIntro= {
+                        rootNavController.navigate(AppRoute.Debate.route)
+                    }*/
                 )
             }
             composable(BottomNavItem.Explore.route){
@@ -53,7 +65,14 @@ fun MainScreen(
                 )
             }
             composable(BottomNavItem.Battle.route){
-                BattleScreen()
+                BattleScreen(
+                    onBackClick = {
+                        mainNavController.popBackStack()
+                    },
+                    onEnterBattle = {
+                        rootNavController.navigate(AppRoute.PreVote.route)
+                    }
+                )
             }
             composable(BottomNavItem.My.route){
                 MyScreen(

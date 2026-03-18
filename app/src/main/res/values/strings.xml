@@ -5,7 +5,7 @@
     <string name="setting">설정</string>
 
 
-    <!-- MyScreen - 마이페이지   -->
+    <!-- 마이   -->
     <string name="my_credit_title">내 크레딧 %d</string>
     <string name="my_charge_free">무료 충전하기</string>
     <string name="my_menu_discussion">내 토론 기록</string>
@@ -20,4 +20,17 @@
     <string name="setting_footer_terms">서비스 약관</string>
     <string name="setting_footer_divider">·</string>
     <string name="my_content_view_detail">내용 보러가기</string>
+
+    <!-- 홈   -->
+    <string name="more">더보기</string>
+    <string name="home_section_trending">지금 뜨는 배틀</string>
+    <string name="home_section_best">Best 배틀</string>
+    <string name="home_section_today_picke">오늘의 Pické</string>
+    <string name="home_section_new">새로운 배틀</string>
+    <string name="home_highlight_battle">배틀</string>
+    <string name="home_highlight_picke">Pické</string>
+
+    <!-- tts & 투표  -->
+    <string name="prevote">사전 투표하기</string>
+    <string name="postvote">사후 투표하기</string>
 </resources>
