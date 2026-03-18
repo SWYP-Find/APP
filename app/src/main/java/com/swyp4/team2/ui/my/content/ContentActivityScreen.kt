@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -28,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,8 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.CustomTopAppBar
-import com.swyp4.team2.ui.my.content.model.MyCommentItem
-import com.swyp4.team2.ui.my.content.model.MyLikeItem
+import com.swyp4.team2.ui.my.content.model.ContentActivityItem
 import com.swyp4.team2.ui.my.content.model.dummyCommentList
 import com.swyp4.team2.ui.my.content.model.dummyLikeList
 import com.swyp4.team2.ui.theme.Beige400
@@ -44,6 +45,7 @@ import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray400
+import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
@@ -58,7 +60,7 @@ fun ContentActivityScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = listOf("댓글", "좋아요")
+    val tabs = listOf("내 댓글", "좋아요")
 
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
@@ -67,6 +69,7 @@ fun ContentActivityScreen(
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_content),
+                centerTitle = true,
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},
@@ -98,8 +101,8 @@ fun ContentActivityScreen(
                 modifier = Modifier.fillMaxSize()
             ){ page ->
                 when (page){
-                    0 -> MyCommentList()
-                    1 -> MyLikeList()
+                    0 -> ContentActivityList(items = dummyCommentList)
+                    1 -> ContentActivityList(items = dummyLikeList)
                 }
             }
         }
@@ -107,172 +110,114 @@ fun ContentActivityScreen(
 }
 
 @Composable
-fun MyCommentList() {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ){
-        items(dummyCommentList){ item ->
-            MyCommentCard(item = item)
-        }
-    }
-}
-
-@Composable
-fun MyLikeList() {
+fun ContentActivityList(items: List<ContentActivityItem>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(dummyLikeList) { item ->
-            MyLikeCard(item = item)
+        items(items) { item ->
+            ContentActivityCard(item = item)
         }
     }
 }
 
+// 🔥 카드 디자인 하나로 통합
 @Composable
-fun MyCommentCard(item: MyCommentItem) {
+fun ContentActivityCard(item: ContentActivityItem) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige400, RoundedCornerShape(2.dp))
             .padding(16.dp)
     ) {
+        // [상단] 프로필, 닉네임, 찬/반 뱃지, 시간
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = item.category,
-                style = SwypTheme.typography.h5SemiBold,
-                color = SwypTheme.colors.primary
-            )
-            Text(
-                text = " | ",
-                style = SwypTheme.typography.labelMedium,
-                color = SwypTheme.colors.primary
-            )
-            Text(
-                text = item.title,
-                style = SwypTheme.typography.labelMedium,
-                color = Gray900
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = item.content,
-            style = SwypTheme.typography.b4Regular,
-            color = Gray600,
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = item.date,
-                style = SwypTheme.typography.label,
-                color = Gray300
-            )
-            Text(
-                text = stringResource(R.string.my_content_view_detail),
-                style = SwypTheme.typography.label,
-                color = Gray400
-            )
-        }
-    }
-}
-
-@Composable
-fun MyLikeCard(item: MyLikeItem) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige400, RoundedCornerShape(2.dp))
-            .padding(16.dp)
-    ){
-        // 상단 정보들
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
-        ) {
-            // 프로필, 닉네임, 찬반, 시간
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier.size(36.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Beige500),
-                    contentAlignment = Alignment.Center
-                ) {
-
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = item.nickname,
-                            style = SwypTheme.typography.labelMedium,
-                            color = Gray900
-                        )
-                        Text(
-                            text = " | ",
-                            style = SwypTheme.typography.label,
-                            color = Secondary900
-                        )
-                        Text(
-                            text = item.stance,
-                            style = SwypTheme.typography.label,
-                            color = Secondary900
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = item.timeAgo,
-                        style = SwypTheme.typography.labelXSmall,
-                        color = Gray400,
-                    )
-                }
-            }
-
-            // 좋아요 버튼
-            Row(
-                modifier = Modifier.clip(RoundedCornerShape(2.dp))
-                    .background(Primary50)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+                    .background(Beige500),
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_heart_plus),
+                    painter = painterResource(id = item.profileImgRes ?: R.drawable.ic_profile_xunzi),
                     contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = Gray400
+                    modifier = Modifier.size(28.dp),
+                    tint = Color.Unspecified
                 )
-                Spacer(modifier = Modifier.width(2.dp))
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = item.nickname,
+                        style = SwypTheme.typography.b2Medium,
+                        color = Gray900
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    val isAgree = item.stance == "찬성"
+                    val badgeBgColor = if (isAgree) Beige400 else SwypTheme.colors.primary
+                    val badgeTextColor = if (isAgree) SwypTheme.colors.primary else SwypTheme.colors.surface
+
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(badgeBgColor)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = item.stance,
+                            style = SwypTheme.typography.labelXSmall,
+                            color = badgeTextColor
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = item.likeCount,
-                    style = SwypTheme.typography.label,
-                    color = Gray400
+                    text = item.timeAgo,
+                    style = SwypTheme.typography.labelXSmall,
+                    color = Gray500
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // 본문
+        // [중단] 본문
         Text(
             text = item.content,
-            style = SwypTheme.typography.b4Regular,
+            style = SwypTheme.typography.b3Regular,
             color = Gray600,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // [하단] 좋아요 수 (우측 정렬)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_heart_plus),
+                contentDescription = "좋아요",
+                modifier = Modifier.size(16.dp),
+                tint = Gray500
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = item.likeCount,
+                style = SwypTheme.typography.labelMedium,
+                color = Gray500
+            )
+        }
     }
 }

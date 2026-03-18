@@ -3,6 +3,7 @@ package com.swyp4.team2.ui.explore
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,6 +65,7 @@ import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary50
 import com.swyp4.team2.ui.theme.SwypTheme
 import kotlinx.coroutines.launch
 
@@ -71,6 +73,7 @@ import kotlinx.coroutines.launch
 fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel(),
     onNavigateToAlarm: ()->Unit,
+    onNavigateToVote: (Int) -> Unit,
 ) {
     val exploreCategories = listOf("전체", "철학", "문학", "예술", "과학", "사회", "역사")
     val selectedCategory by viewModel.selectedCategory.collectAsState()
@@ -93,6 +96,7 @@ fun ExploreScreen(
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
+                centerTitle = false,
                 backgroundColor = SwypTheme.colors.background,
                 actions = {
                     IconButton(
@@ -144,28 +148,90 @@ fun ExploreScreen(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
-                ExploreList(category = exploreCategories[page])
+                ExploreList(
+                    category = exploreCategories[page],
+                    onNavigateToVote = onNavigateToVote
+                )
             }
         }
     }
 }
 
 @Composable
-fun ExploreList(category: String) {
+fun ExploreList(
+    category: String,
+    onNavigateToVote: (Int) -> Unit
+) {
+    var selectedSort by remember { mutableStateOf("인기순") }
+
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        // contentPadding = PaddingValues(horizontal = 16.dp, top = 12.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        // 🌟 1. 필터 버튼 영역을 LazyColumn의 첫 번째 item으로 넣습니다!
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SortButton(
+                    text = "인기순",
+                    isSelected = selectedSort == "인기순",
+                    onClick = { selectedSort = "인기순" }
+                )
+                SortButton(
+                    text = "최신순",
+                    isSelected = selectedSort == "최신순",
+                    onClick = { selectedSort = "최신순" }
+                )
+            }
+        }
+
+        // 🌟 2. 그 아래에 카드 리스트를 그립니다.
         items(dummyExploreList) { item ->
-            ExploreCard(item = item)
+            ExploreCard(
+                item = item,
+                onClick = { id -> onNavigateToVote(id) }
+            )
         }
     }
 }
 
 @Composable
+fun SortButton(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    // 선택 여부에 따라 색상 반전 처리
+    val backgroundColor = if (isSelected) SwypTheme.colors.primary else Primary50
+    val contentColor = if (isSelected) Primary50 else SwypTheme.colors.primary
+    val borderColor = SwypTheme.colors.primary
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(backgroundColor)
+            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = SwypTheme.typography.b4Medium, // 폰트 사이즈가 작아 보여서 b4Medium으로 설정했습니다. 필요시 조정하세요!
+            color = contentColor
+        )
+    }
+}
+
+@Composable
 fun ExploreCard(
-    item: ExploreItem
+    item: ExploreItem,
+    onClick: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -173,6 +239,7 @@ fun ExploreCard(
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .clickable{ onClick(item.id) }
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp) // 이미지와 글 사이 간격
     ) {

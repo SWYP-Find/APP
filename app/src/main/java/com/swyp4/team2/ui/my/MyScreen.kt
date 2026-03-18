@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,14 +39,21 @@ import androidx.navigation.NavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige500
+import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Beige700
 import com.swyp4.team2.ui.theme.Gray100
 import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray50
+import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary800
+import com.swyp4.team2.ui.theme.Secondary200
+import com.swyp4.team2.ui.theme.Secondary300
 import com.swyp4.team2.ui.theme.Secondary600
+import com.swyp4.team2.ui.theme.Secondary700
 import com.swyp4.team2.ui.theme.Secondary900
 import com.swyp4.team2.ui.theme.SwypTheme
 
@@ -65,6 +73,7 @@ fun MyScreen(
         topBar = {
             CustomTopAppBar(
                 backgroundColor = SwypTheme.colors.background,
+                centerTitle = false,
                 actions = {
                     IconButton(
                         onClick = {
@@ -109,17 +118,26 @@ fun MyScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            CreditCard(credit = 240)
+            CreditCard(
+                credit = 240,
+                onChargeClick = {
+
+                }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            PhilosopherTypeCard(
+                philosopherName = "칸트형",
+                philosopherDesc = "원칙주의자",
+                onClick = { onNavigateToPhilosopher() }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             MyPageMenuItem(
                 title = stringResource(R.string.my_menu_discussion),
                 onClick = { onNavigateToDiscussion() }
-            )
-            MyPageMenuItem(
-                title = stringResource(R.string.my_menu_philosopher),
-                onClick = { onNavigateToPhilosopher() }
             )
             MyPageMenuItem(
                 title = stringResource(R.string.my_menu_content),
@@ -141,9 +159,18 @@ fun ProfileSection(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // 프로필 이미지
+        Box(
+            modifier = Modifier.size(52.dp)
+                .background(Secondary600, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+
+        }
+        Spacer(modifier = Modifier.width(12.dp))
         // 이름 & 유형 & ID
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -161,14 +188,64 @@ fun ProfileSection(
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = userHandle, style = SwypTheme.typography.b4Regular, color = Gray300)
         }
-        // 프로필 이미지
+    }
+}
+
+@Composable
+fun PhilosopherTypeCard(
+    philosopherName: String,
+    philosopherDesc: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(Beige400)
+            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 20.dp, vertical = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // [왼쪽] 철학자 아이콘
         Box(
-            modifier = Modifier.size(52.dp)
-                .background(Secondary600, CircleShape),
+            modifier = Modifier
+                .size(48.dp)
+                .background(Beige600, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-
+            Icon(
+                painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                modifier = Modifier.size(36.dp),
+                tint = Color.Unspecified
+            )
         }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        // [가운데] 텍스트 영역
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.my_menu_philosopher),
+                style = SwypTheme.typography.caption2Medium,
+                color = Gray500
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "$philosopherName - $philosopherDesc",
+                style = SwypTheme.typography.b1Medium,
+                color = Gray900
+            )
+        }
+
+        // [오른쪽] 화살표
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_right),
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = Gray900
+        )
     }
 }
 
@@ -181,25 +258,61 @@ fun CreditCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(SwypTheme.colors.primary)
+            .background(Primary800)
             .clickable { onChargeClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // [왼쪽] 내 크레딧 정보
-        Text(
-            text = stringResource(R.string.my_credit_title, credit),
-            style = SwypTheme.typography.label,
-            color = Gray50
-        )
+        // C 아이콘 + 내 크레딧 정보
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // 1. 'C' 동그라미 아이콘
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(color = Secondary300, shape = CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "C",
+                    style = SwypTheme.typography.h5SemiBold,
+                    color = Gray900
+                )
+            }
 
-        // [오른쪽] 무료 충전하기 텍스트
-        Text(
-            text = stringResource(R.string.my_charge_free),
-            style = SwypTheme.typography.label,
-            color = Gray50
-        )
+            // 텍스트 영역
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(R.string.my_credit_title),
+                    style = SwypTheme.typography.b1Medium,
+                    color = Gray50
+                )
+                Text(
+                    text = credit.toString(),
+                    style = SwypTheme.typography.b1Medium,
+                    color = Secondary700
+                )
+            }
+        }
+
+        // [오른쪽] 무료 충전 버튼
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(4.dp))
+                .background(Secondary300)
+                .clickable { onChargeClick() }
+                .padding(horizontal = 6.dp, vertical = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.my_charge_free),
+                style = SwypTheme.typography.label,
+                color = Gray900
+            )
+        }
     }
 }
 
@@ -214,7 +327,7 @@ fun MyPageMenuItem(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {

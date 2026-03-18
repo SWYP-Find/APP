@@ -112,7 +112,7 @@ fun AudioPlayerBar(
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    painter = painterResource(R.drawable.ic_play_back),
                     contentDescription = "15초 뒤로",
                     tint = SwypTheme.colors.primary,
                     modifier = Modifier.size(32.dp)
