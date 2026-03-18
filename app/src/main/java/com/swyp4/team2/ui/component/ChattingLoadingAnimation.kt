@@ -22,7 +22,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ChattingLoadingAnimation() {
+fun ChattingLoadingAnimation(
+    modifier: Modifier = Modifier
+) {
     // 1. 무한히 반복되는 트랜지션(주문)을 만듭니다.
     val infiniteTransition = rememberInfiniteTransition(label = "audio_bars_5")
 
@@ -51,7 +53,7 @@ fun ChattingLoadingAnimation() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(16.dp)
+        modifier = modifier
     ) {
         repeat(5) { index ->
             val variedHeight = (20 + index * 2).dp

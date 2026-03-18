@@ -21,8 +21,8 @@ import kotlinx.coroutines.flow.StateFlow
 class DebateViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ): ViewModel(){
-    private val _scripts = MutableStateFlow<List<DebateMessage>>(DebateDummyData.debateScripts)
-    val scripts : StateFlow<List<DebateMessage>> = _scripts.asStateFlow()
+    private val _scripts = MutableStateFlow<List<DebateMessageLocal>>(DebateDummyData.debateScripts)
+    val scripts : StateFlow<List<DebateMessageLocal>> = _scripts.asStateFlow()
 
     private val _activeIndex = MutableStateFlow(-1)
     val activeIndex : StateFlow<Int> = _activeIndex.asStateFlow()
@@ -74,7 +74,7 @@ class DebateViewModel @Inject constructor(
                         _currentPositionMs.value = currentPos
 
                         // 2. 아까 만들었던 대본 싱크 로직! (현재 시간에 맞는 말풍선 찾기)
-                        val newIndex = _scripts.value.indexOfLast { it.startTimeMs <= currentPos }
+                        val newIndex = _scripts.value.indexOfLast { it.timeMs <= currentPos }
                         if(newIndex != -1 && newIndex != _activeIndex.value){
                             _activeIndex.value = newIndex
                         }
