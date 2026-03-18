@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val rootNavController = rememberNavController()
 
-    NavHost(navController = rootNavController, startDestination = AppRoute.Main.route) {
+    NavHost(navController = rootNavController, startDestination = AppRoute.Splash.route) {
         // 스플래시 화면
         composable(AppRoute.Splash.route){
             SplashScreen(
@@ -59,6 +59,11 @@ fun AppNavigation() {
                     rootNavController.navigate(AppRoute.Main.route){
                         popUpTo(AppRoute.Splash.route) {inclusive=true}
                     }
+                },
+                onNavigateToOnboarding = {
+                    rootNavController.navigate(AppRoute.Onboarding.route){
+                        popUpTo(AppRoute.Splash.route) {inclusive=true}
+                    }
                 }
             )
         }
@@ -67,9 +72,12 @@ fun AppNavigation() {
         composable(AppRoute.Login.route) {
             LoginScreen(
                 onNavigateToMain = {
-                    // 카카오 로그인 성공 시! 온보딩 화면으로 이동시킵니다.
                     rootNavController.navigate(AppRoute.Onboarding.route) {
-                        // 사용자가 뒤로가기를 눌렀을 때 다시 로그인 화면으로 오지 않게 스택에서 없애버림
+                        popUpTo(AppRoute.Login.route) { inclusive = true }
+                    }
+                },
+                onNavigateToOnboarding = {
+                    rootNavController.navigate(AppRoute.Onboarding.route) {
                         popUpTo(AppRoute.Login.route) { inclusive = true }
                     }
                 }

@@ -17,8 +17,8 @@ class AuthInterceptor @Inject constructor(
         val urlPath = originalRequest.url.encodedPath
 
         // 2. 토큰을 헤더에 붙이면 안 되는 예외 API인지 판별
-        val isLoginRequest = urlPath.contains("/api/auth/login")
-        val isRefreshRequest = urlPath.contains("/api/auth/refresh")
+        val isLoginRequest = urlPath.contains("/api/v1/auth/login")
+        val isRefreshRequest = urlPath.contains("/api/v1/auth/refresh")
 
         // 로컬에 저장된 accessToken 가져오기
         val accessToken = tokenManager.getAccessToken()

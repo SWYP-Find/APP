@@ -25,6 +25,8 @@ ui = "1.10.5"
 foundationVersion = "1.10.5"
 foundationLayout = "1.10.5"
 uiGeometry = "1.10.5"
+benchmarkTraceprocessor = "1.4.1"
+playServicesAuth = "21.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +60,7 @@ firebase-dynamic-links = { group = "com.google.firebase", name = "firebase-dynam
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 kakao-sdk-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao" }
 kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakao" }
+google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
@@ -65,6 +68,7 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geometry", version.ref = "uiGeometry" }
+androidx-benchmark-traceprocessor = { group = "androidx.benchmark", name = "benchmark-traceprocessor", version.ref = "benchmarkTraceprocessor" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

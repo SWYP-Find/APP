@@ -21,12 +21,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Kakao Social Login
         val properties = Properties()
-        properties.load(project.rootProject.file("local.properties").inputStream())
+        val propertiesFile = project.rootProject.file("local.properties")
+        if (propertiesFile.exists()) {
+            properties.load(propertiesFile.inputStream())
+        }
+
         val kakaoKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
+        val googleClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
 
         buildConfigField("String", "KAKAO_DEBUG_APPKEY", "\"$kakaoKey\"")
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
 
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoKey
     }
@@ -72,6 +77,7 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.ui.geometry)
+    implementation(libs.androidx.benchmark.traceprocessor)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -98,6 +104,7 @@ dependencies {
     implementation(libs.kakao.sdk.user)
     implementation(libs.kakao.share)
     implementation(libs.androidx.security.crypto)
+    implementation(libs.google.play.services.auth)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

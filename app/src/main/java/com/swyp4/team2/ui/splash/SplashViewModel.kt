@@ -17,7 +17,6 @@ sealed class SplashUiState{
     object NavigateToLogin : SplashUiState() // 소셜로그인
     object NavigateToMain : SplashUiState() // 홈화면
 }
-
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -26,26 +25,27 @@ class SplashViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
-    init{
+    init {
+        tokenManager.clearAll()
         checkAutoLogin()
     }
 
-    private fun checkAutoLogin(){
-        viewModelScope.launch{
-            delay(1500)
-            val refreshToken = tokenManager.getRefreshToken()
+    private fun checkAutoLogin() {
+        viewModelScope.launch {
+            delay(1500L)
 
-            if(refreshToken.isNullOrEmpty()){
-                // 경우1. 저장된 refreshToken이 없음 -> 소셜 로그인 화면으로 이동
+            val localRefreshToken = tokenManager.getRefreshToken()
+
+            if (localRefreshToken.isNullOrBlank()) {
+                // 토큰이 없으면 로그인 화면으로
                 _uiState.value = SplashUiState.NavigateToLogin
             } else {
-                val result = authRepository.refreshAccessToken(refreshToken)
+                val result = authRepository.refreshAccessToken(localRefreshToken)
 
-                result.onSuccess{
-                    // 경우3. refreshToken 유효함 -> 홈 화면으로 이동
+                result.onSuccess {
                     _uiState.value = SplashUiState.NavigateToMain
-                }.onFailure{
-                    // 경우2. refreshToken 만료됨 -> 소셜 로그인 화면으로 이동
+                }.onFailure {
+                    tokenManager.clearAll()
                     _uiState.value = SplashUiState.NavigateToLogin
                 }
             }
