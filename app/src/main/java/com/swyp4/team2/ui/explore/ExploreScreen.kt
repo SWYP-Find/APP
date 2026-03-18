@@ -3,6 +3,7 @@ package com.swyp4.team2.ui.explore
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,7 @@ import kotlinx.coroutines.launch
 fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel(),
     onNavigateToAlarm: ()->Unit,
+    onNavigateToVote: (Int) -> Unit,
 ) {
     val exploreCategories = listOf("전체", "철학", "문학", "예술", "과학", "사회", "역사")
     val selectedCategory by viewModel.selectedCategory.collectAsState()
@@ -93,6 +95,7 @@ fun ExploreScreen(
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
+                centerTitle = false,
                 backgroundColor = SwypTheme.colors.background,
                 actions = {
                     IconButton(
@@ -144,28 +147,38 @@ fun ExploreScreen(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
-                ExploreList(category = exploreCategories[page])
+                ExploreList(
+                    category = exploreCategories[page],
+                    onNavigateToVote = onNavigateToVote
+                )
             }
         }
     }
 }
 
 @Composable
-fun ExploreList(category: String) {
+fun ExploreList(
+    category: String,
+    onNavigateToVote: (Int) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(dummyExploreList) { item ->
-            ExploreCard(item = item)
+            ExploreCard(
+                item = item,
+                onClick = {id -> onNavigateToVote(id)}
+            )
         }
     }
 }
 
 @Composable
 fun ExploreCard(
-    item: ExploreItem
+    item: ExploreItem,
+    onClick: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -173,6 +186,7 @@ fun ExploreCard(
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .clickable{ onClick(item.id) }
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp) // 이미지와 글 사이 간격
     ) {

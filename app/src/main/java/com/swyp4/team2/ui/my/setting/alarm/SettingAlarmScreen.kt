@@ -20,6 +20,7 @@ fun SettingAlarmScreen(
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_setting_alarm),
+                centerTitle = true,
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },

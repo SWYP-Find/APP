@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SwypApp</string>
 
-    <string name="alarm">알림</string>
+    <string name="alarm">알림 설정</string>
     <string name="setting">설정</string>
 
 

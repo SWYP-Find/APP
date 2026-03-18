@@ -20,7 +20,8 @@ import com.swyp4.team2.ui.component.ChatBubble
 
 @Composable
 fun DebateScreen(
-    viewModel: DebateViewModel = hiltViewModel()
+    viewModel: DebateViewModel = hiltViewModel(),
+    onBackClick: () -> Unit = {}
 ) {
     val scripts by viewModel.scripts.collectAsState()
     val activeIndex by viewModel.activeIndex.collectAsState()
