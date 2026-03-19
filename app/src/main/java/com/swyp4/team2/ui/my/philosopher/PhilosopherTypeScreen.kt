@@ -1,6 +1,6 @@
 package com.swyp4.team2.ui.my.philosopher
 
-import android.R.attr.textSize
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,9 +28,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -56,6 +58,12 @@ import com.swyp4.team2.ui.theme.SwypTheme
 import kotlin.math.cos
 import kotlin.math.sin
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import shareCapturedImageToKakao
 
 @Composable
 fun PhilosopherTypeScreen(
@@ -63,6 +71,29 @@ fun PhilosopherTypeScreen(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+
+    val onKakaoShareClick = {
+        coroutineScope.launch {
+            try {
+                // 1. Box로 감싼 HeaderSection 캡처
+                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+
+                // 2. 카카오톡에 캡처한 이미지와 함께 공유!
+                shareCapturedImageToKakao(
+                    context = context,
+                    bitmap = bitmap,
+                    resultId = "12345", // 실제 데이터로 교체
+                    philosopherName = "칸트형", // 실제 데이터로 교체
+                    description = "결과보다 과정을 중시하는 원칙주의자" // 실제 데이터로 교체
+                )
+            } catch (e: Exception) {
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     Scaffold(
         containerColor = SwypTheme.colors.background,
@@ -75,7 +106,7 @@ fun PhilosopherTypeScreen(
                 onBackClick = onBackClick,
                 backgroundColor = SwypTheme.colors.background,
                 actions = {
-                    IconButton(onClick = { /* 공유 로직 */ }) {
+                    IconButton(onClick = { onKakaoShareClick()}) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_share),
                             contentDescription = "공유",
@@ -94,8 +125,15 @@ fun PhilosopherTypeScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // 1. 철학자 유형 헤더
-            PhilosopherHeaderSection()
+            Box(
+                modifier = Modifier.drawWithContent {
+                    graphicsLayer.record { this@drawWithContent.drawContent() }
+                    drawLayer(graphicsLayer)
+                }
+            ) {
+                // 1. 철학자 유형 헤더
+                PhilosopherHeaderSection()
+            }
 
             // 2. 성향 분석 (레이더 차트 + 막대 바)
             TraitAnalysisSection()
