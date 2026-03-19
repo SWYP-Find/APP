@@ -71,71 +71,18 @@ fun CopyLinkButton(
 @Composable
 fun KakaoShareButton(
     modifier: Modifier = Modifier,
-    resultId: String,
+    onClick: () -> Unit // 클릭 이벤트 추가
 ) {
-    val context = LocalContext.current
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.LightGray)
-            .clickable {
-                val defaultFeed = FeedTemplate(
-                    content = Content(
-                        title = "나는 칸트형이에요",
-                        description = "",
-                        imageUrl = "https://your-server.com/images/kant-thumbnail.jpg", // 디자이너가 줄 썸네일 URL (임시)
-                        link = Link(
-                            // 웹 화면이 없으므로 임시로 플레이스토어 주소나 앱 대표 주소를 넣습니다.
-                            webUrl = "https://play.google.com/store/apps/details?id=com.swyp4.team2",
-                            mobileWebUrl = "https://play.google.com/store/apps/details?id=com.swyp4.team2",
-                            // 🌟 핵심! 앱이 깔려있으면 이 파라미터를 들고 앱을 켭니다!
-                            androidExecutionParams = mapOf("resultId" to resultId)
-                        )
-                    ),
-                    buttons = listOf(
-                        Button(
-                            title = "내 철학 유형 알아보러 가기",
-                            link = Link(
-                                webUrl = "https://play.google.com/store/apps/details?id=com.swyp4.team2",
-                                mobileWebUrl = "https://play.google.com/store/apps/details?id=com.swyp4.team2",
-                                androidExecutionParams = mapOf("resultId" to resultId)
-                            )
-                        )
-                    )
-                )
-
-                if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
-                    ShareClient.instance.shareDefault(
-                        context,
-                        defaultFeed
-                    ) { sharingResult, error ->
-                        if (error != null) {
-                            Toast.makeText(
-                                context,
-                                "카카오톡 공유 실패: ${error.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else if (sharingResult != null) {
-                            context.startActivity(sharingResult.intent)
-                        }
-                    }
-                } else {
-                    Toast.makeText(context, "카카오톡이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
+            .background(Color(0xFFFEE500))
+            .clickable { onClick() } // 클릭 시 전달받은 로직 실행
             .padding(vertical = 14.dp),
         contentAlignment = Alignment.Center
     ){
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "카카오톡",
-                color = Color.Gray,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text("카카오톡으로 공유", color = Color.Black, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
