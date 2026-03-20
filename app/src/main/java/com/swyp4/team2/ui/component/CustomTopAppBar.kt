@@ -31,6 +31,7 @@ fun CustomTopAppBar(
     showLogo: Boolean = false,
     showBackButton: Boolean = false,
     backgroundColor: Color,
+    backIconColor: Color = Gray900,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     val startPadding = if (showBackButton) 4.dp else 20.dp
@@ -55,7 +56,7 @@ fun CustomTopAppBar(
                     Icon(
                         painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = Gray900,
+                        tint = backIconColor,
                         modifier = Modifier.size(16.dp)
                     )
                 }
