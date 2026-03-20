@@ -17,6 +17,7 @@ fun AlarmScreen(
     onBackClick:()->Unit
 ) {
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -25,7 +26,7 @@ fun AlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.background
+                backgroundColor = SwypTheme.colors.surface
             )
         }
     ){ innerPadding ->

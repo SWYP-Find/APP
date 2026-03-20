@@ -51,7 +51,7 @@ import com.swyp4.team2.ui.theme.SwypTheme
 
 @Composable
 fun OnboardingScreen(
-    onNavigateToMain: ()->Unit
+    onNavigateToLogin: ()->Unit
 ) {
     val pageCount = 3
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -99,7 +99,7 @@ fun OnboardingScreen(
             // 시작하기 버튼
             CustomButton(
                 text = stringResource(R.string.onboarding_start),
-                onClick = onNavigateToMain,
+                onClick = onNavigateToLogin,
                 backgroundColor = Primary500,
                 textColor = Color.White
             )

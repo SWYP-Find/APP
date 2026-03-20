@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -93,11 +95,12 @@ fun ExploreScreen(
     }
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = SwypTheme.colors.background,
+                backgroundColor = SwypTheme.colors.surface,
                 actions = {
                     IconButton(
                         onClick = {
@@ -139,7 +142,6 @@ fun ExploreScreen(
                     val targetPage = exploreCategories.indexOf(clickedCategory)
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(targetPage)
-                        // 탭 클릭 시 ViewModel 업데이트는 위 LaunchedEffect가 알아서 처리합니다.
                     }
                 }
             )
@@ -166,24 +168,23 @@ fun ExploreList(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        // contentPadding = PaddingValues(horizontal = 16.dp, top = 12.dp, bottom = 16.dp),
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        // 🌟 1. 필터 버튼 영역을 LazyColumn의 첫 번째 item으로 넣습니다!
         item {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 SortButton(
-                    text = "인기순",
+                    text = stringResource(R.string.explore_hot_rank),
                     isSelected = selectedSort == "인기순",
                     onClick = { selectedSort = "인기순" }
                 )
                 SortButton(
-                    text = "최신순",
+                    text =  stringResource(R.string.explore_recent_rank),
                     isSelected = selectedSort == "최신순",
                     onClick = { selectedSort = "최신순" }
                 )
@@ -241,7 +242,7 @@ fun ExploreCard(
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .clickable{ onClick(item.id) }
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp) // 이미지와 글 사이 간격
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // 썸네일 이미지
         AsyncImage(

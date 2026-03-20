@@ -40,6 +40,7 @@ import com.swyp4.team2.AppRoute
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.theme.Beige400
+import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Beige700
@@ -48,6 +49,7 @@ import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray50
 import com.swyp4.team2.ui.theme.Gray500
+import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Primary800
 import com.swyp4.team2.ui.theme.Secondary200
@@ -66,13 +68,13 @@ fun MyScreen(
     onNavigateToContent: () -> Unit,
     onNavigateToNotice: () -> Unit
 ) {
-    // 🌟 가상의 '새 알림' 상태 변수 (나중에는 서버에서 이 값을 받아오게 됩니다!)
     var hasUnreadNotification by remember { mutableStateOf(true) }
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         topBar = {
             CustomTopAppBar(
-                backgroundColor = SwypTheme.colors.background,
+                backgroundColor = SwypTheme.colors.surface,
                 centerTitle = false,
                 actions = {
                     IconButton(
@@ -100,11 +102,10 @@ fun MyScreen(
                 }
             )
         },
-        containerColor = SwypTheme.colors.background
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
+                .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ) {
@@ -112,7 +113,6 @@ fun MyScreen(
 
             ProfileSection(
                 nickname = "사색하는 고양이",
-                userType = "칸트형",
                 userHandle = "@user_code"
             )
 
@@ -154,7 +154,6 @@ fun MyScreen(
 @Composable
 fun ProfileSection(
     nickname: String,
-    userType: String,
     userHandle: String
 ) {
     Row(
@@ -173,20 +172,9 @@ fun ProfileSection(
         Spacer(modifier = Modifier.width(12.dp))
         // 이름 & 유형 & ID
         Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = nickname, style = SwypTheme.typography.h4SemiBold)
-                Spacer(modifier = Modifier.width(4.dp))
-                Box(
-                    modifier = Modifier
-                        .background(Beige500, RoundedCornerShape(12.dp))
-                        .border(1.dp, Beige700, RoundedCornerShape(12.dp))
-                        .padding(horizontal = 6.dp, vertical = 4.dp)
-                ) {
-                    Text(text = userType, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.primary)
-                }
-            }
+            Text(text = nickname, style = SwypTheme.typography.h4SemiBold)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = userHandle, style = SwypTheme.typography.b4Regular, color = Gray300)
+            Text(text = userHandle, style = SwypTheme.typography.b4Regular, color = Gray500)
         }
     }
 }
@@ -200,17 +188,17 @@ fun PhilosopherTypeCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(2.dp))
             .background(Beige400)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 20.dp),
+            .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // [왼쪽] 철학자 아이콘
         Box(
             modifier = Modifier
-                .size(48.dp)
+                .size(52.dp)
                 .background(Beige600, CircleShape),
             contentAlignment = Alignment.Center
         ) {
@@ -222,7 +210,7 @@ fun PhilosopherTypeCard(
             )
         }
 
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
         // [가운데] 텍스트 영역
         Column(modifier = Modifier.weight(1f)) {
@@ -234,8 +222,8 @@ fun PhilosopherTypeCard(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "$philosopherName - $philosopherDesc",
-                style = SwypTheme.typography.b1Medium,
-                color = Gray900
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray700
             )
         }
 
@@ -243,7 +231,7 @@ fun PhilosopherTypeCard(
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = null,
-            modifier = Modifier.size(16.dp),
+            modifier = Modifier.size(12.dp),
             tint = Gray900
         )
     }
@@ -257,7 +245,7 @@ fun CreditCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(2.dp))
             .background(Primary800)
             .clickable { onChargeClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
@@ -277,22 +265,22 @@ fun CreditCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "C",
-                    style = SwypTheme.typography.h5SemiBold,
-                    color = Gray900
+                    text = "P",
+                    style = SwypTheme.typography.b5Medium,
+                    color = Gray700
                 )
             }
 
             // 텍스트 영역
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
-                    text = stringResource(R.string.my_credit_title),
-                    style = SwypTheme.typography.b1Medium,
-                    color = Gray50
+                    text = stringResource(R.string.my_point),
+                    style = SwypTheme.typography.b3Regular,
+                    color = Beige50
                 )
                 Text(
                     text = credit.toString(),
-                    style = SwypTheme.typography.b1Medium,
+                    style = SwypTheme.typography.b3Regular,
                     color = Secondary700
                 )
             }
@@ -327,21 +315,22 @@ fun MyPageMenuItem(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 24.dp),
+                .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
-                style = SwypTheme.typography.b1Medium
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray700
             )
             Icon(
                 painterResource(R.drawable.ic_arrow_right),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(12.dp),
                 tint = Gray900
             )
         }
-        HorizontalDivider(color = Gray200, thickness = 1.dp)
+        HorizontalDivider(color = Beige600, thickness = 1.dp)
     }
 }

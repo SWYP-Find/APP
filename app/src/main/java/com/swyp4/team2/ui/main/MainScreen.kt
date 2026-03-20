@@ -1,10 +1,14 @@
 package com.swyp4.team2.ui.main
 
+import android.graphics.Color
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,6 +25,8 @@ import com.swyp4.team2.ui.my.discussion.DiscussionHistoryScreen
 import com.swyp4.team2.ui.my.notice.NoticeEventScreen
 import com.swyp4.team2.ui.my.philosopher.PhilosopherTypeScreen
 import com.swyp4.team2.ui.my.setting.SettingScreen
+import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
 
 @Composable
@@ -35,7 +41,7 @@ fun MainScreen(
     val showBottomBar = currentRoute != BottomNavItem.Battle.route
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = if (showBottomBar) SwypTheme.colors.surface else Gray900,
         bottomBar = {
             if (showBottomBar) {
                 CustomBottomNavigationBar(mainNavController)
@@ -45,7 +51,12 @@ fun MainScreen(
         NavHost(
             navController = mainNavController,
             startDestination = BottomNavItem.Home.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.fillMaxSize()
+                .padding(
+                    top = if (showBottomBar) innerPadding.calculateTopPadding() else 0.dp,
+                    bottom = innerPadding.calculateBottomPadding()
+                )
+                .background(if (showBottomBar) SwypTheme.colors.surface else Gray900)
         ){
             composable(BottomNavItem.Home.route){
                 HomeScreen(
@@ -55,9 +66,20 @@ fun MainScreen(
                     onNavigateToVote = { id ->
                         // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
                         rootNavController.navigate(AppRoute.PreVote.route)
-
                         // 나중에 API 연결 시 라우트 예시:
                         // rootNavController.navigate("pre_vote_route/$id")
+                    },
+                    onNavigateToTrendingBattle = {
+
+                    },
+                    onNavigateToNewBattle = {
+
+                    },
+                    onNavigateToBestBattle = {
+
+                    },
+                    onNavigateToTodayPicke = {
+
                     }
                 )
             }

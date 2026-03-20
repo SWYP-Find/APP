@@ -42,6 +42,7 @@ import com.swyp4.team2.ui.my.content.model.dummyCommentList
 import com.swyp4.team2.ui.my.content.model.dummyLikeList
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige500
+import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray400
@@ -66,6 +67,7 @@ fun ContentActivityScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_content),
@@ -73,7 +75,7 @@ fun ContentActivityScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},
-                backgroundColor = SwypTheme.colors.background
+                backgroundColor = SwypTheme.colors.surface
             )
         }
     ){ innerPadding ->
@@ -130,11 +132,13 @@ fun ContentActivityCard(item: ContentActivityItem) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige400, RoundedCornerShape(2.dp))
+            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .padding(16.dp)
     ) {
         // [상단] 프로필, 닉네임, 찬/반 뱃지, 시간
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Box(
                 modifier = Modifier
                     .size(36.dp)
@@ -156,7 +160,7 @@ fun ContentActivityCard(item: ContentActivityItem) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = item.nickname,
-                        style = SwypTheme.typography.b2Medium,
+                        style = SwypTheme.typography.labelMedium,
                         color = Gray900
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -173,7 +177,7 @@ fun ContentActivityCard(item: ContentActivityItem) {
                     ) {
                         Text(
                             text = item.stance,
-                            style = SwypTheme.typography.labelXSmall,
+                            style = SwypTheme.typography.b5Medium,
                             color = badgeTextColor
                         )
                     }
@@ -181,7 +185,7 @@ fun ContentActivityCard(item: ContentActivityItem) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = item.timeAgo,
-                    style = SwypTheme.typography.labelXSmall,
+                    style = SwypTheme.typography.b4Regular,
                     color = Gray500
                 )
             }

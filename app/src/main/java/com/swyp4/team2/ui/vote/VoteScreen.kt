@@ -73,7 +73,7 @@ fun VoteScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Beige500)
+            .background(SwypTheme.colors.surface)
     ){
         // 배경 이미지
         AsyncImage(
@@ -211,7 +211,7 @@ fun VoteScreen(
                     contentColor = SwypTheme.colors.surface,
                     disabledContentColor = Color.White
                 ),
-                shape = RoundedCornerShape(4.dp)
+                shape = RoundedCornerShape(2.dp)
             ) {
                 Text(
                     text = stringResource(R.string.prevote),

@@ -1,5 +1,8 @@
 package com.swyp4.team2.ui.component
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -29,7 +32,7 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
     )
 
     NavigationBar(
-        containerColor = SwypTheme.colors.surface
+        containerColor = SwypTheme.colors.surface,
     ) {
         // 현재 화면의 상태를 추적하는 관찰자
         val navBackStackEntry by navController.currentBackStackEntryAsState()

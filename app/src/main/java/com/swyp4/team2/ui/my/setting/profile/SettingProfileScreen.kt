@@ -15,7 +15,9 @@ import com.swyp4.team2.ui.theme.SwypTheme
 fun SettingProfileScreen(
     onBackClick: () -> Unit,
 ) {
+
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -24,7 +26,7 @@ fun SettingProfileScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.background
+                backgroundColor = SwypTheme.colors.surface
             )
         }
     ){ innerPadding ->

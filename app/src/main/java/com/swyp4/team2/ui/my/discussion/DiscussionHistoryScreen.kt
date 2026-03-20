@@ -54,6 +54,7 @@ fun DiscussionHistoryScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_discussion),
@@ -61,7 +62,7 @@ fun DiscussionHistoryScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},
-                backgroundColor = SwypTheme.colors.background
+                backgroundColor = SwypTheme.colors.surface
             )
         }
     ){ innerPadding ->

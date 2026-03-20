@@ -62,6 +62,10 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import com.swyp4.team2.ui.component.CustomButton
+import com.swyp4.team2.ui.theme.Beige50
+import com.swyp4.team2.ui.theme.Beige500
+import com.swyp4.team2.ui.theme.SwypAppTheme
 import kotlinx.coroutines.launch
 import shareCapturedImageToKakao
 
@@ -96,7 +100,7 @@ fun PhilosopherTypeScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.background,
+        containerColor = SwypTheme.colors.surface,
         topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_philosopher),
@@ -104,7 +108,7 @@ fun PhilosopherTypeScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = onBackClick,
-                backgroundColor = SwypTheme.colors.background,
+                backgroundColor = SwypTheme.colors.surface,
                 actions = {
                     IconButton(onClick = { onKakaoShareClick()}) {
                         Icon(
@@ -123,7 +127,7 @@ fun PhilosopherTypeScreen(
                 .padding(top = innerPadding.calculateTopPadding())
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
             Box(
                 modifier = Modifier.drawWithContent {
@@ -145,23 +149,14 @@ fun PhilosopherTypeScreen(
             ChemistrySection()
 
             // 5. 공유하기 버튼
-            Button(
-                onClick = { /* 공유 로직 */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = SwypTheme.colors.primary),
-                shape = RoundedCornerShape(4.dp)
-            ) {
-                Text(text = "공유하기", style = SwypTheme.typography.b1Medium, color = SwypTheme.colors.surface)
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_share), // 공유 아이콘 교체 필요
-                    contentDescription = null,
-                    tint = SwypTheme.colors.surface,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            CustomButton(
+                text = stringResource(R.string.my_share),
+                onClick = { onKakaoShareClick() },
+                modifier = Modifier.padding(bottom = 24.dp),
+                backgroundColor = SwypTheme.colors.primary,
+                textColor = Color.White,
+                iconResId = R.drawable.ic_share
+            )
         }
     }
 }
@@ -169,57 +164,90 @@ fun PhilosopherTypeScreen(
 // 헤더 섹션
 @Composable
 fun PhilosopherHeaderSection() {
+    val cardShape = RoundedCornerShape(
+        topStart = 0.dp,
+        topEnd = 0.dp,
+        bottomStart = 4.dp,
+        bottomEnd = 4.dp
+    )
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(4.dp))
-            .border(1.dp, Beige400, RoundedCornerShape(4.dp))
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color.White, cardShape)
+            .border(1.dp, Beige400, cardShape)
+        // 🚨 주의: 여기에 있던 padding(24.dp)를 지웠습니다!
     ) {
-        Text(text = "나의 철학자 유형", style = SwypTheme.typography.labelMedium, color = Color(0xFF8C3E26))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = "칸트형", style = SwypTheme.typography.h1SemiBold, color = Gray900)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 프로필 이미지
+        // 🌟 2. 맨 위에 각진 굵은 Primary 라인을 그립니다.
         Box(
             modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-                .background(Beige300),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_profile_xunzi), // 칸트 이미지로 교체 필요
-                contentDescription = null,
-                modifier = Modifier.size(60.dp),
-                tint = Color.Unspecified
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "결과보다 과정을 중시하고, 보편적 도덕 법칙을 따르는 원칙주의자. 어떤 상황에서도 흔들리지 않는 기준을 가진 사람입니다.",
-            style = SwypTheme.typography.b3Regular,
-            color = Gray600,
-            textAlign = TextAlign.Center
+                .fillMaxWidth()
+                .height(4.dp) // 시안에 맞춰 두께를 조절하세요 (4.dp ~ 6.dp)
+                .background(Color(0xFF8C3E26)) // Primary 색상
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // 🌟 3. 내부 콘텐츠들만 따로 묶어서 패딩을 줍니다.
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp), // 지웠던 패딩을 여기서 줍니다!
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "나의 철학자 유형", style = SwypTheme.typography.labelMedium, color = Color(0xFF8C3E26))
+            Spacer(modifier = Modifier.height(4.dp))
 
-        // 키워드 태그
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            val tags = listOf("의무론", "규칙 중시", "보편 원칙", "이성적")
-            tags.forEach { tag ->
-                Box(
-                    modifier = Modifier
-                        .border(1.dp, Beige600, RoundedCornerShape(2.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(text = tag, style = SwypTheme.typography.labelXSmall, color = Color(0xFF8C3E26))
+            // 💡 참고: 시안을 보면 '칸트형' 텍스트 오른쪽에 작은 토끼 뱃지가 떠있습니다.
+            // 나중에 추가하시기 편하게 Row로 틀을 잡아드릴게요!
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(text = "칸트형", style = SwypTheme.typography.h1SemiBold, color = Gray900)
+                // 여기에 나중에 토끼 뱃지 Icon/Image를 추가하시면 됩니다.
+                // Spacer(modifier = Modifier.width(8.dp))
+                // Image(...)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 프로필 이미지
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .background(Beige300),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_profile_xunzi), // 칸트 이미지로 교체 필요
+                    contentDescription = null,
+                    modifier = Modifier.size(60.dp),
+                    tint = Color.Unspecified
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "결과보다 과정을 중시하고, 보편적 도덕 법칙을 따르는 원칙주의자. 어떤 상황에서도 흔들리지 않는 기준을 가진 사람입니다.",
+                style = SwypTheme.typography.b3Regular,
+                color = Gray600,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 키워드 태그
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val tags = listOf("의무론", "규칙 중시", "보편 원칙", "이성적")
+                tags.forEach { tag ->
+                    Box(
+                        modifier = Modifier
+                            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(text = tag, style = SwypTheme.typography.labelXSmall, color = Color(0xFF8C3E26))
+                    }
                 }
             }
         }
@@ -283,12 +311,12 @@ fun ScoreBar(modifier: Modifier = Modifier, label: String, score: Int) {
         Spacer(modifier = Modifier.width(8.dp))
 
         // 막대 바
-        Box(modifier = Modifier.weight(1f).height(4.dp).background(Beige400, CircleShape)) {
+        Box(modifier = Modifier.weight(1f).height(4.dp).background(Beige300, CircleShape)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(score / 100f) // 점수 비율만큼 너비 차지
                     .height(4.dp)
-                    .background(Color(0xFF8C3E26), CircleShape)
+                    .background(Beige500, CircleShape)
             )
         }
 
@@ -372,7 +400,8 @@ fun ChemistrySection() {
 @Composable
 fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, desc: String) {
     val titleColor = if (isBest) Color(0xFFCBA572) else Gray600
-    val titleText = if (isBest) "👍 BEST" else "👎 WORST"
+    val titleText = if (isBest) stringResource(R.string.my_best) else stringResource(R.string.my_worst)
+    val iconResId = if (isBest) R.drawable.ic_best else R.drawable.ic_worst
 
     Column(
         modifier = modifier
@@ -381,10 +410,37 @@ fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, 
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = titleText, style = SwypTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = titleColor)
+        // 🌟 아이콘 + 텍스트를 Row로 묶어서 시안처럼 배치합니다.
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = iconResId),
+                contentDescription = if (isBest) "Best" else "Worst",
+                tint = titleColor,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = titleText,
+                style = SwypTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = titleColor
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
-        Box(modifier = Modifier.size(56.dp).clip(CircleShape).background(Beige300)) {
-            // 철학자 아이콘
+
+        Box(
+            modifier = Modifier.size(56.dp).clip(CircleShape).background(Beige300),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_profile_xunzi),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(40.dp)
+            )
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = name, style = SwypTheme.typography.b2Medium, color = Gray900)

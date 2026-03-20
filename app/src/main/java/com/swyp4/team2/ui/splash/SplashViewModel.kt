@@ -15,6 +15,7 @@ import javax.inject.Inject
 sealed class SplashUiState{
     object Loading : SplashUiState()
     object NavigateToLogin : SplashUiState() // 소셜로그인
+    object NavigateToOnboarding : SplashUiState() // 온보딩
     object NavigateToMain : SplashUiState() // 홈화면
 }
 @HiltViewModel
@@ -26,7 +27,7 @@ class SplashViewModel @Inject constructor(
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
     init {
-        tokenManager.clearAll()
+        tokenManager.clearAll() //TODO 소셜 로그인 구현 되면 없애야 함
         checkAutoLogin()
     }
 
@@ -37,8 +38,8 @@ class SplashViewModel @Inject constructor(
             val localRefreshToken = tokenManager.getRefreshToken()
 
             if (localRefreshToken.isNullOrBlank()) {
-                // 토큰이 없으면 로그인 화면으로
-                _uiState.value = SplashUiState.NavigateToLogin
+                // 토큰이 없으면 온보딩 화면으로
+                _uiState.value = SplashUiState.NavigateToOnboarding
             } else {
                 val result = authRepository.refreshAccessToken(localRefreshToken)
 

@@ -25,8 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
+import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.SwypTheme
 
@@ -45,9 +47,10 @@ fun SettingScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.background
+                backgroundColor = SwypTheme.colors.surface
             )
-        }
+        },
+        containerColor = SwypTheme.colors.surface
     ){ innerPadding ->
         Column(
             modifier = Modifier
@@ -56,28 +59,24 @@ fun SettingScreen(
                 .padding(horizontal = 16.dp)
         ){
             SettingMenuItem(
-                iconResId =  R.drawable.ic_alarm_setting,
                 title = stringResource(R.string.my_setting_alarm),
                 onClick = {
                     onNavigateToSettingAlarm()
                 }
             )
             SettingMenuItem(
-                iconResId =  R.drawable.ic_help,
                 title = stringResource(R.string.setting_footer_privacy),
                 onClick = {
                     // 웹 링크 열기
                 }
             )
             SettingMenuItem(
-                iconResId =  R.drawable.ic_help,
                 title = stringResource(R.string.setting_footer_terms),
                 onClick = {
                     // 웹 링크 열기
                 }
             )
             SettingMenuItem(
-                iconResId =  R.drawable.ic_logout,
                 title = stringResource(R.string.logout),
                 onClick = {
                     // 로그아웃 하기
@@ -88,22 +87,9 @@ fun SettingScreen(
     }
 }
 
-@Composable
-fun FooterLinkText(
-    @StringRes textResId: Int,
-    onClick: () -> Unit
-) {
-    Text(
-        text = stringResource(id = textResId),
-        style = SwypTheme.typography.b4Regular,
-        color = Gray300,
-        modifier = Modifier.clickable { onClick() }
-    )
-}
 
 @Composable
 fun SettingMenuItem(
-    iconResId: Int,
     title: String,
     onClick: () -> Unit,
 ) {
@@ -113,23 +99,22 @@ fun SettingMenuItem(
     ){
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 24.dp),
+                .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
                 text = title,
-                style = SwypTheme.typography.b1Medium,
-                color = Gray900
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray700
             )
-
             Icon(
                 painterResource(R.drawable.ic_arrow_right),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(12.dp),
                 tint = Gray900
             )
         }
-        HorizontalDivider(color = Gray200, thickness = 1.dp)
+        HorizontalDivider(color = Beige600, thickness = 1.dp)
     }
 }

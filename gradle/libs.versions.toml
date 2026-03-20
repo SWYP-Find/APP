@@ -17,6 +17,7 @@ firebaseBom = "33.5.1"
 securityCrypto = "1.1.0-alpha06"
 kakao = "2.20.1"
 hiltNavigationCompose = "1.2.0"
+navigation = "2.8.5"
 paging = "3.3.2"
 foundation = "1.10.4"
 uiGraphics = "1.10.5"
@@ -27,6 +28,7 @@ foundationLayout = "1.10.5"
 uiGeometry = "1.10.5"
 benchmarkTraceprocessor = "1.4.1"
 playServicesAuth = "21.0.0"
+animationCore = "1.10.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +71,8 @@ androidx-foundation = { group = "androidx.compose.foundation", name = "foundatio
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geometry", version.ref = "uiGeometry" }
 androidx-benchmark-traceprocessor = { group = "androidx.benchmark", name = "benchmark-traceprocessor", version.ref = "benchmarkTraceprocessor" }
+androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "animationCore" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

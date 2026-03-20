@@ -2,6 +2,8 @@ package com.swyp4.team2.ui.battle
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,27 +25,45 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.battle.model.BattleIntroItem
 import com.swyp4.team2.ui.battle.model.dummyBattleIntroList
+import com.swyp4.team2.ui.component.CustomButton
+import com.swyp4.team2.ui.theme.Beige50
+import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
+import com.swyp4.team2.ui.theme.Gray800
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary200
+import com.swyp4.team2.ui.theme.Primary300
+import com.swyp4.team2.ui.theme.Primary500
+import com.swyp4.team2.ui.theme.Primary800
+import com.swyp4.team2.ui.theme.Secondary200
+import com.swyp4.team2.ui.theme.Secondary500
+import com.swyp4.team2.ui.theme.Secondary700
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
 
@@ -54,76 +74,89 @@ fun BattleScreen(
 ){
     val pagerState = rememberPagerState(pageCount = { dummyBattleIntroList.size })
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .background(Color.Black)
-    ){
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            BattleContent(item = dummyBattleIntroList[page])
-        }
+    var selectedSide by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
+    val isButtonEnabled = selectedSide != null
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 12.dp)
-        ) {
-            // 커스텀 인디케이터 바
-            TopIndicatorBar(
-                currentPage = pagerState.currentPage,
-                totalPages = dummyBattleIntroList.size
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = Color.Black,
+        bottomBar = {
+            CustomButton(
+                text = stringResource(R.string.battle_start),
+                onClick = { if (isButtonEnabled) onEnterBattle() },
+                modifier = Modifier.padding(20.dp),
+                backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
+                textColor = Beige50
             )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = innerPadding.calculateBottomPadding())
+        ) {
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                BattleContent(
+                    item = dummyBattleIntroList[page],
+                    selectedSide = selectedSide,
+                    onSideSelect = { side -> selectedSide = side }
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 뒤로가기 & 공유 버튼
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // 상단 UI (인디케이터 & 뒤로가기/공유 버튼)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                IconButton(onClick = onBackClick, modifier = Modifier.size(24.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_left),
-                        contentDescription = "뒤로가기",
-                        tint = Color.White
-                    )
-                }
-                IconButton(onClick = { /* 공유 로직 */ }, modifier = Modifier.size(24.dp)) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_share),
-                        contentDescription = "공유",
-                        tint = Color.White
-                    )
+                TopIndicatorBar(
+                    currentPage = pagerState.currentPage,
+                    totalPages = dummyBattleIntroList.size
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onBackClick, modifier = Modifier.size(24.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_left),
+                            contentDescription = "뒤로가기",
+                            tint = Color.White
+                        )
+                    }
+                    IconButton(onClick = { /* 공유 로직 */ }, modifier = Modifier.size(16.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_share),
+                            contentDescription = "공유",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
-        }
-
-        // 버튼 (배틀 입장하기)
-        Button(
-            onClick = onEnterBattle,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(20.dp)
-                .padding(bottom = 20.dp)
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8C3E26)),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text("배틀 입장하기", style = SwypTheme.typography.b1Medium, color = Color.White)
         }
     }
 }
 
 @Composable
-fun BattleContent(item: BattleIntroItem) {
+fun BattleContent(
+    item: BattleIntroItem,
+    selectedSide: String?,
+    onSideSelect: (String) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         // [상단] 배경 이미지 + 그라데이션 페이드 아웃
-        Box(modifier = Modifier.fillMaxWidth().height(420.dp)) {
+        Box(
+            modifier = Modifier.fillMaxWidth()
+                .weight(1f)
+        ) {
             AsyncImage(
                 model = item.bgImageRes,
                 contentDescription = null,
@@ -134,8 +167,13 @@ fun BattleContent(item: BattleIntroItem) {
                             drawContent()
                             drawRect(
                                 brush = Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, Color(0xFF161616)),
-                                    startY = size.height * 0.4f // 위에서 40% 지점부터 어두워짐
+                                    colors = listOf(
+                                        Color.Black.copy(alpha = 0.2f),
+                                        Color.Black.copy(alpha = 0.6f),
+                                        Color.Black
+                                    ),
+                                    startY = 0f,
+                                    endY = size.height
                                 )
                             )
                         }
@@ -148,7 +186,8 @@ fun BattleContent(item: BattleIntroItem) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // 해시태그
@@ -168,7 +207,7 @@ fun BattleContent(item: BattleIntroItem) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
                     text = item.title,
@@ -176,14 +215,15 @@ fun BattleContent(item: BattleIntroItem) {
                     color = SwypTheme.colors.surface,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = item.description,
-                    style = SwypTheme.typography.b4Regular,
-                    color = Gray500,
+                    style = SwypTheme.typography.b3Regular,
+                    color = Gray400,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+
                 // 시간 테두리 박스
                 Surface(
                     color = Color.Transparent,
@@ -194,7 +234,7 @@ fun BattleContent(item: BattleIntroItem) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(14.dp), tint = Color.Gray)
+                        Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(12.dp), tint = Color.Gray)
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(item.timeLeft, style = SwypTheme.typography.labelXSmall, color = Color.LightGray)
                     }
@@ -202,31 +242,45 @@ fun BattleContent(item: BattleIntroItem) {
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // [하단] VS 카드 영역
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            contentAlignment = Alignment.Center // 🌟 Box를 쓰면 뷰를 겹치기 쉽습니다!
+            contentAlignment = Alignment.Center
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) { // 카드 사이 2dp 간격
-                OpinionCard(name = item.leftName, opinion = item.leftOpinion, quote = item.leftQuote)
-                OpinionCard(name = item.rightName, opinion = item.rightOpinion, quote = item.rightQuote)
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                OpinionCard(
+                    name = item.leftName,
+                    opinion = item.leftOpinion,
+                    quote = item.leftQuote,
+                    isSelected = selectedSide == "LEFT",
+                    onClick = { onSideSelect("LEFT") }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OpinionCard(
+                    name = item.rightName,
+                    opinion = item.rightOpinion,
+                    quote = item.rightQuote,
+                    isSelected = selectedSide == "RIGHT",
+                    onClick = { onSideSelect("RIGHT") }
+                )
             }
 
             // 정중앙 VS 원형 뱃지
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = Color(0xFFEADBCE) // 베이지색
+                color = Secondary200
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text("VS", style = SwypTheme.typography.b1Medium, color = Color.Black)
+                    Text("VS", style = SwypTheme.typography.b3SemiBold, color = Color.Black)
                 }
             }
         }
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -235,7 +289,7 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // 작대기 부분
         Row(
@@ -256,24 +310,36 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
         Text(
             text = "${currentPage + 1}/$totalPages",
             style = SwypTheme.typography.labelXSmall,
-            color = Color.White
+            color = Color.White.copy(alpha = 0.3f)
         )
     }
 }
 
 @Composable
-fun OpinionCard(name: String, opinion: String, quote: String) {
+fun OpinionCard(
+    name: String,
+    opinion: String,
+    quote: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val borderColor = if (isSelected) Secondary700 else Color.Transparent
+    val bgColor = if (isSelected) Gray900 else Gray800
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF222222))
+            .clip(RoundedCornerShape(2.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
+            .background(bgColor)
+            .clickable { onClick() }
             .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = name, style = SwypTheme.typography.labelXSmall, color = Color(0xFFEADBCE))
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = opinion, style = SwypTheme.typography.h3Bold, color = Color.White)
+        Text(text = name, style = SwypTheme.typography.labelXSmall, color = Secondary500)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "\"$quote\"", style = SwypTheme.typography.labelXSmall, color = Color.Gray)
+        Text(text = opinion, style = SwypTheme.typography.h3Bold, color = Color.White)
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(text = "\"$quote\"", style = SwypTheme.typography.labelXSmall, color = Color.White.copy(0.3f))
     }
 }

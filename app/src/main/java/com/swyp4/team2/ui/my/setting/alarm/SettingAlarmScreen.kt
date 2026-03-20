@@ -31,8 +31,11 @@ import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.theme.Beige400
+import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray300
+import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray500
+import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.SwypTheme
 
@@ -52,6 +55,7 @@ fun SettingAlarmScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -60,11 +64,10 @@ fun SettingAlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.background
+                backgroundColor = SwypTheme.colors.surface
             )
         }
     ){ innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -131,8 +134,8 @@ fun SettingAlarmScreen(
 fun AlarmCategoryHeader(title: String) {
     Text(
         text = title,
-        style = SwypTheme.typography.labelMedium,
-        color = Gray500,
+        style = SwypTheme.typography.b5Medium,
+        color = Gray700,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)
     )
 }
@@ -154,14 +157,14 @@ fun AlarmSettingItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = SwypTheme.typography.b2Medium,
+                style = SwypTheme.typography.b4Medium,
                 color = Gray900
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = subtitle,
-                style = SwypTheme.typography.labelXSmall,
-                color = Gray500
+                style = SwypTheme.typography.caption2Medium,
+                color = Gray400
             )
         }
 
@@ -188,6 +191,6 @@ fun AlarmDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 16.dp),
         thickness = 1.dp,
-        color = Beige400
+        color = Beige600
     )
 }

@@ -50,12 +50,13 @@ fun DebateScreen(
     }
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         topBar = {
             CustomTopAppBar(
                 title = "뒤샹의 변기, 예술인가 도발인가",
                 showBackButton = true,
                 onBackClick = onBackClick,
-                backgroundColor = SwypTheme.colors.background,
+                backgroundColor = SwypTheme.colors.surface,
                 actions = {
                     IconButton(onClick = { /* 다시 듣기 로직 */ }) {
                         Icon(
@@ -79,12 +80,11 @@ fun DebateScreen(
                 onSpeedClick = { /* 배속 기능은 나중에 추가! */ }
             )
         },
-        containerColor = SwypTheme.colors.surface
     ){ innerPadding ->
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
+                .padding(innerPadding)
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(vertical = 24.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
