@@ -58,7 +58,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = rootNavController,
-        startDestination = AppRoute.Splash.route,
+        startDestination = AppRoute.Main.route,
         modifier = Modifier.fillMaxSize()
     ) {
         // 스플래시 화면
