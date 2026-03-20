@@ -51,7 +51,6 @@ import com.swyp4.team2.BuildConfig
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onNavigateToMain: ()->Unit,
-    onNavigateToOnboarding: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -73,13 +72,12 @@ fun LoginScreen(
     }
 
     LaunchedEffect(uiState){
-        when (val state = uiState) {
+        when (uiState) {
             is LoginUiState.Success -> {
-                if (state.isNewUser) {
-                    onNavigateToOnboarding()
-                } else {
-                    onNavigateToMain()
-                }
+                onNavigateToMain()
+            }
+            is LoginUiState.Error -> {
+                // 에러 처리 로직
             }
             else -> { }
         }
@@ -134,7 +132,7 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_kakao),
                 onClick = {
-                    onNavigateToOnboarding()
+                    onNavigateToMain()
                     /*
                     loginWithKakaoForAuthCode(context) { token ->
                         viewModel.handleSocialLoginSuccess("KAKAO", token) // TODO : KAKAO 대문자 맞나?
@@ -152,7 +150,7 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_google),
                 onClick = {
-                    onNavigateToOnboarding()
+                    onNavigateToMain()
                     // 🌟 구글 웹 클라이언트 ID를 넣어서 인텐트를 실행합니다.
                     /*
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

@@ -1,13 +1,22 @@
 package com.swyp4.team2
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
 import com.swyp4.team2.ui.battle.BattleScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
@@ -20,6 +29,7 @@ import com.swyp4.team2.ui.my.setting.SettingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
 import com.swyp4.team2.ui.splash.SplashScreen
+import com.swyp4.team2.ui.theme.SwypTheme
 import com.swyp4.team2.ui.vote.VoteScreen
 import com.swyp4.team2.ui.vote.model.VoteType
 import com.swyp4.team2.ui.vote.model.dummyVoteItem
@@ -30,8 +40,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //val keyHash = Utility.getKeyHash(this)
-        //Log.d("Hash", "내 키 해시값: $keyHash")
+        val keyHash = Utility.getKeyHash(this)
+        Log.d("Hash", "내 키 해시값: $keyHash")
 
         enableEdgeToEdge()
         setContent {
@@ -46,7 +56,11 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val rootNavController = rememberNavController()
 
-    NavHost(navController = rootNavController, startDestination = AppRoute.Splash.route) {
+    NavHost(
+        navController = rootNavController,
+        startDestination = AppRoute.Splash.route,
+        modifier = Modifier.fillMaxSize()
+    ) {
         // 스플래시 화면
         composable(AppRoute.Splash.route){
             SplashScreen(
@@ -68,35 +82,40 @@ fun AppNavigation() {
             )
         }
 
-        // 로그인 화면
-        composable(AppRoute.Login.route) {
-            LoginScreen(
-                onNavigateToMain = {
-                    rootNavController.navigate(AppRoute.Onboarding.route) {
-                        popUpTo(AppRoute.Login.route) { inclusive = true }
-                    }
-                },
-                onNavigateToOnboarding = {
-                    rootNavController.navigate(AppRoute.Onboarding.route) {
-                        popUpTo(AppRoute.Login.route) { inclusive = true }
+        // 온보딩 화면
+        composable(AppRoute.Onboarding.route) {
+            OnboardingScreen(
+                onNavigateToLogin = {
+                    rootNavController.navigate(AppRoute.Login.route){
+                        popUpTo(AppRoute.Onboarding.route) {inclusive=true}
                     }
                 }
             )
         }
 
-        // 온보딩 화면
-        composable(AppRoute.Onboarding.route) {
-            OnboardingScreen(
+        // 로그인 화면
+        composable(
+            route = AppRoute.Login.route,
+            exitTransition = {
+                fadeOut(animationSpec = tween(100))
+            }
+        ) {
+            LoginScreen(
                 onNavigateToMain = {
-                    rootNavController.navigate(AppRoute.Main.route){
-                         popUpTo(AppRoute.Onboarding.route) {inclusive=true}
-                     }
-                }
+                    rootNavController.navigate(AppRoute.Main.route) {
+                        popUpTo(AppRoute.Login.route) { inclusive = true }
+                    }
+                },
             )
         }
 
         // 메인 화면
-        composable(AppRoute.Main.route) {
+        composable(
+            route = AppRoute.Main.route,
+            enterTransition = {
+                fadeIn(animationSpec = tween(50)) + slideInVertically(initialOffsetY = { it / 10 })
+            }
+        ) {
             MainScreen(rootNavController = rootNavController)
         }
 

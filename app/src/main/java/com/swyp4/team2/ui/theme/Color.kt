@@ -40,10 +40,10 @@ val Gray50 = Color(0xFFFAFAFA)
 // Beige Color - 베이지 컬러
 val Beige900 = Color(0xFFC8B69A)
 val Beige800 = Color(0xFFD3C4AF)
-val Beige700 = Color(0xFFDECFC3)
-val Beige600 = Color(0xFFE8DFD7)
+val Beige700 = Color(0xFFDAD1BF)
+val Beige600 = Color(0xFFEFEAE0)
 val Beige500 = Color(0xFFF2EBE0) // 베이지 핵심
-val Beige400 = Color(0xFFF5EFE6)
+val Beige400 = Color(0xFFF7F4EE)
 val Beige300 = Color(0xFFF8F4ED)
 val Beige200 = Color(0xFFFAF7F3)
 val Beige100 = Color(0xFFFDFBFA)

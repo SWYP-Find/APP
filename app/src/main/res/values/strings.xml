@@ -9,8 +9,8 @@
     <string name="onboarding_start">시작하기</string>
 
     <!-- 마이   -->
-    <string name="my_credit_title">내 크레딧</string>
-    <string name="my_charge_free">무료 충전하기</string>
+    <string name="my_point">내 포인트</string>
+    <string name="my_charge_free">무료 충전</string>
     <string name="my_menu_discussion">내 토론 기록</string>
     <string name="my_menu_philosopher">나의 철학자 유형</string>
     <string name="my_menu_content">내 콘텐츠 활동</string>
@@ -23,6 +23,9 @@
     <string name="setting_footer_terms">서비스 약관</string>
     <string name="setting_footer_divider">·</string>
     <string name="my_content_view_detail">내용 보러가기</string>
+    <string name="my_share">공유하기</string>
+    <string name="my_worst">WORST</string>
+    <string name="my_best">BEST</string>
 
     <!-- 홈   -->
     <string name="more">더보기</string>
@@ -32,6 +35,13 @@
     <string name="home_section_new">새로운 배틀</string>
     <string name="home_highlight_battle">배틀</string>
     <string name="home_highlight_picke">Pické</string>
+    <string name="home_editor_pick">EDITOR PICK</string>
+
+    <!-- 탐색 -->
+    <string name="explore_hot_rank">인기순</string>
+    <string name="explore_recent_rank">최신순</string>
+
+    <string name="battle_start">배틀 입장하기</string>
 
     <!-- tts & 투표  -->
     <string name="prevote">사전 투표하기</string>

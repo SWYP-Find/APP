@@ -33,6 +33,7 @@ fun SplashScreen(
     LaunchedEffect(uiState) {
         when(uiState){
             SplashUiState.NavigateToLogin -> onNavigateToLogin()
+            SplashUiState.NavigateToOnboarding -> onNavigateToOnboarding()
             SplashUiState.NavigateToMain -> onNavigateToMain()
             SplashUiState.Loading -> { } // 로고 띄우기
         }

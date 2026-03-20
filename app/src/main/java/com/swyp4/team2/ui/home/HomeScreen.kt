@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -88,11 +90,16 @@ import com.swyp4.team2.ui.home.model.dummyPickeList
 import com.swyp4.team2.ui.home.model.dummyTrendingList
 import com.swyp4.team2.ui.theme.Beige300
 import com.swyp4.team2.ui.theme.Beige400
+import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Beige700
+import com.swyp4.team2.ui.theme.Beige800
+import com.swyp4.team2.ui.theme.Beige900
+import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray500
+import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Secondary200
 import com.swyp4.team2.ui.theme.SwypAppTheme
@@ -101,24 +108,28 @@ import com.swyp4.team2.ui.theme.SwypTheme
 @Composable
 fun HomeScreen(
     onNavigateToAlarm: ()->Unit,
-    onNavigateToVote: (Int) -> Unit
+    onNavigateToVote: (Int) -> Unit,
+    onNavigateToTrendingBattle : ()->Unit,
+    onNavigateToBestBattle : ()->Unit,
+    onNavigateToTodayPicke : ()->Unit,
+    onNavigateToNewBattle : ()->Unit,
 ) {
-    // 🌟 가상의 '새 알림' 상태 변수 (나중에는 서버에서 이 값을 받아오게 됩니다!)
     var hasUnreadNotification by remember { mutableStateOf(true) }
     val scrollState = rememberScrollState()
 
 
     Scaffold(
+        containerColor = SwypTheme.colors.surface,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = SwypTheme.colors.background,
+                backgroundColor = SwypTheme.colors.surface,
                 actions = {
                     IconButton(
                         onClick = {
                             onNavigateToAlarm()
-                            hasUnreadNotification = false // 클릭했으니까 빨간 점 없애기 (선택사항)
+                            hasUnreadNotification = false
                         }
                     ) {
                         BadgedBox(
@@ -145,6 +156,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = innerPadding.calculateTopPadding())
+                .background(SwypTheme.colors.surface)
                 .verticalScroll(scrollState)
         ){
             // 에디터 픽 섹션
@@ -162,7 +174,9 @@ fun HomeScreen(
                     HomeSectionHeader(
                         title = stringResource(R.string.home_section_trending),
                         highlightText = stringResource(R.string.home_highlight_battle),
-                        onMoreClick = { }
+                        onMoreClick = {
+                            onNavigateToTrendingBattle()
+                        }
                     )
                 }
                 LazyRow(
@@ -188,7 +202,9 @@ fun HomeScreen(
                 HomeSectionHeader(
                     title = stringResource(R.string.home_section_best),
                     highlightText = stringResource(R.string.home_highlight_battle),
-                    onMoreClick = { /* 더보기 로직 */ }
+                    onMoreClick = {
+                        onNavigateToBestBattle()
+                    }
                 )
 
                 dummyBestBattleList.take(3).forEach { item ->
@@ -210,7 +226,9 @@ fun HomeScreen(
                 HomeSectionHeader(
                     title = stringResource(R.string.home_section_today_picke),
                     highlightText = stringResource(R.string.home_highlight_picke),
-                    onMoreClick = { /* 더보기 로직 */ }
+                    onMoreClick = {
+                        onNavigateToTodayPicke()
+                    }
                 )
 
                 dummyPickeList.forEach { item ->
@@ -231,7 +249,9 @@ fun HomeScreen(
                 HomeSectionHeader(
                     title = stringResource(R.string.home_section_new),
                     highlightText = stringResource(R.string.home_highlight_battle),
-                    onMoreClick = { /* 더보기 로직 */ }
+                    onMoreClick = {
+                        onNavigateToNewBattle()
+                    }
                 )
 
                 // 리스트 형태 (여기선 take(3) 등으로 제한하거나 전체 리스트 출력)
@@ -294,25 +314,34 @@ fun EditorPickCard(
             Surface(
                 color = SwypTheme.colors.primary,
                 shape = RoundedCornerShape(2.dp)
+
             ) {
                 Text(
-                    text = "EDITOR PICK",
-                    style = SwypTheme.typography.label.copy(fontWeight = FontWeight.Bold),
-                    color = SwypTheme.colors.surface,
+                    text = stringResource(R.string.home_editor_pick),
+                    style = SwypTheme.typography.caption2SemiBold,
+                    color = Secondary200,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
 
             // 페이지네이션 (1/10)
             Surface(
-                color = Color.White.copy(alpha = 0.15f),
+                color = Gray500.copy(alpha = 0.8f),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "$currentIndex/$totalCount",
+                    text = buildAnnotatedString {
+
+                        withStyle(style = SpanStyle(color = Color.White, fontWeight = FontWeight.Bold)) {
+                            append(currentIndex.toString())
+                        }
+
+                        withStyle(style = SpanStyle(color = Beige50.copy(alpha = 0.6f))) {
+                            append("/$totalCount")
+                        }
+                    },
                     style = SwypTheme.typography.labelXSmall,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
         }
@@ -350,10 +379,10 @@ fun EditorPickCard(
 
                 Text(text = item.leftOpinion, style = textStyle, color = Color.White)
 
-                Text(
-                    text = "VS",
-                    style = SwypTheme.typography.h3Bold.copy(fontStyle = FontStyle.Italic),
-                    color = Color.White
+                Icon(
+                    painter = painterResource(R.drawable.ic_versus),
+                    contentDescription = null,
+                    tint = Color.White
                 )
 
                 Text(text = item.rightOpinion, style = textStyle, color = Color.White)
@@ -371,14 +400,14 @@ fun EditorPickCard(
                 style = SwypTheme.typography.h4SemiBold,
                 color = Color.White
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = item.description,
-                style = SwypTheme.typography.b3Regular,
-                color = Color(0xFFAAAAAA) // 연한 회색 (Gray500 등 대체 가능)
+                style = SwypTheme.typography.label,
+                color = Gray400
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -388,8 +417,8 @@ fun EditorPickCard(
                 // 태그
                 Text(
                     text = item.tags.joinToString(" ") { "#$it" },
-                    style = SwypTheme.typography.labelMedium,
-                    color = Color(0xFFAAAAAA)
+                    style = SwypTheme.typography.label,
+                    color = Gray300
                 )
 
                 // 조회수
@@ -398,13 +427,13 @@ fun EditorPickCard(
                         painter = painterResource(id = R.drawable.ic_eye),
                         contentDescription = "Views",
                         modifier = Modifier.size(16.dp),
-                        tint = Color(0xFFAAAAAA)
+                        tint = Gray400
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = item.viewCount,
-                        style = SwypTheme.typography.labelMedium,
-                        color = Color(0xFFAAAAAA)
+                        style = SwypTheme.typography.label,
+                        color = Gray300
                     )
                 }
             }
@@ -465,7 +494,7 @@ fun TrendingBattleCard(
 ) {
     Column(
         modifier = Modifier
-            .width(160.dp)
+            .width(220.dp)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .clickable { onClick() }
@@ -482,14 +511,12 @@ fun TrendingBattleCard(
             AsyncImage(
                 model = item.imageUrl,
                 contentDescription = "Trending Thumbnail",
-                modifier = Modifier
-                    .padding(4.dp)
-                    .clip(RoundedCornerShape(2.dp)),
+                modifier = Modifier.clip(RoundedCornerShape(2.dp)),
                 contentScale = ContentScale.Crop
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // 카테고리 태그
         Surface(
@@ -497,24 +524,25 @@ fun TrendingBattleCard(
             shape = RoundedCornerShape(2.dp)
         ) {
             Text(
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                 text = "#${item.category}",
                 style = SwypTheme.typography.labelXSmall,
                 color = SwypTheme.colors.primary
             )
         }
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        // 제목 (최대 2줄)
+        // 제목
         Text(
             text = item.title,
-            style = SwypTheme.typography.b2Medium,
+            style = SwypTheme.typography.h5SemiBold,
             color = Gray900,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // tts 시간 & 조회수
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -524,8 +552,8 @@ fun TrendingBattleCard(
                 modifier = Modifier.size(12.dp),
                 tint = Gray400
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = item.timeAgo, style = SwypTheme.typography.labelXSmall, color = Gray400)
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(text = item.timeAgo, style = SwypTheme.typography.label, color = Gray400)
 
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -535,8 +563,8 @@ fun TrendingBattleCard(
                 modifier = Modifier.size(12.dp),
                 tint = Gray400
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = item.viewCount, style = SwypTheme.typography.labelXSmall, color = Gray400)
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(text = item.viewCount, style = SwypTheme.typography.label, color = Gray400)
         }
     }
 }
@@ -548,54 +576,63 @@ fun BestBattleRankItem(
     onClick: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
-            .clickable{ onClick() }
-    ){
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.dp),
+                .padding(vertical = 16.dp, horizontal = 16.dp),
             verticalAlignment = Alignment.Top
-        ){
+        ) {
+            val rankColor = if (item.rank == 1) SwypTheme.colors.primary else Beige600
+
             // 순위
             Text(
                 text = item.rank.toString(),
                 style = SwypTheme.typography.h1SemiBold,
-                color = SwypTheme.colors.primary,
-                modifier = Modifier.width(36.dp),
-                textAlign = TextAlign.Center
+                color = rankColor,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(24.dp)
+                    .align(Alignment.CenterVertically),
+                textAlign = TextAlign.Center,
             )
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            Column(modifier = Modifier.weight(1f)){
+            // 우측 콘텐츠 영역
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 // VS 뱃지
                 Surface(
                     color = Beige600,
                     shape = RoundedCornerShape(2.dp)
-                ){
+                ) {
                     Text(
                         text = item.vsBadge,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        style = SwypTheme.typography.h5SemiBold,
+                        style = SwypTheme.typography.labelXSmall,
                         color = SwypTheme.colors.primary
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // 제목
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.h5SemiBold,
+                    style = SwypTheme.typography.h4SemiBold,
                     color = Gray900,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-                // 태그 및 메타 정보 (하단 한 줄)
+                // 태그 및 메타 정보
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -605,15 +642,15 @@ fun BestBattleRankItem(
                     Text(
                         text = item.tags.joinToString(" ") { "#$it" },
                         style = SwypTheme.typography.label,
-                        color = Gray400
+                        color = Gray500
                     )
 
-                    // 시간 & 조회수
+                    // 시간 & 조회수 묶음
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            painterResource(R.drawable.ic_clock),
-                            null,
-                            Modifier.size(12.dp),
+                            painter = painterResource(R.drawable.ic_clock),
+                            contentDescription = "시간",
+                            modifier = Modifier.size(14.dp),
                             tint = Gray400
                         )
                         Spacer(modifier = Modifier.width(2.dp))
@@ -626,9 +663,9 @@ fun BestBattleRankItem(
                         Spacer(modifier = Modifier.width(6.dp))
 
                         Icon(
-                            painterResource(R.drawable.ic_eye),
-                            null,
-                            Modifier.size(12.dp),
+                            painter = painterResource(R.drawable.ic_eye),
+                            contentDescription = "조회수",
+                            modifier = Modifier.size(14.dp),
                             tint = Gray400
                         )
                         Spacer(modifier = Modifier.width(2.dp))
@@ -641,8 +678,12 @@ fun BestBattleRankItem(
                 }
             }
         }
-        // 아이템 사이 구분선
-        HorizontalDivider(color = Beige400, thickness = 1.dp)
+
+        // 2. 아이템 하단 구분선
+        HorizontalDivider(
+            color = Beige400,
+            thickness = 1.dp,
+        )
     }
 }
 
@@ -675,7 +716,7 @@ fun NewBattleCard(
                 Text(
                     text = "#${item.category}",
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                    style = SwypTheme.typography.labelXSmall,
+                    style = SwypTheme.typography.label,
                     color = SwypTheme.colors.primary
                 )
             }
@@ -760,11 +801,13 @@ private fun BattleOpinionBox(
         Spacer(modifier = Modifier.width(4.dp))
 
         Column {
-            Text(text = profile.opinion, style = SwypTheme.typography.b2Medium, color = Gray900)
+            Text(text = profile.opinion, style = SwypTheme.typography.h5SemiBold, color = Gray900)
+            Spacer(modifier = Modifier.height(2.dp))
             Text(text = profile.name, style = SwypTheme.typography.labelXSmall, color = Gray400)
         }
     }
 }
+
 
 @Composable
 fun TodayPickeCard(
@@ -781,7 +824,7 @@ fun TodayPickeCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(backgroundColor)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .border(1.dp, Beige700, RoundedCornerShape(1.dp))
             .padding(16.dp)
     ) {
         // [공통 상단] 뱃지 & 참여자 수
@@ -803,12 +846,12 @@ fun TodayPickeCard(
             }
             Text(
                 text = item.participants,
-                style = SwypTheme.typography.labelMedium,
-                color = Gray500
+                style = SwypTheme.typography.label,
+                color = Gray400
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         when (item) {
             is TodayPickeItem.AbType -> AbPickeContent(item)
@@ -818,6 +861,7 @@ fun TodayPickeCard(
 
 }
 
+// 1. 퀴즈
 @Composable
 private fun AbPickeContent(item: TodayPickeItem.AbType) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -828,13 +872,13 @@ private fun AbPickeContent(item: TodayPickeItem.AbType) {
             color = Gray900,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         // 설명
         Text(
             text = item.description,
-            style = SwypTheme.typography.b3Regular,
-            color = Gray500,
+            style = SwypTheme.typography.label,
+            color = Gray300,
             textAlign = TextAlign.Center
         )
 
@@ -859,15 +903,35 @@ private fun AbPickeContent(item: TodayPickeItem.AbType) {
     }
 }
 
-// 2. 4지 선다형 (투표형)
+@Composable
+private fun PickeOptionButton(modifier: Modifier, title: String, sub: String) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(2.dp))
+            .background(SwypTheme.colors.surface)
+            .border(1.dp, Beige500, RoundedCornerShape(1.dp))
+            .padding(vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = title, style = SwypTheme.typography.chipSmall, color = Gray900)
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(text = sub, style = SwypTheme.typography.labelXSmall, color = Gray400)
+    }
+}
+
+// 2. 투표
 @Composable
 private fun SelectionPickeContent(item: TodayPickeItem.SelectionType) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        // 빈칸이 있는 제목 만들기
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = item.titlePart1, style = SwypTheme.typography.h4SemiBold, color = Gray900)
+            // 제목
+            Text(
+                text = item.titlePart1,
+                style = SwypTheme.typography.b2SemiBold,
+                color = Gray900
+            )
 
-            // 빈칸 (Box)
+            // 빈칸
             Box(
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
@@ -877,18 +941,22 @@ private fun SelectionPickeContent(item: TodayPickeItem.SelectionType) {
                     .background(SwypTheme.colors.surface)
             )
 
-            Text(text = item.titlePart2, style = SwypTheme.typography.label, color = Gray900)
+            Text(
+                text = item.titlePart2,
+                style = SwypTheme.typography.b2SemiBold,
+                color = Gray900
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = item.description,
-            style = SwypTheme.typography.b3Regular,
-            color = Gray500,
+            style = SwypTheme.typography.label,
+            color = Gray300,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // 2x2 그리드 옵션 버튼
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -913,33 +981,26 @@ private fun SelectionPickeContent(item: TodayPickeItem.SelectionType) {
     }
 }
 
-// 공통 버튼 컴포넌트
-@Composable
-private fun PickeOptionButton(modifier: Modifier, title: String, sub: String) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surface)
-            .padding(vertical = 20.dp), // 상하 여백을 넉넉하게 주어 크게 만듭니다.
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = title, style = SwypTheme.typography.b1Medium, color = Gray900)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = sub, style = SwypTheme.typography.h5SemiBold, color = Gray400)
-    }
-}
-
 @Composable
 private fun PickeGridButton(modifier: Modifier, index: String, text: String) {
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
-            .background(Beige300) // 아주 연한 베이지색 버튼 배경
+            .background(Beige300)
+            .border(1.dp, Beige600, RoundedCornerShape(1.dp))
             .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "$index. ", style = SwypTheme.typography.b1Medium, color = SwypTheme.colors.primary)
-        Text(text = text, style = SwypTheme.typography.b1Medium, color = Gray900)
+        Text(
+            text = "$index. ",
+            style = SwypTheme.typography.label,
+            color = Beige900
+        )
+        Text(
+            text = text,
+            style = SwypTheme.typography.chipSmall,
+            color = Gray900
+        )
     }
 }
