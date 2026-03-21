@@ -1,5 +1,6 @@
 package com.swyp4.team2.ui.splash
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,8 @@ fun SplashScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState) {
+        Log.d("SplashFlow", "현재 UI 상태 수신됨: $uiState")
+
         when(uiState){
             SplashUiState.NavigateToLogin -> onNavigateToLogin()
             SplashUiState.NavigateToOnboarding -> onNavigateToOnboarding()

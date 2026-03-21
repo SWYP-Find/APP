@@ -1,9 +1,8 @@
 package com.swyp4.team2.data.remote
 
+import com.swyp4.team2.data.model.AuthResponseDto
 import com.swyp4.team2.data.model.BaseResponse
-import com.swyp4.team2.data.model.RefreshResponse
 import com.swyp4.team2.data.model.SocialLoginRequest
-import com.swyp4.team2.data.model.SocialLoginResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Header
@@ -16,20 +15,20 @@ interface AuthApi{
     suspend fun login(
         @Path("provider") provider:String,
         @Body request: SocialLoginRequest
-    ) : BaseResponse<SocialLoginResponse>
+    ) : BaseResponse<AuthResponseDto>
 
     // 토큰 갱신
     @POST("/api/v1/auth/refresh")
     suspend fun refreshAccessToken(
         @Header("X-Refresh-Token") refreshToken: String
-    ) : BaseResponse<RefreshResponse>
+    ) : BaseResponse<AuthResponseDto>
 
     // 로그아웃
     @POST("/api/v1/auth/logout")
-    suspend fun logout(): BaseResponse<Any>
+    suspend fun logout(): BaseResponse<String>
 
     // 회원탈퇴
     @DELETE("/api/v1/me")
-    suspend fun withdraw(): BaseResponse<Any>
+    suspend fun withdraw(): BaseResponse<String>
 }
 
