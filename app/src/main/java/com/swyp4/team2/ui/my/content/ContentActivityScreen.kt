@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.my.content.model.ContentActivityItem
 import com.swyp4.team2.ui.my.content.model.dummyCommentList
 import com.swyp4.team2.ui.my.content.model.dummyLikeList
@@ -139,20 +140,11 @@ fun ContentActivityCard(item: ContentActivityItem) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(Beige500),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = item.profileImgRes ?: R.drawable.ic_profile_xunzi),
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = Color.Unspecified
-                )
-            }
+            // 프로필 이미지
+            ProfileImage(
+                model = R.drawable.ic_profile_mengzi,
+                modifier = Modifier.size(36.dp),
+            )
 
             Spacer(modifier = Modifier.width(10.dp))
 

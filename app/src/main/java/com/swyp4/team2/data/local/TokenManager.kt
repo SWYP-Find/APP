@@ -20,7 +20,7 @@ class TokenManager @Inject constructor(
     // 2. Token을 저장할 암호화된 SharedPreferences 생성
     private val prefs = EncryptedSharedPreferences.create(
         context,
-        "auth_prefs",
+        "auth_prefs_v2",
         masterKey,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,

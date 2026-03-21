@@ -4,59 +4,59 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.swyp4.team2.domain.model.DebateMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import androidx.media3.common.Player
-import kotlinx.coroutines.flow.StateFlow
 
 @HiltViewModel
 class DebateViewModel @Inject constructor(
     @ApplicationContext private val context: Context
-): ViewModel(){
-    private val _scripts = MutableStateFlow<List<DebateMessageLocal>>(DebateDummyData.debateScripts)
-    val scripts : StateFlow<List<DebateMessageLocal>> = _scripts.asStateFlow()
+) : ViewModel() {
 
-    private val _activeIndex = MutableStateFlow(-1)
-    val activeIndex : StateFlow<Int> = _activeIndex.asStateFlow()
-
-    // 오디오 관련 상태들
-    private val _isPlaying = MutableStateFlow(false)
-    val isPlaying : StateFlow<Boolean> = _isPlaying.asStateFlow()
-
-    private val _currentPositionMs = MutableStateFlow(0L)
-    val currentPositionMs : StateFlow<Long> = _currentPositionMs.asStateFlow()
-
-    private val _totalDurationMs = MutableStateFlow(0L)
-    val totalDurationMs : StateFlow<Long> = _totalDurationMs.asStateFlow()
+    // 🌟 1. 파편화되었던 상태들을 'DebateUiState' 하나로 통합합니다!
+    private val _uiState = MutableStateFlow(DebateUiState())
+    val uiState: StateFlow<DebateUiState> = _uiState.asStateFlow()
 
     private var player: ExoPlayer? = null
 
-    init{
+    init {
+        // 🌟 2. 뷰모델이 생성될 때 더미 데이터를 State에 밀어 넣습니다.
+        // (나중에는 여기서 API 통신(GET)을 호출해서 받아온 데이터를 넣어주면 됩니다!)
+        _uiState.update { currentState ->
+            currentState.copy(
+                scripts = DebateDummyData.debateScripts,
+                interactiveOptions = DebateDummyData.dummyOptions // 선택지도 미리 넣어둠
+            )
+        }
         initializePlayer()
     }
 
-    private fun initializePlayer(){
-        player = ExoPlayer.Builder(context).build().apply{
+    private fun initializePlayer() {
+        player = ExoPlayer.Builder(context).build().apply {
+            // TODO: 나중에 API에서 받은 음성 URL로 교체!
             val mediaItem = MediaItem.fromUri("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3")
             setMediaItem(mediaItem)
             prepare()
 
             addListener(object : Player.Listener {
                 override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    _isPlaying.value = isPlaying
+                    // 상태 업데이트
+                    _uiState.update { it.copy(isPlaying = isPlaying) }
                 }
+
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     if (playbackState == Player.STATE_READY) {
-                        // 곡이 준비되면 총길이를 가져옵니다. (음수 방지를 위해 최소 0L로 세팅)
-                        _totalDurationMs.value = duration.coerceAtLeast(0L)
+                        // 곡이 준비되면 총 길이를 가져옵니다. (ExoPlayer는 Long이지만 State는 Int로 맞춤)
+                        _uiState.update { it.copy(totalDurationMs = duration.coerceAtLeast(0L).toInt()) }
                     }
                 }
             })
@@ -64,23 +64,27 @@ class DebateViewModel @Inject constructor(
         }
     }
 
-    private fun startTrackingProgress(){
+    private fun startTrackingProgress() {
         viewModelScope.launch {
-            while(isActive){
+            while (isActive) {
                 player?.let { exo ->
-                    if(exo.isPlaying) {
-                        // 1. 현재 재생 시간 UI 상태 업데이트
-                        val currentPos = exo.currentPosition
-                        _currentPositionMs.value = currentPos
+                    if (exo.isPlaying) {
+                        val currentPos = exo.currentPosition.toInt()
+                        val scripts = _uiState.value.scripts
 
-                        // 2. 아까 만들었던 대본 싱크 로직! (현재 시간에 맞는 말풍선 찾기)
-                        val newIndex = _scripts.value.indexOfLast { it.timeMs <= currentPos }
-                        if(newIndex != -1 && newIndex != _activeIndex.value){
-                            _activeIndex.value = newIndex
+                        // 🌟 3. timeMs -> startTimeMs 로 모델에 맞게 이름 변경!
+                        val newIndex = scripts.indexOfLast { it.startTimeMs <= currentPos }
+
+                        // 상태 업데이트 로직 (현재 시간과 활성화된 말풍선 인덱스를 동시 업데이트)
+                        _uiState.update { state ->
+                            state.copy(
+                                currentPositionMs = currentPos,
+                                activeIndex = if (newIndex != -1) newIndex else state.activeIndex
+                            )
                         }
                     }
                 }
-                delay(100L) // 0.1초 대기 (while문 안에 안전하게 위치!)
+                delay(100L) // 0.1초마다 싱크 체크
             }
         }
     }
@@ -94,15 +98,22 @@ class DebateViewModel @Inject constructor(
     }
 
     fun seekRewind() {
-        player?.let { it.seekTo((it.currentPosition - 15000L).coerceAtLeast(0L)) } // 0초 밑으로 안 내려가게 방어!
+        player?.let { it.seekTo((it.currentPosition - 15000L).coerceAtLeast(0L)) }
     }
 
     fun seekToPosition(ratio: Float) {
         player?.let {
-            val targetPosition = (ratio * _totalDurationMs.value).toLong()
+            val targetPosition = (ratio * _uiState.value.totalDurationMs).toLong()
             it.seekTo(targetPosition)
-            _currentPositionMs.value = targetPosition
+            _uiState.update { state -> state.copy(currentPositionMs = targetPosition.toInt()) }
         }
+    }
+
+    // 🌟 4. 유저가 선택지를 클릭했을 때 호출될 함수 (미리 만들어둠!)
+    fun selectOption(nextNodeId: String) {
+        // TODO: 나중에 여기서 API(POST 등)를 호출하여 유저의 선택을 서버에 보냅니다.
+        // 호출 성공 후, 새로운 스크립트(nextNodeId에 해당하는)와 음성을 받아와서 uiState와 Player를 업데이트하면 됩니다!
+        println("선택된 노드 ID: $nextNodeId")
     }
 
     override fun onCleared() {

@@ -39,6 +39,7 @@ import androidx.navigation.NavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
@@ -128,6 +129,7 @@ fun MyScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             PhilosopherTypeCard(
+                philosopherImage = R.drawable.ic_profile_mengzi,
                 philosopherName = "칸트형",
                 philosopherDesc = "원칙주의자",
                 onClick = { onNavigateToPhilosopher() }
@@ -162,13 +164,10 @@ fun ProfileSection(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 프로필 이미지
-        Box(
-            modifier = Modifier.size(52.dp)
-                .background(Secondary600, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-
-        }
+        ProfileImage(
+            model = R.drawable.ic_profile_mengzi,
+            modifier = Modifier.size(52.dp),
+        )
         Spacer(modifier = Modifier.width(12.dp))
         // 이름 & 유형 & ID
         Column {
@@ -181,6 +180,7 @@ fun ProfileSection(
 
 @Composable
 fun PhilosopherTypeCard(
+    philosopherImage: Any?,
     philosopherName: String,
     philosopherDesc: String,
     onClick: () -> Unit
@@ -196,19 +196,10 @@ fun PhilosopherTypeCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // [왼쪽] 철학자 아이콘
-        Box(
-            modifier = Modifier
-                .size(52.dp)
-                .background(Beige600, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = null,
-                modifier = Modifier.size(36.dp),
-                tint = Color.Unspecified
-            )
-        }
+        ProfileImage(
+            model = philosopherImage,
+            modifier = Modifier.size(40.dp),
+        )
 
         Spacer(modifier = Modifier.width(12.dp))
 

@@ -46,6 +46,7 @@ import coil.compose.AsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.home.model.BattleProfile
 import com.swyp4.team2.ui.theme.Beige100
 import com.swyp4.team2.ui.theme.Beige300
@@ -260,19 +261,10 @@ fun VoteOptionCard(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 프로필 아이콘 배경
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .background(Color(0xFFEEEEEE), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(id = profile.profileImg), // R.drawable.ic_profile_xunzi 등
-                contentDescription = null,
-                modifier = Modifier.size(36.dp),
-                tint = Color.Unspecified
-            )
-        }
+        ProfileImage(
+            model = R.drawable.ic_profile_mengzi, // profile.profileImg,
+            modifier = Modifier.size(48.dp),
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = profile.opinion, style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(4.dp))
