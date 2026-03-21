@@ -1,5 +1,6 @@
 package com.swyp4.team2.ui.splash
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.swyp4.team2.data.local.TokenManager
@@ -27,25 +28,29 @@ class SplashViewModel @Inject constructor(
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
     init {
-        tokenManager.clearAll() //TODO 소셜 로그인 구현 되면 없애야 함
         checkAutoLogin()
     }
 
     private fun checkAutoLogin() {
         viewModelScope.launch {
-            delay(1500L)
+            delay(1000)
 
             val localRefreshToken = tokenManager.getRefreshToken()
+            Log.d("SplashFlow", "1. 저장된 리프레시 토큰: $localRefreshToken")
 
             if (localRefreshToken.isNullOrBlank()) {
                 // 토큰이 없으면 온보딩 화면으로
+                Log.d("SplashFlow", "2. 토큰 없음 -> 신규 유저 판단 (온보딩 이동)")
                 _uiState.value = SplashUiState.NavigateToOnboarding
             } else {
+                Log.d("SplashFlow", "2. 토큰 있음 -> 기존 유저 판단 (토큰 갱신 시도)")
                 val result = authRepository.refreshAccessToken(localRefreshToken)
 
                 result.onSuccess {
+                    Log.d("SplashFlow", "3. 토큰 갱신 성공! -> 홈(Main) 화면 이동")
                     _uiState.value = SplashUiState.NavigateToMain
-                }.onFailure {
+                }.onFailure { error ->
+                    Log.e("SplashFlow", "3. 토큰 갱신 실패! -> 로그인 화면 이동", error)
                     tokenManager.clearAll()
                     _uiState.value = SplashUiState.NavigateToLogin
                 }

@@ -55,29 +55,28 @@ fun LoginScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
-    // 구글 로그인 결과를 처리하는 Launcher 설정
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            // 🌟 accessToken이나 idToken이 아닌, ServerAuthCode를 빼옵니다!
             account.serverAuthCode?.let { authCode ->
-                viewModel.handleSocialLoginSuccess("GOOGLE", authCode)
-            }
+                Log.d("LoginFlow", "▶️ 구글 런처: 인가 코드 빼오기 성공! ViewModel로 넘깁니다.")
+                viewModel.handleSocialLoginSuccess("google", authCode) // 백엔드 스펙에 맞게 소문자로 변경 추천
+            } ?: Log.e("LoginFlow", "▶️ 구글 런처: 엥? serverAuthCode가 null입니다!")
         } catch (e: ApiException) {
-            Log.e("GoogleLogin", "구글 로그인 실패: ${e.statusCode}", e)
+            Log.e("LoginFlow", "▶️ 구글 런처: 구글 SDK 로그인 실패 (StatusCode: ${e.statusCode})", e)
         }
     }
-
     LaunchedEffect(uiState){
-        when (uiState) {
+        when (val state = uiState) {
             is LoginUiState.Success -> {
+                Log.d("LoginFlow", "✅ 화면 이동: 메인(또는 온보딩)으로 넘어갑니다! (신규 유저: ${state.isNewUser})")
                 onNavigateToMain()
             }
             is LoginUiState.Error -> {
-                // 에러 처리 로직
+                Log.d("LoginFlow", "❌ 에러 발생: ${state.message}")
             }
             else -> { }
         }
@@ -133,12 +132,12 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_kakao),
                 onClick = {
-                    onNavigateToMain()
-                    /*
+                    // onNavigateToMain()
+                    Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
                     loginWithKakaoForAuthCode(context) { token ->
-                        viewModel.handleSocialLoginSuccess("KAKAO", token) // TODO : KAKAO 대문자 맞나?
+                        Log.d("LoginFlow", "▶️ 카카오 헬퍼: 인가 코드 받기 성공! ViewModel로 넘깁니다.")
+                        viewModel.handleSocialLoginSuccess("kakao", token)
                     }
-                     */
                 },
                 backgroundColor = Color(0xFFFEE500),
                 textColor = Gray900,
@@ -151,16 +150,14 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_google),
                 onClick = {
-                    onNavigateToMain()
-                    // 🌟 구글 웹 클라이언트 ID를 넣어서 인텐트를 실행합니다.
-                    /*
+                    // onNavigateToMain()
+                    Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID) // 백엔드용 클라이언트 ID
                         .requestEmail()
                         .build()
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
                     googleSignInLauncher.launch(googleSignInClient.signInIntent)
-                     */
                 },
                 backgroundColor = Color.White,
                 textColor = Gray900,
@@ -186,20 +183,22 @@ fun LoginScreen(
 
 // 카카오 SDK 실행 헬퍼 함수
 // 카카오 '인가 코드(Auth Code)'를 받아오는 함수
+// 헬퍼 함수
 private fun loginWithKakaoForAuthCode(context: Context, onSuccess: (String) -> Unit) {
     val callback: (String?, Throwable?) -> Unit = { authCode, error ->
         if (error != null) {
-            Log.e("KakaoLogin", "카카오 로그인 실패", error)
+            Log.e("LoginFlow", "카카오 계정 로그인 실패", error)
         } else if (authCode != null) {
-            onSuccess(authCode) // 🌟 여기서 받은 게 바로 백엔드가 원하는 authorizationCode!
+            onSuccess(authCode)
         }
     }
 
     if (AuthCodeClient.instance.isKakaoTalkLoginAvailable(context)) {
         AuthCodeClient.instance.authorizeWithKakaoTalk(context) { authCode, error ->
             if (error != null) {
-                Log.e("KakaoLogin", "카카오톡 로그인 실패", error)
+                Log.e("LoginFlow", "카카오톡으로 로그인 실패", error)
                 if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                    Log.d("LoginFlow", "사용자가 카카오 로그인 취소함")
                     return@authorizeWithKakaoTalk
                 }
                 AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)

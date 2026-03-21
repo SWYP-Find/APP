@@ -11,12 +11,12 @@ import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    // private val api: AuthApi,
+    private val api: AuthApi,
     private val tokenManager: TokenManager
 ) : AuthRepository {
 
     // 토큰 갱신
-    override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
+    /*override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         delay(500L)
 
         // 무조건 성공한다고 가정! (실패하는 경우를 테스트하고 싶으면 Result.failure(Exception()) 으로 바꾸면 됩니다)
@@ -24,8 +24,8 @@ class AuthRepositoryImpl @Inject constructor(
         tokenManager.saveRefreshToken("dummy_new_refresh_token")
 
         return Result.success(Unit)
-    }
-    /*
+    }*/
+
     override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
             // 1. 진짜 서버에 토큰 갱신 요청을 보냅니다.
@@ -46,10 +46,9 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-     */
 
     // 소셜 로그인
-    override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthToken> {
+    /*override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthToken> {
         delay(500L)
 
         val dummyToken = AuthToken(
@@ -65,8 +64,8 @@ class AuthRepositoryImpl @Inject constructor(
         tokenManager.saveRefreshToken(dummyToken.refreshToken)
 
         return Result.success(dummyToken)
-    }
-    /*
+    }*/
+
     override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthToken> {
         return try {
             // 1. 서버로 보낼 택배 상자(Request DTO)를 포장합니다.
@@ -89,7 +88,7 @@ class AuthRepositoryImpl @Inject constructor(
                 val authToken = AuthToken(
                     accessToken = data.accessToken,
                     refreshToken = data.refreshToken,
-                    userId = data.userId,
+                    userTag = data.userTag,
                     isNewUser = data.isNewUser,
                     status = data.status
                 )
@@ -101,15 +100,14 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
-     */
+
 
     // 로그아웃
-    override suspend fun logout(): Result<Unit> {
+    /*override suspend fun logout(): Result<Unit> {
         delay(300L)
         tokenManager.clearAll()
         return Result.success(Unit)
-    }
-    /*
+    }*/
     override suspend fun logout(): Result<Unit> {
         return try {
             api.logout()
@@ -120,23 +118,22 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
-    */
+
 
     // 회원 탈퇴
-    override suspend fun withdraw(): Result<Unit> {
+    /*override suspend fun withdraw(): Result<Unit> {
         delay(300L)
         tokenManager.clearAll()
         return Result.success(Unit)
-    }
-    /*
+    }*/
     override suspend fun withdraw(): Result<Unit> {
         return try {
             api.withdraw()
             tokenManager.clearAll()
             Result.success(Unit)
         } catch (e: Exception) {
+            tokenManager.clearAll()
             Result.failure(e)
         }
     }
-    */
 }

@@ -1,5 +1,6 @@
 package com.swyp4.team2.ui.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.swyp4.team2.domain.repository.HomeRepository
@@ -36,11 +37,13 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun fetchHomeData() {
+        Log.d("HomeFlow", "1. 홈 데이터 서버에 요청 시작!")
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             homeRepository.fetchHomeData()
                 .onSuccess { boardData ->
+                    Log.d("HomeFlow", "2. 🟢 홈 데이터 통신 성공! (에디터픽: ${boardData.editorPicks.size}개, 트렌딩: ${boardData.trendingBattles.size}개, 투데이픽: ${boardData.todayPicks.size}개)")
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
@@ -54,6 +57,7 @@ class HomeViewModel @Inject constructor(
                     }
                 }
                 .onFailure { error ->
+                    Log.e("HomeFlow", "2. 🔴 홈 데이터 통신 실패!", error)
                     _uiState.update { it.copy(isLoading = false) }
                 }
         }
