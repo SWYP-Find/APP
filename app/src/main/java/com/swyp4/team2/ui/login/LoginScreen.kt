@@ -103,6 +103,7 @@ fun LoginScreen(
                 contentDescription = "Pické 로고",
                 modifier = Modifier.size(width = 320.dp, height = 120.dp)
             )
+            Spacer(modifier = Modifier.height(72.dp))
         }
 
         // 하단: 소셜 로그인 버튼

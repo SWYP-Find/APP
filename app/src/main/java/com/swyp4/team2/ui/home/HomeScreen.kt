@@ -77,6 +77,7 @@ import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.InstagramShareButton
 import com.swyp4.team2.ui.component.KakaoShareButton
 import com.swyp4.team2.AppRoute
+import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.home.model.BattleProfile
 import com.swyp4.team2.ui.home.model.BestBattleItem
 import com.swyp4.team2.ui.home.model.EditorPickItem
@@ -783,20 +784,10 @@ private fun BattleOpinionBox(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 프로필 이미지
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Beige600),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(id = profile.profileImg),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                tint = Color.Unspecified
-            )
-        }
+        ProfileImage(
+            model = profile.profileImg,
+            modifier = Modifier.size(40.dp)
+        )
 
         Spacer(modifier = Modifier.width(4.dp))
 

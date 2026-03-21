@@ -3,7 +3,7 @@ package com.swyp4.team2.ui.home.model
 import com.swyp4.team2.R
 
 data class BattleProfile(
-    val profileImg: Int, // SVG 리소스 ID
+    val profileImg: Any?, // SVG 리소스 ID
     val opinion: String, // "선하다"
     val name: String     // "맹자"
 )

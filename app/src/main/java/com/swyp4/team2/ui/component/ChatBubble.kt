@@ -13,10 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.swyp4.team2.R
-import com.swyp4.team2.domain.model.DebateMessage
-import com.swyp4.team2.domain.model.SpeakerType
 import com.swyp4.team2.ui.debate.DebateMessageLocal
 import com.swyp4.team2.ui.debate.SpeakerTypeLocal
 import com.swyp4.team2.ui.theme.*
@@ -27,6 +25,23 @@ fun ChatBubble(
     isActive: Boolean,
     showAvatarAndName: Boolean
 ) {
+    if (message.speakerType == SpeakerTypeLocal.CENTER) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = message.text,
+                color = Gray500,
+                style = SwypTheme.typography.label,
+                textAlign = TextAlign.Center
+            )
+        }
+        return
+    }
+
     val isLeft = message.speakerType == SpeakerTypeLocal.LEFT
 
     // 피그마 디자인에 맞춘 색상
@@ -36,21 +51,20 @@ fun ChatBubble(
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isLeft) Arrangement.Start else Arrangement.End,
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top // 🌟 2. 프로필을 상단에 맞춥니다.
     ) {
-        // [오른쪽 화자일 경우] 왼쪽에 제시카님이 만든 파형 애니메이션 띄우기!
+        // [오른쪽 화자일 경우] 왼쪽에 파형 애니메이션 띄우기
         if (!isLeft && isActive) {
-            Box(modifier = Modifier.padding(top = 16.dp)) {
+            Box(modifier = Modifier.align(Alignment.Bottom).padding(bottom = 12.dp, end = 8.dp)) { // 🌟 3. 파형만 바닥에 고정!
                 ChattingLoadingAnimation()
             }
         }
 
         // [왼쪽 화자 프로필 영역]
         if (isLeft) {
-            ProfileArea(
-                profileRes = message.profileRes, // 🌟 이제 모델에서 이미지를 직접 가져옵니다!
-                speakerName = message.speakerName,
-                showAvatar = showAvatarAndName
+            ProfileImage(
+                model = message.profileRes,
+                modifier = Modifier.size(40.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
         }
@@ -78,7 +92,7 @@ fun ChatBubble(
                     .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Text(
-                    text = message.text,
+                    text = message.text, // 🚨 ViewModel에서 SSML 태그(<speak> 등)를 꼭 제거해서 넘겨주셔야 합니다!
                     style = SwypTheme.typography.b3Regular,
                     color = if (isActive) Gray900 else Gray500
                 )
@@ -88,41 +102,16 @@ fun ChatBubble(
         // [오른쪽 화자 프로필 영역]
         if (!isLeft) {
             Spacer(modifier = Modifier.width(8.dp))
-            ProfileArea(
-                profileRes = message.profileRes,
-                speakerName = message.speakerName,
-                showAvatar = showAvatarAndName
+            ProfileImage(
+                model = message.profileRes,
+                modifier = Modifier.size(40.dp)
             )
         }
 
-        // [왼쪽 화자일 경우] 오른쪽에 제시카님이 만든 파형 애니메이션 띄우기!
+        // [왼쪽 화자일 경우] 오른쪽에 파형 애니메이션 띄우기
         if (isLeft && isActive) {
-            ChattingLoadingAnimation(
-                modifier = Modifier.padding(top = 16.dp, start = 12.dp)
-            )
-        }
-    }
-}
-
-// 프로필 그리기 컴포넌트
-@Composable
-fun ProfileArea(profileRes: Int, speakerName: String, showAvatar: Boolean) {
-    Box(modifier = Modifier.size(40.dp)) {
-        if (showAvatar) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(CircleShape)
-                    .background(Gray100),
-                contentAlignment = Alignment.Center
-            ) {
-                // 실제 프로필 아이콘이 있다면 이걸 사용하세요!
-                Icon(
-                    painter = painterResource(id = profileRes),
-                    contentDescription = speakerName,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(32.dp)
-                )
+            Box(modifier = Modifier.align(Alignment.Bottom).padding(bottom = 12.dp, start = 8.dp)) { // 🌟 3. 파형만 바닥에 고정!
+                ChattingLoadingAnimation()
             }
         }
     }

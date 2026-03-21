@@ -63,6 +63,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import com.swyp4.team2.ui.component.CustomButton
+import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.SwypAppTheme
@@ -211,20 +212,10 @@ fun PhilosopherHeaderSection() {
             Spacer(modifier = Modifier.height(24.dp))
 
             // 프로필 이미지
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(Beige300),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_profile_xunzi), // 칸트 이미지로 교체 필요
-                    contentDescription = null,
-                    modifier = Modifier.size(60.dp),
-                    tint = Color.Unspecified
-                )
-            }
+            ProfileImage(
+                model = R.drawable.ic_profile_mengzi, // profile.profileImg,
+                modifier = Modifier.size(80.dp),
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -431,17 +422,10 @@ fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, 
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
-            modifier = Modifier.size(56.dp).clip(CircleShape).background(Beige300),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_profile_xunzi),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(40.dp)
-            )
-        }
+        ProfileImage(
+            model =R.drawable.ic_profile_mengzi, // profile.profileImg,
+            modifier = Modifier.size(56.dp),
+        )
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = name, style = SwypTheme.typography.b2Medium, color = Gray900)
         Spacer(modifier = Modifier.height(8.dp))

@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
 import com.swyp4.team2.ui.battle.BattleScreen
+import com.swyp4.team2.ui.curation.CurationScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.debate.DebateScreen
 import com.swyp4.team2.ui.login.LoginScreen
@@ -119,11 +120,6 @@ fun AppNavigation() {
             MainScreen(rootNavController = rootNavController)
         }
 
-        // tts 화면
-        composable(AppRoute.Debate.route){
-            DebateScreen()
-        }
-
         // 알림 화면
         composable(AppRoute.Alarm.route){
             AlarmScreen(
@@ -166,6 +162,15 @@ fun AppNavigation() {
             )
         }
 
+        // tts 화면
+        composable(AppRoute.Debate.route){
+            DebateScreen(
+                onBackClick = {
+                    rootNavController.popBackStack()
+                },
+            )
+        }
+
         // 사후 투표 화면
         composable(AppRoute.PostVote.route) {
             VoteScreen(
@@ -174,7 +179,26 @@ fun AppNavigation() {
                 onBackClick = {
                     rootNavController.popBackStack()
                 },
-                onVoteSubmit = { /* 결과 화면으로 이동 */ }
+                onVoteSubmit = {
+
+                }
+            )
+        }
+
+        composable(AppRoute.Curation.route){
+            CurationScreen(
+                onCloseClick = {
+                    // TODO
+                },
+                onBackClick = {
+                    rootNavController.popBackStack()
+                },
+                onItemClick = {
+                    // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
+                    rootNavController.navigate(AppRoute.PreVote.route)
+                    // 나중에 API 연결 시 라우트 예시:
+                    // rootNavController.navigate("pre_vote_route/$id")
+                }
             )
         }
     }
