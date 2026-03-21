@@ -91,10 +91,7 @@ fun CurationScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(curationList) { item ->
-                NewBattleCard(
-                    item = item,
-                    onClick = { onItemClick(item.id) }
-                )
+
             }
         }
     }
