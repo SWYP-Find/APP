@@ -2,6 +2,7 @@ package com.swyp4.team2.di
 
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.remote.ExploreApi
+import com.swyp4.team2.data.remote.HomeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +23,11 @@ object ApiModule {
     @Singleton
     fun provideExploreApi(retrofit: Retrofit): ExploreApi {
         return retrofit.create(ExploreApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHomeApi(retrofit: Retrofit): HomeApi {
+        return retrofit.create(HomeApi::class.java)
     }
 }
