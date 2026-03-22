@@ -1,4 +1,4 @@
-package com.swyp4.team2.ui.battle
+package com.swyp4.team2.ui.todaybattle
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,16 +20,14 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,35 +43,39 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.swyp4.team2.R
-import com.swyp4.team2.ui.battle.model.BattleIntroItem
-import com.swyp4.team2.ui.battle.model.dummyBattleIntroList
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Gray400
-import com.swyp4.team2.ui.theme.Gray500
-import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray800
 import com.swyp4.team2.ui.theme.Gray900
-import com.swyp4.team2.ui.theme.Primary200
 import com.swyp4.team2.ui.theme.Primary300
-import com.swyp4.team2.ui.theme.Primary500
-import com.swyp4.team2.ui.theme.Primary800
 import com.swyp4.team2.ui.theme.Secondary200
 import com.swyp4.team2.ui.theme.Secondary500
 import com.swyp4.team2.ui.theme.Secondary700
-import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
+import com.swyp4.team2.ui.todaybattle.model.TodayBattleUiModel
 
 @Composable
-fun BattleScreen(
+fun TodayBattleScreen(
+    viewModel: TodayBattleViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
     onEnterBattle: () -> Unit
 ){
-    val pagerState = rememberPagerState(pageCount = { dummyBattleIntroList.size })
+    val uiState by viewModel.uiState.collectAsState()
+    val battleList = uiState.battleList
 
+    if (uiState.isLoading || battleList.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = SwypTheme.colors.primary)
+        }
+        return
+    }
+
+    val pagerState = rememberPagerState(pageCount = { battleList.size })
     var selectedSide by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     val isButtonEnabled = selectedSide != null
 
@@ -101,7 +102,7 @@ fun BattleScreen(
                 modifier = Modifier.fillMaxSize()
             ) { page ->
                 BattleContent(
-                    item = dummyBattleIntroList[page],
+                    item = battleList[page],
                     selectedSide = selectedSide,
                     onSideSelect = { side -> selectedSide = side }
                 )
@@ -116,7 +117,7 @@ fun BattleScreen(
             ) {
                 TopIndicatorBar(
                     currentPage = pagerState.currentPage,
-                    totalPages = dummyBattleIntroList.size
+                    totalPages = battleList.size
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -148,7 +149,7 @@ fun BattleScreen(
 
 @Composable
 fun BattleContent(
-    item: BattleIntroItem,
+    item: TodayBattleUiModel,
     selectedSide: String?,
     onSideSelect: (String) -> Unit
 ) {
@@ -159,7 +160,7 @@ fun BattleContent(
                 .weight(1f)
         ) {
             AsyncImage(
-                model = item.bgImageRes,
+                model = item.imageUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()
@@ -253,21 +254,26 @@ fun BattleContent(
             contentAlignment = Alignment.Center
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                OpinionCard(
-                    name = item.leftName,
-                    opinion = item.leftOpinion,
-                    quote = item.leftQuote,
-                    isSelected = selectedSide == "LEFT",
-                    onClick = { onSideSelect("LEFT") }
-                )
+                if (item.options.isNotEmpty()) {
+                    OpinionCard(
+                        name = item.options[0].name,
+                        opinion = item.options[0].opinion,
+                        quote = item.options[0].quote,
+                        isSelected = selectedSide == "LEFT",
+                        onClick = { onSideSelect("LEFT") }
+                    )
+                }
                 Spacer(modifier = Modifier.height(12.dp))
-                OpinionCard(
-                    name = item.rightName,
-                    opinion = item.rightOpinion,
-                    quote = item.rightQuote,
-                    isSelected = selectedSide == "RIGHT",
-                    onClick = { onSideSelect("RIGHT") }
-                )
+                // 🌟 오른쪽 의견 (options 배열의 두 번째 값)
+                if (item.options.size > 1) {
+                    OpinionCard(
+                        name = item.options[1].name,
+                        opinion = item.options[1].opinion,
+                        quote = item.options[1].quote,
+                        isSelected = selectedSide == "RIGHT",
+                        onClick = { onSideSelect("RIGHT") }
+                    )
+                }
             }
 
             // 정중앙 VS 원형 뱃지

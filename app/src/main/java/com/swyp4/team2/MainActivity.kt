@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,19 +17,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
-import com.swyp4.team2.ui.battle.BattleScreen
 import com.swyp4.team2.ui.curation.CurationScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.debate.DebateScreen
 import com.swyp4.team2.ui.login.LoginScreen
-import com.swyp4.team2.ui.main.BottomNavItem
 import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
-import com.swyp4.team2.ui.my.setting.SettingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
 import com.swyp4.team2.ui.splash.SplashScreen
-import com.swyp4.team2.ui.theme.SwypTheme
 import com.swyp4.team2.ui.vote.VoteScreen
 import com.swyp4.team2.ui.vote.model.VoteType
 import com.swyp4.team2.ui.vote.model.dummyVoteItem
