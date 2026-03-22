@@ -28,7 +28,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,8 +68,10 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.component.ProfileImage
+import com.swyp4.team2.ui.component.ShareDialog
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
+import com.swyp4.team2.ui.theme.Primary500
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import kotlinx.coroutines.launch
 import shareCapturedImageToKakao
@@ -79,6 +85,8 @@ fun PhilosopherTypeScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
+
+    var showShareDialog by remember { mutableStateOf(false) }
 
     val onKakaoShareClick = {
         coroutineScope.launch {
@@ -111,7 +119,7 @@ fun PhilosopherTypeScreen(
                 onBackClick = onBackClick,
                 backgroundColor = SwypTheme.colors.surface,
                 actions = {
-                    IconButton(onClick = { onKakaoShareClick()}) {
+                    IconButton(onClick = { showShareDialog = true }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_share),
                             contentDescription = "공유",
@@ -152,11 +160,35 @@ fun PhilosopherTypeScreen(
             // 5. 공유하기 버튼
             CustomButton(
                 text = stringResource(R.string.my_share),
-                onClick = { onKakaoShareClick() },
+                onClick = { showShareDialog = true },
                 modifier = Modifier.padding(bottom = 24.dp),
                 backgroundColor = SwypTheme.colors.primary,
                 textColor = Color.White,
                 iconResId = R.drawable.ic_share
+            )
+        }
+
+        if (showShareDialog) {
+            ShareDialog(
+                onDismiss = { showShareDialog = false },
+                onKakaoClick = {
+                    showShareDialog = false
+                    onKakaoShareClick()
+                },
+                onInstaClick = {
+                    // TODO: 인스타 공유 로직 구현
+                    showShareDialog = false
+                    Toast.makeText(context, "인스타그램 공유 준비중!", Toast.LENGTH_SHORT).show()
+                },
+                onFacebookClick = {
+                    // TODO: 페이스북 공유 로직 구현
+                    showShareDialog = false
+                },
+                onCopyLinkClick = {
+                    // TODO: 링크 복사 클립보드 로직 구현
+                    showShareDialog = false
+                    Toast.makeText(context, "링크가 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }
@@ -177,36 +209,28 @@ fun PhilosopherHeaderSection() {
             .fillMaxWidth()
             .background(Color.White, cardShape)
             .border(1.dp, Beige400, cardShape)
-        // 🚨 주의: 여기에 있던 padding(24.dp)를 지웠습니다!
     ) {
-        // 🌟 2. 맨 위에 각진 굵은 Primary 라인을 그립니다.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(4.dp) // 시안에 맞춰 두께를 조절하세요 (4.dp ~ 6.dp)
-                .background(Color(0xFF8C3E26)) // Primary 색상
+                .height(4.dp)
+                .background(Primary500)
         )
 
-        // 🌟 3. 내부 콘텐츠들만 따로 묶어서 패딩을 줍니다.
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp), // 지웠던 패딩을 여기서 줍니다!
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "나의 철학자 유형", style = SwypTheme.typography.labelMedium, color = Color(0xFF8C3E26))
             Spacer(modifier = Modifier.height(4.dp))
 
-            // 💡 참고: 시안을 보면 '칸트형' 텍스트 오른쪽에 작은 토끼 뱃지가 떠있습니다.
-            // 나중에 추가하시기 편하게 Row로 틀을 잡아드릴게요!
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(text = "칸트형", style = SwypTheme.typography.h1SemiBold, color = Gray900)
-                // 여기에 나중에 토끼 뱃지 Icon/Image를 추가하시면 됩니다.
-                // Spacer(modifier = Modifier.width(8.dp))
-                // Image(...)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -260,7 +284,7 @@ fun TraitAnalysisSection() {
                 .padding(vertical = 24.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🔥 레이더 차트 호출
+            // 레이더 차트 호출
             Box(modifier = Modifier.size(220.dp)) {
                 RadarChart(
                     scores = listOf(0.92f, 0.85f, 0.45f, 0.45f, 0.88f, 0.72f), // 백엔드 수치를 0~1.0으로 변환해서 넣기
@@ -485,14 +509,14 @@ fun RadarChart(
         dataPath.close()
 
         // 데이터 영역 색칠 및 테두리
-        drawPath(dataPath, color = primaryColor.copy(alpha = 0.15f)) // 반투명 배경
-        drawPath(dataPath, color = primaryColor, style = Stroke(width = 2.dp.toPx())) // 굵은 테두리
+        drawPath(dataPath, color = primaryColor.copy(alpha = 0.15f))
+        drawPath(dataPath, color = primaryColor, style = Stroke(width = 2.dp.toPx()))
 
         // 3. 라벨(글자) 그리기
-        val textPaint = android.graphics.Paint().apply { // 🌟 여기를 android.graphics.Paint()로 변경!
+        val textPaint = android.graphics.Paint().apply {
             color = android.graphics.Color.parseColor("#555555")
             textSize = 12.sp.toPx()
-            textAlign = android.graphics.Paint.Align.CENTER // 🌟 여기도 명시
+            textAlign = android.graphics.Paint.Align.CENTER
         }
 
         labels.forEachIndexed { index, label ->

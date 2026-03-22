@@ -39,6 +39,7 @@ class TodayBattleViewModel @Inject constructor(
             todayBattleRepository.fetchTodayBattles()
                 .onSuccess { board ->
                     Log.d("BattleFlow", "🟢 배틀 목록 불러오기 성공! (${board.items.size}개)")
+                    Log.d("BattleFlow", "🟢 배틀 목록 : (${board.items})")
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,

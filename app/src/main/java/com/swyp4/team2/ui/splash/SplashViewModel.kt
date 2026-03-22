@@ -36,6 +36,10 @@ class SplashViewModel @Inject constructor(
             delay(1000)
 
             val localRefreshToken = tokenManager.getRefreshToken()
+            val localAccessToken = tokenManager.getAccessToken()
+
+            Log.d("TokenFlow", "🔥 AccessToken: $localAccessToken")
+            Log.d("TokenFlow", "🔥 RefreshToken: $localRefreshToken")
             Log.d("SplashFlow", "1. 저장된 리프레시 토큰: $localRefreshToken")
 
             if (localRefreshToken.isNullOrBlank()) {
