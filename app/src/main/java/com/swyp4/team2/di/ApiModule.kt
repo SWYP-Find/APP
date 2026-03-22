@@ -3,6 +3,7 @@ package com.swyp4.team2.di
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.remote.ExploreApi
 import com.swyp4.team2.data.remote.HomeApi
+import com.swyp4.team2.data.remote.ScenarioApi
 import com.swyp4.team2.data.remote.TodayBattleApi
 import dagger.Module
 import dagger.Provides
@@ -36,5 +37,11 @@ object ApiModule {
     @Singleton
     fun provideTodayBattleApi(retrofit: Retrofit): TodayBattleApi {
         return retrofit.create(TodayBattleApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideScenarioApi(retrofit: Retrofit): ScenarioApi {
+        return retrofit.create(ScenarioApi::class.java)
     }
 }

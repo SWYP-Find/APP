@@ -27,7 +27,7 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Explore,
-        BottomNavItem.Battle,
+        BottomNavItem.TodayBattle,
         BottomNavItem.My
     )
 

@@ -1,0 +1,67 @@
+package com.swyp4.team2.ui.scenario.model
+
+import com.swyp4.team2.domain.model.ScenarioBoard
+import com.swyp4.team2.domain.model.SpeakerType
+
+data class ScenarioUiModel(
+    val battleId: String,
+    val isInteractive: Boolean,
+    val startNodeId: String,
+    val audios: Map<String, String>,
+    val nodes: Map<String, ScenarioNodeUiModel>
+)
+
+data class ScenarioNodeUiModel(
+    val nodeId: String,
+    val nodeName: String,
+    val audioDuration: Int,
+    val autoNextNodeId: String?,
+    val scripts: List<ScenarioScriptUiModel>,
+    val interactiveOptions: List<ScenarioOptionUiModel>
+)
+
+data class ScenarioScriptUiModel(
+    val scriptId: String,
+    val startTimeMs: Long,
+    val speakerType: SpeakerType,
+    val speakerName: String,
+    val displayText: String
+)
+
+data class ScenarioOptionUiModel(
+    val label: String,
+    val nextNodeId: String
+)
+
+// Domain -> UI
+fun ScenarioBoard.toUiModel(): ScenarioUiModel {
+    val nodeMap = this.nodes.associateBy(
+        keySelector = { it.nodeId },
+        valueTransform = { node ->
+            ScenarioNodeUiModel(
+                nodeId = node.nodeId,
+                nodeName = node.nodeName,
+                autoNextNodeId = node.autoNextNodeId,
+                audioDuration = node.audioDuration,
+                interactiveOptions = node.interactiveOptions.map { ScenarioOptionUiModel(it.label, it.nextNodeId) },
+                scripts = node.scripts.map { script ->
+                    ScenarioScriptUiModel(
+                        scriptId = script.scriptId,
+                        startTimeMs = script.startTimeMs,
+                        speakerType = script.speakerType,
+                        speakerName = script.speakerName,
+                        displayText = script.text.replace(Regex("<[^>]*>"), "")
+                    )
+                }
+            )
+        }
+    )
+
+    return ScenarioUiModel(
+        battleId = this.battleId,
+        isInteractive = this.isInteractive,
+        startNodeId = this.startNodeId,
+        audios = this.audios,
+        nodes = nodeMap
+    )
+}

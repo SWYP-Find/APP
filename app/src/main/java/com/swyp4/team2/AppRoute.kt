@@ -5,7 +5,7 @@ sealed class AppRoute(val route: String){
     object Login : AppRoute("login_screen")
     object Onboarding : AppRoute("onboarding_screen")
     object Main : AppRoute("main_screen")
-    object Debate : AppRoute("debate_screen")
+    object Scenario : AppRoute("scenario_screen")
     object Alarm : AppRoute("alarm_screen")
     object Setting : AppRoute("setting_screen")
 

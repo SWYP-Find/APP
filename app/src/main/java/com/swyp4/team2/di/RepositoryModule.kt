@@ -3,10 +3,12 @@ package com.swyp4.team2.di
 import com.swyp4.team2.data.repository.AuthRepositoryImpl
 import com.swyp4.team2.data.repository.ExploreRepositoryImpl
 import com.swyp4.team2.data.repository.HomeRepositoryImpl
+import com.swyp4.team2.data.repository.ScenarioRepositoryImpl
 import com.swyp4.team2.data.repository.TodayBattleRepositoryImpl
 import com.swyp4.team2.domain.repository.AuthRepository
 import com.swyp4.team2.domain.repository.ExploreRepository
 import com.swyp4.team2.domain.repository.HomeRepository
+import com.swyp4.team2.domain.repository.ScenarioRepository
 import com.swyp4.team2.domain.repository.TodayBattleRepository
 import dagger.Binds
 import dagger.Module
@@ -41,4 +43,9 @@ abstract class RepositoryModule {
         todayBattleRepositoryImpl: TodayBattleRepositoryImpl
     ): TodayBattleRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindScenarioRepository(
+        scenarioRepositoryImpl: ScenarioRepositoryImpl
+    ): ScenarioRepository
 }

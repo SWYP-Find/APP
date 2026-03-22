@@ -1,5 +1,6 @@
 package com.swyp4.team2
 
+import ScenarioScreen
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -19,7 +20,6 @@ import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
 import com.swyp4.team2.ui.curation.CurationScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
-import com.swyp4.team2.ui.debate.DebateScreen
 import com.swyp4.team2.ui.login.LoginScreen
 import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
@@ -152,14 +152,15 @@ fun AppNavigation() {
                     rootNavController.popBackStack()
                 },
                 onVoteSubmit = {
-                    rootNavController.navigate(AppRoute.Debate.route)
+                    rootNavController.navigate(AppRoute.Scenario.route)
                 }
             )
         }
 
         // tts 화면
-        composable(AppRoute.Debate.route){
-            DebateScreen(
+        composable(AppRoute.Scenario.route){
+            ScenarioScreen(
+                battleId = "",
                 onBackClick = {
                     rootNavController.popBackStack()
                 },
