@@ -53,7 +53,7 @@ import com.swyp4.team2.ui.theme.SwypTheme
 fun OnboardingScreen(
     onNavigateToLogin: ()->Unit
 ) {
-    val pageCount = 3
+    val pageCount = 4
     val pagerState = rememberPagerState(pageCount = { pageCount })
 
     Column(
@@ -119,13 +119,15 @@ fun OnboardingPageContent(page: Int) {
     ) {
         val title = when (page) {
             0 -> "AI 철학자들의 실시간 배틀"
-            1 -> "매일 새로운 투표, 당신의 Pick은?"
+            1 -> "배틀 승리로 주어지는 포인트"
+            2 -> "매일 새로운 투표, 당신의 Pick은?"
             else -> "나와 가장 닮은 철학자는?"
         }
 
         val subTitle = when (page) {
             0 -> "위대한 사상가들의 토론을 듣고,\n당신의 입장을 선택하세요."
-            1 -> "철학, 예술, 과학, 사회 등\n다양한 주제의 배틀과 투표가 기다리고 있어요."
+            1 -> "배틀 참여로 포인트를 모아\n나만의 배틀을 제안해보세요."
+            2 -> "철학, 예술, 과학, 사회 등\n다양한 주제의 배틀과 투표가 기다리고 있어요."
             else -> "토론 성향에 따라 철학자 유형이 부여돼요.\n배틀에 참여해 새로운 나를 발견해보세요!"
         }
 
