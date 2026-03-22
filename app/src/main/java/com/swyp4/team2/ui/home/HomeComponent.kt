@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.ProfileImage
-import com.swyp4.team2.ui.home.model.HomeContentModel
-import com.swyp4.team2.ui.home.model.TodayPickModel
+import com.swyp4.team2.ui.home.model.HomeContentUiModel
+import com.swyp4.team2.ui.home.model.TodayPickUiModel
 import com.swyp4.team2.ui.theme.*
 
 // 1. 공통 헤더
@@ -67,7 +67,7 @@ fun HomeSectionHeader(
 // 2. Editor Pick
 @Composable
 fun EditorPickSection(
-    items: List<HomeContentModel>,
+    items: List<HomeContentUiModel>,
     modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit
 ) {
@@ -85,7 +85,7 @@ fun EditorPickSection(
 }
 
 @Composable
-fun EditorPickCard(item: HomeContentModel, currentIndex: Int, totalCount: Int, modifier: Modifier = Modifier) {
+fun EditorPickCard(item: HomeContentUiModel, currentIndex: Int, totalCount: Int, modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth().background(Color.Black)) {
         // [상단] 라벨 & 페이지네이션
         Row(
@@ -146,7 +146,7 @@ fun EditorPickCard(item: HomeContentModel, currentIndex: Int, totalCount: Int, m
 
 // 3. Trending Battle
 @Composable
-fun TrendingBattleCard(item: HomeContentModel, onClick: () -> Unit) {
+fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
     Column(
         modifier = Modifier.width(220.dp).border(1.dp, Beige600, RoundedCornerShape(2.dp)).background(SwypTheme.colors.surface).clickable { onClick() }.padding(12.dp)
     ) {
@@ -174,7 +174,7 @@ fun TrendingBattleCard(item: HomeContentModel, onClick: () -> Unit) {
 
 // 4. Best Battle
 @Composable
-fun BestBattleRankItem(item: HomeContentModel, rank: Int, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun BestBattleRankItem(item: HomeContentUiModel, rank: Int, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(modifier = modifier.fillMaxWidth().clickable { onClick() }) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp), verticalAlignment = Alignment.Top) {
             val rankColor = if (rank == 1) SwypTheme.colors.primary else Beige600
@@ -208,7 +208,7 @@ fun BestBattleRankItem(item: HomeContentModel, rank: Int, modifier: Modifier = M
 // 5. New Battle
 @Composable
 fun NewBattleCard(
-    item: HomeContentModel,
+    item: HomeContentUiModel,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -259,16 +259,16 @@ private fun BattleOpinionBox(modifier: Modifier = Modifier, opinion: String?, na
 
 // 6. Today Pické
 @Composable
-fun TodayPickeCard(item: TodayPickModel, modifier: Modifier = Modifier) {
+fun TodayPickeCard(item: TodayPickUiModel, modifier: Modifier = Modifier) {
     // Sealed Class를 활용해 VOTE와 QUIZ를 완벽히 분기 처리!
     val backgroundColor = when (item) {
-        is TodayPickModel.VotePick -> Beige400
-        is TodayPickModel.QuizPick -> SwypTheme.colors.surface
+        is TodayPickUiModel.VotePick -> Beige400
+        is TodayPickUiModel.QuizPick -> SwypTheme.colors.surface
     }
 
     Column(modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(2.dp)).background(backgroundColor).border(1.dp, Beige700, RoundedCornerShape(1.dp)).padding(16.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            val typeName = if (item is TodayPickModel.VotePick) "투표" else "퀴즈"
+            val typeName = if (item is TodayPickUiModel.VotePick) "투표" else "퀴즈"
             Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
                 Text(text = "#$typeName", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = SwypTheme.typography.h5SemiBold, color = SwypTheme.colors.primary)
             }
@@ -277,14 +277,14 @@ fun TodayPickeCard(item: TodayPickModel, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(20.dp))
 
         when (item) {
-            is TodayPickModel.VotePick -> AbPickeContent(item)
-            is TodayPickModel.QuizPick -> SelectionPickeContent(item)
+            is TodayPickUiModel.VotePick -> AbPickeContent(item)
+            is TodayPickUiModel.QuizPick -> SelectionPickeContent(item)
         }
     }
 }
 
 @Composable
-private fun AbPickeContent(item: TodayPickModel.VotePick) {
+private fun AbPickeContent(item: TodayPickUiModel.VotePick) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = item.title, style = SwypTheme.typography.b2SemiBold, color = Gray900, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(6.dp))
@@ -305,7 +305,7 @@ private fun PickeOptionButton(modifier: Modifier, title: String) {
 }
 
 @Composable
-private fun SelectionPickeContent(item: TodayPickModel.QuizPick) {
+private fun SelectionPickeContent(item: TodayPickUiModel.QuizPick) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = item.title, style = SwypTheme.typography.b2SemiBold, color = Gray900, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))

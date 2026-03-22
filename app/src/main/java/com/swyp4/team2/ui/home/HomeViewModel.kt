@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.swyp4.team2.domain.repository.HomeRepository
-import com.swyp4.team2.ui.home.model.HomeContentModel
-import com.swyp4.team2.ui.home.model.TodayPickModel
+import com.swyp4.team2.ui.home.model.HomeContentUiModel
+import com.swyp4.team2.ui.home.model.TodayPickUiModel
+import com.swyp4.team2.ui.home.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,11 +18,11 @@ import javax.inject.Inject
 data class HomeUiState(
     val isLoading: Boolean = true,
     val hasNewNotice: Boolean = false,
-    val editorPicks: List<HomeContentModel> = emptyList(),
-    val trendingBattles: List<HomeContentModel> = emptyList(),
-    val bestBattles: List<HomeContentModel> = emptyList(),
-    val newBattles: List<HomeContentModel> = emptyList(),
-    val todayPicks: List<TodayPickModel> = emptyList()
+    val editorPicks: List<HomeContentUiModel> = emptyList(),
+    val trendingBattles: List<HomeContentUiModel> = emptyList(),
+    val bestBattles: List<HomeContentUiModel> = emptyList(),
+    val newBattles: List<HomeContentUiModel> = emptyList(),
+    val todayPicks: List<TodayPickUiModel> = emptyList()
 )
 
 @HiltViewModel
@@ -48,11 +49,11 @@ class HomeViewModel @Inject constructor(
                         state.copy(
                             isLoading = false,
                             hasNewNotice = boardData.hasNewNotice,
-                            editorPicks = boardData.editorPicks,
-                            trendingBattles = boardData.trendingBattles,
-                            bestBattles = boardData.bestBattles,
-                            newBattles = boardData.newBattles,
-                            todayPicks = boardData.todayPicks
+                            editorPicks = boardData.editorPicks.map { it.toUiModel() },
+                            trendingBattles = boardData.trendingBattles.map { it.toUiModel() },
+                            bestBattles = boardData.bestBattles.map { it.toUiModel() },
+                            newBattles = boardData.newBattles.map { it.toUiModel() },
+                            todayPicks = boardData.todayPicks.map { it.toUiModel() }
                         )
                     }
                 }

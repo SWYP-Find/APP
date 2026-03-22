@@ -1,6 +1,5 @@
 package com.swyp4.team2.ui.main
 
-import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.swyp4.team2.AppRoute
-import com.swyp4.team2.ui.battle.BattleScreen
 import com.swyp4.team2.ui.component.CustomBottomNavigationBar
 import com.swyp4.team2.ui.explore.ExploreScreen
 import com.swyp4.team2.ui.home.HomeScreen
@@ -26,8 +24,8 @@ import com.swyp4.team2.ui.my.notice.NoticeEventScreen
 import com.swyp4.team2.ui.my.philosopher.PhilosopherTypeScreen
 import com.swyp4.team2.ui.my.setting.SettingScreen
 import com.swyp4.team2.ui.theme.Gray900
-import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
+import com.swyp4.team2.ui.todaybattle.TodayBattleScreen
 
 @Composable
 fun MainScreen(
@@ -100,7 +98,7 @@ fun MainScreen(
                 )
             }
             composable(BottomNavItem.Battle.route){
-                BattleScreen(
+                TodayBattleScreen(
                     onBackClick = {
                         mainNavController.popBackStack()
                     },

@@ -1,10 +1,8 @@
 package com.swyp4.team2.data.repository
 
-import com.swyp4.team2.data.mapper.toHomeContentModel
-import com.swyp4.team2.data.mapper.toTodayPickModel
 import com.swyp4.team2.data.remote.HomeApi
 import com.swyp4.team2.domain.mock.DummyHomeData
-import com.swyp4.team2.domain.model.HomeBoardData
+import com.swyp4.team2.domain.model.HomeBoard
 import com.swyp4.team2.domain.repository.HomeRepository
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -13,7 +11,7 @@ class HomeRepositoryImpl @Inject constructor(
     private val homeApi: HomeApi
 ) : HomeRepository {
 
-    override suspend fun fetchHomeData(): Result<HomeBoardData> {
+    override suspend fun fetchHomeData(): Result<HomeBoard> {
         return try {
             // 1. 서버에서 DTO 받아오기
             // val response = homeApi.getHomeData()
