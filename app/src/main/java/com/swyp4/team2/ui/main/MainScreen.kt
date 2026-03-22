@@ -36,7 +36,7 @@ fun MainScreen(
     val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    val showBottomBar = currentRoute != BottomNavItem.Battle.route
+    val showBottomBar = currentRoute != BottomNavItem.TodayBattle.route
 
     Scaffold(
         containerColor = if (showBottomBar) SwypTheme.colors.surface else Gray900,
@@ -97,7 +97,7 @@ fun MainScreen(
                     }
                 )
             }
-            composable(BottomNavItem.Battle.route){
+            composable(BottomNavItem.TodayBattle.route){
                 TodayBattleScreen(
                     onBackClick = {
                         mainNavController.popBackStack()

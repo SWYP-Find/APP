@@ -3,37 +3,34 @@ package com.swyp4.team2.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.swyp4.team2.ui.debate.DebateMessageLocal
-import com.swyp4.team2.ui.debate.SpeakerTypeLocal
+import com.swyp4.team2.domain.model.SpeakerType
+import com.swyp4.team2.ui.scenario.model.ScenarioScriptUiModel
 import com.swyp4.team2.ui.theme.*
+import com.swyp4.team2.R
 
 @Composable
 fun ChatBubble(
-    message: DebateMessageLocal,
+    script: ScenarioScriptUiModel,
     isActive: Boolean,
     showAvatarAndName: Boolean
 ) {
-    if (message.speakerType == SpeakerTypeLocal.CENTER) {
+    // 1. 나레이터는 화면 중앙에 텍스트만 표시
+    if (script.speakerType == SpeakerType.NARRATOR) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp).alpha(if (isActive) 1f else 0.5f),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = message.text,
+                text = script.displayText,
                 color = Gray500,
                 style = SwypTheme.typography.label,
                 textAlign = TextAlign.Center
@@ -42,45 +39,54 @@ fun ChatBubble(
         return
     }
 
-    val isLeft = message.speakerType == SpeakerTypeLocal.LEFT
+    // 2. A는 왼쪽(플라톤), B는 오른쪽(사르트르)
+    val isLeft = script.speakerType == SpeakerType.A
 
-    // 피그마 디자인에 맞춘 색상
+    // 3. 색상: 왼쪽은 흰색 바탕, 오른쪽은 베이지 바탕
     val bubbleBgColor = if (isLeft) Color.White else Beige50
     val bubbleBorderColor = if (isLeft) Gray200 else Beige400
 
+    // 임시 프로필 이미지 매핑 (서버에서 주는 speakerName을 기반으로 하거나, 앱 내 하드코딩)
+    val profileRes = if (isLeft) R.drawable.ic_profile_mengzi else R.drawable.ic_profile_xunzi
+    // TODO image 백엔드 한테 api로 달라고 하기
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (isActive) 1f else 0.4f), // 🌟 활성화 안 된 말풍선은 흐리게!
         horizontalArrangement = if (isLeft) Arrangement.Start else Arrangement.End,
-        verticalAlignment = Alignment.Top // 🌟 2. 프로필을 상단에 맞춥니다.
+        verticalAlignment = Alignment.Top
     ) {
-        // [오른쪽 화자일 경우] 왼쪽에 파형 애니메이션 띄우기
+        // --- [왼쪽 화자 (플라톤) 프로필] ---
+        if (isLeft) {
+            if (showAvatarAndName) {
+                ProfileImage(model = profileRes, modifier = Modifier.size(40.dp))
+            } else {
+                Spacer(modifier = Modifier.width(40.dp)) // 프로필 안 보일 때도 공간 차지
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+
+        // --- [오른쪽 화자 (사르트르) 파형 애니메이션] ---
+        // 시안을 보면 사르트르가 말할 땐 말풍선 왼쪽에 파형이 있습니다.
         if (!isLeft && isActive) {
-            Box(modifier = Modifier.align(Alignment.Bottom).padding(bottom = 12.dp, end = 8.dp)) { // 🌟 3. 파형만 바닥에 고정!
+            Box(modifier = Modifier.padding(top = 12.dp, end = 8.dp)) {
                 ChattingLoadingAnimation()
             }
         }
 
-        // [왼쪽 화자 프로필 영역]
-        if (isLeft) {
-            ProfileImage(
-                model = message.profileRes,
-                modifier = Modifier.size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-
-        // [말풍선 & 이름 영역]
+        // --- [말풍선 본체 영역] ---
         Column(
             modifier = Modifier.weight(1f, fill = false),
             horizontalAlignment = if (isLeft) Alignment.Start else Alignment.End
         ) {
-            // 이름 (연속되지 않은 첫 메시지일 때만 표시)
+            // 이름
             if (showAvatarAndName) {
                 Text(
-                    text = message.speakerName,
+                    text = script.speakerName,
                     style = SwypTheme.typography.labelMedium,
                     color = Gray900,
-                    modifier = Modifier.padding(bottom = 4.dp, start = 4.dp, end = 4.dp)
+                    modifier = Modifier.padding(bottom = 6.dp, start = 4.dp, end = 4.dp)
                 )
             }
 
@@ -89,29 +95,32 @@ fun ChatBubble(
                 modifier = Modifier
                     .background(bubbleBgColor, RoundedCornerShape(2.dp))
                     .border(1.dp, bubbleBorderColor, RoundedCornerShape(2.dp))
-                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                    .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = message.text, // 🚨 ViewModel에서 SSML 태그(<speak> 등)를 꼭 제거해서 넘겨주셔야 합니다!
+                    text = script.displayText, // SSML 태그가 지워진 순수 텍스트
                     style = SwypTheme.typography.b3Regular,
-                    color = if (isActive) Gray900 else Gray500
+                    color = Gray900,
+                    lineHeight = SwypTheme.typography.b3Regular.lineHeight
                 )
             }
         }
 
-        // [오른쪽 화자 프로필 영역]
-        if (!isLeft) {
-            Spacer(modifier = Modifier.width(8.dp))
-            ProfileImage(
-                model = message.profileRes,
-                modifier = Modifier.size(40.dp)
-            )
+        // --- [왼쪽 화자 (플라톤) 파형 애니메이션] ---
+        // 시안을 보면 플라톤이 말할 땐 말풍선 오른쪽에 파형이 있습니다.
+        if (isLeft && isActive) {
+            Box(modifier = Modifier.padding(top = 12.dp, start = 8.dp)) {
+                ChattingLoadingAnimation()
+            }
         }
 
-        // [왼쪽 화자일 경우] 오른쪽에 파형 애니메이션 띄우기
-        if (isLeft && isActive) {
-            Box(modifier = Modifier.align(Alignment.Bottom).padding(bottom = 12.dp, start = 8.dp)) { // 🌟 3. 파형만 바닥에 고정!
-                ChattingLoadingAnimation()
+        // --- [오른쪽 화자 (사르트르) 프로필] ---
+        if (!isLeft) {
+            Spacer(modifier = Modifier.width(8.dp))
+            if (showAvatarAndName) {
+                ProfileImage(model = profileRes, modifier = Modifier.size(40.dp))
+            } else {
+                Spacer(modifier = Modifier.width(40.dp)) // 프로필 안 보일 때도 공간 차지
             }
         }
     }

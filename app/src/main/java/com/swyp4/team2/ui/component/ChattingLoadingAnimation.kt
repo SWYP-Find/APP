@@ -2,6 +2,7 @@ package com.swyp4.team2.ui.component
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -25,43 +26,35 @@ import androidx.compose.ui.unit.dp
 fun ChattingLoadingAnimation(
     modifier: Modifier = Modifier
 ) {
-    // 1. 무한히 반복되는 트랜지션(주문)을 만듭니다.
     val infiniteTransition = rememberInfiniteTransition(label = "audio_bars_5")
-
-    // 🌟 2. 5개의 서로 다른 애니메이션 숫자(Scale)를 미리 정의합니다.
-    // 각 애니메이션은 'delayMillis'가 서로 다르게 설정됩니다!
-    val baseDuration = 600
-    val baseEasing = LinearEasing
-    val repeatMode = RepeatMode.Reverse
+    val baseHeights = listOf(10.dp, 16.dp, 24.dp, 16.dp, 10.dp)
+    val maxScales = listOf(1.1f, 1.3f, 1.6f, 1.3f, 1.1f)
 
     val animations = (0 until 5).map { index ->
         infiniteTransition.animateFloat(
-            initialValue = 0.5f,
-            targetValue = 1.5f,
+            initialValue = 0.6f,
+            targetValue = maxScales[index],
             animationSpec = infiniteRepeatable(
                 animation = tween(
-                    durationMillis = baseDuration,
-                    easing = baseEasing,
-                    // 💥 막대기마다 딜레이를 다르게! (0, 120ms, 240ms, 360ms, 480ms)
-                    delayMillis = index * (baseDuration / 5)
+                    durationMillis = 400,
+                    easing = LinearEasing
                 ),
-                repeatMode = repeatMode
+                repeatMode = RepeatMode.Reverse,
+                initialStartOffset = StartOffset(offsetMillis = index * 120)
             ),
             label = "scale_${index + 1}"
         )
     }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
         repeat(5) { index ->
-            val variedHeight = (20 + index * 2).dp
-
             Box(
                 modifier = Modifier
-                    .size(width = 4.dp, height = variedHeight)
-                    // 4. 각 막대기에 해당하는 미리 정의된 애니메이션 값을 세로 스케일로 적용합니다.
+                    .size(width = 4.dp, height = baseHeights[index])
                     .scale(scaleX = 1f, scaleY = animations[index].value)
                     .background(Color(0xFF8D4B38), RoundedCornerShape(2.dp))
             )
