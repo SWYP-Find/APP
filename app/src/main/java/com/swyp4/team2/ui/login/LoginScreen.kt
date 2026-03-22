@@ -63,7 +63,7 @@ fun LoginScreen(
             val account = task.getResult(ApiException::class.java)
             account.serverAuthCode?.let { authCode ->
                 Log.d("LoginFlow", "▶️ 구글 런처: 인가 코드 빼오기 성공! ViewModel로 넘깁니다.")
-                viewModel.handleSocialLoginSuccess("google", authCode) // 백엔드 스펙에 맞게 소문자로 변경 추천
+                viewModel.handleSocialLoginSuccess("google", authCode)
             } ?: Log.e("LoginFlow", "▶️ 구글 런처: 엥? serverAuthCode가 null입니다!")
         } catch (e: ApiException) {
             Log.e("LoginFlow", "▶️ 구글 런처: 구글 SDK 로그인 실패 (StatusCode: ${e.statusCode})", e)
@@ -183,7 +183,6 @@ fun LoginScreen(
 
 // 카카오 SDK 실행 헬퍼 함수
 // 카카오 '인가 코드(Auth Code)'를 받아오는 함수
-// 헬퍼 함수
 private fun loginWithKakaoForAuthCode(context: Context, onSuccess: (String) -> Unit) {
     val callback: (String?, Throwable?) -> Unit = { authCode, error ->
         if (error != null) {

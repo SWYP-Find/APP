@@ -14,10 +14,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// 🌟 화면 전체의 기분(상태)
 data class TodayBattleUiState(
     val isLoading: Boolean = true,
-    val battleList: List<TodayBattleUiModel> = emptyList(), // 우리가 그릴 배틀 리스트!
+    val battleList: List<TodayBattleUiModel> = emptyList(),
     val errorMessage: String? = null
 )
 
