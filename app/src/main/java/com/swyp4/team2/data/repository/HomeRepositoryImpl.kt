@@ -1,5 +1,7 @@
 package com.swyp4.team2.data.repository
 
+import com.swyp4.team2.data.model.toDomainModel
+import com.swyp4.team2.data.model.toTodayPickDomainModel
 import com.swyp4.team2.data.remote.HomeApi
 import com.swyp4.team2.domain.mock.DummyHomeData
 import com.swyp4.team2.domain.model.HomeBoard
@@ -13,26 +15,21 @@ class HomeRepositoryImpl @Inject constructor(
 
     override suspend fun fetchHomeData(): Result<HomeBoard> {
         return try {
-            // 1. 서버에서 DTO 받아오기
-            // val response = homeApi.getHomeData()
+            val response = homeApi.getHomeData()
+            val responseData = response.data ?: throw Exception(response.error?.message ?: "데이터를 불러올 수 없습니다.")
 
-            // 2. Mapper를 통해 DTO -> UI Model 변환 및 포장
-            /*
-            val boardData = HomeBoardData(
-                hasNewNotice = response.newNotice,
-                editorPicks = response.editorPicks.map { it.toHomeContentModel() },
-                trendingBattles = response.trendingBattles.map { it.toHomeContentModel() },
-                bestBattles = response.bestBattles.map { it.toHomeContentModel() },
-                todayPicks = response.todayPicks.mapNotNull { it.toTodayPickModel() },
-                newBattles = response.newBattles.map { it.toHomeContentModel() }
+            val boardData = HomeBoard(
+                hasNewNotice = responseData.newNotice,
+                editorPicks = responseData.editorPicks.map { it.toDomainModel() },
+                trendingBattles = responseData.trendingBattles.map { it.toDomainModel() },
+                bestBattles = responseData.bestBattles.map { it.toDomainModel() },
+                todayPicks = responseData.todayPicks.mapNotNull { it.toTodayPickDomainModel() },
+                newBattles = responseData.newBattles.map { it.toDomainModel() }
             )
-             */
 
-            // 🌟 3. 성공 시 Result.success 로 감싸서 반환 (이게 무조건 마지막 줄이어야 함!)
-            // Result.success(boardData)
-            return Result.success(DummyHomeData.getDummyBoardData)
+            Result.success(boardData)
+            // return Result.success(DummyHomeData.getDummyBoardData)
         } catch (e: Exception) {
-            // 4. 네트워크 에러 등 예외 발생 시 Result.failure 로 반환
             Result.failure(e)
         }
     }

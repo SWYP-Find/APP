@@ -21,7 +21,6 @@ class TokenManager @Inject constructor(
 
     private fun initEncryptedPrefs() {
         try {
-            Log.d("TokenManager", "1. 암호화 저장소(MasterKey) 생성 시도...")
             val masterKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
@@ -33,10 +32,7 @@ class TokenManager @Inject constructor(
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
-            Log.d("TokenManager", "2. 🟢 암호화 저장소 초기화 성공!")
-
         } catch (e: Exception) {
-            Log.e("TokenManager", "2. 🔴 암호화 저장소 초기화 실패! (키스토어 꼬임 발생)", e)
 
             // [비상 조치] 키가 꼬여서 복구 불가 상태이므로, 기존 꼬인 파일을 물리적으로 강제 삭제!
             context.getSharedPreferences("auth_prefs_v2", Context.MODE_PRIVATE).edit().clear().apply()
@@ -53,9 +49,7 @@ class TokenManager @Inject constructor(
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
-                Log.d("TokenManager", "3. 🟡 기존 파일 삭제 후 암호화 저장소 재성성 완료 (유저는 재로그인 필요)")
             } catch (e2: Exception) {
-                Log.e("TokenManager", "3. 🔴 재생성조차 실패함 (심각한 디바이스 에러)", e2)
             }
         }
     }

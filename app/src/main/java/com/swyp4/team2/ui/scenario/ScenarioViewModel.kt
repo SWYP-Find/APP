@@ -68,11 +68,11 @@ class ScenarioViewModel @Inject constructor(
             scenarioRepository.fetchBattleScenario(battleId)
                 .onSuccess { board ->
                     Log.d("ScenarioFlow", "✅ API 호출 성공! 시작 노드: ${board.startNodeId}")
-                    Log.d("ScenarioData", "==========================================")
-                    Log.d("ScenarioData", "🚀 배틀 ID: ${board.battleId}")
-                    Log.d("ScenarioData", "🔗 오디오 목록: ${board.audios}")
-                    Log.d("ScenarioData", "🛣️ 추천 경로: ${board.recommendedPathKey}")
-                    Log.d("ScenarioData", "📦 전체 노드 개수: ${board.nodes.size}개")
+                    Log.d("ScenarioFlow", "==========================================")
+                    Log.d("ScenarioFlow", "🚀 배틀 ID: ${board.battleId}")
+                    Log.d("ScenarioFlow", "🔗 오디오 목록: ${board.audios}")
+                    Log.d("ScenarioFlow", "🛣️ 추천 경로: ${board.recommendedPathKey}")
+                    Log.d("ScenarioFlow", "📦 전체 노드 개수: ${board.nodes.size}개")
 
                     fullScenario = board.toUiModel()
                     val firstNodeId = fullScenario?.startNodeId ?: return@onSuccess

@@ -15,10 +15,6 @@ class TodayBattleRepositoryImpl @Inject constructor(
             val response = battleApi.getTodayBattles()
             val responseData = response.data
 
-            Log.d("ApiDebug", "서버 응답 상태코드: ${response.statusCode}")
-            Log.d("ApiDebug", "서버 응답 데이터: ${response.data}")
-            Log.d("ApiDebug", "서버 에러 메시지: ${response.error}")
-
             if (response.statusCode == 200 && responseData != null) {
                 Result.success(responseData.toDomainModel())
             } else {

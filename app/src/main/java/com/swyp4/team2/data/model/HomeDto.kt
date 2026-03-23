@@ -23,8 +23,14 @@ data class HomeContentItemDto(
     val viewCount: Int,
     val participantsCount: Int,
     val audioDuration: Int,
-    val tags: List<String>,
+    val tags: List<TagDto>,
     val options: List<OptionDto>
+)
+
+data class TagDto(
+    val tagId: String,
+    val name: String,
+    val type: String
 )
 
 data class OptionDto(
@@ -43,7 +49,7 @@ fun HomeContentItemDto.toDomainModel(): HomeContent {
         thumbnailUrl = this.thumbnailUrl,
         viewCount = this.viewCount,
         audioDuration = this.audioDuration,
-        tags = this.tags,
+        tags = this.tags.map{ it.name },
         options = this.options?.map { ContentOption(it.label, it.text, it.imageUrl) } ?: emptyList()
     )
 }
