@@ -1,45 +1,44 @@
 package com.swyp4.team2.data.model
 
-import com.google.gson.annotations.SerializedName
 import com.swyp4.team2.domain.model.ScenarioBoard
 import com.swyp4.team2.domain.model.ScenarioNode
 import com.swyp4.team2.domain.model.ScenarioOption
 import com.swyp4.team2.domain.model.ScenarioScript
 import com.swyp4.team2.domain.model.SpeakerType
 
-data class ScenarioDto(
-    @SerializedName("battleId") val battleId: String,
-    @SerializedName("isInteractive") val isInteractive: Boolean,
-    @SerializedName("startNodeId") val startNodeId: String,
-    @SerializedName("recommendedPathKey") val recommendedPathKey: String,
-    @SerializedName("audios") val audios: Map<String, String>,
-    @SerializedName("nodes") val nodes: List<ScenarioNodeDto>
+data class ScenarioResponseDto(
+    val battleId: String,
+    val isInteractive: Boolean,
+    val startNodeId: String,
+    val recommendedPathKey: String,
+    val audios: Map<String, String>,
+    val nodes: List<ScenarioNodeDto>
 )
 
 data class ScenarioNodeDto(
-    @SerializedName("nodeId") val nodeId: String,
-    @SerializedName("nodeName") val nodeName: String,
-    @SerializedName("audioDuration") val audioDuration: Int,
-    @SerializedName("autoNextNodeId") val autoNextNodeId: String?,
-    @SerializedName("scripts") val scripts: List<ScenarioScriptDto>,
-    @SerializedName("interactiveOptions") val interactiveOptions: List<ScenarioOptionDto>
+    val nodeId: String,
+    val nodeName: String,
+    val audioDuration: Int,
+    val autoNextNodeId: String?,
+    val scripts: List<ScenarioScriptDto>,
+    val interactiveOptions: List<ScenarioOptionDto>
 )
 
 data class ScenarioScriptDto(
-    @SerializedName("scriptId") val scriptId: String,
-    @SerializedName("startTimeMs") val startTimeMs: Long,
-    @SerializedName("speakerType") val speakerType: String,
-    @SerializedName("speakerName") val speakerName: String,
-    @SerializedName("text") val text: String
+    val scriptId: String,
+    val startTimeMs: Long,
+    val speakerType: String,
+    val speakerName: String,
+    val text: String
 )
 
 data class ScenarioOptionDto(
-    @SerializedName("label") val label: String,
-    @SerializedName("nextNodeId") val nextNodeId: String
+    val label: String,
+    val nextNodeId: String
 )
 
 // Dto -> Domain
-fun ScenarioDto.toDomainModel(): ScenarioBoard {
+fun ScenarioResponseDto.toDomainModel(): ScenarioBoard {
     return ScenarioBoard(
         battleId = this.battleId,
         isInteractive = this.isInteractive,

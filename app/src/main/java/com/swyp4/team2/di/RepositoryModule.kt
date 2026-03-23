@@ -5,11 +5,13 @@ import com.swyp4.team2.data.repository.ExploreRepositoryImpl
 import com.swyp4.team2.data.repository.HomeRepositoryImpl
 import com.swyp4.team2.data.repository.ScenarioRepositoryImpl
 import com.swyp4.team2.data.repository.TodayBattleRepositoryImpl
+import com.swyp4.team2.data.repository.VoteRepositoryImpl
 import com.swyp4.team2.domain.repository.AuthRepository
 import com.swyp4.team2.domain.repository.ExploreRepository
 import com.swyp4.team2.domain.repository.HomeRepository
 import com.swyp4.team2.domain.repository.ScenarioRepository
 import com.swyp4.team2.domain.repository.TodayBattleRepository
+import com.swyp4.team2.domain.repository.VoteRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -48,4 +50,10 @@ abstract class RepositoryModule {
     abstract fun bindScenarioRepository(
         scenarioRepositoryImpl: ScenarioRepositoryImpl
     ): ScenarioRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindVoteRepository(
+        voteRepositoryImpl: VoteRepositoryImpl
+    ): VoteRepository
 }

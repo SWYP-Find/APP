@@ -3,35 +3,11 @@ package com.swyp4.team2.ui.vote
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,42 +23,26 @@ import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.ProfileImage
-import com.swyp4.team2.ui.home.model.BattleProfile
-import com.swyp4.team2.ui.theme.Beige100
-import com.swyp4.team2.ui.theme.Beige300
-import com.swyp4.team2.ui.theme.Beige400
-import com.swyp4.team2.ui.theme.Beige50
-import com.swyp4.team2.ui.theme.Beige500
-import com.swyp4.team2.ui.theme.Beige600
-import com.swyp4.team2.ui.theme.Beige900
-import com.swyp4.team2.ui.theme.Gray400
-import com.swyp4.team2.ui.theme.Gray500
-import com.swyp4.team2.ui.theme.Gray700
-import com.swyp4.team2.ui.theme.Gray900
-import com.swyp4.team2.ui.theme.Primary300
-import com.swyp4.team2.ui.theme.Primary500
-import com.swyp4.team2.ui.theme.Secondary200
-import com.swyp4.team2.ui.theme.Secondary500
-import com.swyp4.team2.ui.theme.SwypTheme
-import com.swyp4.team2.ui.vote.model.VoteTopicItem
+import com.swyp4.team2.ui.theme.*
+import com.swyp4.team2.ui.vote.model.VoteUiModel
+import com.swyp4.team2.ui.vote.model.VoteOptionUiModel
 import com.swyp4.team2.ui.vote.model.VoteType
+
 @Composable
 fun VoteScreen(
     voteType: VoteType,
-    item: VoteTopicItem,
+    uiModel: VoteUiModel,
     onBackClick: () -> Unit,
-    onVoteSubmit: () -> Unit
+    onVoteSubmit: (String) -> Unit
 ) {
     val isPreVote = voteType == VoteType.PRE
 
-    // 테마 설정
     val bgColor = if (isPreVote) SwypTheme.colors.surface else Color.Black
     val titleColor = if (isPreVote) Gray900 else SwypTheme.colors.surface
     val descColor = if (isPreVote) Gray700 else Gray400
 
-    // 상태 관리 (버튼 활성화)
-    var selectedSide by remember { mutableStateOf<Int?>(null) }
-    val isButtonEnabled = selectedSide != null
+    var selectedOptionId by remember { mutableStateOf<String?>(null) }
+    val isButtonEnabled = selectedOptionId != null
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -111,8 +71,8 @@ fun VoteScreen(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
                 CustomButton(
-                    text = stringResource(R.string.prevote),
-                    onClick = { if (isButtonEnabled) onVoteSubmit() },
+                    text = if (isPreVote) stringResource(R.string.prevote) else "사후 투표하기", // 임시 텍스트
+                    onClick = { selectedOptionId?.let { onVoteSubmit(it) } },
                     modifier = Modifier.padding(20.dp),
                     backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
                     textColor = Beige50
@@ -125,14 +85,13 @@ fun VoteScreen(
                 .fillMaxSize()
                 .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
-            // [상단] 배경 이미지 + 오버레이
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
             ) {
                 AsyncImage(
-                    model = item.bgImageRes,
+                    model = uiModel.bgImageUrl,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -155,7 +114,6 @@ fun VoteScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                // 태그, 제목, 설명
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -165,7 +123,7 @@ fun VoteScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        item.tags.forEach { tag ->
+                        uiModel.tags.forEach { tag ->
                             Surface(
                                 color = Color.White.copy(alpha = 0.8f),
                                 shape = RoundedCornerShape(2.dp)
@@ -182,13 +140,13 @@ fun VoteScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = item.title.replace(", ", ",\n"),
+                        text = uiModel.title.replace(", ", ",\n"),
                         style = SwypTheme.typography.h1SemiBold,
                         color = titleColor
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = if (isPreVote) item.preDescription else item.postDescription,
+                        text = if (isPreVote) uiModel.preDescription else uiModel.postDescription,
                         style = SwypTheme.typography.b3Regular,
                         color = descColor
                     )
@@ -197,7 +155,6 @@ fun VoteScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // [하단] VS 카드 영역
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -210,30 +167,25 @@ fun VoteScreen(
                 ) {
                     VoteOptionCard(
                         modifier = Modifier.weight(1f),
-                        profile = item.leftProfile,
-                        isSelected = selectedSide == 0,
-                        onClick = { selectedSide = 0 }
+                        option = uiModel.optionA, // 🌟 A 옵션 모델 통째로 넘기기
+                        isSelected = selectedOptionId == uiModel.optionA.optionId,
+                        onClick = { selectedOptionId = uiModel.optionA.optionId }
                     )
                     VoteOptionCard(
                         modifier = Modifier.weight(1f),
-                        profile = item.rightProfile,
-                        isSelected = selectedSide == 1,
-                        onClick = { selectedSide = 1 }
+                        option = uiModel.optionB, // 🌟 B 옵션 모델 통째로 넘기기
+                        isSelected = selectedOptionId == uiModel.optionB.optionId,
+                        onClick = { selectedOptionId = uiModel.optionB.optionId }
                     )
                 }
 
-                // 정중앙 VS 원형 뱃지
                 Surface(
                     modifier = Modifier.size(36.dp),
                     shape = CircleShape,
-                    color = Color(0xFFF2E3C6) // 베이지색 뱃지
+                    color = Color(0xFFF2E3C6)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Text(
-                            "VS",
-                            style = SwypTheme.typography.labelMedium,
-                            color = Gray900
-                        )
+                        Text("VS", style = SwypTheme.typography.labelMedium, color = Gray900)
                     }
                 }
             }
@@ -245,7 +197,7 @@ fun VoteScreen(
 @Composable
 fun VoteOptionCard(
     modifier: Modifier = Modifier,
-    profile: BattleProfile,
+    option: VoteOptionUiModel,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -260,14 +212,13 @@ fun VoteOptionCard(
             .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 프로필 아이콘 배경
         ProfileImage(
-            model = R.drawable.ic_profile_mengzi, // profile.profileImg,
+            model = option.philosopherType.,
             modifier = Modifier.size(48.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = profile.opinion, style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Text(text = option.opinion, style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = profile.name, style = SwypTheme.typography.labelXSmall, color = Gray500)
+        Text(text = option.philosopherName, style = SwypTheme.typography.labelXSmall, color = Gray500)
     }
 }
