@@ -5,6 +5,7 @@ import com.swyp4.team2.data.remote.ExploreApi
 import com.swyp4.team2.data.remote.HomeApi
 import com.swyp4.team2.data.remote.ScenarioApi
 import com.swyp4.team2.data.remote.TodayBattleApi
+import com.swyp4.team2.data.remote.VoteApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,5 +44,11 @@ object ApiModule {
     @Singleton
     fun provideScenarioApi(retrofit: Retrofit): ScenarioApi {
         return retrofit.create(ScenarioApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideVoteApi(retrofit: Retrofit): VoteApi {
+        return retrofit.create(VoteApi::class.java)
     }
 }
