@@ -58,6 +58,10 @@ fun ScenarioScreen(
         viewModel.loadScenario("22222222-2222-2222-2222-000000000001")
     }
 
+    val visibleScripts = if (uiState.activeIndex >= 0) {
+        uiState.scripts.subList(0, uiState.activeIndex + 1)
+    } else emptyList()
+
     // 활성화된 말풍선 인덱스가 바뀔 때마다 스크롤 부드럽게 이동
     LaunchedEffect(uiState.activeIndex) {
         if (uiState.activeIndex >= 0 && uiState.activeIndex < uiState.scripts.size) {
@@ -84,7 +88,7 @@ fun ScenarioScreen(
             }
         },
         bottomBar = {
-            // 하단 플레이어 바 (제시카님 기존 코드 유지)
+            // 하단 플레이어 바
             AudioPlayerBar(
                 isPlaying = uiState.isPlaying,
                 currentPositionMs = uiState.currentPositionMs,
@@ -103,26 +107,24 @@ fun ScenarioScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 20.dp),
             contentPadding = PaddingValues(top = 24.dp, bottom = 40.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp) // 말풍선 사이 간격
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            itemsIndexed(uiState.scripts) { index, script ->
-                val isFirstInGroup = index == 0 || uiState.scripts[index - 1].speakerType != script.speakerType
+            itemsIndexed(visibleScripts) { index, script ->
+                val isFirstInGroup = index == 0 || visibleScripts[index - 1].speakerType != script.speakerType
 
-                // 화자가 바뀔 때 좀 더 넓은 간격 띄우기
                 if (isFirstInGroup && index > 0) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                // 🌟 ChatBubble 호출
                 ChatBubble(
                     script = script,
-                    isActive = index == uiState.activeIndex,
+                    isActive = index == visibleScripts.lastIndex && uiState.isPlaying,
                     showAvatarAndName = isFirstInGroup
                 )
             }
 
-            // 🌟 참여형 옵션 (A/B 선택지)
-            if (uiState.interactiveOptions.isNotEmpty()) {
+            // 참여형 옵션 (A/B 선택지)
+            if (uiState.interactiveOptions.isNotEmpty() && uiState.showOptions) {
                 item {
                     Column(
                         modifier = Modifier
@@ -131,14 +133,14 @@ fun ScenarioScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray500)
                             Text(
                                 text = "이제 당신의 입장을 선택해주세요",
                                 style = SwypTheme.typography.labelMedium,
                                 color = Gray900,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray500)
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -162,7 +164,7 @@ fun OptionSelectionButton(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(2.dp))
             .border(1.dp, Secondary500, RoundedCornerShape(4.dp))
             .background(Beige400)
             .clickable { onClick() }

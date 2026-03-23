@@ -26,7 +26,7 @@ fun ChatBubble(
     // 1. 나레이터는 화면 중앙에 텍스트만 표시
     if (script.speakerType == SpeakerType.NARRATOR) {
         Box(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp).alpha(if (isActive) 1f else 0.5f),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).alpha(if (isActive) 1f else 0.5f),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -39,36 +39,33 @@ fun ChatBubble(
         return
     }
 
-    // 2. A는 왼쪽(플라톤), B는 오른쪽(사르트르)
+    // 2. A는 왼쪽, B는 오른쪽
     val isLeft = script.speakerType == SpeakerType.A
 
     // 3. 색상: 왼쪽은 흰색 바탕, 오른쪽은 베이지 바탕
-    val bubbleBgColor = if (isLeft) Color.White else Beige50
-    val bubbleBorderColor = if (isLeft) Gray200 else Beige400
+    val bubbleBgColor = if (isLeft) Color.White else Beige500
+    val bubbleBorderColor = if (isLeft) Beige50 else Beige700
 
-    // 임시 프로필 이미지 매핑 (서버에서 주는 speakerName을 기반으로 하거나, 앱 내 하드코딩)
+    // 임시 프로필 이미지 매핑
     val profileRes = if (isLeft) R.drawable.ic_profile_mengzi else R.drawable.ic_profile_xunzi
     // TODO image 백엔드 한테 api로 달라고 하기
 
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .alpha(if (isActive) 1f else 0.4f), // 🌟 활성화 안 된 말풍선은 흐리게!
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isLeft) Arrangement.Start else Arrangement.End,
         verticalAlignment = Alignment.Top
     ) {
-        // --- [왼쪽 화자 (플라톤) 프로필] ---
+        // --- [왼쪽 화자 프로필] ---
         if (isLeft) {
             if (showAvatarAndName) {
                 ProfileImage(model = profileRes, modifier = Modifier.size(40.dp))
             } else {
-                Spacer(modifier = Modifier.width(40.dp)) // 프로필 안 보일 때도 공간 차지
+                Spacer(modifier = Modifier.width(40.dp))
             }
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        // --- [오른쪽 화자 (사르트르) 파형 애니메이션] ---
-        // 시안을 보면 사르트르가 말할 땐 말풍선 왼쪽에 파형이 있습니다.
+        // --- [오른쪽 화자 파형 애니메이션] ---
         if (!isLeft && isActive) {
             Box(modifier = Modifier.padding(top = 12.dp, end = 8.dp)) {
                 ChattingLoadingAnimation()
@@ -84,8 +81,8 @@ fun ChatBubble(
             if (showAvatarAndName) {
                 Text(
                     text = script.speakerName,
-                    style = SwypTheme.typography.labelMedium,
-                    color = Gray900,
+                    style = SwypTheme.typography.b3SemiBold,
+                    color = Gray700,
                     modifier = Modifier.padding(bottom = 6.dp, start = 4.dp, end = 4.dp)
                 )
             }
@@ -98,7 +95,7 @@ fun ChatBubble(
                     .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = script.displayText, // SSML 태그가 지워진 순수 텍스트
+                    text = script.displayText,
                     style = SwypTheme.typography.b3Regular,
                     color = Gray900,
                     lineHeight = SwypTheme.typography.b3Regular.lineHeight
@@ -107,7 +104,6 @@ fun ChatBubble(
         }
 
         // --- [왼쪽 화자 (플라톤) 파형 애니메이션] ---
-        // 시안을 보면 플라톤이 말할 땐 말풍선 오른쪽에 파형이 있습니다.
         if (isLeft && isActive) {
             Box(modifier = Modifier.padding(top = 12.dp, start = 8.dp)) {
                 ChattingLoadingAnimation()
