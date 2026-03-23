@@ -33,7 +33,7 @@ data class ScenarioOptionUiModel(
     val nextNodeId: String
 )
 
-// Domain -> UI
+// Domain -> UI Mapper
 fun ScenarioBoard.toUiModel(): ScenarioUiModel {
     val nodeMap = this.nodes.associateBy(
         keySelector = { it.nodeId },
@@ -41,16 +41,18 @@ fun ScenarioBoard.toUiModel(): ScenarioUiModel {
             ScenarioNodeUiModel(
                 nodeId = node.nodeId,
                 nodeName = node.nodeName,
-                autoNextNodeId = node.autoNextNodeId,
                 audioDuration = node.audioDuration,
-                interactiveOptions = node.interactiveOptions.map { ScenarioOptionUiModel(it.label, it.nextNodeId) },
+                autoNextNodeId = node.autoNextNodeId,
+                interactiveOptions = node.interactiveOptions.map {
+                    ScenarioOptionUiModel(it.label, it.nextNodeId)
+                },
                 scripts = node.scripts.map { script ->
                     ScenarioScriptUiModel(
                         scriptId = script.scriptId,
                         startTimeMs = script.startTimeMs,
                         speakerType = script.speakerType,
                         speakerName = script.speakerName,
-                        displayText = script.text.replace(Regex("<[^>]*>"), "")
+                        displayText = script.text.replace(Regex("<[^>]*>"), "") // 🧹 SSML 태그 제거!
                     )
                 }
             )
