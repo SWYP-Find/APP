@@ -3,6 +3,7 @@ package com.swyp4.team2.di
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.remote.ExploreApi
 import com.swyp4.team2.data.remote.HomeApi
+import com.swyp4.team2.data.remote.PerspectiveApi
 import com.swyp4.team2.data.remote.ScenarioApi
 import com.swyp4.team2.data.remote.TodayBattleApi
 import com.swyp4.team2.data.remote.VoteApi
@@ -50,5 +51,11 @@ object ApiModule {
     @Singleton
     fun provideVoteApi(retrofit: Retrofit): VoteApi {
         return retrofit.create(VoteApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providePerspectiveApi(retrofit: Retrofit): PerspectiveApi {
+        return retrofit.create(PerspectiveApi::class.java)
     }
 }

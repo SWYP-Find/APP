@@ -213,7 +213,7 @@ fun VoteOptionCard(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileImage(
-            model = option.philosopherType.,
+            model = option.philosopherType,
             modifier = Modifier.size(48.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))

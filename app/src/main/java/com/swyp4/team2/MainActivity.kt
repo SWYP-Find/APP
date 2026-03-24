@@ -147,7 +147,7 @@ fun AppNavigation() {
         composable(AppRoute.PreVote.route) {
             VoteScreen(
                 voteType = VoteType.PRE,
-                item = dummyVoteItem,
+                uiModel = dummyVoteItem,
                 onBackClick = {
                     rootNavController.popBackStack()
                 },
@@ -171,12 +171,12 @@ fun AppNavigation() {
         composable(AppRoute.PostVote.route) {
             VoteScreen(
                 voteType = VoteType.POST,
-                item = dummyVoteItem,
+                uiModel = dummyVoteItem,
                 onBackClick = {
                     rootNavController.popBackStack()
                 },
                 onVoteSubmit = {
-
+                    rootNavController.popBackStack()
                 }
             )
         }
