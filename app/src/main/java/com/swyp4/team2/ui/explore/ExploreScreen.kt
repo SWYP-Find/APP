@@ -58,6 +58,7 @@ import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.ui.component.CustomTabBar
+import com.swyp4.team2.ui.component.SortFilterChip
 import com.swyp4.team2.ui.explore.model.ExploreItem
 import com.swyp4.team2.ui.explore.model.dummyExploreList
 import com.swyp4.team2.ui.theme.Beige100
@@ -178,12 +179,12 @@ fun ExploreList(
                     .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                SortButton(
+                SortFilterChip(
                     text = stringResource(R.string.explore_hot_rank),
                     isSelected = selectedSort == "인기순",
                     onClick = { selectedSort = "인기순" }
                 )
-                SortButton(
+                SortFilterChip(
                     text =  stringResource(R.string.explore_recent_rank),
                     isSelected = selectedSort == "최신순",
                     onClick = { selectedSort = "최신순" }
@@ -201,33 +202,6 @@ fun ExploreList(
     }
 }
 
-@Composable
-fun SortButton(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    // 선택 여부에 따라 색상 반전 처리
-    val backgroundColor = if (isSelected) SwypTheme.colors.primary else Primary50
-    val contentColor = if (isSelected) Primary50 else SwypTheme.colors.primary
-    val borderColor = SwypTheme.colors.primary
-
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .background(backgroundColor)
-            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            style = SwypTheme.typography.b4Medium, // 폰트 사이즈가 작아 보여서 b4Medium으로 설정했습니다. 필요시 조정하세요!
-            color = contentColor
-        )
-    }
-}
 
 @Composable
 fun ExploreCard(

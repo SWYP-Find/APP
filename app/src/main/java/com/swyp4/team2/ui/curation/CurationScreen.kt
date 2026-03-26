@@ -58,7 +58,7 @@ fun CurationScreen(
     onItemClick: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val curationList = uiState.curationList
+    val curationList = uiState.curationList.take(3)
 
     Scaffold(
         containerColor = SwypTheme.colors.surface,
@@ -85,12 +85,20 @@ fun CurationScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp),
+                .padding(innerPadding),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(curationList) { item ->
+
+                NewBattleCard(
+                    item = item,
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        // TODO: 해당 배틀 아이디를 넘겨서 상세 페이지로 이동
+                        // onItemClick(item.id)
+                    }
+                )
 
             }
         }

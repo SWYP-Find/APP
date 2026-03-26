@@ -3,6 +3,8 @@ package com.swyp4.team2.ui.curation
 import androidx.lifecycle.ViewModel
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.home.model.BattleProfile
+import com.swyp4.team2.ui.home.model.ContentUiType
+import com.swyp4.team2.ui.home.model.HomeContentUiModel
 import com.swyp4.team2.ui.home.model.NewBattleItem
 import com.swyp4.team2.ui.home.model.dummyNewBattleList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +15,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 data class CurationUiState(
-    val curationList: List<NewBattleItem> = emptyList(),
+    val curationList: List<HomeContentUiModel> = emptyList(),
     val isLoading: Boolean = false
 )
 
@@ -29,13 +31,29 @@ class CurationViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadCurationData() {
-        // TODO: 나중에 서버 API(GET)를 호출해서 데이터를 받아오는 로직으로 교체합니다.
         val dummyData = dummyNewBattleList
 
-        // 상태 업데이트
+        val uiModels = dummyData.map { item ->
+            HomeContentUiModel(
+                contentId = item.hashCode().toString(),
+                type = ContentUiType.BATTLE,
+                thumbnailUrl = "",
+                title = item.title,
+                summary = item.description,
+                viewCountText = "726",
+                timeInfoText = "5분",
+                tags = listOf(item.category),
+                leftOpinion = "악하다",
+                leftProfileName = "순자",
+                rightOpinion = "순하다",
+                rightProfileName = "맹자"
+            )
+        }
+
+        // 🌟 2. 버그 수정: dummyData 대신 방금 변환을 마친 uiModels를 넣습니다!
         _uiState.update { currentState ->
             currentState.copy(
-                curationList = dummyData,
+                curationList = uiModels,
                 isLoading = false
             )
         }

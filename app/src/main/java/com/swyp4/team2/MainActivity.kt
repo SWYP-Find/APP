@@ -25,6 +25,7 @@ import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
+import com.swyp4.team2.ui.perspective.PerspectiveScreen
 import com.swyp4.team2.ui.splash.SplashScreen
 import com.swyp4.team2.ui.vote.VoteScreen
 import com.swyp4.team2.ui.vote.model.VoteType
@@ -162,8 +163,12 @@ fun AppNavigation() {
             ScenarioScreen(
                 battleId = "",
                 onBackClick = {
-                    rootNavController.popBackStack()
+                    //rootNavController.popBackStack()
+                    rootNavController.navigate(AppRoute.PostVote.route)
                 },
+                onNextClick = {
+                    rootNavController.navigate(AppRoute.PostVote.route)
+                }
             )
         }
 
@@ -176,25 +181,22 @@ fun AppNavigation() {
                     rootNavController.popBackStack()
                 },
                 onVoteSubmit = {
-                    rootNavController.popBackStack()
+                    rootNavController.navigate(AppRoute.Perspective.route)
                 }
             )
         }
 
-        composable(AppRoute.Curation.route){
-            CurationScreen(
-                onCloseClick = {
-                    // TODO
-                },
+        composable(AppRoute.Perspective.route){
+            PerspectiveScreen(
                 onBackClick = {
                     rootNavController.popBackStack()
                 },
-                onItemClick = {
-                    // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
-                    rootNavController.navigate(AppRoute.PreVote.route)
-                    // 나중에 API 연결 시 라우트 예시:
-                    // rootNavController.navigate("pre_vote_route/$id")
-                }
+                onNextClick = {
+                    rootNavController.getBackStackEntry(AppRoute.Main.route)
+                        .savedStateHandle["next_route"] = AppRoute.Curation.route
+
+                    rootNavController.popBackStack(AppRoute.Main.route, inclusive = false)
+                },
             )
         }
     }

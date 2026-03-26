@@ -1,5 +1,6 @@
 package com.swyp4.team2.ui.component
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -11,6 +12,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -22,6 +24,7 @@ import com.swyp4.team2.ui.main.BottomNavItem
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.SwypTheme
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun CustomBottomNavigationBar(navController: NavHostController) {
     val items = listOf(
@@ -31,15 +34,22 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
         BottomNavItem.My
     )
 
+    val bottomTabRoutes = items.map { it.route }
+
     NavigationBar(
         containerColor = SwypTheme.colors.surface,
     ) {
-        // 현재 화면의 상태를 추적하는 관찰자
         val navBackStackEntry by navController.currentBackStackEntryAsState()
-        // 관찰한 정보에서 현재 화면의 주소
-        val currentRoute = navBackStackEntry?.destination?.route
 
-        items.forEach{item ->
+        val activeTabRoute = remember(navBackStackEntry) {
+            navController.currentBackStack.value.lastOrNull { entry ->
+                entry.destination.route in bottomTabRoutes
+            }?.destination?.route
+        }
+
+        items.forEach { item ->
+            val isSelected = activeTabRoute == item.route
+
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -54,14 +64,23 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
                         style = SwypTheme.typography.label
                     )
                 },
-                selected = currentRoute == item.route,
+
+                selected = isSelected,
+
                 onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(navController.graph.findStartDestination().id) { //탭을 이동할때마다 스택이 무한히 쌓이지 않도록 시작점을 기준으로 이전 기록을 지움
-                            saveState = true // 지워지는 화면의 현재 상태(스크롤 위치 등)을 임시 저장함
+                    if (isSelected) {
+                        // 현재 탭의 상세 화면에 있다면, 해당 탭의 Root 화면(item.route)으로 다 지우고 돌아갑니다!
+                        // inclusive = false: Root 화면 자체는 지우지 말고 남겨둬라!
+                        navController.popBackStack(route = item.route, inclusive = false)
+                    } else {
+                        // 다른 탭을 누른 경우: 기존처럼 탭 이동 및 상태 복원 로직 실행
+                        navController.navigate(item.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true // 사용자가 같은 탭을 여러번 눌러도 화면이 영러 겹으로 중복 생성되는 것을 방지함
-                        restoreState = true // 예전에 방문했던 탭으로 돌아왔을때 임시 저장해둔 상태(스크롤 위치 등)를 그대로 복원함
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(

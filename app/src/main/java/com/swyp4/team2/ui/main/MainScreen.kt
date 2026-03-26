@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +16,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.ui.component.CustomBottomNavigationBar
+import com.swyp4.team2.ui.curation.CurationScreen
 import com.swyp4.team2.ui.explore.ExploreScreen
 import com.swyp4.team2.ui.home.HomeScreen
 import com.swyp4.team2.ui.my.MyScreen
@@ -37,6 +39,19 @@ fun MainScreen(
     val currentRoute = navBackStackEntry?.destination?.route
 
     val showBottomBar = currentRoute != BottomNavItem.TodayBattle.route
+
+    val rootBackStackEntry by rootNavController.currentBackStackEntryAsState()
+    val nextRoute = rootBackStackEntry?.savedStateHandle?.get<String>("next_route")
+
+    LaunchedEffect(nextRoute) {
+        if (nextRoute != null) {
+            // 메모에 적힌 목적지(Curation)로 이동!
+            mainNavController.navigate(nextRoute)
+
+            // 🚨 이동했으면 메모를 찢어버려야 합니다! (안 지우면 다른 탭 갔다가 돌아올 때 또 무한 이동됨)
+            rootBackStackEntry?.savedStateHandle?.remove<String>("next_route")
+        }
+    }
 
     Scaffold(
         containerColor = if (showBottomBar) SwypTheme.colors.surface else Gray900,
@@ -164,6 +179,23 @@ fun MainScreen(
                     },
                     onOpenWebLink = {
                         // 웹 링크 열기
+                    }
+                )
+            }
+
+            composable(AppRoute.Curation.route){
+                CurationScreen(
+                    onCloseClick = {
+                        mainNavController.popBackStack()
+                    },
+                    onBackClick = {
+                        mainNavController.popBackStack()
+                    },
+                    onItemClick = {
+                        // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
+                        rootNavController.navigate(AppRoute.PreVote.route)
+                        // 나중에 API 연결 시 라우트 예시:
+                        // rootNavController.navigate("pre_vote_route/$id")
                     }
                 )
             }
