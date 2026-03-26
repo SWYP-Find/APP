@@ -1,6 +1,5 @@
 package com.swyp4.team2.domain.repository
 
-import com.swyp4.team2.data.model.BaseResponse
 import com.swyp4.team2.domain.model.PerspectivePage
 
 interface PerspectiveRepository {

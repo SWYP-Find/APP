@@ -127,12 +127,12 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_kakao),
                 onClick = {
-                    // onNavigateToMain()
-                    Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
+                    onNavigateToMain()
+                    /* Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
                     loginWithKakaoForAuthCode(context) { token ->
                         Log.d("LoginFlow", "▶️ 카카오 헬퍼: 인가 코드 받기 성공! ViewModel로 넘깁니다.")
                         viewModel.handleSocialLoginSuccess("kakao", token)
-                    }
+                    }*/
                 },
                 backgroundColor = Color(0xFFFEE500),
                 textColor = Gray900,
@@ -145,14 +145,15 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_google),
                 onClick = {
-                    // onNavigateToMain()
-                    Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
+                    onNavigateToMain()
+                    /*Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID) // 백엔드용 클라이언트 ID
                         .requestEmail()
                         .build()
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
                     googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                     */
                 },
                 backgroundColor = Color.White,
                 textColor = Gray900,
@@ -161,20 +162,6 @@ fun LoginScreen(
         }
     }
 }
-
-
-
-/*private fun getGoogleSignInIntent(context: Context): Intent {
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        // 백엔드 개발자에게 받은 구글 웹 클라이언트 ID를 여기에 넣어야 합니다!
-        .requestIdToken("여기에_구글_웹_클라이언트_ID_입력.apps.googleusercontent.com")
-        .requestEmail()
-        .build()
-
-    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-    return googleSignInClient.signInIntent
-}*/
-
 
 // 카카오 SDK 실행 헬퍼 함수
 // 카카오 '인가 코드(Auth Code)'를 받아오는 함수

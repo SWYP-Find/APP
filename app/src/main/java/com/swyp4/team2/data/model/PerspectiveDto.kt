@@ -2,6 +2,7 @@ package com.swyp4.team2.data.model
 
 import com.swyp4.team2.domain.model.PerspectiveBoard
 import com.swyp4.team2.domain.model.PerspectivePage
+import com.swyp4.team2.domain.model.PerspectiveStance
 
 data class PerspectivePageDto(
     val items: List<PerspectiveDto>,
@@ -26,7 +27,7 @@ data class PerspectiveUserDto(
 // Dto->Domain
 fun PerspectivePageDto.toDomainModel(): PerspectivePage {
     return PerspectivePage(
-        items = this.items.map { it.toDomainModel() }, // 알맹이 리스트 변환
+        items = this.items.map { it.toDomainModel() },
         nextCursor = this.nextCursor,
         hasNext = this.hasNext
     )
@@ -37,8 +38,13 @@ fun PerspectiveDto.toDomainModel(): PerspectiveBoard {
         commentId = this.commentId,
         userTag = this.user.userTag,
         nickname = this.user.nickname,
+        characterType = this.user.characterType,
         content = this.content,
         isMine = this.isMine,
-        createdAt = this.createdAt
+        createdAt = this.createdAt,
+        stance = PerspectiveStance.AGREE,
+        replyCount = 0,
+        likeCount = 0,
+        isLiked = false
     )
 }

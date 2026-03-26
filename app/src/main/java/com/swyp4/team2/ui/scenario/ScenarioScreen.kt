@@ -50,6 +50,7 @@ fun ScenarioScreen(
     battleId: String,
     viewModel: ScenarioViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
+    onNextClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
