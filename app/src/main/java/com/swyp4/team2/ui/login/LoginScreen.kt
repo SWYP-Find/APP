@@ -41,6 +41,7 @@ import com.swyp4.team2.ui.theme.Primary300
 import com.swyp4.team2.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.swyp4.team2.BuildConfig
+import com.swyp4.team2.ui.theme.Primary900
 
 @Composable
 fun LoginScreen(
@@ -110,9 +111,8 @@ fun LoginScreen(
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // TODO 로딩 디자인?
             if (uiState is LoginUiState.Loading) {
-                CircularProgressIndicator(color = Color.White)
+                CircularProgressIndicator(color = Primary900)
                 Spacer(modifier = Modifier.height(16.dp))
             }
             if (uiState is LoginUiState.Error) {
@@ -127,12 +127,12 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_kakao),
                 onClick = {
-                    onNavigateToMain()
-                    /* Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
+                    // onNavigateToMain()
+                     Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
                     loginWithKakaoForAuthCode(context) { token ->
                         Log.d("LoginFlow", "▶️ 카카오 헬퍼: 인가 코드 받기 성공! ViewModel로 넘깁니다.")
                         viewModel.handleSocialLoginSuccess("kakao", token)
-                    }*/
+                    }
                 },
                 backgroundColor = Color(0xFFFEE500),
                 textColor = Gray900,
@@ -145,15 +145,14 @@ fun LoginScreen(
             CustomButton(
                 text = stringResource(R.string.login_with_google),
                 onClick = {
-                    onNavigateToMain()
-                    /*Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
+                    // onNavigateToMain()
+                    Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID) // 백엔드용 클라이언트 ID
                         .requestEmail()
                         .build()
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
                     googleSignInLauncher.launch(googleSignInClient.signInIntent)
-                     */
                 },
                 backgroundColor = Color.White,
                 textColor = Gray900,

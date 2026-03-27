@@ -43,7 +43,6 @@ class SplashViewModel @Inject constructor(
             Log.d("SplashFlow", "1. 저장된 리프레시 토큰: $localRefreshToken")
 
             if (localRefreshToken.isNullOrBlank()) {
-                // 토큰이 없으면 온보딩 화면으로
                 Log.d("SplashFlow", "2. 토큰 없음 -> 신규 유저 판단 (온보딩 이동)")
                 _uiState.value = SplashUiState.NavigateToOnboarding
             } else {

@@ -19,6 +19,8 @@ sealed class AppRoute(val route: String){
     object PreVote : AppRoute("pre_vote_screen")
     object PostVote : AppRoute("post_vote_screen")
     object Perspective : AppRoute("perspective_screen")
+    object PerspectiveDetail : AppRoute("perspective_detail_screen")
+
     object Curation : AppRoute("curation_screen")
 
 }

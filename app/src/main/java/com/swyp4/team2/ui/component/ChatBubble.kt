@@ -23,7 +23,7 @@ fun ChatBubble(
     isActive: Boolean,
     showAvatarAndName: Boolean
 ) {
-    // 1. 나레이터는 화면 중앙에 텍스트만 표시
+    // NARRATOR
     if (script.speakerType == SpeakerType.NARRATOR) {
         Box(
             modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).alpha(if (isActive) 1f else 0.5f),
@@ -39,85 +39,79 @@ fun ChatBubble(
         return
     }
 
-    // 2. A는 왼쪽, B는 오른쪽
     val isLeft = script.speakerType == SpeakerType.A
 
-    // 3. 색상: 왼쪽은 흰색 바탕, 오른쪽은 베이지 바탕
     val bubbleBgColor = if (isLeft) Color.White else Beige500
-    val bubbleBorderColor = if (isLeft) Beige50 else Beige700
+    val bubbleBorderColor = if (isLeft) Beige500 else Beige700
 
-    // 임시 프로필 이미지 매핑
-    val profileRes = if (isLeft) R.drawable.ic_profile_mengzi else R.drawable.ic_profile_xunzi
-    // TODO image 백엔드 한테 api로 달라고 하기
+    val imageModel = script.profileImageUrl ?: R.drawable.ic_profile_mengzi
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (isLeft) Arrangement.Start else Arrangement.End,
         verticalAlignment = Alignment.Top
     ) {
-        // --- [왼쪽 화자 프로필] ---
+        // 왼쪽 화자 프로필
         if (isLeft) {
             if (showAvatarAndName) {
-                ProfileImage(model = profileRes, modifier = Modifier.size(40.dp))
+                ProfileImage(model = imageModel, modifier = Modifier.size(32.dp))
             } else {
-                Spacer(modifier = Modifier.width(40.dp))
+                Spacer(modifier = Modifier.width(32.dp))
             }
             Spacer(modifier = Modifier.width(8.dp))
         }
 
-        // --- [오른쪽 화자 파형 애니메이션] ---
+        // 오른쪽 화자 파형 애니메이션
         if (!isLeft && isActive) {
-            Box(modifier = Modifier.padding(top = 12.dp, end = 8.dp)) {
+            Box(modifier = Modifier.padding(8.dp)) {
                 ChattingLoadingAnimation()
             }
         }
 
-        // --- [말풍선 본체 영역] ---
+        // 이름 & 채팅
         Column(
             modifier = Modifier.weight(1f, fill = false),
             horizontalAlignment = if (isLeft) Alignment.Start else Alignment.End
         ) {
-            // 이름
             if (showAvatarAndName) {
                 Text(
                     text = script.speakerName,
                     style = SwypTheme.typography.b3SemiBold,
-                    color = Gray700,
-                    modifier = Modifier.padding(bottom = 6.dp, start = 4.dp, end = 4.dp)
+                    color = Gray400,
+                    modifier = Modifier.padding(2.dp)
                 )
             }
-
-            // 말풍선 박스
+            Spacer(modifier = Modifier.height(2.dp))
             Box(
                 modifier = Modifier
                     .background(bubbleBgColor, RoundedCornerShape(2.dp))
                     .border(1.dp, bubbleBorderColor, RoundedCornerShape(2.dp))
-                    .padding(horizontal = 14.dp, vertical = 12.dp)
+                    .padding(8.dp)
             ) {
                 Text(
                     text = script.displayText,
-                    style = SwypTheme.typography.b3Regular,
-                    color = Gray900,
-                    lineHeight = SwypTheme.typography.b3Regular.lineHeight
+                    style = SwypTheme.typography.b5Medium,
+                    color = Gray300
                 )
             }
         }
 
-        // --- [왼쪽 화자 (플라톤) 파형 애니메이션] ---
+        // 왼쪽 화자 파형 애니메이션
         if (isLeft && isActive) {
-            Box(modifier = Modifier.padding(top = 12.dp, start = 8.dp)) {
+            Box(modifier = Modifier.padding(8.dp)) {
                 ChattingLoadingAnimation()
             }
         }
 
-        // --- [오른쪽 화자 (사르트르) 프로필] ---
+        // 오른쪽 화자 프로필
         if (!isLeft) {
             Spacer(modifier = Modifier.width(8.dp))
             if (showAvatarAndName) {
-                ProfileImage(model = profileRes, modifier = Modifier.size(40.dp))
+                ProfileImage(model = imageModel, modifier = Modifier.size(32.dp))
             } else {
-                Spacer(modifier = Modifier.width(40.dp)) // 프로필 안 보일 때도 공간 차지
+                Spacer(modifier = Modifier.width(32.dp))
             }
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }

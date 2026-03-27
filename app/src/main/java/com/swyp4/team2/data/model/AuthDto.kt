@@ -1,19 +1,45 @@
 package com.swyp4.team2.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.swyp4.team2.domain.model.AuthBoard
 
 // 1. 소셜 로그인 요청 (Request)
 data class SocialLoginRequest(
+    @SerializedName("authorizationCode")
     val authorizationCode: String,
+    @SerializedName("redirectUri")
     val redirectUri: String
 )
 
-// 2. 로그인 & 토큰 갱신 공통 응답 (Response)
 data class AuthResponseDto(
+    @SerializedName("access_token")
     val accessToken: String,
+    @SerializedName("refresh_token")
     val refreshToken: String,
+    @SerializedName("user_tag")
     val userTag: String,
+    @SerializedName("status")
     val status: String, // "PENDING" or "ACTIVE"
-    @SerializedName("is_new_user")
+    @SerializedName("new_user")
     val isNewUser: Boolean
 )
+
+data class LogoutResponseDto(
+    @SerializedName("logged_out")
+    val loggedOut: Boolean,
+)
+
+data class WithdrawnResponseDto(
+    @SerializedName("withdrawn")
+    val withdrawn: Boolean,
+)
+
+fun AuthResponseDto.toDomain(): AuthBoard {
+    return AuthBoard(
+        accessToken = this.accessToken,
+        refreshToken = this.refreshToken,
+        userTag = this.userTag,
+        isNewUser = this.isNewUser,
+        status = this.status
+    )
+}

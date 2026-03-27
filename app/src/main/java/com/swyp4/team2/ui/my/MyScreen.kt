@@ -1,5 +1,7 @@
 package com.swyp4.team2.ui.my
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,9 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.R
@@ -59,6 +65,7 @@ import com.swyp4.team2.ui.theme.Secondary600
 import com.swyp4.team2.ui.theme.Secondary700
 import com.swyp4.team2.ui.theme.Secondary900
 import com.swyp4.team2.ui.theme.SwypTheme
+import com.swyp4.team2.util.AdMobManager
 
 @Composable
 fun MyScreen(
@@ -67,9 +74,21 @@ fun MyScreen(
     onNavigateToDiscussion: () -> Unit,
     onNavigateToPhilosopher: () -> Unit,
     onNavigateToContent: () -> Unit,
-    onNavigateToNotice: () -> Unit
+    onNavigateToNotice: () -> Unit,
+    viewModel: MyViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    val adMobManager = remember { AdMobManager(context) }
     var hasUnreadNotification by remember { mutableStateOf(true) }
+
+
+    LaunchedEffect(Unit) {
+        // SSV(서버 측 검증)를 위해 내 아이디를 이름표로 달아줍니다.
+        adMobManager.loadAd(userId = uiState.userId)
+    }
 
     Scaffold(
         containerColor = SwypTheme.colors.surface,
@@ -113,16 +132,29 @@ fun MyScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             ProfileSection(
-                nickname = "사색하는 고양이",
-                userHandle = "@user_code"
+                nickname = uiState.nickname,
+                userHandle = uiState.userHandle
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             CreditCard(
-                credit = 240,
+                credit = uiState.credit,
                 onChargeClick = {
+                    activity?.let {
+                        adMobManager.showAd(
+                            activity = it,
+                            onRewardEarned = {
+                                // 유저가 30초짜리 광고를 끝까지 다 봤을 때 실행됨!
+                                viewModel.refreshPointsAfterAd() // 포인트 +10 갱신
 
+                                // 광고를 다 봤으니 다음 충전을 위해 새 광고를 다시 장전해둡니다.
+                                adMobManager.loadAd(userId = uiState.userId)
+                            }
+                        )
+                    } ?: run {
+                        Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             )
 
