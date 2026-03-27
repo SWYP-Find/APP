@@ -16,8 +16,6 @@ class AdMobManager(private val context: Context) {
 
     private var rewardedAd: RewardedAd? = null
     private val adUnitId = BuildConfig.ADMOB_REWARDED_AD_UNIT_ID
-    // 🚨 구글이 제공하는 '테스트용' 보상형 광고 ID입니다.
-    // (나중에 앱 출시 직전에 AdMob 대시보드에서 발급받은 '진짜 ID'로 꼭! 바꿔야 합니다)
 
     /**
      * 1. 광고 장전하기 (화면에 진입할 때 미리 호출해 두면 유저가 기다리지 않습니다)
@@ -28,15 +26,15 @@ class AdMobManager(private val context: Context) {
 
         RewardedAd.load(context, adUnitId, adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.e("AdMobManager", "광고 로드 실패: ${adError.message}")
+                Log.e("AdMobManagerFlow", "광고 로드 실패: ${adError.message}")
                 rewardedAd = null
             }
 
             override fun onAdLoaded(ad: RewardedAd) {
-                Log.d("AdMobManager", "광고 로드 성공!")
+                Log.d("AdMobManagerFlow", "광고 로드 성공!")
                 rewardedAd = ad
 
-                // 🌟 [핵심] SSV (서버 측 검증) 세팅!
+                // 🌟 SSV (서버 측 검증) 세팅
                 // 구글 서버가 우리 백엔드 서버를 찌를 때, 이 userId를 그대로 넘겨줍니다.
                 val options = ServerSideVerificationOptions.Builder()
                     .setCustomData(userId)
@@ -52,30 +50,25 @@ class AdMobManager(private val context: Context) {
      */
     fun showAd(activity: Activity, onRewardEarned: () -> Unit) {
         if (rewardedAd != null) {
-
             // 광고 화면이 닫히거나 실패했을 때의 이벤트 처리
             rewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    Log.d("AdMobManager", "광고 화면이 닫혔습니다.")
-                    // 사용자가 광고를 껐으니, 다음을 위해 메모리에서 비워줍니다.
-                    // (뷰모델이나 화면 쪽에서 다시 loadAd()를 호출해서 새 알을 장전해야 합니다)
+                    Log.d("AdMobManagerFlow", "광고 화면이 닫혔습니다.")
                     rewardedAd = null
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    Log.e("AdMobManager", "광고 띄우기 실패: ${adError.message}")
+                    Log.e("AdMobManagerFlow", "광고 띄우기 실패: ${adError.message}")
                     rewardedAd = null
                 }
             }
 
-            // 진짜로 화면에 광고 띄우기!
             rewardedAd?.show(activity) { rewardItem ->
-                // 🌟 유저가 영상을 스킵 없이 끝까지 다 봤을 때 이곳이 실행됩니다!
-                Log.d("AdMobManager", "보상 획득 완료! (구글이 천수님 백엔드로 지급 요청을 보냄)")
+                Log.d("AdMobManagerFlow", "보상 획득 완료! (구글이 천수님 백엔드로 지급 요청을 보냄)")
                 onRewardEarned()
             }
         } else {
-            Log.d("AdMobManager", "아직 광고가 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.")
+            Log.d("AdMobManagerFlow", "아직 광고가 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.")
         }
     }
 }

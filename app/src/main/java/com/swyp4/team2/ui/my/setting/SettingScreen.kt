@@ -109,7 +109,7 @@ fun SettingMenuItem(
                 color = Gray700
             )
             Icon(
-                painterResource(R.drawable.ic_arrow_right),
+                painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
                 tint = Gray900

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
 import com.swyp4.team2.ui.curation.CurationScreen
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
         val keyHash = Utility.getKeyHash(this)
         Log.d("Hash", "내 키 해시값: $keyHash")
 
+        MobileAds.initialize(this) {}
         enableEdgeToEdge()
         setContent {
             SwypAppTheme {
