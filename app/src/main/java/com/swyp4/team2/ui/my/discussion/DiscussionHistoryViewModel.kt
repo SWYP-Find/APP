@@ -33,12 +33,12 @@ class DiscussionHistoryViewModel @Inject constructor() : ViewModel(){
             delay(1000)
 
             val dummyAgreeList = listOf(
-                DiscussionHistoryItem(1, "철학", "인간의 본성은 선한가 악한가?", "저는 맹자의 성선설에 전적으로 동의합니다. 인간은 태어날 때부터...", "2026.03.15"),
-                DiscussionHistoryItem(2, "사회", "기본소득제 도입, 필요한가?", "기본소득제는 현대 사회의 양극화를 해소할 수 있는...", "2026.03.12")
+                DiscussionHistoryItem("1", "철학", "인간의 본성은 선한가 악한가?", "저는 맹자의 성선설에 전적으로 동의합니다. 인간은 태어날 때부터...", "2026.03.15"),
+                DiscussionHistoryItem("2", "사회", "기본소득제 도입, 필요한가?", "기본소득제는 현대 사회의 양극화를 해소할 수 있는...", "2026.03.12")
             )
 
             val dummyDisagreeList = listOf(
-                DiscussionHistoryItem(3, "기술", "AI 발전은 인류에게 위협인가?", "AI는 도구일 뿐, 그것을 사용하는 인간의 윤리적 잣대가...", "2026.03.10")
+                DiscussionHistoryItem("3", "기술", "AI 발전은 인류에게 위협인가?", "AI는 도구일 뿐, 그것을 사용하는 인간의 윤리적 잣대가...", "2026.03.10")
             )
 
             _uiState.update {

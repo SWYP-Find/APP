@@ -1,6 +1,7 @@
 package com.swyp4.team2.di
 
 import com.swyp4.team2.data.repository.AuthRepositoryImpl
+import com.swyp4.team2.data.repository.BattleRepositoryImpl
 import com.swyp4.team2.data.repository.ExploreRepositoryImpl
 import com.swyp4.team2.data.repository.HomeRepositoryImpl
 import com.swyp4.team2.data.repository.PerspectiveRepositoryImpl
@@ -8,6 +9,7 @@ import com.swyp4.team2.data.repository.ScenarioRepositoryImpl
 import com.swyp4.team2.data.repository.TodayBattleRepositoryImpl
 import com.swyp4.team2.data.repository.VoteRepositoryImpl
 import com.swyp4.team2.domain.repository.AuthRepository
+import com.swyp4.team2.domain.repository.BattleRepository
 import com.swyp4.team2.domain.repository.ExploreRepository
 import com.swyp4.team2.domain.repository.HomeRepository
 import com.swyp4.team2.domain.repository.PerspectiveRepository
@@ -65,4 +67,9 @@ abstract class RepositoryModule {
         perspectiveRepositoryImpl: PerspectiveRepositoryImpl
     ): PerspectiveRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindBattleRepository(
+        battleRepositoryImpl: BattleRepositoryImpl
+    ): BattleRepository
 }

@@ -264,7 +264,7 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
 fun SecondOnboardingCard(modifier: Modifier = Modifier) {
     val dummyPerspectives = listOf(
         PerspectiveUiModel(
-            commentId = 1L,
+            commentId = "1",
             profileImageRes = R.drawable.ic_profile_racoon,
             nickname = "사유하는 라쿤",
             stance = PerspectiveStance.AGREE,
@@ -275,7 +275,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
             isLiked = false
         ),
         PerspectiveUiModel(
-            commentId = 2L,
+            commentId = "2",
             profileImageRes = R.drawable.ic_profile_dochi,
             nickname = "사유하는 고슴도치",
             stance = PerspectiveStance.AGREE, // 찬성

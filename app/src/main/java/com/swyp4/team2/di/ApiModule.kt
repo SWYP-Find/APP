@@ -1,6 +1,7 @@
 package com.swyp4.team2.di
 
 import com.swyp4.team2.data.remote.AuthApi
+import com.swyp4.team2.data.remote.BattleApi
 import com.swyp4.team2.data.remote.ExploreApi
 import com.swyp4.team2.data.remote.HomeApi
 import com.swyp4.team2.data.remote.PerspectiveApi
@@ -58,4 +59,10 @@ object ApiModule {
     fun providePerspectiveApi(retrofit: Retrofit): PerspectiveApi {
         return retrofit.create(PerspectiveApi::class.java)
     }
-}
+
+    @Provides
+    @Singleton
+    fun provideBattleApi(retrofit: Retrofit): BattleApi{
+        return retrofit.create(BattleApi::class.java)
+    }
+ }

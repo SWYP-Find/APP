@@ -35,7 +35,7 @@ fun PerspectivePageDto.toDomainModel(): PerspectivePage {
 
 fun PerspectiveDto.toDomainModel(): PerspectiveBoard {
     return PerspectiveBoard(
-        commentId = this.commentId,
+        commentId = this.commentId.toString(),
         userTag = this.user.userTag,
         nickname = this.user.nickname,
         characterType = this.user.characterType,

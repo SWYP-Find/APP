@@ -1,7 +1,7 @@
 package com.swyp4.team2.domain.model
 
 data class NoticeEventItem(
-    val id: Long,
+    val id: String,
     val type: String,
     val title: String,
     val date: String,

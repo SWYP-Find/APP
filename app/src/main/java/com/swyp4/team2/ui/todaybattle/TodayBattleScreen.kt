@@ -53,6 +53,7 @@ import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray800
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Primary300
+import com.swyp4.team2.ui.theme.Primary900
 import com.swyp4.team2.ui.theme.Secondary200
 import com.swyp4.team2.ui.theme.Secondary500
 import com.swyp4.team2.ui.theme.Secondary700
@@ -63,14 +64,14 @@ import com.swyp4.team2.ui.todaybattle.model.TodayBattleUiModel
 fun TodayBattleScreen(
     viewModel: TodayBattleViewModel = hiltViewModel(),
     onBackClick: () -> Unit,
-    onEnterBattle: () -> Unit
+    onEnterBattle: (String) -> Unit
 ){
     val uiState by viewModel.uiState.collectAsState()
     val battleList = uiState.battleList
 
     if (uiState.isLoading || battleList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = SwypTheme.colors.primary)
+            CircularProgressIndicator(color = Primary900)
         }
         return
     }
@@ -85,7 +86,12 @@ fun TodayBattleScreen(
         bottomBar = {
             CustomButton(
                 text = stringResource(R.string.battle_start),
-                onClick = { if (isButtonEnabled) onEnterBattle() },
+                onClick = {
+                    if (isButtonEnabled) {
+                        val currentBattleId = battleList[pagerState.currentPage].battleId
+                        onEnterBattle(currentBattleId)
+                    }
+                },
                 modifier = Modifier.padding(20.dp),
                 backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
                 textColor = Beige50

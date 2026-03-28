@@ -18,24 +18,52 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.swyp4.team2.R
+import com.swyp4.team2.domain.model.BattleDetailBoard
+import com.swyp4.team2.domain.model.BattleOptionBoard
+import com.swyp4.team2.domain.model.VoteBoard
+import com.swyp4.team2.domain.model.VoteOption
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.theme.*
-import com.swyp4.team2.ui.vote.model.VoteUiModel
-import com.swyp4.team2.ui.vote.model.VoteOptionUiModel
-import com.swyp4.team2.ui.vote.model.VoteType
+
+@Composable
+fun VoteRoute(
+    voteType: VoteType,
+    onBackClick: () -> Unit,
+    onVoteSubmit: (String) -> Unit,
+    viewModel: VoteViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    if (uiState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Primary900)
+        }
+    } else {
+        uiState.battleDetail?.let { detail ->
+            VoteScreen(
+                voteType = voteType,
+                battleDetail = detail,
+                onBackClick = onBackClick,
+                onVoteSubmit = onVoteSubmit
+            )
+        }
+    }
+}
 
 @Composable
 fun VoteScreen(
     voteType: VoteType,
-    uiModel: VoteUiModel,
+    battleDetail: BattleDetailBoard,
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit
 ) {
     val isPreVote = voteType == VoteType.PRE
+    val battleInfo = battleDetail.battleInfo
 
     val bgColor = if (isPreVote) SwypTheme.colors.surface else Color.Black
     val titleColor = if (isPreVote) Gray900 else SwypTheme.colors.surface
@@ -71,8 +99,12 @@ fun VoteScreen(
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
                 CustomButton(
-                    text = if (isPreVote) stringResource(R.string.prevote) else "사후 투표하기", // 임시 텍스트
-                    onClick = { selectedOptionId?.let { onVoteSubmit(it) } },
+                    text = if (isPreVote) stringResource(R.string.prevote) else "사후 투표하기",
+                    onClick = {
+                        if (selectedOptionId != null) {
+                            onVoteSubmit(battleInfo.battleId.toString())
+                        }
+                    },
                     modifier = Modifier.padding(20.dp),
                     backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
                     textColor = Beige50
@@ -91,7 +123,7 @@ fun VoteScreen(
                     .weight(1f)
             ) {
                 AsyncImage(
-                    model = uiModel.bgImageUrl,
+                    model = battleInfo.thumbnailUrl,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -123,13 +155,13 @@ fun VoteScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        uiModel.tags.forEach { tag ->
+                        battleInfo.tags.forEach { tag ->
                             Surface(
                                 color = Color.White.copy(alpha = 0.8f),
                                 shape = RoundedCornerShape(2.dp)
                             ) {
                                 Text(
-                                    text = "#$tag",
+                                    text = "#${tag.name}",
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                     style = SwypTheme.typography.label,
                                     color = Primary500
@@ -140,13 +172,13 @@ fun VoteScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = uiModel.title.replace(", ", ",\n"),
+                        text = battleInfo.title.replace(", ", ",\n"),
                         style = SwypTheme.typography.h1SemiBold,
                         color = titleColor
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = if (isPreVote) uiModel.preDescription else uiModel.postDescription,
+                        text = if (isPreVote) battleInfo.summary else battleDetail.description,
                         style = SwypTheme.typography.b3Regular,
                         color = descColor
                     )
@@ -165,18 +197,20 @@ fun VoteScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    VoteOptionCard(
-                        modifier = Modifier.weight(1f),
-                        option = uiModel.optionA, // 🌟 A 옵션 모델 통째로 넘기기
-                        isSelected = selectedOptionId == uiModel.optionA.optionId,
-                        onClick = { selectedOptionId = uiModel.optionA.optionId }
-                    )
-                    VoteOptionCard(
-                        modifier = Modifier.weight(1f),
-                        option = uiModel.optionB, // 🌟 B 옵션 모델 통째로 넘기기
-                        isSelected = selectedOptionId == uiModel.optionB.optionId,
-                        onClick = { selectedOptionId = uiModel.optionB.optionId }
-                    )
+                    if (battleInfo.options.size >= 2) {
+                        VoteOptionCard(
+                            modifier = Modifier.weight(1f),
+                            option = battleInfo.options[0],
+                            isSelected = selectedOptionId == battleInfo.options[0].optionId.toString(),
+                            onClick = { selectedOptionId = battleInfo.options[0].optionId.toString() }
+                        )
+                        VoteOptionCard(
+                            modifier = Modifier.weight(1f),
+                            option = battleInfo.options[1],
+                            isSelected = selectedOptionId == battleInfo.options[1].optionId.toString(),
+                            onClick = { selectedOptionId = battleInfo.options[1].optionId.toString() }
+                        )
+                    }
                 }
 
                 Surface(
@@ -194,10 +228,11 @@ fun VoteScreen(
     }
 }
 
+// 3. 개별 옵션 카드
 @Composable
 fun VoteOptionCard(
     modifier: Modifier = Modifier,
-    option: VoteOptionUiModel,
+    option: BattleOptionBoard,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -212,13 +247,15 @@ fun VoteOptionCard(
             .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ProfileImage(
-            model = option.philosopherType,
-            modifier = Modifier.size(48.dp),
+        AsyncImage(
+            model = option.imageUrl,
+            contentDescription = option.representative,
+            modifier = Modifier.size(48.dp).clip(CircleShape),
+            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = option.opinion, style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Text(text = option.title, style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = option.philosopherName, style = SwypTheme.typography.labelXSmall, color = Gray500)
+        Text(text = option.representative, style = SwypTheme.typography.labelXSmall, color = Gray500)
     }
 }

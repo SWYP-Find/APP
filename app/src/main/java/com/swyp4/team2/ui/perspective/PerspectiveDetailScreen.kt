@@ -48,7 +48,7 @@ fun PerspectiveDetailScreen(
     onBackClick: ()->Unit,
     modifier: Modifier = Modifier,
     mainComment: PerspectiveUiModel = PerspectiveUiModel(
-        commentId = 1L,
+        commentId = "1",
         profileImageRes = R.drawable.ic_profile_mengzi, // 보내주신 코드의 리소스 반영
         nickname = "사유하는 라쿤",
         stance = PerspectiveStance.AGREE, // 찬성
@@ -60,7 +60,7 @@ fun PerspectiveDetailScreen(
     ),
     replies: List<PerspectiveUiModel> = listOf(
         PerspectiveUiModel(
-            commentId = 101L,
+            commentId = "2",
             profileImageRes = R.drawable.ic_profile_mengzi,
             nickname = "사색하는 사슴",
             stance = PerspectiveStance.DISAGREE, // 반대 의견으로 설정해봤어요!
@@ -71,7 +71,7 @@ fun PerspectiveDetailScreen(
             isLiked = true // 내가 좋아요 누른 상태 예시
         ),
         PerspectiveUiModel(
-            commentId = 102L,
+            commentId = "3",
             profileImageRes = R.drawable.ic_profile_mengzi,
             nickname = "논쟁하는 사자",
             stance = PerspectiveStance.DISAGREE,
@@ -82,7 +82,7 @@ fun PerspectiveDetailScreen(
             isLiked = false
         ),
         PerspectiveUiModel(
-            commentId = 103L,
+            commentId = "4",
             profileImageRes = R.drawable.ic_profile_mengzi,
             nickname = "행복한 강아지",
             stance = PerspectiveStance.AGREE,
