@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(
 
             homeRepository.fetchHomeData()
                 .onSuccess { boardData ->
-                    Log.d("HomeFlow", "2. 🟢 홈 데이터 통신 성공! (에디터픽: ${boardData.editorPicks.size}개, 트렌딩: ${boardData.trendingBattles.size}개, 투데이픽: ${boardData.todayPicks.size}개)")
+                    Log.d("HomeFlow", "2. 🟢 홈 데이터 통신 성공! (${boardData})")
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,

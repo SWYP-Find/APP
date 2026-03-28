@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -82,12 +83,14 @@ fun ShareDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ShareItem(iconRes = R.drawable.ic_kakao_share, title = "카카오톡", onClick = onKakaoClick)
+                Spacer(modifier = Modifier.width(32.dp))
                 ShareItem(iconRes = R.drawable.ic_instagram, title = "인스타그램", onClick = onInstaClick)
-                ShareItem(iconRes = R.drawable.ic_facebook, title = "페이스북", onClick = onFacebookClick)
+                // ShareItem(iconRes = R.drawable.ic_facebook, title = "페이스북", onClick = onFacebookClick)
+                Spacer(modifier = Modifier.width(32.dp))
                 ShareItem(iconRes = R.drawable.ic_link, title = "링크 복사", onClick = onCopyLinkClick)
             }
         }

@@ -1,6 +1,7 @@
 package com.swyp4.team2.domain.model
 
 data class PhilosopherReport(
+    val reportId: String,
     val hasTestResult: Boolean = false,
     val mainPhilosopher: MainPhilosopherDetail,
     val traitAnalysis: TraitAnalysis,

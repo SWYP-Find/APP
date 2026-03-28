@@ -11,6 +11,11 @@ sealed class AppRoute(val route: String){
 
     object DiscussionHistory : AppRoute("discussion_history_screen") // 마이-내 토론 기록
     object PhilosopherType : AppRoute("philosopher_type_screen")     // 마이-나는 어떤 철학자 일까?
+    object OtherPhilosopher : AppRoute("other_philosopher_screen/{reportId}") {
+        fun createRoute(reportId: String): String {
+            return "other_philosopher_screen/$reportId"
+        }
+    }
     object ContentActivity : AppRoute("content_activity_screen")     // 마이-내 콘텐츠 활동
     object NoticeEvent : AppRoute("notice_event_screen")             // 마이-공지방 · 이벤트
     object SettingProfile : AppRoute("setting_profile_screen")       // 설정-프로필 편집

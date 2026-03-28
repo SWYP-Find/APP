@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -62,9 +63,12 @@ import com.swyp4.team2.ui.component.SortFilterChip
 import com.swyp4.team2.ui.explore.model.ExploreItem
 import com.swyp4.team2.ui.explore.model.dummyExploreList
 import com.swyp4.team2.ui.theme.Beige100
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray200
+import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray400
+import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
@@ -96,12 +100,12 @@ fun ExploreScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = SwypTheme.colors.surface,
+                backgroundColor = Beige200,
                 actions = {
                     IconButton(
                         onClick = {
@@ -223,7 +227,8 @@ fun ExploreCard(
             model = item.imageUrl,
             contentDescription = "Content Thumbnail",
             modifier = Modifier
-                .size(80.dp)
+                .width(80.dp)
+                .aspectRatio(3f / 4f)
                 .clip(RoundedCornerShape(2.dp)),
             contentScale = ContentScale.Crop,
         )
@@ -250,7 +255,7 @@ fun ExploreCard(
                 Text(
                     text = item.title,
                     style = SwypTheme.typography.h5SemiBold,
-                    color = Gray900,
+                    color = Gray500,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -262,7 +267,7 @@ fun ExploreCard(
             Text(
                 text = item.description,
                 style = SwypTheme.typography.b4Regular,
-                color = Gray600,
+                color = Gray400,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -280,7 +285,7 @@ fun ExploreCard(
                     painter = painterResource(id = R.drawable.ic_clock),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = Gray400
+                    tint = Gray300
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = item.timeAgo, style = SwypTheme.typography.label, color = Gray400)
@@ -292,7 +297,7 @@ fun ExploreCard(
                     painter = painterResource(id = R.drawable.ic_eye),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = Gray400
+                    tint = Gray300
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(text = item.viewCount, style = SwypTheme.typography.label, color = Gray400)

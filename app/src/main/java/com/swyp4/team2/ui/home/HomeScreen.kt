@@ -73,11 +73,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
 import com.swyp4.team2.R
-import com.swyp4.team2.ui.component.ChattingLoadingAnimation
-import com.swyp4.team2.ui.component.CopyLinkButton
 import com.swyp4.team2.ui.component.CustomTopAppBar
-import com.swyp4.team2.ui.component.InstagramShareButton
-import com.swyp4.team2.ui.component.KakaoShareButton
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.home.model.BattleProfile
@@ -91,6 +87,7 @@ import com.swyp4.team2.ui.home.model.dummyEditorPickList
 import com.swyp4.team2.ui.home.model.dummyNewBattleList
 import com.swyp4.team2.ui.home.model.dummyPickeList
 import com.swyp4.team2.ui.home.model.dummyTrendingList
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige300
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige50
@@ -122,12 +119,12 @@ fun HomeScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = SwypTheme.colors.surface,
+                backgroundColor = Beige200,
                 actions = {
                     IconButton(onClick = { onNavigateToAlarm() }) {
                         BadgedBox(
