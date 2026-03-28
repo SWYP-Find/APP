@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.SwypTheme
 
 @Composable
@@ -17,7 +18,7 @@ fun AlarmScreen(
     onBackClick:()->Unit
 ) {
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -26,7 +27,7 @@ fun AlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.surface
+                backgroundColor = Beige200
             )
         }
     ){ innerPadding ->

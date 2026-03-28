@@ -72,6 +72,7 @@ import com.swyp4.team2.domain.model.TraitAnalysis
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.component.ShareDialog
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Primary500
 import com.swyp4.team2.ui.theme.Primary900
@@ -115,7 +116,7 @@ fun PhilosopherTypeScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_philosopher),
@@ -123,14 +124,15 @@ fun PhilosopherTypeScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = onBackClick,
-                backgroundColor = SwypTheme.colors.surface,
+                backgroundColor = Beige200,
                 actions = {
                     if (report?.hasTestResult == true) {
                         IconButton(onClick = { showShareDialog = true }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_share),
                                 contentDescription = "공유",
-                                tint = Gray900
+                                tint = Gray900,
+                                modifier = modifier.size(16.dp)
                             )
                         }
                     }

@@ -95,7 +95,7 @@ fun PerspectiveScreen(
                     title = "배틀 제목",
                     centerTitle = true,
                     showLogo = false,
-                    showBackButton = true,
+                    showBackButton = false,
                     onBackClick = onBackClick,
                     backgroundColor = SwypTheme.colors.surface,
                     actions = {

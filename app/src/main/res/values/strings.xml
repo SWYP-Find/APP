@@ -19,6 +19,7 @@
     <string name="my_setting_alarm">알림 설정</string>
     <string name="help_and_opinion">도움말 및 의견</string>
     <string name="logout">로그아웃</string>
+    <string name="withdraw">탈퇴하기</string>
     <string name="setting_footer_privacy">개인정보처리방침</string>
     <string name="setting_footer_terms">서비스 약관</string>
     <string name="setting_footer_divider">·</string>

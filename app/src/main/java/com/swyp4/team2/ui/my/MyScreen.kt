@@ -49,6 +49,7 @@ import com.swyp4.team2.R
 import com.swyp4.team2.domain.model.PhilosopherInfo
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.ProfileImage
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
@@ -93,10 +94,10 @@ fun MyScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             CustomTopAppBar(
-                backgroundColor = SwypTheme.colors.surface,
+                backgroundColor = Beige200,
                 centerTitle = false,
                 actions = {
                     IconButton(
@@ -296,7 +297,6 @@ fun CreditCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(Primary800)
-            .clickable { onChargeClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

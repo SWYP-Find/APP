@@ -69,14 +69,13 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
 
                 onClick = {
                     if (isSelected) {
-                        // 현재 탭의 상세 화면에 있다면, 해당 탭의 Root 화면(item.route)으로 다 지우고 돌아갑니다!
-                        // inclusive = false: Root 화면 자체는 지우지 말고 남겨둬라!
                         navController.popBackStack(route = item.route, inclusive = false)
                     } else {
-                        // 다른 탭을 누른 경우: 기존처럼 탭 이동 및 상태 복원 로직 실행
                         navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                            if (item.route != BottomNavItem.TodayBattle.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
                             }
                             launchSingleTop = true
                             restoreState = true

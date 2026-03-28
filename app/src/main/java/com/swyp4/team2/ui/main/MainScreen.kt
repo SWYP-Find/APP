@@ -29,6 +29,7 @@ import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.SwypTheme
 import com.swyp4.team2.ui.todaybattle.TodayBattleScreen
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.swyp4.team2.ui.theme.Beige200
 
 @Composable
 fun MainScreen(
@@ -42,7 +43,7 @@ fun MainScreen(
     val showBottomBar = currentRoute != BottomNavItem.TodayBattle.route
 
     Scaffold(
-        containerColor = if (showBottomBar) SwypTheme.colors.surface else Gray900,
+        containerColor = if (showBottomBar) Beige200 else Gray900,
         bottomBar = {
             if (showBottomBar) {
                 CustomBottomNavigationBar(mainNavController)
@@ -117,10 +118,20 @@ fun MainScreen(
             }
 
             composable(AppRoute.DiscussionHistory.route) {
-                DiscussionHistoryScreen(onBackClick = { mainNavController.popBackStack() })
+                DiscussionHistoryScreen(
+                    onBackClick = { mainNavController.popBackStack() },
+                    /* onNavigateToComment = { itemId ->
+                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
+                    }*/
+                )
             }
             composable(AppRoute.ContentActivity.route) {
-                ContentActivityScreen(onBackClick = { mainNavController.popBackStack() })
+                ContentActivityScreen(
+                    onBackClick = { mainNavController.popBackStack() },
+                    onNavigateToComment = { itemId ->
+                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
+                    }
+                )
             }
             composable(AppRoute.PhilosopherType.route) {
                 PhilosopherTypeScreen(onBackClick = { mainNavController.popBackStack() })
@@ -133,7 +144,8 @@ fun MainScreen(
                     onBackClick = { mainNavController.popBackStack() },
                     onNavigateToSettingProfile = { rootNavController.navigate(AppRoute.SettingProfile.route) },
                     onNavigateToSettingAlarm = { rootNavController.navigate(AppRoute.SettingAlarm.route) },
-                    onOpenWebLink = { /* 웹 링크 열기 */ }
+                    onNavigateToPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
+                    onNavigateToTermsOfService = { rootNavController.navigate(AppRoute.TermsOfService.route) }
                 )
             }
         }

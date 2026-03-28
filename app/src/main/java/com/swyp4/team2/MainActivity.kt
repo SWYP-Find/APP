@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
@@ -26,6 +28,8 @@ import com.swyp4.team2.ui.login.LoginScreen
 import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
+import com.swyp4.team2.ui.my.setting.policy.PrivacyPolicyScreen
+import com.swyp4.team2.ui.my.setting.policy.TermsOfServiceScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
 import com.swyp4.team2.ui.perspective.PerspectiveDetailScreen
 import com.swyp4.team2.ui.perspective.PerspectiveScreen
@@ -118,9 +122,6 @@ fun AppNavigation() {
             // 메인 화면
             composable(
                 route = AppRoute.Main.route,
-                enterTransition = {
-                    fadeIn(animationSpec = tween(50)) + slideInVertically(initialOffsetY = { it / 10 })
-                }
             ) {
                 MainScreen(rootNavController = rootNavController)
             }
@@ -190,33 +191,53 @@ fun AppNavigation() {
                         rootNavController.popBackStack()
                     },
                     onVoteSubmit = {
-                        rootNavController.navigate(AppRoute.Perspective.route)
+                        rootNavController.navigate(AppRoute.Perspective.createRoute(0L)) {
+                            popUpTo(AppRoute.Main.route) { inclusive = false }
+                        }
                     }
                 )
             }
 
-            composable(AppRoute.Perspective.route) {
+            // 관점 화면
+            composable(
+                route = AppRoute.Perspective.route,
+                arguments = listOf(
+                    navArgument("itemId") { type = NavType.LongType }
+                )
+            ) { backStackEntry ->
+                val itemId = backStackEntry.arguments?.getLong("itemId") ?: 0L
+
                 PerspectiveScreen(
                     onBackClick = {
-                        rootNavController.popBackStack()
+                        // rootNavController.popBackStack()
                     },
                     onNextClick = {
                         rootNavController.navigate(AppRoute.Curation.route)
                     },
                     onMoreClick = {
-                        rootNavController.navigate(AppRoute.PerspectiveDetail.route)
+                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
                     }
                 )
             }
 
-            composable(AppRoute.PerspectiveDetail.route){
+            // 답글 화면
+            composable(
+                route = AppRoute.PerspectiveDetail.route,
+                arguments = listOf(
+                    navArgument("itemId") { type = NavType.LongType }
+                )
+            ){ backStackEntry ->
+                val itemId = backStackEntry.arguments?.getLong("itemId") ?: 0L
+
                 PerspectiveDetailScreen(
+                    // itemId = itemId,
                     onBackClick = {
                         rootNavController.popBackStack()
                     }
                 )
             }
 
+            // 큐레이션 화면
             composable(AppRoute.Curation.route) {
                 CurationScreen(
                     onCloseClick = {
@@ -229,6 +250,14 @@ fun AppNavigation() {
                         rootNavController.navigate(AppRoute.PreVote.route)
                     }
                 )
+            }
+
+            composable(AppRoute.PrivacyPolicy.route) {
+                PrivacyPolicyScreen(onBackClick = { rootNavController.popBackStack() })
+            }
+
+            composable(AppRoute.TermsOfService.route) {
+                TermsOfServiceScreen(onBackClick = { rootNavController.popBackStack() })
             }
         }
     }
