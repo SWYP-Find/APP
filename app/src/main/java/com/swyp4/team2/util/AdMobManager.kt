@@ -35,7 +35,6 @@ class AdMobManager(private val context: Context) {
                 rewardedAd = ad
 
                 // 🌟 SSV (서버 측 검증) 세팅
-                // 구글 서버가 우리 백엔드 서버를 찌를 때, 이 userId를 그대로 넘겨줍니다.
                 val options = ServerSideVerificationOptions.Builder()
                     .setCustomData(userId)
                     .build()

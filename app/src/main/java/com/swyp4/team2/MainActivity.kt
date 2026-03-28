@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
@@ -26,6 +27,7 @@ import com.swyp4.team2.ui.curation.CurationScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.login.LoginScreen
 import com.swyp4.team2.ui.main.MainScreen
+import com.swyp4.team2.ui.my.philosopher.OtherPhilosopherDetailScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
 import com.swyp4.team2.ui.my.setting.policy.PrivacyPolicyScreen
@@ -258,6 +260,32 @@ fun AppNavigation() {
 
             composable(AppRoute.TermsOfService.route) {
                 TermsOfServiceScreen(onBackClick = { rootNavController.popBackStack() })
+            }
+
+            composable(
+                route = AppRoute.OtherPhilosopher.route,
+                arguments = listOf(
+                    navArgument("reportId") { type = NavType.StringType }
+                ),
+                deepLinks = listOf(
+                    navDeepLink {
+                        uriPattern = "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://kakaolink?reportId={reportId}"
+                    }
+                )
+            ) { backStackEntry ->
+                val reportId = backStackEntry.arguments?.getString("reportId") ?: ""
+
+                OtherPhilosopherDetailScreen(
+                    reportId = reportId,
+                    onBackClick = {
+                        rootNavController.popBackStack()
+                    },
+                    onGoToSplashClick = {
+                        rootNavController.navigate(AppRoute.Splash.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
     }

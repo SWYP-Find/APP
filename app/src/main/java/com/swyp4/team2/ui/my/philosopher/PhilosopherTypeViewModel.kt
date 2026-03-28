@@ -29,11 +29,7 @@ class PhilosopherTypeViewModel @Inject constructor() : ViewModel(){
     private val _uiState = MutableStateFlow(PhilosopherTypeUiState())
     val uiState: StateFlow<PhilosopherTypeUiState> = _uiState.asStateFlow()
 
-    init {
-        fetchPhilosopherReport()
-    }
-
-    private fun fetchPhilosopherReport() {
+    fun fetchPhilosopherReport() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
@@ -41,6 +37,7 @@ class PhilosopherTypeViewModel @Inject constructor() : ViewModel(){
             delay(1000)
 
             val dummyReport = PhilosopherReport(
+                reportId = "1",
                 hasTestResult = true,
                 mainPhilosopher = MainPhilosopherDetail(
                     name = "칸트형",
@@ -84,6 +81,64 @@ class PhilosopherTypeViewModel @Inject constructor() : ViewModel(){
             _uiState.update {
                 it.copy(
                     report = dummyReport,
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    fun fetchOtherPhilosopherReport(reportId: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            // TODO: 실제 서버 API(GET /reports/{reportId} 등) 호출로 교체해야 함!
+            delay(1000)
+
+            val otherDummyReport = PhilosopherReport(
+                reportId = reportId,
+                hasTestResult = true,
+                mainPhilosopher = MainPhilosopherDetail(
+                    name = "니체형",
+                    description = "기존의 가치를 파괴하고 초인을 꿈꾸는 사람. 남의 시선에 얽매이지 않고 자신만의 길을 개척합니다.",
+                    imageUrl = R.drawable.ic_profile_niche,
+                    tags = listOf("초인", "독립적", "도전적", "자유로움")
+                ),
+                traitAnalysis = TraitAnalysis(
+                    principle = 30,
+                    logic = 60,
+                    individual = 95,
+                    change = 85,
+                    inner = 90,
+                    ideal = 50
+                ),
+                tasteReport = TasteReport(
+                    totalParticipation = 120,
+                    opinionChanges = 5,
+                    winRate = 85,
+                    topCategories = listOf(
+                        CategoryCount("자유", 50),
+                        CategoryCount("도전", 35),
+                        CategoryCount("예술", 20),
+                        CategoryCount("사회", 15)
+                    )
+                ),
+                chemistry = Chemistry(
+                    best = ChemistryPhilosopher(
+                        name = "사르트르형",
+                        description = "자유와 책임을 중시하는 실존주의자.",
+                        imageUrl = R.drawable.ic_profile_mengzi
+                    ),
+                    worst = ChemistryPhilosopher(
+                        name = "칸트형",
+                        description = "결과보다 과정을 중시하고 보편적 도덕 법칙을 따르는 원칙주의자.",
+                        imageUrl = R.drawable.ic_profile_kant
+                    )
+                )
+            )
+
+            _uiState.update {
+                it.copy(
+                    report = otherDummyReport,
                     isLoading = false
                 )
             }

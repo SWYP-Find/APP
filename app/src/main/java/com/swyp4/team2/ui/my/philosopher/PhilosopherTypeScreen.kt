@@ -27,6 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,9 +63,12 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.swyp4.team2.BuildConfig
 import com.swyp4.team2.domain.model.Chemistry
 import com.swyp4.team2.domain.model.MainPhilosopherDetail
 import com.swyp4.team2.domain.model.TasteReport
@@ -76,8 +80,9 @@ import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Primary500
 import com.swyp4.team2.ui.theme.Primary900
+import com.swyp4.team2.util.shareCapturedImageToKakao
+import com.swyp4.team2.util.shareToInstagramStory
 import kotlinx.coroutines.launch
-import shareCapturedImageToKakao
 
 @Composable
 fun PhilosopherTypeScreen(
@@ -90,25 +95,38 @@ fun PhilosopherTypeScreen(
 
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
 
     var showShareDialog by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchPhilosopherReport()
+    }
+
     val onKakaoShareClick = {
         coroutineScope.launch {
             try {
-                // 1. Box로 감싼 HeaderSection 캡처
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
 
-                // 2. 카카오톡에 캡처한 이미지와 함께 공유
                 shareCapturedImageToKakao(
                     context = context,
                     bitmap = bitmap,
-                    resultId = "12345",
+                    resultId = report?.reportId ?: "",
                     philosopherName = report?.mainPhilosopher?.name ?: "알 수 없음",
                     description = report?.mainPhilosopher?.description ?: ""
                 )
+            } catch (e: Exception) {
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    val onInstaShareClick = {
+        coroutineScope.launch {
+            try {
+                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                shareToInstagramStory(context = context, bitmap = bitmap)
             } catch (e: Exception) {
                 Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
@@ -204,18 +222,25 @@ fun PhilosopherTypeScreen(
                     onKakaoShareClick()
                 },
                 onInstaClick = {
-                    // TODO: 인스타 공유 로직 구현
                     showShareDialog = false
-                    Toast.makeText(context, "인스타그램 공유 준비중!", Toast.LENGTH_SHORT).show()
+                    onInstaShareClick()
                 },
                 onFacebookClick = {
-                    // TODO: 페이스북 공유 로직 구현
                     showShareDialog = false
                 },
                 onCopyLinkClick = {
-                    // TODO: 링크 복사 클립보드 로직 구현
+                    val reportId = report?.reportId ?: ""
+                    val packageName = context.packageName
+                    val appKey = BuildConfig.KAKAO_DEBUG_APPKEY
+
+                    // 안드로이드 시스템이 해석하는 인텐트 URI 생성
+                    val deepLinkUrl = "intent://kakaolink?reportId=$reportId#Intent;scheme=kakao${BuildConfig.KAKAO_DEBUG_APPKEY};package=$packageName;end"
+
+                    // 클립보드에 텍스트 복사
+                    clipboardManager.setText(AnnotatedString(deepLinkUrl))
+
                     showShareDialog = false
-                    Toast.makeText(context, "링크가 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
                 }
             )
         }
