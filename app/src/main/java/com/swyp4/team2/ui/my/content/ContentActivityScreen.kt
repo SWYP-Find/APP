@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ContentActivityScreen(
     onBackClick: () -> Unit,
-    onNavigateToComment: (Long) -> Unit,
+    onNavigateToComment: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ContentActivityViewModel = hiltViewModel()
 ) {
@@ -142,7 +142,7 @@ fun ContentActivityScreen(
 fun ContentActivityList(
     items: List<ContentActivityItem>,
     emptyMessage: String,
-    onItemClick: (Long) -> Unit
+    onItemClick: (String) -> Unit
 ) {
     if (items.isEmpty()) {
         Column(

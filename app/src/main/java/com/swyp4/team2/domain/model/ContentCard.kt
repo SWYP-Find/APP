@@ -1,7 +1,7 @@
 package com.swyp4.team2.domain.model
 
 data class ContentCard(
-    val id: Int,
+    val id: String,
     val title: String,
     val description: String,
     val optionA: String,

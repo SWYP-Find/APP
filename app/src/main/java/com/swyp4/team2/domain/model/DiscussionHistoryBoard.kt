@@ -6,7 +6,7 @@ data class DiscussionHistoryBoard(
 )
 
 data class DiscussionHistoryItem(
-    val id: Long,
+    val id: String,
     val category: String,
     val title: String,
     val description: String,

@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -101,6 +102,7 @@ import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary900
 import com.swyp4.team2.ui.theme.Secondary200
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
@@ -146,106 +148,114 @@ fun HomeScreen(
         }
     ){ innerPadding ->
         if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize())
-            return@Scaffold
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-                .background(SwypTheme.colors.surface)
-                .verticalScroll(scrollState)
-        ){
-            // 1. 에디터 픽 섹션
-            if (uiState.editorPicks.isNotEmpty()) {
-                EditorPickSection(
-                    items = uiState.editorPicks,
-                    onItemClick = onNavigateToVote
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
             }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .background(SwypTheme.colors.surface)
+                    .verticalScroll(scrollState)
+            ) {
+                // 1. 에디터 픽 섹션
+                if (uiState.editorPicks.isNotEmpty()) {
+                    EditorPickSection(
+                        items = uiState.editorPicks,
+                        onItemClick = { contentId ->
+                            onNavigateToVote(contentId)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
 
-            // 2. 지금 뜨는 배틀
-            if (uiState.trendingBattles.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        HomeSectionHeader(
-                            title = stringResource(R.string.home_section_trending),
-                            highlightText = stringResource(R.string.home_highlight_battle),
-                            onMoreClick = onNavigateToTrendingBattle
-                        )
+                // 2. 지금 뜨는 배틀
+                if (uiState.trendingBattles.isNotEmpty()) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            HomeSectionHeader(
+                                title = stringResource(R.string.home_section_trending),
+                                highlightText = stringResource(R.string.home_highlight_battle),
+                                onMoreClick = onNavigateToTrendingBattle
+                            )
+                        }
+                        LazyRow(
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(uiState.trendingBattles) { item ->
+                                TrendingBattleCard(
+                                    item = item,
+                                    onClick = { onNavigateToVote(item.contentId) }
+                                )
+                            }
+                        }
                     }
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(uiState.trendingBattles) { item ->
-                            TrendingBattleCard(
+                    Spacer(modifier = Modifier.height(40.dp))
+                }
+
+                // 3. Best 배틀
+                if (uiState.bestBattles.isNotEmpty()) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                        HomeSectionHeader(
+                            title = stringResource(R.string.home_section_best),
+                            highlightText = stringResource(R.string.home_highlight_battle),
+                            onMoreClick = onNavigateToBestBattle
+                        )
+                        // Best는 상위 3개만 자르고 index를 넘겨 순위를 표시합니다.
+                        uiState.bestBattles.take(3).forEachIndexed { index, item ->
+                            BestBattleRankItem(
                                 item = item,
+                                rank = index + 1,
                                 onClick = { onNavigateToVote(item.contentId) }
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                // 4. 오늘의 Pické
+                if (uiState.todayPicks.isNotEmpty()) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                        HomeSectionHeader(
+                            title = stringResource(R.string.home_section_today_picke),
+                            highlightText = stringResource(R.string.home_highlight_picke),
+                            onMoreClick = onNavigateToTodayPicke
+                        )
+                        uiState.todayPicks.forEach { item ->
+                            TodayPickeCard(item = item)
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                // 5. 새로운 배틀
+                if (uiState.newBattles.isNotEmpty()) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                        HomeSectionHeader(
+                            title = stringResource(R.string.home_section_new),
+                            highlightText = stringResource(R.string.home_highlight_battle),
+                            onMoreClick = onNavigateToNewBattle
+                        )
+                        uiState.newBattles.forEach { item ->
+                            NewBattleCard(
+                                item = item,
+                                onClick = { onNavigateToVote(item.contentId) }
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                    }
                 }
                 Spacer(modifier = Modifier.height(40.dp))
-            }
 
-            // 3. Best 배틀
-            if (uiState.bestBattles.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                    HomeSectionHeader(
-                        title = stringResource(R.string.home_section_best),
-                        highlightText = stringResource(R.string.home_highlight_battle),
-                        onMoreClick = onNavigateToBestBattle
-                    )
-                    // Best는 상위 3개만 자르고 index를 넘겨 순위를 표시합니다.
-                    uiState.bestBattles.take(3).forEachIndexed { index, item ->
-                        BestBattleRankItem(
-                            item = item,
-                            rank = index + 1, // 🌟 1, 2, 3 순위 계산
-                            onClick = { onNavigateToVote(item.contentId) }
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
             }
-
-            // 4. 오늘의 Pické
-            if (uiState.todayPicks.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                    HomeSectionHeader(
-                        title = stringResource(R.string.home_section_today_picke),
-                        highlightText = stringResource(R.string.home_highlight_picke),
-                        onMoreClick = onNavigateToTodayPicke
-                    )
-                    uiState.todayPicks.forEach { item ->
-                        TodayPickeCard(item = item)
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
-            }
-
-            // 5. 새로운 배틀
-            if (uiState.newBattles.isNotEmpty()) {
-                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-                    HomeSectionHeader(
-                        title = stringResource(R.string.home_section_new),
-                        highlightText = stringResource(R.string.home_highlight_battle),
-                        onMoreClick = onNavigateToNewBattle
-                    )
-                    uiState.newBattles.forEach { item ->
-                        NewBattleCard(
-                            item = item,
-                            onClick = { onNavigateToVote(item.contentId) }
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(40.dp))
-
         }
     }
 }

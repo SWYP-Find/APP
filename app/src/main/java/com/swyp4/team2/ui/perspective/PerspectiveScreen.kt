@@ -58,6 +58,7 @@ import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.SortFilterChip
 import com.swyp4.team2.ui.perspective.model.PerspectiveUiModel
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray600
@@ -73,7 +74,7 @@ import kotlinx.coroutines.launch
 fun PerspectiveScreen(
     onBackClick: ()->Unit,
     onNextClick: ()->Unit,
-    onMoreClick: ()->Unit,
+    onMoreClick: (String)->Unit,
     modifier: Modifier = Modifier,
     viewModel: PerspectiveViewModel = hiltViewModel()
 ) {
@@ -88,7 +89,7 @@ fun PerspectiveScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
@@ -97,7 +98,7 @@ fun PerspectiveScreen(
                     showLogo = false,
                     showBackButton = false,
                     onBackClick = onBackClick,
-                    backgroundColor = SwypTheme.colors.surface,
+                    backgroundColor = Beige200,
                     actions = {
                         IconButton(onClick = { onNextClick() }) {
                             Icon(
@@ -127,8 +128,8 @@ fun PerspectiveScreen(
                 .padding(innerPadding)
         ){
             PerspectiveHeader(
-                proPercentage = 59.5f,
-                conPercentage = 40.5f
+                proPercentage = uiState.proRatio * 100f,
+                conPercentage = uiState.conRatio * 100f
             )
 
             CustomTabBar(
@@ -180,7 +181,7 @@ fun PerspectiveScreen(
                     itemsIndexed(filteredList) { index, item ->
                         PerspectiveItemCard(
                             item = item,
-                            onMoreClick = onMoreClick
+                            onMoreClick = { onMoreClick(item.commentId) }
                         )
 
                         if (index == filteredList.lastIndex && uiState.hasNext && !uiState.isLoading) {

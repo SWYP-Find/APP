@@ -81,7 +81,7 @@ fun ScenarioScreen(
                     onBackClick = onBackClick,
                     backgroundColor = SwypTheme.colors.surface,
                     actions = {
-                        IconButton(onClick = { /* 전체 다시 듣기 로직 */ }) {
+                        IconButton(onClick = { onNextClick() }) {
                             Icon(painterResource(R.drawable.ic_reload), contentDescription = "다시듣기", tint = Gray900)
                         }
                     }

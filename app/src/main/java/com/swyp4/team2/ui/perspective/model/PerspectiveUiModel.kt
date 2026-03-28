@@ -8,7 +8,7 @@ import java.time.ZonedDateTime
 import kotlin.time.Instant
 
 data class PerspectiveUiModel(
-    val commentId: Long,
+    val commentId: String,
     val profileImageRes: Int,
     val nickname: String,
     val stance: PerspectiveStance,
@@ -35,7 +35,7 @@ fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
 
 val mockPerspectiveList = listOf(
     PerspectiveUiModel(
-        commentId = 1L,
+        commentId = "1",
         profileImageRes = R.drawable.ic_profile_mengzi,
         nickname = "사유하는 라쿤",
         stance = PerspectiveStance.AGREE,
@@ -46,7 +46,7 @@ val mockPerspectiveList = listOf(
         isLiked = false
     ),
     PerspectiveUiModel(
-        commentId = 2L,
+        commentId = "2",
         profileImageRes = R.drawable.ic_profile_mengzi,
         nickname = "사유하는 고슴도치",
         stance = PerspectiveStance.AGREE,
@@ -57,7 +57,7 @@ val mockPerspectiveList = listOf(
         isLiked = true
     ),
     PerspectiveUiModel(
-        commentId = 3L,
+        commentId = "3",
         profileImageRes = R.drawable.ic_profile_mengzi,
         nickname = "사유하는 고양이",
         stance = PerspectiveStance.DISAGREE,
@@ -68,7 +68,7 @@ val mockPerspectiveList = listOf(
         isLiked = false
     ),
     PerspectiveUiModel(
-        commentId = 4L,
+        commentId = "4",
         profileImageRes = R.drawable.ic_profile_mengzi,
         nickname = "철학적인 부엉이",
         stance = PerspectiveStance.AGREE,
@@ -79,7 +79,7 @@ val mockPerspectiveList = listOf(
         isLiked = false
     ),
     PerspectiveUiModel(
-        commentId = 4L,
+        commentId = "5",
         profileImageRes = R.drawable.ic_profile_mengzi,
         nickname = "철학적인 부엉이",
         stance = PerspectiveStance.AGREE,
@@ -90,7 +90,7 @@ val mockPerspectiveList = listOf(
         isLiked = false
     ),
     PerspectiveUiModel(
-        commentId = 4L,
+        commentId = "6",
         profileImageRes = R.drawable.ic_profile_mengzi,
         nickname = "철학적인 부엉이",
         stance = PerspectiveStance.AGREE,

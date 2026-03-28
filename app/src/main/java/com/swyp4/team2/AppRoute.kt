@@ -5,7 +5,6 @@ sealed class AppRoute(val route: String){
     object Login : AppRoute("login_screen")
     object Onboarding : AppRoute("onboarding_screen")
     object Main : AppRoute("main_screen")
-    object Scenario : AppRoute("scenario_screen")
     object Alarm : AppRoute("alarm_screen")
     object Setting : AppRoute("setting_screen")
 
@@ -21,16 +20,25 @@ sealed class AppRoute(val route: String){
     object SettingProfile : AppRoute("setting_profile_screen")       // 설정-프로필 편집
     object SettingAlarm : AppRoute("setting_alarm_screen")         // 설정-알림 설정
 
-    object PreVote : AppRoute("pre_vote_screen")
-    object PostVote : AppRoute("post_vote_screen")
-    object Perspective : AppRoute("perspective_screen/{itemId}"){
-        fun createRoute(itemId: Long): String {
-            return "perspective_screen/$itemId"
+    object PreVote : AppRoute("pre_vote_screen/{battleId}") {
+        fun createRoute(battleId: String) = "pre_vote_screen/$battleId"
+    }
+
+    object Scenario : AppRoute("scenario_screen/{battleId}") {
+        fun createRoute(battleId: String) = "scenario_screen/$battleId"
+    }
+
+    object PostVote : AppRoute("post_vote_screen/{battleId}") {
+        fun createRoute(battleId: String) = "post_vote_screen/$battleId"
+    }
+    object Perspective : AppRoute("perspective_screen/{battleId}"){
+        fun createRoute(battleId: String): String {
+            return "perspective_screen/$battleId"
         }
     }
-    object PerspectiveDetail : AppRoute("perspective_detail_screen/{itemId}"){
-        fun createRoute(itemId: Long): String {
-            return "perspective_detail_screen/$itemId"
+    object PerspectiveDetail : AppRoute("perspective_detail_screen/{battleId}"){
+        fun createRoute(battleId: String): String {
+            return "perspective_detail_screen/$battleId"
         }
     }
 

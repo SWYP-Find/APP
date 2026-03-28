@@ -8,7 +8,7 @@ import java.io.IOException
 
 fun ContentResponseDto.toDomain(): ContentCard {
     return ContentCard(
-        id = this.id,
+        id = this.id.toString(),
         title = this.title,
         description = this.description,
         optionA = this.optionA,

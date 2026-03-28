@@ -10,7 +10,7 @@ data class TodayBattleResponseDto(
 )
 
 data class TodayBattleItemDto(
-    val battleId: String,
+    val battleId: Long,
     val title: String,
     val summary: String,
     val thumbnailUrl: String,
@@ -21,13 +21,13 @@ data class TodayBattleItemDto(
 )
 
 data class TodayBattleTagDto(
-    val tagId: String,
+    val tagId: Long,
     val name: String,
     val type: String
 )
 
 data class TodayBattleOptionDto(
-    val optionId: String,
+    val optionId: Long,
     val label: String,
     val title: String,
     val representative: String,
@@ -45,20 +45,20 @@ fun TodayBattleResponseDto.toDomainModel(): TodayBattleBoard{
 
 fun TodayBattleItemDto.toDomainModel(): TodayBattleItem {
     return TodayBattleItem(
-        battleId = this.battleId,
+        battleId = this.battleId.toString(),
         title = this.title,
         summary = this.summary,
         thumbnailUrl = this.thumbnailUrl,
         type = this.type,
         audioDuration = this.audioDuration,
-        tags = this.tags.map { it.name }, // 🌟 태그 객체에서 '이름'만 쏙 뽑아서 List<String>으로!
+        tags = this.tags.map { it.name },
         options = this.options.map { it.toDomainModel() }
     )
 }
 
 fun TodayBattleOptionDto.toDomainModel(): TodayBattleOption {
     return TodayBattleOption(
-        optionId = this.optionId,
+        optionId = this.optionId.toString(),
         label = this.label,
         title = this.title,
         representative = this.representative,

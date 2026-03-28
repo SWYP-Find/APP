@@ -7,9 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -37,9 +35,9 @@ import com.swyp4.team2.ui.perspective.PerspectiveDetailScreen
 import com.swyp4.team2.ui.perspective.PerspectiveScreen
 import com.swyp4.team2.ui.splash.SplashScreen
 import com.swyp4.team2.ui.theme.Beige200
+import com.swyp4.team2.ui.vote.VoteRoute
 import com.swyp4.team2.ui.vote.VoteScreen
-import com.swyp4.team2.ui.vote.model.VoteType
-import com.swyp4.team2.ui.vote.model.dummyVoteItem
+import com.swyp4.team2.ui.vote.VoteType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -157,43 +155,56 @@ fun AppNavigation() {
             }
 
             // 사전 투표 화면
-            composable(AppRoute.PreVote.route) {
-                VoteScreen(
+            composable(
+                route = AppRoute.PreVote.route,
+                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+
+                VoteRoute(
                     voteType = VoteType.PRE,
-                    uiModel = dummyVoteItem,
                     onBackClick = {
                         rootNavController.popBackStack()
                     },
-                    onVoteSubmit = {
-                        rootNavController.navigate(AppRoute.Scenario.route)
+                    onVoteSubmit = { submittedBattleId ->
+                        rootNavController.navigate(AppRoute.PostVote.createRoute(submittedBattleId))
+                        // rootNavController.navigate(AppRoute.Scenario.createRoute(battleId))
                     }
                 )
             }
 
-            // tts 화면
-            composable(AppRoute.Scenario.route) {
+            // 시나리오 (TTS) 화면
+            composable(
+                route = AppRoute.Scenario.route,
+                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val contentId = backStackEntry.arguments?.getString("battleId") ?: ""
+
                 ScenarioScreen(
-                    battleId = "",
+                    battleId = contentId,
                     onBackClick = {
-                        //rootNavController.popBackStack()
-                        rootNavController.navigate(AppRoute.PostVote.route)
+                        rootNavController.popBackStack()
                     },
                     onNextClick = {
-                        rootNavController.navigate(AppRoute.PostVote.route)
+                        rootNavController.navigate(AppRoute.PostVote.createRoute(contentId))
                     }
                 )
             }
 
             // 사후 투표 화면
-            composable(AppRoute.PostVote.route) {
-                VoteScreen(
+            composable(
+                route = AppRoute.PostVote.route,
+                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+
+                VoteRoute(
                     voteType = VoteType.POST,
-                    uiModel = dummyVoteItem,
                     onBackClick = {
                         rootNavController.popBackStack()
                     },
-                    onVoteSubmit = {
-                        rootNavController.navigate(AppRoute.Perspective.createRoute(0L)) {
+                    onVoteSubmit = { submittedBattleId ->
+                        rootNavController.navigate(AppRoute.Perspective.createRoute(submittedBattleId)) {
                             popUpTo(AppRoute.Main.route) { inclusive = false }
                         }
                     }
@@ -204,10 +215,10 @@ fun AppNavigation() {
             composable(
                 route = AppRoute.Perspective.route,
                 arguments = listOf(
-                    navArgument("itemId") { type = NavType.LongType }
+                    navArgument("battleId") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val itemId = backStackEntry.arguments?.getLong("itemId") ?: 0L
+                val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
 
                 PerspectiveScreen(
                     onBackClick = {
@@ -216,8 +227,8 @@ fun AppNavigation() {
                     onNextClick = {
                         rootNavController.navigate(AppRoute.Curation.route)
                     },
-                    onMoreClick = {
-                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
+                    onMoreClick = { submittedBattleId ->
+                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(submittedBattleId))
                     }
                 )
             }
@@ -226,10 +237,10 @@ fun AppNavigation() {
             composable(
                 route = AppRoute.PerspectiveDetail.route,
                 arguments = listOf(
-                    navArgument("itemId") { type = NavType.LongType }
+                    navArgument("battleId") { type = NavType.StringType }
                 )
             ){ backStackEntry ->
-                val itemId = backStackEntry.arguments?.getLong("itemId") ?: 0L
+                val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
 
                 PerspectiveDetailScreen(
                     // itemId = itemId,

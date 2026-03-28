@@ -65,8 +65,8 @@ fun MainScreen(
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
-                    onNavigateToVote = { id ->
-                        rootNavController.navigate(AppRoute.PreVote.route)
+                    onNavigateToVote = { contentId->
+                        rootNavController.navigate(AppRoute.PreVote.createRoute(contentId))
                     },
                     onNavigateToTrendingBattle = { },
                     onNavigateToNewBattle = { },
@@ -89,8 +89,8 @@ fun MainScreen(
                     onBackClick = {
                         mainNavController.popBackStack()
                     },
-                    onEnterBattle = {
-                        rootNavController.navigate(AppRoute.PreVote.route)
+                    onEnterBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.PreVote.createRoute(battleId))
                     }
                 )
             }
