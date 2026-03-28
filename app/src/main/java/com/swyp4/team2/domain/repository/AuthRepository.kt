@@ -1,6 +1,6 @@
 package com.swyp4.team2.domain.repository
 
-import com.swyp4.team2.domain.model.AuthToken
+import com.swyp4.team2.domain.model.AuthBoard
 
 interface AuthRepository{
     suspend fun refreshAccessToken(refreshToken: String): Result<Unit>
@@ -9,7 +9,7 @@ interface AuthRepository{
         provider: String,
         authCode: String,
         redirectUri: String
-    ): Result<AuthToken>
+    ): Result<AuthBoard>
 
     suspend fun logout(): Result<Unit>
     suspend fun withdraw(): Result<Unit>

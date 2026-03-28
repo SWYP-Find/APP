@@ -55,12 +55,12 @@ fun HomeSectionHeader(
             }
         }
         Text(text = annotatedTitle, style = SwypTheme.typography.h3Bold, color = Gray900)
-        Text(
+        /*Text(
             text = stringResource(R.string.more),
             style = SwypTheme.typography.b4Medium,
             color = Gray500,
             modifier = Modifier.clickable { onMoreClick() }
-        )
+        )*/
     }
 }
 
@@ -260,7 +260,6 @@ private fun BattleOpinionBox(modifier: Modifier = Modifier, opinion: String?, na
 // 6. Today Pické
 @Composable
 fun TodayPickeCard(item: TodayPickUiModel, modifier: Modifier = Modifier) {
-    // Sealed Class를 활용해 VOTE와 QUIZ를 완벽히 분기 처리!
     val backgroundColor = when (item) {
         is TodayPickUiModel.VotePick -> Beige400
         is TodayPickUiModel.QuizPick -> SwypTheme.colors.surface

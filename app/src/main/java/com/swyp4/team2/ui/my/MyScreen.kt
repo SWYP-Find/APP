@@ -1,5 +1,7 @@
 package com.swyp4.team2.ui.my
 
+import android.app.Activity
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,12 +21,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,14 +37,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.R
+import com.swyp4.team2.domain.model.PhilosopherInfo
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.ProfileImage
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige50
 import com.swyp4.team2.ui.theme.Beige500
@@ -53,12 +63,14 @@ import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Primary800
+import com.swyp4.team2.ui.theme.Primary900
 import com.swyp4.team2.ui.theme.Secondary200
 import com.swyp4.team2.ui.theme.Secondary300
 import com.swyp4.team2.ui.theme.Secondary600
 import com.swyp4.team2.ui.theme.Secondary700
 import com.swyp4.team2.ui.theme.Secondary900
 import com.swyp4.team2.ui.theme.SwypTheme
+import com.swyp4.team2.util.AdMobManager
 
 @Composable
 fun MyScreen(
@@ -67,28 +79,50 @@ fun MyScreen(
     onNavigateToDiscussion: () -> Unit,
     onNavigateToPhilosopher: () -> Unit,
     onNavigateToContent: () -> Unit,
-    onNavigateToNotice: () -> Unit
+    onNavigateToNotice: () -> Unit,
+    viewModel: MyViewModel = hiltViewModel()
 ) {
-    var hasUnreadNotification by remember { mutableStateOf(true) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    val adMobManager = remember { AdMobManager(context) }
+
+
+    LaunchedEffect(Unit) {
+        adMobManager.loadAd(userId = uiState.userId)
+    }
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             CustomTopAppBar(
-                backgroundColor = SwypTheme.colors.surface,
+                backgroundColor = Beige200,
                 centerTitle = false,
                 actions = {
                     IconButton(
                         onClick = {
                             onNavigateToAlarm()
-                            hasUnreadNotification = false // 클릭했으니까 빨간 점 없애기 (선택사항)
+                            viewModel.readNotice()
                         }
                     ) {
-                        Icon(
-                            painterResource(R.drawable.ic_alarm),
-                            contentDescription = stringResource(R.string.alarm),
-                            tint = Gray900
-                        )
+                        Box {
+                            Icon(
+                                painterResource(R.drawable.ic_alarm),
+                                contentDescription = stringResource(R.string.alarm),
+                                tint = Gray900
+                            )
+
+                            if (uiState.hasNewNotice) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(5.dp)
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 2.dp, y = (-2).dp)
+                                        .background(Color(0xFFFF5454), CircleShape)
+                                )
+                            }
+                        }
                     }
                     IconButton(
                         onClick = {
@@ -104,51 +138,72 @@ fun MyScreen(
             )
         },
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(top = innerPadding.calculateTopPadding())
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            Spacer(modifier = Modifier.height(24.dp))
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
+            }
+        }
+        else {
+            Column(
+                modifier = Modifier
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
 
-            ProfileSection(
-                nickname = "사색하는 고양이",
-                userHandle = "@user_code"
-            )
+                ProfileSection(
+                    nickname = uiState.nickname,
+                    userHandle = uiState.userHandle,
+                    profileImage = uiState.philosopherInfo?.imageUrl ?: R.drawable.ic_profile_kant
+                )
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            CreditCard(
-                credit = 240,
-                onChargeClick = {
+                CreditCard(
+                    credit = uiState.credit,
+                    onChargeClick = {
+                        activity?.let {
+                            adMobManager.showAd(
+                                activity = it,
+                                onRewardEarned = {
+                                    viewModel.refreshPointsAfterAd() // 포인트 +10 갱신
+                                    adMobManager.loadAd(userId = uiState.userId)
+                                }
+                            )
+                        } ?: run {
+                            Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                )
 
-                }
-            )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                PhilosopherTypeCard(
+                    philosopherInfo = uiState.philosopherInfo,
+                    onClick = { onNavigateToPhilosopher() }
+                )
 
-            PhilosopherTypeCard(
-                philosopherImage = R.drawable.ic_profile_mengzi,
-                philosopherName = "칸트형",
-                philosopherDesc = "원칙주의자",
-                onClick = { onNavigateToPhilosopher() }
-            )
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            MyPageMenuItem(
-                title = stringResource(R.string.my_menu_discussion),
-                onClick = { onNavigateToDiscussion() }
-            )
-            MyPageMenuItem(
-                title = stringResource(R.string.my_menu_content),
-                onClick = { onNavigateToContent() }
-            )
-            MyPageMenuItem(
-                title = stringResource(R.string.my_menu_notice),
-                onClick = { onNavigateToNotice() }
-            )
+                MyPageMenuItem(
+                    title = stringResource(R.string.my_menu_discussion),
+                    onClick = { onNavigateToDiscussion() }
+                )
+                MyPageMenuItem(
+                    title = stringResource(R.string.my_menu_content),
+                    onClick = { onNavigateToContent() }
+                )
+                MyPageMenuItem(
+                    title = stringResource(R.string.my_menu_notice),
+                    onClick = { onNavigateToNotice() }
+                )
+            }
         }
     }
 }
@@ -156,7 +211,8 @@ fun MyScreen(
 @Composable
 fun ProfileSection(
     nickname: String,
-    userHandle: String
+    userHandle: String,
+    profileImage: Any?
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -165,7 +221,7 @@ fun ProfileSection(
     ) {
         // 프로필 이미지
         ProfileImage(
-            model = R.drawable.ic_profile_mengzi,
+            model = profileImage ?: R.drawable.ic_profile_mengzi,
             modifier = Modifier.size(52.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
@@ -180,11 +236,14 @@ fun ProfileSection(
 
 @Composable
 fun PhilosopherTypeCard(
-    philosopherImage: Any?,
-    philosopherName: String,
-    philosopherDesc: String,
+    philosopherInfo: PhilosopherInfo?,
     onClick: () -> Unit
 ) {
+    val isLocked = philosopherInfo == null // 잠금 여부 확인
+    val displayImage = if (isLocked) R.drawable.img_lock else philosopherInfo?.imageUrl
+    val displayName = if (isLocked) "??형" else philosopherInfo?.name ?: ""
+    val displayDesc = if (isLocked) "나만의 철학자를 찾아보세요" else philosopherInfo?.description ?: ""
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -197,7 +256,7 @@ fun PhilosopherTypeCard(
     ) {
         // [왼쪽] 철학자 아이콘
         ProfileImage(
-            model = philosopherImage,
+            model = displayImage,
             modifier = Modifier.size(40.dp),
         )
 
@@ -212,7 +271,7 @@ fun PhilosopherTypeCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "$philosopherName - $philosopherDesc",
+                text = if (isLocked) displayName else "$displayName - $displayDesc",
                 style = SwypTheme.typography.b3SemiBold,
                 color = Gray700
             )
@@ -220,7 +279,7 @@ fun PhilosopherTypeCard(
 
         // [오른쪽] 화살표
         Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_right),
+            painter = painterResource(id = R.drawable.ic_arrow_right_a),
             contentDescription = null,
             modifier = Modifier.size(12.dp),
             tint = Gray900
@@ -238,7 +297,6 @@ fun CreditCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(Primary800)
-            .clickable { onChargeClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -316,7 +374,7 @@ fun MyPageMenuItem(
                 color = Gray700
             )
             Icon(
-                painterResource(R.drawable.ic_arrow_right),
+                painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
                 tint = Gray900

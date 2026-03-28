@@ -2,7 +2,9 @@ package com.swyp4.team2.data.remote
 
 import com.swyp4.team2.data.model.AuthResponseDto
 import com.swyp4.team2.data.model.BaseResponse
+import com.swyp4.team2.data.model.LogoutResponseDto
 import com.swyp4.team2.data.model.SocialLoginRequest
+import com.swyp4.team2.data.model.WithdrawnResponseDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.Header
@@ -25,10 +27,10 @@ interface AuthApi{
 
     // 로그아웃
     @POST("/api/v1/auth/logout")
-    suspend fun logout(): BaseResponse<String>
+    suspend fun logout(): BaseResponse<LogoutResponseDto>
 
     // 회원탈퇴
     @DELETE("/api/v1/me")
-    suspend fun withdraw(): BaseResponse<String>
+    suspend fun withdraw(): BaseResponse<WithdrawnResponseDto>
 }
 

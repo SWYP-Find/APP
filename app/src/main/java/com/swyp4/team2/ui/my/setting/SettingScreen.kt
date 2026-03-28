@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
@@ -37,7 +38,8 @@ fun SettingScreen(
     onBackClick: ()->Unit,
     onNavigateToSettingProfile: ()->Unit,
     onNavigateToSettingAlarm: ()->Unit,
-    onOpenWebLink: (String)->Unit,
+    onNavigateToPrivacyPolicy: () -> Unit,
+    onNavigateToTermsOfService: () -> Unit
 ) {
     Scaffold(
         topBar={
@@ -47,10 +49,10 @@ fun SettingScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.surface
+                backgroundColor = Beige200
             )
         },
-        containerColor = SwypTheme.colors.surface
+        containerColor = Beige200
     ){ innerPadding ->
         Column(
             modifier = Modifier
@@ -58,28 +60,30 @@ fun SettingScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
         ){
-            SettingMenuItem(
+            /*SettingMenuItem(
                 title = stringResource(R.string.my_setting_alarm),
                 onClick = {
                     onNavigateToSettingAlarm()
                 }
-            )
+            )*/
             SettingMenuItem(
                 title = stringResource(R.string.setting_footer_privacy),
-                onClick = {
-                    // 웹 링크 열기
-                }
+                onClick = onNavigateToPrivacyPolicy
             )
             SettingMenuItem(
                 title = stringResource(R.string.setting_footer_terms),
-                onClick = {
-                    // 웹 링크 열기
-                }
+                onClick = onNavigateToTermsOfService
             )
             SettingMenuItem(
                 title = stringResource(R.string.logout),
                 onClick = {
                     // 로그아웃 하기
+                }
+            )
+            SettingMenuItem(
+                title = stringResource(R.string.withdraw),
+                onClick = {
+                    // 탈퇴 하기
                 }
             )
             Spacer(modifier = Modifier.weight(1f))
@@ -109,7 +113,7 @@ fun SettingMenuItem(
                 color = Gray700
             )
             Icon(
-                painterResource(R.drawable.ic_arrow_right),
+                painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
                 tint = Gray900

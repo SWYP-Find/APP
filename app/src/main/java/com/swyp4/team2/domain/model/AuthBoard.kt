@@ -1,6 +1,6 @@
 package com.swyp4.team2.domain.model
 
-data class AuthToken(
+data class AuthBoard(
     val accessToken: String,
     val refreshToken: String,
     val userTag: String,

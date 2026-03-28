@@ -28,6 +28,8 @@ import com.swyp4.team2.ui.my.setting.SettingScreen
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.SwypTheme
 import com.swyp4.team2.ui.todaybattle.TodayBattleScreen
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.swyp4.team2.ui.theme.Beige200
 
 @Composable
 fun MainScreen(
@@ -40,21 +42,8 @@ fun MainScreen(
 
     val showBottomBar = currentRoute != BottomNavItem.TodayBattle.route
 
-    val rootBackStackEntry by rootNavController.currentBackStackEntryAsState()
-    val nextRoute = rootBackStackEntry?.savedStateHandle?.get<String>("next_route")
-
-    LaunchedEffect(nextRoute) {
-        if (nextRoute != null) {
-            // 메모에 적힌 목적지(Curation)로 이동!
-            mainNavController.navigate(nextRoute)
-
-            // 🚨 이동했으면 메모를 찢어버려야 합니다! (안 지우면 다른 탭 갔다가 돌아올 때 또 무한 이동됨)
-            rootBackStackEntry?.savedStateHandle?.remove<String>("next_route")
-        }
-    }
-
     Scaffold(
-        containerColor = if (showBottomBar) SwypTheme.colors.surface else Gray900,
+        containerColor = if (showBottomBar) Beige200 else Gray900,
         bottomBar = {
             if (showBottomBar) {
                 CustomBottomNavigationBar(mainNavController)
@@ -77,23 +66,12 @@ fun MainScreen(
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { id ->
-                        // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
                         rootNavController.navigate(AppRoute.PreVote.route)
-                        // 나중에 API 연결 시 라우트 예시:
-                        // rootNavController.navigate("pre_vote_route/$id")
                     },
-                    onNavigateToTrendingBattle = {
-
-                    },
-                    onNavigateToNewBattle = {
-
-                    },
-                    onNavigateToBestBattle = {
-
-                    },
-                    onNavigateToTodayPicke = {
-
-                    }
+                    onNavigateToTrendingBattle = { },
+                    onNavigateToNewBattle = { },
+                    onNavigateToBestBattle = { },
+                    onNavigateToTodayPicke = { }
                 )
             }
             composable(BottomNavItem.Explore.route){
@@ -102,13 +80,7 @@ fun MainScreen(
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { id ->
-                        // 🔥 여기서 VoteScreen으로 이동!
-                        // 지금은 더미데이터라 단순히 화면만 넘기지만,
-                        // 나중에는 API 통신을 위해 라우트에 id를 붙여서 넘길 수 있습니다.
                         rootNavController.navigate(AppRoute.PreVote.route)
-
-                        // 💡 나중에 API 연결 시 라우트 예시:
-                        // rootNavController.navigate("pre_vote_route/$id")
                     }
                 )
             }
@@ -145,61 +117,37 @@ fun MainScreen(
                 )
             }
 
-
             composable(AppRoute.DiscussionHistory.route) {
                 DiscussionHistoryScreen(
-                    onBackClick = { mainNavController.popBackStack() }
+                    onBackClick = { mainNavController.popBackStack() },
+                    /* onNavigateToComment = { itemId ->
+                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
+                    }*/
                 )
             }
             composable(AppRoute.ContentActivity.route) {
                 ContentActivityScreen(
-                    onBackClick = { mainNavController.popBackStack() }
+                    onBackClick = { mainNavController.popBackStack() },
+                    onNavigateToComment = { itemId ->
+                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
+                    }
                 )
             }
             composable(AppRoute.PhilosopherType.route) {
-                PhilosopherTypeScreen(
-                    onBackClick = { mainNavController.popBackStack() }
-                )
+                PhilosopherTypeScreen(onBackClick = { mainNavController.popBackStack() })
             }
             composable(AppRoute.NoticeEvent.route) {
-                NoticeEventScreen(
-                    onBackClick = { mainNavController.popBackStack() }
-                )
+                NoticeEventScreen(onBackClick = { mainNavController.popBackStack() })
             }
             composable(AppRoute.Setting.route){
                 SettingScreen(
-                    onBackClick = {
-                        mainNavController.popBackStack()
-                    },
-                    onNavigateToSettingProfile = {
-                        rootNavController.navigate(AppRoute.SettingProfile.route)
-                    },
-                    onNavigateToSettingAlarm = {
-                        rootNavController.navigate(AppRoute.SettingAlarm.route)
-                    },
-                    onOpenWebLink = {
-                        // 웹 링크 열기
-                    }
-                )
-            }
-
-            composable(AppRoute.Curation.route){
-                CurationScreen(
-                    onCloseClick = {
-                        mainNavController.popBackStack()
-                    },
-                    onBackClick = {
-                        mainNavController.popBackStack()
-                    },
-                    onItemClick = {
-                        // 🔥 여기서 사전투표(PreVote) 혹은 투표 화면으로 이동!
-                        rootNavController.navigate(AppRoute.PreVote.route)
-                        // 나중에 API 연결 시 라우트 예시:
-                        // rootNavController.navigate("pre_vote_route/$id")
-                    }
+                    onBackClick = { mainNavController.popBackStack() },
+                    onNavigateToSettingProfile = { rootNavController.navigate(AppRoute.SettingProfile.route) },
+                    onNavigateToSettingAlarm = { rootNavController.navigate(AppRoute.SettingAlarm.route) },
+                    onNavigateToPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
+                    onNavigateToTermsOfService = { rootNavController.navigate(AppRoute.TermsOfService.route) }
                 )
             }
         }
     }
 }
-

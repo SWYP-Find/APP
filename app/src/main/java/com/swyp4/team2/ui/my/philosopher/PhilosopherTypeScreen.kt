@@ -19,8 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -35,12 +34,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle.Companion.Stroke
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.res.painterResource
@@ -66,21 +63,31 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.swyp4.team2.domain.model.Chemistry
+import com.swyp4.team2.domain.model.MainPhilosopherDetail
+import com.swyp4.team2.domain.model.TasteReport
+import com.swyp4.team2.domain.model.TraitAnalysis
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.component.ShareDialog
-import com.swyp4.team2.ui.theme.Beige50
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Primary500
-import com.swyp4.team2.ui.theme.SwypAppTheme
+import com.swyp4.team2.ui.theme.Primary900
 import kotlinx.coroutines.launch
 import shareCapturedImageToKakao
 
 @Composable
 fun PhilosopherTypeScreen(
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: PhilosopherTypeViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val report = uiState.report
+
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -94,13 +101,13 @@ fun PhilosopherTypeScreen(
                 // 1. Box로 감싼 HeaderSection 캡처
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
 
-                // 2. 카카오톡에 캡처한 이미지와 함께 공유!
+                // 2. 카카오톡에 캡처한 이미지와 함께 공유
                 shareCapturedImageToKakao(
                     context = context,
                     bitmap = bitmap,
-                    resultId = "12345", // 실제 데이터로 교체
-                    philosopherName = "칸트형", // 실제 데이터로 교체
-                    description = "결과보다 과정을 중시하는 원칙주의자" // 실제 데이터로 교체
+                    resultId = "12345",
+                    philosopherName = report?.mainPhilosopher?.name ?: "알 수 없음",
+                    description = report?.mainPhilosopher?.description ?: ""
                 )
             } catch (e: Exception) {
                 Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
@@ -109,7 +116,7 @@ fun PhilosopherTypeScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_philosopher),
@@ -117,55 +124,76 @@ fun PhilosopherTypeScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = onBackClick,
-                backgroundColor = SwypTheme.colors.surface,
+                backgroundColor = Beige200,
                 actions = {
-                    IconButton(onClick = { showShareDialog = true }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_share),
-                            contentDescription = "공유",
-                            tint = Gray900
-                        )
+                    if (report?.hasTestResult == true) {
+                        IconButton(onClick = { showShareDialog = true }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_share),
+                                contentDescription = "공유",
+                                tint = Gray900,
+                                modifier = modifier.size(16.dp)
+                            )
+                        }
                     }
                 }
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding())
-                .verticalScroll(scrollState)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
-        ) {
+        if (uiState.isLoading) {
             Box(
-                modifier = Modifier.drawWithContent {
-                    graphicsLayer.record { this@drawWithContent.drawContent() }
-                    drawLayer(graphicsLayer)
-                }
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
             ) {
-                // 1. 철학자 유형 헤더
-                PhilosopherHeaderSection()
+                CircularProgressIndicator(color = Primary900)
             }
+        }
+        else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(32.dp)
+            ) {
+                if (report != null && !report.hasTestResult) {
+                    LockedPhilosopherHeaderSection()
+                    LockedTraitAnalysisSection()
+                }
+                else if (report != null && report.hasTestResult) {
+                    Box(
+                        modifier = Modifier.drawWithContent {
+                            graphicsLayer.record { this@drawWithContent.drawContent() }
+                            drawLayer(graphicsLayer)
+                        }
+                    ) {
+                        // 1. 철학자 유형 헤더
+                        report.mainPhilosopher?.let { PhilosopherHeaderSection(it) }
+                    }
 
-            // 2. 성향 분석 (레이더 차트 + 막대 바)
-            TraitAnalysisSection()
+                    // 2. 성향 분석
+                    report.traitAnalysis?.let { TraitAnalysisSection(it) }
 
-            // 3. 내 취향 리포트
-            TasteReportSection()
+                    // 3. 취향 리포트
+                    report.tasteReport?.let { TasteReportSection(it) }
 
-            // 4. 궁합 유형
-            ChemistrySection()
+                    // 4. 궁합 유형
+                    report.chemistry?.let { ChemistrySection(it) }
 
-            // 5. 공유하기 버튼
-            CustomButton(
-                text = stringResource(R.string.my_share),
-                onClick = { showShareDialog = true },
-                modifier = Modifier.padding(bottom = 24.dp),
-                backgroundColor = SwypTheme.colors.primary,
-                textColor = Color.White,
-                iconResId = R.drawable.ic_share
-            )
+                    // 5. 공유하기 버튼
+                    CustomButton(
+                        text = stringResource(R.string.my_share),
+                        onClick = { showShareDialog = true },
+                        modifier = Modifier.padding(bottom = 24.dp),
+                        backgroundColor = SwypTheme.colors.primary,
+                        textColor = Color.White,
+                        iconResId = R.drawable.ic_share
+                    )
+                }
+            }
         }
 
         if (showShareDialog) {
@@ -194,9 +222,97 @@ fun PhilosopherTypeScreen(
     }
 }
 
+@Composable
+fun LockedPhilosopherHeaderSection() {
+    val cardShape = RoundedCornerShape(
+        topStart = 0.dp, topEnd = 0.dp, bottomStart = 4.dp, bottomEnd = 4.dp
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White, cardShape)
+            .border(1.dp, Beige400, cardShape)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(Primary500))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "나의 철학자 유형", style = SwypTheme.typography.labelMedium, color = Color(0xFF8C3E26))
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(text = "??형", style = SwypTheme.typography.h2SemiBold, color = Gray900)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(Color(0xFFEBEBEB), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.img_lock),
+                    contentDescription = "잠금",
+                    modifier = Modifier.size(52.dp),
+                    tint = Color.Unspecified
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "아직 분석할 기록이 부족해요.\n배틀에 참여하면 성향을 확인할 수 있어요!",
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray500,
+                textAlign = TextAlign.Center,
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+fun LockedTraitAnalysisSection() {
+    Column {
+        Text(text = "성향 분석", style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .background(Color.White, RoundedCornerShape(4.dp))
+                .border(1.dp, Beige400, RoundedCornerShape(4.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            // 흐릿한 레이더 차트 배경
+            RadarChart(
+                scores = listOf(0.92f, 0.85f, 0.45f, 0.45f, 0.88f, 0.72f),
+                labels = listOf("원칙", "이성", "개인", "변화", "내면", "이상"),
+                modifier = Modifier.size(200.dp).alpha(0.15f),
+            )
+
+            // 중앙 텍스트
+            Text(
+                text = "배틀 5개에 참여하시면\n잠금을 풀 수 있어요!",
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray900,
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp
+            )
+        }
+    }
+}
+
 // 헤더 섹션
 @Composable
-fun PhilosopherHeaderSection() {
+fun PhilosopherHeaderSection(philosopher: MainPhilosopherDetail) {
     val cardShape = RoundedCornerShape(
         topStart = 0.dp,
         topEnd = 0.dp,
@@ -230,21 +346,21 @@ fun PhilosopherHeaderSection() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "칸트형", style = SwypTheme.typography.h1SemiBold, color = Gray900)
+                Text(text = philosopher.name, style = SwypTheme.typography.h1SemiBold, color = Gray900)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             // 프로필 이미지
             ProfileImage(
-                model = R.drawable.ic_profile_mengzi, // profile.profileImg,
+                model = philosopher.imageUrl ?: R.drawable.ic_profile_mengzi, // profile.profileImg,
                 modifier = Modifier.size(80.dp),
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "결과보다 과정을 중시하고, 보편적 도덕 법칙을 따르는 원칙주의자. 어떤 상황에서도 흔들리지 않는 기준을 가진 사람입니다.",
+                text = philosopher.description,
                 style = SwypTheme.typography.b3Regular,
                 color = Gray600,
                 textAlign = TextAlign.Center
@@ -254,8 +370,7 @@ fun PhilosopherHeaderSection() {
 
             // 키워드 태그
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                val tags = listOf("의무론", "규칙 중시", "보편 원칙", "이성적")
-                tags.forEach { tag ->
+                philosopher.tags.forEach { tag ->
                     Box(
                         modifier = Modifier
                             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
@@ -271,7 +386,7 @@ fun PhilosopherHeaderSection() {
 
 // 성향 분석 섹션 (레이더 차트 + 수치)
 @Composable
-fun TraitAnalysisSection() {
+fun TraitAnalysisSection(analysis: TraitAnalysis) {
     Column {
         Text(text = "성향 분석", style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(12.dp))
@@ -287,7 +402,14 @@ fun TraitAnalysisSection() {
             // 레이더 차트 호출
             Box(modifier = Modifier.size(220.dp)) {
                 RadarChart(
-                    scores = listOf(0.92f, 0.85f, 0.45f, 0.45f, 0.88f, 0.72f), // 백엔드 수치를 0~1.0으로 변환해서 넣기
+                    scores = listOf(
+                        analysis.principle / 100f,
+                        analysis.logic / 100f,
+                        analysis.individual / 100f,
+                        analysis.change / 100f,
+                        analysis.inner / 100f,
+                        analysis.ideal / 100f
+                    ),
                     labels = listOf("원칙", "논리", "일관성", "공감", "실용", "직관")
                 )
             }
@@ -296,9 +418,9 @@ fun TraitAnalysisSection() {
 
             // 점수 막대 바 (2열 배치)
             val traits = listOf(
-                Pair("원칙", 92), Pair("이성", 85),
-                Pair("개인", 72), Pair("변화", 38),
-                Pair("내면", 88), Pair("이상", 45)
+                Pair("원칙", analysis.principle), Pair("이성", analysis.logic),
+                Pair("개인", analysis.individual), Pair("변화", analysis.change),
+                Pair("내면", analysis.inner), Pair("이상", analysis.ideal)
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -342,7 +464,7 @@ fun ScoreBar(modifier: Modifier = Modifier, label: String, score: Int) {
 
 // 내 취향 리포트 섹션
 @Composable
-fun TasteReportSection() {
+fun TasteReportSection(report: TasteReport) {
     Column {
         Text(text = "내 취향 리포트", style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(12.dp))
@@ -358,18 +480,17 @@ fun TasteReportSection() {
                 modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                ReportStatItem("47", "총 참여")
+                ReportStatItem(report.totalParticipation.toString(), "총 참여")
                 Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Beige400)
-                ReportStatItem("12", "의견 전환")
+                ReportStatItem(report.opinionChanges.toString(), "의견 전환")
                 Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Beige400)
-                ReportStatItem("68%", "배틀 승률")
+                ReportStatItem("${report.winRate}%", "배틀 승률")
             }
 
             HorizontalDivider(color = Beige400)
 
             // 하단 리스트
-            val categories = listOf("철학" to "20회", "문학" to "13회", "예술" to "8회", "사회" to "5회")
-            categories.forEachIndexed { index, item ->
+            report.topCategories.forEachIndexed { index, item ->
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -377,11 +498,11 @@ fun TasteReportSection() {
                     Row {
                         Text(text = "0${index + 1}", style = SwypTheme.typography.labelMedium, color = Color(0xFFCBA572))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "#${item.first}", style = SwypTheme.typography.labelMedium, color = Gray900)
+                        Text(text = "#${item.category}", style = SwypTheme.typography.labelMedium, color = Gray900)
                     }
-                    Text(text = item.second, style = SwypTheme.typography.label, color = Gray500)
+                    Text(text = "${item.count}회", style = SwypTheme.typography.label, color = Gray500)
                 }
-                if (index < categories.size - 1) HorizontalDivider(color = Beige100)
+                if (index < report.topCategories.size - 1) HorizontalDivider(color = Beige100)
             }
         }
     }
@@ -398,22 +519,38 @@ fun ReportStatItem(value: String, label: String) {
 
 // 궁합 유형 섹션
 @Composable
-fun ChemistrySection() {
+fun ChemistrySection(chemistry: Chemistry) {
     Column {
         Text(text = "궁합 유형", style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            // BEST
-            ChemistryCard(modifier = Modifier.weight(1f), isBest = true, name = "플라톤형", desc = "본질과 이상을 좇으며 더 나은 세계를 꿈꾸는 사람.")
-            // WORST
-            ChemistryCard(modifier = Modifier.weight(1f), isBest = false, name = "니체형", desc = "기존의 틀을 부수고 자기만의 길을 가는 사람")
+            ChemistryCard(
+                modifier = Modifier.weight(1f),
+                isBest = true,
+                name = chemistry.best.name,
+                desc = chemistry.best.description,
+                imageUrl = chemistry.best.imageUrl
+            )
+            ChemistryCard(
+                modifier = Modifier.weight(1f),
+                isBest = false,
+                name = chemistry.worst.name,
+                desc = chemistry.worst.description,
+                imageUrl = chemistry.worst.imageUrl
+            )
         }
     }
 }
 
 @Composable
-fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, desc: String) {
+fun ChemistryCard(
+    modifier: Modifier = Modifier,
+    isBest: Boolean,
+    name: String,
+    desc: String,
+    imageUrl: Any?
+) {
     val titleColor = if (isBest) Color(0xFFCBA572) else Gray600
     val titleText = if (isBest) stringResource(R.string.my_best) else stringResource(R.string.my_worst)
     val iconResId = if (isBest) R.drawable.ic_best else R.drawable.ic_worst
@@ -425,7 +562,6 @@ fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, 
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 🌟 아이콘 + 텍스트를 Row로 묶어서 시안처럼 배치합니다.
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
@@ -447,7 +583,7 @@ fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, 
         Spacer(modifier = Modifier.height(16.dp))
 
         ProfileImage(
-            model =R.drawable.ic_profile_mengzi, // profile.profileImg,
+            model = imageUrl ?: R.drawable.ic_profile_mengzi,
             modifier = Modifier.size(56.dp),
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -461,7 +597,7 @@ fun ChemistryCard(modifier: Modifier = Modifier, isBest: Boolean, name: String, 
 fun RadarChart(
     scores: List<Float>,
     labels: List<String>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val centerX = size.width / 2
@@ -470,7 +606,8 @@ fun RadarChart(
         val angleStep = (2 * Math.PI / 6).toFloat()
 
         val primaryColor = Color(0xFF8C3E26) // 테마 갈색
-        val gridColor = Color(0xFFE2CFA7)    // 거미줄 베이지색
+        val gridColor = Color(0xFFE2CFA7)    // 베이지색
+
 
         // 1. 거미줄 배경 그리기 (3단계)
         for (step in 1..3) {

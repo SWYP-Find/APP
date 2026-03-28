@@ -2,12 +2,12 @@ package com.swyp4.team2.data.repository
 
 import com.swyp4.team2.data.local.TokenManager
 import com.swyp4.team2.data.model.SocialLoginRequest
+import com.swyp4.team2.data.model.toDomain
 import com.swyp4.team2.data.remote.AuthApi
-import com.swyp4.team2.domain.model.AuthToken
 import com.swyp4.team2.domain.repository.AuthRepository
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.swyp4.team2.domain.model.AuthBoard
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
@@ -16,7 +16,7 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
 
     // 토큰 갱신
-    override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
+    /*override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         delay(500L)
 
         // 무조건 성공한다고 가정! (실패하는 경우를 테스트하고 싶으면 Result.failure(Exception()) 으로 바꾸면 됩니다)
@@ -24,9 +24,9 @@ class AuthRepositoryImpl @Inject constructor(
         tokenManager.saveRefreshToken("dummy_new_refresh_token")
 
         return Result.success(Unit)
-    }
+    }*/
 
-    /*override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
+    override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
             // 1. 진짜 서버에 토큰 갱신 요청을 보냅니다.
             val response = api.refreshAccessToken(refreshToken)
@@ -44,11 +44,11 @@ class AuthRepositoryImpl @Inject constructor(
             // 인터넷이 끊겼거나 서버가 터졌을 때
             Result.failure(e)
         }
-    }*/
+    }
 
 
     // 소셜 로그인
-    override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthToken> {
+    /*override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthToken> {
         delay(500L)
 
         val dummyToken = AuthToken(
@@ -64,9 +64,9 @@ class AuthRepositoryImpl @Inject constructor(
         tokenManager.saveRefreshToken(dummyToken.refreshToken)
 
         return Result.success(dummyToken)
-    }
+    }*/
 
-    /*override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthToken> {
+    override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthBoard> {
         return try {
             // 1. 서버로 보낼 택배 상자(Request DTO)를 포장합니다.
             val request = SocialLoginRequest(
@@ -85,13 +85,7 @@ class AuthRepositoryImpl @Inject constructor(
                 tokenManager.saveRefreshToken(data.refreshToken)
 
                 // 4. UI 쪽에 넘겨줄 데이터(AuthToken)로 예쁘게 가공합니다.
-                val authToken = AuthToken(
-                    accessToken = data.accessToken,
-                    refreshToken = data.refreshToken,
-                    userTag = data.userTag,
-                    isNewUser = data.isNewUser,
-                    status = data.status
-                )
+                val authToken = data.toDomain()
                 Result.success(authToken)
             } else {
                 Result.failure(Exception(response.error?.message ?: "로그인 실패"))
@@ -99,7 +93,7 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
-    }*/
+    }
 
 
     // 로그아웃

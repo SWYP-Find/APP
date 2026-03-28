@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
+import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray300
@@ -55,7 +56,7 @@ fun SettingAlarmScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = Beige200,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -64,7 +65,7 @@ fun SettingAlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.surface
+                backgroundColor = Beige200
             )
         }
     ){ innerPadding ->

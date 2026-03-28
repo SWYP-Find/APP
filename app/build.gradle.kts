@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.swyp4.team2"
-        minSdk = 26   //Media3 등을 위해 26 이상 권장
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -29,11 +29,14 @@ android {
 
         val kakaoKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
         val googleClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
+        val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
+        val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
 
         buildConfigField("String", "KAKAO_DEBUG_APPKEY", "\"$kakaoKey\"")
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
-
+        manifestPlaceholders["admobAppId"] = admobAppId
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoKey
+        buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", "\"$admobRewardedAdUnitId\"")
     }
 
     buildTypes {
@@ -80,6 +83,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.geometry)
     implementation(libs.androidx.benchmark.traceprocessor)
     implementation(libs.androidx.compose.animation.core)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.play.services.ads.api)
+    implementation(libs.foundation)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
