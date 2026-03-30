@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.domain.model.BattleDetailBoard
 import com.swyp4.team2.domain.model.BattleOptionBoard
@@ -130,7 +131,7 @@ fun VoteScreen(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                AsyncImage(
+                SubcomposeAsyncImage(
                     model = battleInfo.thumbnailUrl,
                     contentDescription = null,
                     modifier = Modifier
@@ -151,7 +152,18 @@ fun VoteScreen(
                                 )
                             }
                         },
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    loading = {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = SwypTheme.colors.primary,
+                                modifier = Modifier.size(44.dp)
+                            )
+                        }
+                    }
                 )
 
                 Column(
@@ -207,16 +219,16 @@ fun VoteScreen(
                 ) {
                     if (battleInfo.options.size >= 2) {
                         VoteOptionCard(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(0.5f),
                             option = battleInfo.options[0],
-                            isSelected = selectedOptionId == battleInfo.options[0].optionId.toString(),
-                            onClick = { selectedOptionId = battleInfo.options[0].optionId.toString() }
+                            isSelected = selectedOptionId == battleInfo.options[0].optionId,
+                            onClick = { selectedOptionId = battleInfo.options[0].optionId}
                         )
                         VoteOptionCard(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(0.5f),
                             option = battleInfo.options[1],
-                            isSelected = selectedOptionId == battleInfo.options[1].optionId.toString(),
-                            onClick = { selectedOptionId = battleInfo.options[1].optionId.toString() }
+                            isSelected = selectedOptionId == battleInfo.options[1].optionId,
+                            onClick = { selectedOptionId = battleInfo.options[1].optionId }
                         )
                     }
                 }

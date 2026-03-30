@@ -29,14 +29,10 @@ class MyViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(MyUiState())
+    private val _uiState = MutableStateFlow(MyUiState(isLoading = true))
     val uiState: StateFlow<MyUiState> = _uiState.asStateFlow()
 
-    init {
-        fetchMyInfo()
-    }
-
-    private fun fetchMyInfo() {
+    fun fetchMyInfo() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 

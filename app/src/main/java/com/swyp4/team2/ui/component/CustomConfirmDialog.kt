@@ -58,12 +58,12 @@ fun CustomConfirmDialog(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 32.dp),
+                        .padding(horizontal = 24.dp, vertical = 24.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = message,
-                        style = SwypTheme.typography.b2Medium,
+                        style = SwypTheme.typography.b3SemiBold,
                         color = pointColor,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp

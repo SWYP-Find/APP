@@ -57,7 +57,7 @@ fun CustomTopAppBar(
                         painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
                         tint = backIconColor,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }

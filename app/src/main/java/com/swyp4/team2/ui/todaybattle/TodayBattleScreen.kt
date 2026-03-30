@@ -133,7 +133,7 @@ fun TodayBattleScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onBackClick, modifier = Modifier.size(24.dp)) {
+                    IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_left),
                             contentDescription = "뒤로가기",

@@ -27,9 +27,9 @@ fun SortFilterChip(
 
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(4.dp))
+            .clip(RoundedCornerShape(2.dp))
             .background(backgroundColor)
-            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 6.dp),
         contentAlignment = Alignment.Center

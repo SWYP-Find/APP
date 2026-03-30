@@ -146,7 +146,7 @@ fun PhilosopherTypeScreen(
                 showBackButton = true,
                 onBackClick = onBackClick,
                 backgroundColor = Beige200,
-                actions = {
+                /*actions = {
                     if (recapBoard != null) {
                         IconButton(onClick = { showShareDialog = true }) {
                             Icon(
@@ -157,7 +157,7 @@ fun PhilosopherTypeScreen(
                             )
                         }
                     }
-                }
+                }*/
             )
         }
     ) { innerPadding ->
@@ -208,14 +208,14 @@ fun PhilosopherTypeScreen(
                     )
 
                     // 5. 공유하기 버튼
-                    CustomButton(
+                    /*CustomButton(
                         text = stringResource(R.string.my_share),
                         onClick = { showShareDialog = true },
                         modifier = Modifier.padding(bottom = 24.dp),
                         backgroundColor = SwypTheme.colors.primary,
                         textColor = Color.White,
                         iconResId = R.drawable.ic_share
-                    )
+                    )*/
                 }
             }
         }

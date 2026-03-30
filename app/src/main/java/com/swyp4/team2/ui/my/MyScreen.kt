@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.swyp4.team2.AppRoute
@@ -87,11 +91,23 @@ fun MyScreen(
     val activity = context as? Activity
 
     val adMobManager = remember { AdMobManager(context) }
-
-
     LaunchedEffect(uiState.profile?.userTag) {
         uiState.profile?.userTag?.let {
             adMobManager.loadAd(userId = it)
+        }
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.fetchMyInfo()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -102,7 +118,7 @@ fun MyScreen(
                 backgroundColor = Beige200,
                 centerTitle = false,
                 actions = {
-                    IconButton(
+                    /*IconButton(
                         onClick = {
                             onNavigateToAlarm()
                             viewModel.readNotice()
@@ -125,7 +141,7 @@ fun MyScreen(
                                 )
                             }
                         }
-                    }
+                    }*/
                     IconButton(
                         onClick = {
                             onNavigateToSetting()
@@ -160,9 +176,9 @@ fun MyScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ProfileSection(
-                    nickname = uiState.profile!!.nickname,
-                    userHandle = "@${uiState.profile!!.userTag}",
-                    profileImage = uiState.profile!!.characterImageUrl
+                    nickname = uiState.profile?.nickname ?: "사용자",
+                    userHandle = uiState.profile?.userTag?.let { "@$it" } ?: "",
+                    profileImage = uiState.profile?.characterImageUrl
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -171,17 +187,24 @@ fun MyScreen(
                     credit = uiState.tier?.currentPoint ?: 0,
                     onChargeClick = {
                         activity?.let {
-                            adMobManager.showAd(
-                                activity = it,
-                                onRewardEarned = {
-                                    viewModel.refreshPointsAfterAd()
-                                    // 보상 받은 후 새 광고 다시 장전
-                                    uiState.profile?.userTag?.let { tag -> adMobManager.loadAd(userId = tag) }
-                                }
-                            )
-                        } ?: run {
-                            Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        val isAdReady = adMobManager.showAd(
+                            activity = it,
+                            onRewardEarned = {
+                                viewModel.refreshPointsAfterAd()
+                                uiState.profile?.userTag?.let { tag -> adMobManager.loadAd(userId = tag) }
+                            }
+                        )
+
+                        if (!isAdReady) {
+                            Toast.makeText(
+                                context,
+                                "아직 광고가 준비되지 않았습니다.\n잠시 후 다시 시도해주세요.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    } ?: run {
+                        Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
                     }
                 )
 

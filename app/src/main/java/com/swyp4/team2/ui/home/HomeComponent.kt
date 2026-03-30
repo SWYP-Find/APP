@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.home.model.HomeContentUiModel
@@ -71,36 +72,40 @@ fun EditorPickSection(
     modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit
 ) {
+    if (items.isEmpty()) return
+
     val pagerState = rememberPagerState(pageCount = { items.size })
 
-    HorizontalPager(state = pagerState, modifier = modifier.fillMaxWidth()) { page ->
-        val item = items[page]
-        EditorPickCard(
-            item = item,
-            currentIndex = page + 1,
-            totalCount = items.size,
-            modifier = Modifier.clickable { onItemClick(item.contentId) }
-        )
-    }
-}
-
-@Composable
-fun EditorPickCard(item: HomeContentUiModel, currentIndex: Int, totalCount: Int, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth().background(Color.Black)) {
-        // [상단] 라벨 & 페이지네이션
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.Black)
+    ) {
+        // [상단] 라벨 & 페이지네이션 (고정 영역)
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Surface(color = SwypTheme.colors.primary, shape = RoundedCornerShape(2.dp)) {
-                Text("EDITOR PICK", style = SwypTheme.typography.caption2SemiBold, color = Secondary200, modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp))
+                Text(
+                    text = "EDITOR PICK",
+                    style = SwypTheme.typography.caption2SemiBold,
+                    color = Secondary200,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                )
             }
             Surface(color = Gray500.copy(alpha = 0.8f), shape = RoundedCornerShape(12.dp)) {
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color.White, fontWeight = FontWeight.Bold)) { append(currentIndex.toString()) }
-                        withStyle(style = SpanStyle(color = Beige50.copy(alpha = 0.6f))) { append("/$totalCount") }
+                        withStyle(style = SpanStyle(color = Color.White, fontWeight = FontWeight.Bold)) {
+                            append((pagerState.currentPage + 1).toString())
+                        }
+                        withStyle(style = SpanStyle(color = Beige50.copy(alpha = 0.6f))) {
+                            append("/${items.size}")
+                        }
                     },
                     style = SwypTheme.typography.labelXSmall,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
@@ -108,36 +113,91 @@ fun EditorPickCard(item: HomeContentUiModel, currentIndex: Int, totalCount: Int,
             }
         }
 
-        // [중앙] 이미지
-        Box(modifier = Modifier.fillMaxWidth().aspectRatio(1.8f)) {
-            AsyncImage(model = item.thumbnailUrl, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)))
-
-            // VS 텍스트 (서버에 데이터가 없다면 빈 칸으로 안전 처리)
-            Row(
-                modifier = Modifier.align(Alignment.Center),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+        // [하단] 이미지 + 텍스트 영역 (페이저 적용 - 한 세트로 같이 넘어감)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxWidth()
+        ) { page ->
+            val pagerItem = items[page]
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onItemClick(pagerItem.contentId) }
             ) {
-                val textStyle = SwypTheme.typography.h4SemiBold.copy(shadow = Shadow(color = Color.Black, offset = Offset(2f, 2f), blurRadius = 4f))
-                Text(text = item.leftOpinion ?: "A", style = textStyle, color = Color.White)
-                Icon(painter = painterResource(R.drawable.ic_versus), contentDescription = null, tint = Color.White)
-                Text(text = item.rightOpinion ?: "B", style = textStyle, color = Color.White)
-            }
-        }
+                // 1. 중앙 이미지 영역
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.8f)
+                ) {
+                    SubcomposeAsyncImage(
+                        model = pagerItem.thumbnailUrl,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        loading = {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = Color.White)
+                            }
+                        }
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
+                    )
 
-        // [하단] 타이틀
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(text = item.title, style = SwypTheme.typography.h4SemiBold, color = Color.White)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = item.summary, style = SwypTheme.typography.label, color = Gray400)
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Text(text = item.tags.joinToString(" ") { "#$it" }, style = SwypTheme.typography.label, color = Gray300)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painterResource(id = R.drawable.ic_eye), null, Modifier.size(16.dp), tint = Gray400)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray300)
+                    // VS 텍스트
+                    Row(
+                        modifier = Modifier.align(Alignment.Center),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        val textStyle = SwypTheme.typography.h4SemiBold.copy(
+                            shadow = Shadow(color = Color.Black, offset = Offset(2f, 2f), blurRadius = 4f)
+                        )
+                        Text(text = pagerItem.leftOpinion ?: "A", style = textStyle, color = Color.White)
+                        Icon(painter = painterResource(R.drawable.ic_versus), contentDescription = null, tint = Color.White)
+                        Text(text = pagerItem.rightOpinion ?: "B", style = textStyle, color = Color.White)
+                    }
+                }
+
+                // 2. 하단 텍스트 영역
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(text = pagerItem.title, style = SwypTheme.typography.h4SemiBold, color = Color.White)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(text = pagerItem.summary,
+                        style = SwypTheme.typography.label,
+                        color = Gray400,
+                        minLines = 2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = SwypTheme.typography.label.fontSize * 1.4
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = pagerItem.tags.joinToString(" ") { "#$it" },
+                            style = SwypTheme.typography.label,
+                            color = Gray300
+                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(painterResource(id = R.drawable.ic_eye), null, Modifier.size(16.dp), tint = Gray400)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = pagerItem.viewCountText, style = SwypTheme.typography.label, color = Gray300)
+                        }
+                    }
                 }
             }
         }
@@ -150,8 +210,25 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
     Column(
         modifier = Modifier.width(220.dp).border(1.dp, Beige600, RoundedCornerShape(2.dp)).background(SwypTheme.colors.surface).clickable { onClick() }.padding(12.dp)
     ) {
-        Surface(modifier = Modifier.fillMaxWidth().aspectRatio(1.2f), shape = RoundedCornerShape(2.dp), border = BorderStroke(4.dp, Beige700)) {
-            AsyncImage(model = item.thumbnailUrl, contentDescription = null, modifier = Modifier.clip(RoundedCornerShape(2.dp)), contentScale = ContentScale.Crop)
+        Surface(modifier = Modifier.fillMaxWidth().aspectRatio(1.2f), shape = RoundedCornerShape(4.dp), border = BorderStroke(4.dp, Beige700)) {
+            SubcomposeAsyncImage(
+                model = item.thumbnailUrl,
+                contentDescription = null,
+                modifier = Modifier.clip(RoundedCornerShape(2.dp))
+                    .background(Beige200),
+                contentScale = ContentScale.Crop,
+                loading = {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Primary900,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+            )
         }
         Spacer(modifier = Modifier.height(20.dp))
         Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
@@ -177,7 +254,7 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
 fun BestBattleRankItem(item: HomeContentUiModel, rank: Int, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(modifier = modifier.fillMaxWidth().clickable { onClick() }) {
         Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp), verticalAlignment = Alignment.Top) {
-            val rankColor = if (rank == 1) SwypTheme.colors.primary else Beige600
+            val rankColor = if (rank == 1) SwypTheme.colors.primary else if(rank ==2) Secondary500 else Beige700
             Text(text = rank.toString(), style = SwypTheme.typography.h1SemiBold, color = rankColor, modifier = Modifier.fillMaxHeight().width(24.dp).align(Alignment.CenterVertically), textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -185,16 +262,16 @@ fun BestBattleRankItem(item: HomeContentUiModel, rank: Int, modifier: Modifier =
                     Text(text = "${item.leftProfileName ?: "A"} VS ${item.rightProfileName ?: "B"}", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.primary)
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = item.title, style = SwypTheme.typography.h4SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = item.tags.joinToString(" ") { "#$it" }, style = SwypTheme.typography.label, color = Gray500)
+                    Text(text = item.tags.joinToString(" ") { "#$it" }, style = SwypTheme.typography.label, color = Gray300)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(14.dp), tint = Gray400)
+                        Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(14.dp), tint = Gray300)
                         Spacer(modifier = Modifier.width(2.dp))
                         Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = Gray400)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(14.dp), tint = Gray400)
+                        Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(14.dp), tint = Gray300)
                         Spacer(modifier = Modifier.width(2.dp))
                         Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray400)
                     }
@@ -229,9 +306,9 @@ fun NewBattleCard(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900)
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Text(text = item.summary, style = SwypTheme.typography.label, color = Gray400)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // VS 영역
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -254,14 +331,40 @@ fun NewBattleCard(
 }
 
 @Composable
-private fun BattleOpinionBox(modifier: Modifier = Modifier, opinion: String?, name: String?, imageUrl: String?) {
-    Row(modifier = modifier.clip(RoundedCornerShape(2.dp)).border(1.dp, Beige500, RoundedCornerShape(2.dp)).background(Beige300).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+private fun BattleOpinionBox(
+    modifier: Modifier = Modifier,
+    opinion: String?,
+    name: String?,
+    imageUrl: String?
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(2.dp))
+            .border(1.dp, Beige500, RoundedCornerShape(2.dp))
+            .background(Beige300)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 프로필 이미지
         ProfileImage(model = imageUrl, modifier = Modifier.size(40.dp))
         Spacer(modifier = Modifier.width(4.dp))
-        Column {
-            Text(text = opinion ?: "의견", style = SwypTheme.typography.label, color = Gray900)
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = name ?: "이름",
+                style = SwypTheme.typography.label,
+                color = Gray900,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             Spacer(modifier = Modifier.height(2.dp))
-            Text(text = name ?: "이름", style = SwypTheme.typography.labelXSmall, color = Gray400)
+            Text(
+                text = opinion ?: "의견",
+                style = SwypTheme.typography.labelXSmall,
+                color = Gray400,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
