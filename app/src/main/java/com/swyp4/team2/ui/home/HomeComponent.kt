@@ -235,22 +235,31 @@ fun NewBattleCard(
 
         // VS 영역
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            BattleOpinionBox(modifier = Modifier.weight(1f), opinion = item.leftOpinion, name = item.leftProfileName)
+            BattleOpinionBox(
+                modifier = Modifier.weight(1f),
+                opinion = item.leftOpinion,
+                name = item.leftProfileName,
+                imageUrl = item.leftProfileImageUrl)
             Surface(modifier = Modifier.size(40.dp).padding(6.dp), shape = CircleShape, color = Secondary200) {
                 Box(contentAlignment = Alignment.Center) { Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = Gray900) }
             }
-            BattleOpinionBox(modifier = Modifier.weight(1f), opinion = item.rightOpinion, name = item.rightProfileName)
+            BattleOpinionBox(
+                modifier = Modifier.weight(1f),
+                opinion = item.rightOpinion,
+                name = item.rightProfileName,
+                imageUrl = item.rightProfileImageUrl
+            )
         }
     }
 }
 
 @Composable
-private fun BattleOpinionBox(modifier: Modifier = Modifier, opinion: String?, name: String?) {
+private fun BattleOpinionBox(modifier: Modifier = Modifier, opinion: String?, name: String?, imageUrl: String?) {
     Row(modifier = modifier.clip(RoundedCornerShape(2.dp)).border(1.dp, Beige500, RoundedCornerShape(2.dp)).background(Beige300).padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        ProfileImage(model = null, modifier = Modifier.size(40.dp)) // 추후 URL 데이터 추가 시 연결
+        ProfileImage(model = imageUrl, modifier = Modifier.size(40.dp))
         Spacer(modifier = Modifier.width(4.dp))
         Column {
-            Text(text = opinion ?: "의견", style = SwypTheme.typography.h5SemiBold, color = Gray900)
+            Text(text = opinion ?: "의견", style = SwypTheme.typography.label, color = Gray900)
             Spacer(modifier = Modifier.height(2.dp))
             Text(text = name ?: "이름", style = SwypTheme.typography.labelXSmall, color = Gray400)
         }

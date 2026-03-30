@@ -1,5 +1,7 @@
 package com.swyp4.team2.ui.main
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -58,7 +60,11 @@ fun MainScreen(
                     top = if (showBottomBar) innerPadding.calculateTopPadding() else 0.dp,
                     bottom = innerPadding.calculateBottomPadding()
                 )
-                .background(if (showBottomBar) SwypTheme.colors.surface else Gray900)
+                .background(if (showBottomBar) SwypTheme.colors.surface else Gray900),
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None }
         ){
             composable(BottomNavItem.Home.route){
                 HomeScreen(
@@ -79,8 +85,8 @@ fun MainScreen(
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
-                    onNavigateToVote = { id ->
-                        rootNavController.navigate(AppRoute.PreVote.route)
+                    onNavigateToVote = { battleId ->
+                        rootNavController.navigate(AppRoute.PreVote.createRoute(battleId))
                     }
                 )
             }
@@ -129,7 +135,7 @@ fun MainScreen(
                 ContentActivityScreen(
                     onBackClick = { mainNavController.popBackStack() },
                     onNavigateToComment = { itemId ->
-                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(itemId))
+                        rootNavController.navigate(AppRoute.Comment.createRoute(itemId))
                     }
                 )
             }
@@ -145,7 +151,8 @@ fun MainScreen(
                     onNavigateToSettingProfile = { rootNavController.navigate(AppRoute.SettingProfile.route) },
                     onNavigateToSettingAlarm = { rootNavController.navigate(AppRoute.SettingAlarm.route) },
                     onNavigateToPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
-                    onNavigateToTermsOfService = { rootNavController.navigate(AppRoute.TermsOfService.route) }
+                    onNavigateToTermsOfService = { rootNavController.navigate(AppRoute.TermsOfService.route) },
+                    onNavigateToLogin = { rootNavController.navigate(AppRoute.Login.route) }
                 )
             }
         }

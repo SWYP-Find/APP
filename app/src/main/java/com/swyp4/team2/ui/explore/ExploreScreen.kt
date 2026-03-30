@@ -28,6 +28,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -52,6 +53,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
@@ -60,8 +63,6 @@ import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.SortFilterChip
-import com.swyp4.team2.ui.explore.model.ExploreItem
-import com.swyp4.team2.ui.explore.model.dummyExploreList
 import com.swyp4.team2.ui.theme.Beige100
 import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige600
@@ -73,6 +74,7 @@ import com.swyp4.team2.ui.theme.Gray600
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Primary50
+import com.swyp4.team2.ui.theme.Primary900
 import com.swyp4.team2.ui.theme.SwypTheme
 import kotlinx.coroutines.launch
 
@@ -80,16 +82,15 @@ import kotlinx.coroutines.launch
 fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel(),
     onNavigateToAlarm: ()->Unit,
-    onNavigateToVote: (Int) -> Unit,
+    onNavigateToVote: (String) -> Unit,
 ) {
     val exploreCategories = listOf("전체", "철학", "문학", "예술", "과학", "사회", "역사")
     val selectedCategory by viewModel.selectedCategory.collectAsState()
-    val categoryList by viewModel.categoryList.collectAsState()
+    val selectedSort by viewModel.selectedSort.collectAsState()
     val pagingItems = viewModel.explorePagingData.collectAsLazyPagingItems()
 
     val pagerState = rememberPagerState(pageCount = { exploreCategories.size })
     val coroutineScope = rememberCoroutineScope()
-
     var hasUnreadNotification by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState.currentPage) {
@@ -110,16 +111,13 @@ fun ExploreScreen(
                     IconButton(
                         onClick = {
                             onNavigateToAlarm()
-                            // 클릭했으니까 빨간 점 없애기 (선택사항)
                             hasUnreadNotification = false
                         }
                     ) {
                         BadgedBox(
                             badge = {
                                 if (hasUnreadNotification) {
-                                    Badge(
-                                        containerColor = SwypTheme.colors.primary
-                                    )
+                                    Badge(containerColor = SwypTheme.colors.primary)
                                 }
                             }
                         ) {
@@ -133,84 +131,111 @@ fun ExploreScreen(
                 }
             )
         }
-    ){ innerPadding ->
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(top = innerPadding.calculateTopPadding()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            CustomTabBar(
-                tabs = exploreCategories,
-                isScrollable = true,
-                selectedTab = selectedCategory,
-                onTabSelected = { clickedCategory ->
-                    val targetPage = exploreCategories.indexOf(clickedCategory)
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(targetPage)
+    ) { innerPadding ->
+        val isLoading = pagingItems.loadState.refresh is LoadState.Loading
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CustomTabBar(
+                    tabs = exploreCategories,
+                    isScrollable = true,
+                    selectedTab = selectedCategory,
+                    onTabSelected = { clickedCategory ->
+                        val targetPage = exploreCategories.indexOf(clickedCategory)
+                        coroutineScope.launch { pagerState.animateScrollToPage(targetPage) }
                     }
-                }
-            )
-
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                ExploreList(
-                    category = exploreCategories[page],
-                    onNavigateToVote = onNavigateToVote
                 )
+
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { _ ->
+                    ExploreList(
+                        pagingItems = pagingItems,
+                        isLoading = isLoading,
+                        selectedSort = selectedSort,
+                        onSortChanged = { newSort -> viewModel.updateSort(newSort) },
+                        onNavigateToVote = onNavigateToVote
+                    )
+                }
             }
-        }
+
     }
 }
-
 @Composable
 fun ExploreList(
-    category: String,
-    onNavigateToVote: (Int) -> Unit
+    pagingItems: LazyPagingItems<ExploreUiModel>,
+    isLoading: Boolean,
+    selectedSort: String,
+    onSortChanged: (String) -> Unit,
+    onNavigateToVote: (String) -> Unit
 ) {
-    var selectedSort by remember { mutableStateOf("인기순") }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                SortFilterChip(
-                    text = stringResource(R.string.explore_hot_rank),
-                    isSelected = selectedSort == "인기순",
-                    onClick = { selectedSort = "인기순" }
-                )
-                SortFilterChip(
-                    text =  stringResource(R.string.explore_recent_rank),
-                    isSelected = selectedSort == "최신순",
-                    onClick = { selectedSort = "최신순" }
-                )
-            }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            SortFilterChip(
+                text = stringResource(R.string.explore_hot_rank),
+                isSelected = selectedSort == "POPULAR",
+                onClick = { onSortChanged("POPULAR") }
+            )
+            SortFilterChip(
+                text = stringResource(R.string.explore_recent_rank),
+                isSelected = selectedSort == "LATEST",
+                onClick = { onSortChanged("LATEST") }
+            )
         }
 
-        // 🌟 2. 그 아래에 카드 리스트를 그립니다.
-        items(dummyExploreList) { item ->
-            ExploreCard(
-                item = item,
-                onClick = { id -> onNavigateToVote(id) }
-            )
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(count = pagingItems.itemCount) { index ->
+                    pagingItems[index]?.let { item ->
+                        ExploreCard(
+                            item = item,
+                            onClick = { id -> onNavigateToVote(id) }
+                        )
+                    }
+                }
+
+                if (pagingItems.loadState.append is LoadState.Loading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Primary900, modifier = Modifier.size(24.dp))
+                        }
+                    }
+                }
+            }
         }
     }
 }
-
 
 @Composable
 fun ExploreCard(
-    item: ExploreItem,
-    onClick: (Int) -> Unit
+    item: ExploreUiModel,
+    onClick: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -218,13 +243,13 @@ fun ExploreCard(
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
-            .clickable{ onClick(item.id) }
+            .clickable { onClick(item.battleId) }
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // 썸네일 이미지
         AsyncImage(
-            model = item.imageUrl,
+            model = item.thumbnailUrl,
             contentDescription = "Content Thumbnail",
             modifier = Modifier
                 .width(80.dp)
@@ -234,9 +259,7 @@ fun ExploreCard(
         )
 
         // 텍스트 정보들
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             // 1. 타입(뱃지) & 제목
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
@@ -251,7 +274,7 @@ fun ExploreCard(
                         color = SwypTheme.colors.primary
                     )
                 }
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = item.title,
                     style = SwypTheme.typography.h5SemiBold,
@@ -261,11 +284,21 @@ fun ExploreCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
-            // 2. 설명 내용
+            // 2. 태그 리스트
+            if (item.tags.isNotEmpty()) {
+                Text(
+                    text = item.tags.joinToString(" ") { "#$it" },
+                    style = SwypTheme.typography.label,
+                    color = SwypTheme.colors.primary
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+
+            // 3. 설명 내용
             Text(
-                text = item.description,
+                text = item.summary,
                 style = SwypTheme.typography.b4Regular,
                 color = Gray400,
                 maxLines = 2,
@@ -274,13 +307,12 @@ fun ExploreCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // 3. 시간 & 조회수 (오른쪽 정렬)
+            // 4. 오디오 시간 & 조회수
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // tts 시간
                 Icon(
                     painter = painterResource(id = R.drawable.ic_clock),
                     contentDescription = null,
@@ -288,11 +320,10 @@ fun ExploreCard(
                     tint = Gray300
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.timeAgo, style = SwypTheme.typography.label, color = Gray400)
+                Text(text = item.audioDurationText, style = SwypTheme.typography.label, color = Gray400)
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // 조회수
                 Icon(
                     painter = painterResource(id = R.drawable.ic_eye),
                     contentDescription = null,
@@ -300,7 +331,7 @@ fun ExploreCard(
                     tint = Gray300
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.viewCount, style = SwypTheme.typography.label, color = Gray400)
+                Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray400)
             }
         }
     }

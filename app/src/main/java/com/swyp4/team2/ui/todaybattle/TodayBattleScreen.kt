@@ -141,11 +141,11 @@ fun TodayBattleScreen(
                         )
                     }
                     IconButton(onClick = { /* 공유 로직 */ }, modifier = Modifier.size(16.dp)) {
-                        Icon(
+                        /*Icon(
                             painter = painterResource(id = R.drawable.ic_share),
                             contentDescription = "공유",
                             tint = Color.White
-                        )
+                        )*/
                     }
                 }
             }

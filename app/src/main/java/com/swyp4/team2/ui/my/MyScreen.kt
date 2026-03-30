@@ -46,7 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.R
-import com.swyp4.team2.domain.model.PhilosopherInfo
+import com.swyp4.team2.domain.model.MyPhilosopher
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.ProfileImage
 import com.swyp4.team2.ui.theme.Beige200
@@ -89,8 +89,10 @@ fun MyScreen(
     val adMobManager = remember { AdMobManager(context) }
 
 
-    LaunchedEffect(Unit) {
-        adMobManager.loadAd(userId = uiState.userId)
+    LaunchedEffect(uiState.profile?.userTag) {
+        uiState.profile?.userTag?.let {
+            adMobManager.loadAd(userId = it)
+        }
     }
 
     Scaffold(
@@ -158,22 +160,23 @@ fun MyScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ProfileSection(
-                    nickname = uiState.nickname,
-                    userHandle = uiState.userHandle,
-                    profileImage = uiState.philosopherInfo?.imageUrl ?: R.drawable.ic_profile_kant
+                    nickname = uiState.profile!!.nickname,
+                    userHandle = "@${uiState.profile!!.userTag}",
+                    profileImage = uiState.profile!!.characterImageUrl
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 CreditCard(
-                    credit = uiState.credit,
+                    credit = uiState.tier?.currentPoint ?: 0,
                     onChargeClick = {
                         activity?.let {
                             adMobManager.showAd(
                                 activity = it,
                                 onRewardEarned = {
-                                    viewModel.refreshPointsAfterAd() // 포인트 +10 갱신
-                                    adMobManager.loadAd(userId = uiState.userId)
+                                    viewModel.refreshPointsAfterAd()
+                                    // 보상 받은 후 새 광고 다시 장전
+                                    uiState.profile?.userTag?.let { tag -> adMobManager.loadAd(userId = tag) }
                                 }
                             )
                         } ?: run {
@@ -185,7 +188,7 @@ fun MyScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 PhilosopherTypeCard(
-                    philosopherInfo = uiState.philosopherInfo,
+                    philosopher = uiState.philosopher,
                     onClick = { onNavigateToPhilosopher() }
                 )
 
@@ -236,13 +239,13 @@ fun ProfileSection(
 
 @Composable
 fun PhilosopherTypeCard(
-    philosopherInfo: PhilosopherInfo?,
+    philosopher: MyPhilosopher?,
     onClick: () -> Unit
 ) {
-    val isLocked = philosopherInfo == null // 잠금 여부 확인
-    val displayImage = if (isLocked) R.drawable.img_lock else philosopherInfo?.imageUrl
-    val displayName = if (isLocked) "??형" else philosopherInfo?.name ?: ""
-    val displayDesc = if (isLocked) "나만의 철학자를 찾아보세요" else philosopherInfo?.description ?: ""
+    val isLocked = philosopher == null || philosopher.philosopherType == "UNKNOWN"
+    val displayImage = if (isLocked) R.drawable.img_lock else philosopher?.imageUrl
+    val displayName = if (isLocked) "??형" else philosopher?.philosopherLabel ?: ""
+    val displayDesc = if (isLocked) "나만의 철학자를 찾아보세요" else philosopher?.description ?: ""
 
     Row(
         modifier = Modifier

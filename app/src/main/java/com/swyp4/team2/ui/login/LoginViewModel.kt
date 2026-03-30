@@ -47,8 +47,7 @@ class LoginViewModel @Inject constructor(
             )
 
             result.onSuccess { authToken ->
-                // 🌟 4. 성공 시, 이 유저가 신규 유저인지 정보를 Success 상태에 실어 보냅니다.
-                // TokenManager 저장 로직은 이미 RepositoryImpl에 넣어두었으니 여기선 상태만 넘기면 끝!
+                Log.d("LoginFlow", "$result")
                 Log.d("LoginFlow", "3. 🟢 백엔드 로그인 통신 성공! (신규 유저 여부: ${authToken.isNewUser})")
                 _uiState.value = LoginUiState.Success(isNewUser = authToken.isNewUser)
             }.onFailure { error ->

@@ -1,3 +1,4 @@
+/*
 package com.swyp4.team2.ui.my.philosopher
 
 import androidx.compose.foundation.layout.Arrangement
@@ -98,4 +99,4 @@ fun OtherPhilosopherDetailScreen(
             }
         }
     }
-}
+}*/

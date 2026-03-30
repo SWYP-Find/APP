@@ -13,7 +13,7 @@ class AuthInterceptor @Inject constructor(
         val originalRequest = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
-        // 1. 현재 요청하는 API의 경로(Path)를 확인
+        // 1. 현재 요청하는 API     의 경로(Path)를 확인
         val urlPath = originalRequest.url.encodedPath
 
         // 2. 토큰을 헤더에 붙이면 안 되는 예외 API인지 판별

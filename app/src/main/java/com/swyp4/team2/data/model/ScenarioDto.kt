@@ -7,25 +7,25 @@ import com.swyp4.team2.domain.model.ScenarioScript
 import com.swyp4.team2.domain.model.SpeakerType
 
 data class ScenarioResponseDto(
-    val battleId: String,
+    val battleId: Long,
     val isInteractive: Boolean,
-    val startNodeId: String,
+    val startNodeId: Long,
     val recommendedPathKey: String,
     val audios: Map<String, String>,
     val nodes: List<ScenarioNodeDto>
 )
 
 data class ScenarioNodeDto(
-    val nodeId: String,
+    val nodeId: Long,
     val nodeName: String,
     val audioDuration: Int,
-    val autoNextNodeId: String?,
+    val autoNextNodeId: Long?, // 이 값은 null이 올 수 있으므로 Long? 로 유지
     val scripts: List<ScenarioScriptDto>,
     val interactiveOptions: List<ScenarioOptionDto>
 )
 
 data class ScenarioScriptDto(
-    val scriptId: String,
+    val scriptId: Long,
     val startTimeMs: Long,
     val speakerType: String,
     val speakerName: String,
@@ -34,32 +34,32 @@ data class ScenarioScriptDto(
 
 data class ScenarioOptionDto(
     val label: String,
-    val nextNodeId: String
+    val nextNodeId: Long
 )
 
-// Dto -> Domain
+// 🌟 2. Dto -> Domain 매퍼: Long으로 받은 ID를 Domain에 맞게 String으로 변환(.toString())
 fun ScenarioResponseDto.toDomainModel(): ScenarioBoard {
     return ScenarioBoard(
-        battleId = this.battleId,
+        battleId = this.battleId.toString(),
         isInteractive = this.isInteractive,
-        startNodeId = this.startNodeId,
+        startNodeId = this.startNodeId.toString(),
         recommendedPathKey = this.recommendedPathKey,
-        audios = this.audios,
+        audios = this.audios ?: emptyMap(), // 혹시 모를 null 방어
         nodes = this.nodes.map { node ->
             ScenarioNode(
-                nodeId = node.nodeId,
+                nodeId = node.nodeId.toString(),
                 nodeName = node.nodeName,
                 audioDuration = node.audioDuration,
-                autoNextNodeId = node.autoNextNodeId,
+                autoNextNodeId = node.autoNextNodeId?.toString(),
                 interactiveOptions = node.interactiveOptions.map {
                     ScenarioOption(
-                        it.label,
-                        it.nextNodeId
+                        label = it.label,
+                        nextNodeId = it.nextNodeId.toString()
                     )
                 },
                 scripts = node.scripts.map { script ->
                     ScenarioScript(
-                        scriptId = script.scriptId,
+                        scriptId = script.scriptId.toString(),
                         startTimeMs = script.startTimeMs,
                         speakerType = runCatching { SpeakerType.valueOf(script.speakerType) }.getOrDefault(
                             SpeakerType.UNKNOWN

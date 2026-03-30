@@ -1,12 +1,21 @@
 package com.swyp4.team2.ui.scenario
 
 import android.content.Context
+import retrofit2.HttpException
+import android.os.Build
 import android.util.Log
+import androidx.annotation.OptIn
+import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.swyp4.team2.BuildConfig
+import com.swyp4.team2.data.local.TokenManager
 import com.swyp4.team2.domain.repository.ScenarioRepository
 import com.swyp4.team2.ui.scenario.model.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +45,7 @@ data class ScenarioUiState(
 @HiltViewModel
 class ScenarioViewModel @Inject constructor(
     private val scenarioRepository: ScenarioRepository,
+    private val tokenManager: TokenManager,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
@@ -45,8 +55,71 @@ class ScenarioViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var fullScenario: ScenarioUiModel? = null
 
+    private val player: ExoPlayer = createExoPlayerWithToken()
+
+    @OptIn(UnstableApi::class)
+    private fun createExoPlayerWithToken(): ExoPlayer {
+        Log.d("ExoPlayerFlow", "🛠️ 1. ExoPlayer 공장 가동: 플레이어 생성 시작")
+
+        // 1. 토큰 가져오기
+        val accessToken = tokenManager.getAccessToken() ?: ""
+        // 보안상 토큰 전체를 찍지 않고 앞 10자리만 확인합니다.
+        val maskedToken = if (accessToken.length > 10) "${accessToken.take(10)}..." else "EMPTY"
+        Log.d("ExoPlayerFlow", "🎫 2. 로컬에서 토큰 꺼내기 완료 (토큰 앞부분: $maskedToken)")
+
+        // 2. DataSourceFactory 생성 및 헤더 세팅
+        Log.d("ExoPlayerFlow", "🌐 3. HTTP 데이터 소스 팩토리 생성 (여기에 토큰을 기본 헤더로 장착합니다)")
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(
+                mapOf(
+                    "Authorization" to "Bearer $accessToken"
+                )
+            )
+
+        // 3. MediaSourceFactory에 연결
+        Log.d("ExoPlayerFlow", "🔗 4. 미디어 소스 팩토리에 방금 만든 HTTP 통신 규칙을 연결합니다")
+        val mediaSourceFactory = DefaultMediaSourceFactory(context)
+            .setDataSourceFactory(dataSourceFactory)
+
+        // 4. ExoPlayer 빌드
+        Log.d("ExoPlayerFlow", "🏗️ 5. ExoPlayer 객체 조립 시작")
+        return ExoPlayer.Builder(context)
+            .setMediaSourceFactory(mediaSourceFactory)
+            .build()
+            .apply {
+                addListener(object : Player.Listener {
+                    // 플레이어의 상태가 변할 때마다 로그를 찍어줍니다! (매우 중요)
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        val stateString = when(playbackState) {
+                            Player.STATE_IDLE -> "IDLE (대기 중 - 아무것도 안 함)"
+                            Player.STATE_BUFFERING -> "BUFFERING (버퍼링 중 - 🚀 서버와 통신하며 데이터를 받아오는 중!)"
+                            Player.STATE_READY -> "READY (재생 준비 완료! 소리 나옴)"
+                            Player.STATE_ENDED -> "ENDED (재생 끝)"
+                            else -> "UNKNOWN ($playbackState)"
+                        }
+                        Log.d("ExoPlayerFlow", "▶️ 플레이어 상태 변경: $stateString")
+
+                        if (playbackState == Player.STATE_ENDED) {
+                            handleNodeEnd()
+                        }
+                    }
+
+                    // 에러가 났을 때 원인을 더 깊게 파고듭니다.
+                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                        Log.e("ExoPlayerFlow", "🚨 앗! ExoPlayer 에러 발생: ${error.message}")
+
+                        // Http 에러인 경우 원인을 더 자세히 출력합니다.
+                        val cause = error.cause
+                        Log.e("ExoPlayerFlow", "🚨 상세 원인(Cause): ${cause?.message}")
+                        Log.e("ExoPlayerFlow", "🚨 이 에러는 STATE_BUFFERING 단계에서 서버가 데이터를 주지 않거나 터졌을 때 발생합니다.")
+                    }
+                })
+                Log.d("ExoPlayerFlow", "✅ 6. ExoPlayer 객체 생성 완료! (⚠️ 주의: 아직 서버랑 통신 시작 안 했음)")
+            }
+    }
+
     // 1. 오디오 플레이어
-    private val player = ExoPlayer.Builder(context).build().apply {
+    /*private val player = ExoPlayer.Builder(context).build().apply {
         addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 // 오디오가 끝까지 재생되었을 때 노드 종료 처리
@@ -58,9 +131,10 @@ class ScenarioViewModel @Inject constructor(
                 Log.e("ScenarioFlow", "🚨 앗! ExoPlayer 에러 발생: ${error.message}", error)
             }
         })
-    }
+    }*/
 
     // 2. 시나리오 데이터 로드
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun loadScenario(battleId: String) {
         viewModelScope.launch {
             Log.d("ScenarioFlow", "▶️ API 호출 시작! (battleId: $battleId)")
@@ -73,13 +147,23 @@ class ScenarioViewModel @Inject constructor(
                     Log.d("ScenarioFlow", "🔗 오디오 목록: ${board.audios}")
                     Log.d("ScenarioFlow", "🛣️ 추천 경로: ${board.recommendedPathKey}")
                     Log.d("ScenarioFlow", "📦 전체 노드 개수: ${board.nodes.size}개")
+                    Log.d("ScenarioFlow", "📝 파싱된 응답 데이터: $board") // 파싱된 객체 출력
 
                     fullScenario = board.toUiModel()
                     val firstNodeId = fullScenario?.startNodeId ?: return@onSuccess
                     loadNode(firstNodeId)
                 }
                 .onFailure { error ->
-                    Log.e("ScenarioFlow", "❌ API 호출 실패...", error)
+                    Log.e("ScenarioFlow", "❌ API 호출 실패...")
+                    if (error is HttpException) {
+                        val errorCode = error.code()
+                        val errorBody = error.response()?.errorBody()?.string()
+
+                        Log.e("ScenarioFlow", "🚨 HTTP 상태 코드: $errorCode")
+                        Log.e("ScenarioFlow", "🚨 에러 응답(JSON): $errorBody")
+                    } else {
+                        Log.e("ScenarioFlow", "🚨 기타 에러 발생: ${error.message}", error)
+                    }
                 }
         }
     }
@@ -102,8 +186,26 @@ class ScenarioViewModel @Inject constructor(
         )}
 
         // URL이 있으면 플레이어에 세팅
-        if (audioUrl != null) {
+        /*if (audioUrl != null) {
             val mediaItem = MediaItem.fromUri(audioUrl)
+            player.setMediaItem(mediaItem)
+            player.prepare()
+
+            playAudio()
+        }*/
+
+        if (audioUrl != null) {
+            val baseUrl = BuildConfig.BASE_URL
+
+            val fullAudioUrl = if (audioUrl.startsWith("http")) {
+                audioUrl
+            } else {
+                baseUrl + audioUrl
+            }
+
+            Log.d("ScenarioFlow", "🎵 재생 시도할 풀 URL: $fullAudioUrl")
+
+            val mediaItem = MediaItem.fromUri(fullAudioUrl)
             player.setMediaItem(mediaItem)
             player.prepare()
 

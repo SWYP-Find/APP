@@ -1,5 +1,6 @@
 package com.swyp4.team2.di
 
+import com.swyp4.team2.BuildConfig
 import com.swyp4.team2.data.remote.AuthInterceptor
 import com.swyp4.team2.data.local.TokenManager
 import com.swyp4.team2.data.remote.AuthApi
@@ -36,7 +37,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://13.124.230.176:8080/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

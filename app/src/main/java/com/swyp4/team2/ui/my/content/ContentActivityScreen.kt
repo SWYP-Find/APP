@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -40,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swyp4.team2.R
-import com.swyp4.team2.domain.model.ContentActivityItem
+import com.swyp4.team2.domain.model.MyContentActivityItem
 import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.component.ProfileImage
@@ -123,13 +124,17 @@ fun ContentActivityScreen(
                     when (page) {
                         0 -> ContentActivityList(
                             items = uiState.commentList,
+                            activityType = "COMMENT",
                             emptyMessage = "아직 작성한 댓글이 없습니다",
-                            onItemClick = onNavigateToComment
+                            onItemClick = onNavigateToComment,
+                            onLoadMore = { viewModel.loadMore("COMMENT") }
                         )
                         1 -> ContentActivityList(
                             items = uiState.likeList,
+                            activityType = "LIKE",
                             emptyMessage = "아직 좋아요를 누른 콘텐츠가 없습니다",
-                            onItemClick = onNavigateToComment
+                            onItemClick = onNavigateToComment,
+                            onLoadMore = { viewModel.loadMore("LIKE") }
                         )
                     }
                 }
@@ -140,9 +145,11 @@ fun ContentActivityScreen(
 
 @Composable
 fun ContentActivityList(
-    items: List<ContentActivityItem>,
+    items: List<MyContentActivityItem>,
+    activityType: String,
     emptyMessage: String,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    onLoadMore: () -> Unit
 ) {
     if (items.isEmpty()) {
         Column(
@@ -168,10 +175,14 @@ fun ContentActivityList(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(items) { item ->
+            itemsIndexed(items) { index, item ->
+                if (index >= items.size - 2) {
+                    onLoadMore()
+                }
+
                 ContentActivityCard(
                     item = item,
-                    onClick = { onItemClick(item.id) }
+                    onClick = { onItemClick(item.activityId) }
                 )
             }
         }
@@ -180,7 +191,7 @@ fun ContentActivityList(
 
 @Composable
 fun ContentActivityCard(
-    item: ContentActivityItem,
+    item: MyContentActivityItem,
     onClick: () -> Unit
 ) {
     Column(
@@ -207,7 +218,7 @@ fun ContentActivityCard(
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = item.nickname,
+                        text = item.author.nickname,
                         style = SwypTheme.typography.labelMedium,
                         color = Gray500
                     )
@@ -232,7 +243,7 @@ fun ContentActivityCard(
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = item.timeAgo,
+                    text = item.createdAt,
                     style = SwypTheme.typography.b4Regular,
                     color = Gray300
                 )

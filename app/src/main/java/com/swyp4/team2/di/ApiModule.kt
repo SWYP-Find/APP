@@ -1,10 +1,14 @@
 package com.swyp4.team2.di
 
+import com.swyp4.team2.data.remote.AlarmApi
 import com.swyp4.team2.data.remote.AuthApi
 import com.swyp4.team2.data.remote.BattleApi
+import com.swyp4.team2.data.remote.CommentApi
 import com.swyp4.team2.data.remote.ExploreApi
 import com.swyp4.team2.data.remote.HomeApi
+import com.swyp4.team2.data.remote.MyPageApi
 import com.swyp4.team2.data.remote.PerspectiveApi
+import com.swyp4.team2.data.remote.RecommendApi
 import com.swyp4.team2.data.remote.ScenarioApi
 import com.swyp4.team2.data.remote.TodayBattleApi
 import com.swyp4.team2.data.remote.VoteApi
@@ -64,5 +68,29 @@ object ApiModule {
     @Singleton
     fun provideBattleApi(retrofit: Retrofit): BattleApi{
         return retrofit.create(BattleApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCommentApi(retrofit: Retrofit): CommentApi{
+        return retrofit.create(CommentApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendApi(retrofit: Retrofit): RecommendApi{
+        return retrofit.create(RecommendApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMyPageApi(retrofit: Retrofit): MyPageApi {
+        return retrofit.create(MyPageApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlarmApi(retrofit: Retrofit): AlarmApi {
+        return retrofit.create(AlarmApi::class.java)
     }
  }

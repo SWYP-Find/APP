@@ -13,7 +13,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.swyp4.team2"
+        applicationId = "com.picke.app"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -46,6 +46,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 배포용 서버 주소
+            buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
+        }
+        debug {
+            // 개발용 서버 주소
+            buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
         }
     }
     compileOptions {
@@ -58,6 +64,9 @@ android {
     }
     kotlinOptions{
         jvmTarget = "17"
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -86,6 +95,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.play.services.ads.api)
     implementation(libs.foundation)
+    implementation(libs.androidx.paging.common)
+    implementation(libs.androidx.foundation.layout)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 

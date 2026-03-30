@@ -72,17 +72,22 @@ class VoteViewModel @Inject constructor(
     fun submitVote(voteType: VoteType, selectedOptionId: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             val optionIdLong = selectedOptionId.toLongOrNull() ?: 0L
+            val battleIdLong = battleId.toLongOrNull() ?: 0L
+
+            Log.d("VoteDetailFlow", "투표 전송 시작 - type: $voteType, battleId: $battleIdLong, optionId: $optionIdLong")
 
             val result = if (voteType == VoteType.PRE) {
-                voteRepository.submitPreVote(battleId, optionIdLong)
+                voteRepository.submitPreVote(battleIdLong, optionIdLong)
             } else {
-                voteRepository.submitPostVote(battleId, optionIdLong)
+                voteRepository.submitPostVote(battleIdLong, optionIdLong)
             }
 
             result.onSuccess {
+                Log.d("VoteDetailFlow", "🟢 투표 전송 성공!")
                 onSuccess()
             }.onFailure { error ->
-                // TODO: 에러 처리
+                Log.e("VoteDetailFlow", "🔴 투표 전송 실패: ${error.message}", error)
+                _uiState.update { it.copy(error = error.message) }
             }
         }
     }

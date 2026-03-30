@@ -1,9 +1,12 @@
 package com.swyp4.team2.ui.my.content
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.swyp4.team2.domain.model.ContentActivityItem
+import com.swyp4.team2.domain.model.MyContentActivityItem
+import com.swyp4.team2.domain.repository.MyPageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,15 +16,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ContentActivityUiState(
-    val commentList: List<ContentActivityItem> = emptyList(),
-    val likeList: List<ContentActivityItem> = emptyList(),
-    val isLoading: Boolean = false
+    val commentList: List<MyContentActivityItem> = emptyList(),
+    val commentOffset: Int? = 0,
+    val hasMoreComments: Boolean = true,
+
+    val likeList: List<MyContentActivityItem> = emptyList(),
+    val likeOffset: Int? = 0,
+    val hasMoreLikes: Boolean = true,
+
+    val isLoading: Boolean = false,
+    val isPagingLoading: Boolean = false
 )
 
 @HiltViewModel
-class ContentActivityViewModel @Inject constructor() : ViewModel() {
+class ContentActivityViewModel @Inject constructor(
+    private val myPageRepository: MyPageRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ContentActivityUiState())
     val uiState: StateFlow<ContentActivityUiState> = _uiState.asStateFlow()
+
+    private val TAG = "ContentActivityFlow"
 
     init {
         fetchContentActivity()
@@ -30,25 +44,99 @@ class ContentActivityViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            delay(1000)
+            val commentsDeferred = async {
+                myPageRepository.getMyContentActivities(offset = 0, size = 20, activityType = "COMMENT")
+            }
+            val likesDeferred = async {
+                myPageRepository.getMyContentActivities(offset = 0, size = 20, activityType = "LIKE")
+            }
 
-            val dummyComments = listOf(
-                ContentActivityItem("1", "사색하는 고양이", "찬성", "1시간 전", "저도 이 의견에 전적으로 동의합니다. 현실적인 대안이 필요해요.", 12),
-                ContentActivityItem("2", "사색하는 고양이", "반대", "3시간 전", "그건 너무 이상적인 이야기 아닐까요? 당장 도입하기엔 무리가 있습니다.", 5)
-            )
+            val commentsResult = commentsDeferred.await()
+            val likesResult = likesDeferred.await()
 
-            val dummyLikes = listOf(
-                ContentActivityItem("3", "지나가는 철학자", "찬성", "어제", "맞아요. 칸트의 의무론적 관점에서 보면 이건 무조건 지켜야 할 원칙이죠.", 128),
-                ContentActivityItem("4", "현실주의자", "반대", "2일 전", "이론상으로는 좋지만, 실제 사회에 적용했을 때의 부작용도 고려해야 합니다.", 45)
-            )
+            commentsResult.onSuccess { data ->
+                Log.d(TAG, "댓글 불러오기 성공! 아이템 개수: ${data.items.size}")
+                Log.d(TAG, "댓글 데이터 상세: $data")
+            }.onFailure { exception ->
+                Log.e(TAG, "댓글 불러오기 실패: ${exception.message}")
+            }
 
-            _uiState.update {
-                it.copy(
-                    commentList = dummyComments,
-                    likeList = dummyLikes,
+            likesResult.onSuccess { data ->
+                Log.d(TAG, "좋아요 불러오기 성공! 아이템 개수: ${data.items.size}")
+                Log.d(TAG, "좋아요 데이터 상세: $data")
+            }.onFailure { exception ->
+                Log.e(TAG, "좋아요 불러오기 실패: ${exception.message}")
+            }
+
+            val comments = commentsResult.getOrNull()?.items ?: emptyList()
+            val likes = likesResult.getOrNull()?.items ?: emptyList()
+
+            _uiState.update { state ->
+                state.copy(
+                    commentList = commentsResult.getOrNull()?.items ?: emptyList(),
+                    commentOffset = commentsResult.getOrNull()?.nextOffset,
+                    hasMoreComments = commentsResult.getOrNull()?.hasNext ?: false,
+
+                    likeList = likesResult.getOrNull()?.items ?: emptyList(),
+                    likeOffset = likesResult.getOrNull()?.nextOffset,
+                    hasMoreLikes = likesResult.getOrNull()?.hasNext ?: false,
+
                     isLoading = false
                 )
             }
         }
     }
+
+    fun loadMore(activityType: String) {
+        val currentState = _uiState.value
+
+        if (currentState.isPagingLoading) return
+
+        val (currentOffset, hasNext) = if (activityType == "COMMENT") {
+            currentState.commentOffset to currentState.hasMoreComments
+        } else {
+            currentState.likeOffset to currentState.hasMoreLikes
+        }
+
+        if (!hasNext || currentOffset == null) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isPagingLoading = true) }
+            Log.d(TAG, "페이징 시작: 타입=$activityType, offset=$currentOffset")
+
+            val result = myPageRepository.getMyContentActivities(
+                offset = currentOffset,
+                size = 20,
+                activityType = activityType
+            )
+
+            result.onSuccess { pageData ->
+                Log.d(
+                    TAG,
+                    "페이징 성공: 타입=$activityType, 추가된 개수=${pageData.items.size}, 다음 offset=${pageData.nextOffset}"
+                )
+                _uiState.update { state ->
+                    if (activityType == "COMMENT") {
+                        state.copy(
+                            commentList = state.commentList + pageData.items,
+                            commentOffset = pageData.nextOffset,
+                            hasMoreComments = pageData.hasNext,
+                            isPagingLoading = false
+                        )
+                    } else {
+                        state.copy(
+                            likeList = state.likeList + pageData.items,
+                            likeOffset = pageData.nextOffset,
+                            hasMoreLikes = pageData.hasNext,
+                            isPagingLoading = false
+                        )
+                    }
+                }
+            }.onFailure { exception ->
+                Log.e(TAG, "페이징 실패: 타입=$activityType, 에러=${exception.message}")
+                _uiState.update { it.copy(isPagingLoading = false) }
+            }
+        }
+    }
 }
+

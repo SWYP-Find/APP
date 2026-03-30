@@ -36,13 +36,13 @@ sealed class AppRoute(val route: String){
             return "perspective_screen/$battleId"
         }
     }
-    object PerspectiveDetail : AppRoute("perspective_detail_screen/{battleId}"){
-        fun createRoute(battleId: String): String {
-            return "perspective_detail_screen/$battleId"
+    object Comment : AppRoute("comment_screen/{itemId}"){
+        fun createRoute(itemId: String): String {
+            return "comment_screen/$itemId"
         }
     }
 
-    object Curation : AppRoute("curation_screen")
+    object Recommend : AppRoute("recommend_screen")
     object PrivacyPolicy : AppRoute("privacy_policy_screen")
     object TermsOfService : AppRoute("terms_of_service_screen")
 }

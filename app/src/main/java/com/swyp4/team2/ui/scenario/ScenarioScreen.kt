@@ -1,4 +1,6 @@
+import android.os.Build
 import android.view.WindowInsets
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,6 +47,7 @@ import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Secondary500
 import com.swyp4.team2.ui.theme.SwypTheme
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun ScenarioScreen(
     battleId: String,
@@ -56,7 +59,7 @@ fun ScenarioScreen(
     val listState = rememberLazyListState()
 
     LaunchedEffect(battleId) {
-        viewModel.loadScenario("22222222-2222-2222-2222-000000000001")
+        viewModel.loadScenario(battleId)
     }
 
     val visibleScripts = if (uiState.activeIndex >= 0) {
@@ -81,7 +84,7 @@ fun ScenarioScreen(
                     onBackClick = onBackClick,
                     backgroundColor = SwypTheme.colors.surface,
                     actions = {
-                        IconButton(onClick = { onNextClick() }) {
+                        IconButton(onClick = { viewModel.loadScenario(battleId) }) {
                             Icon(painterResource(R.drawable.ic_reload), contentDescription = "다시듣기", tint = Gray900)
                         }
                     }

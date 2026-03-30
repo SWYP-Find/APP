@@ -3,6 +3,7 @@ package com.swyp4.team2.data.repository
 import com.swyp4.team2.data.model.VoteRequestDto
 import com.swyp4.team2.data.model.toDomainModel
 import com.swyp4.team2.data.remote.VoteApi
+import com.swyp4.team2.domain.model.MyVoteBoard
 import com.swyp4.team2.domain.model.VoteStatsBoard
 import com.swyp4.team2.domain.repository.VoteRepository
 import javax.inject.Inject
@@ -11,7 +12,7 @@ class VoteRepositoryImpl @Inject constructor(
     private val voteApi: VoteApi
 ) : VoteRepository{
     override suspend fun submitPreVote(
-        battleId: String,
+        battleId: Long,
         optionId: Long
     ): Result<Boolean> {
         return try {
@@ -29,7 +30,7 @@ class VoteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun submitPostVote(
-        battleId: String,
+        battleId: Long,
         optionId: Long
     ): Result<Boolean> {
         return try {
@@ -46,19 +47,24 @@ class VoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getVoteStats(battleId: String): Result<VoteStatsBoard> {
+    override suspend fun getVoteStats(battleId: Long): Result<VoteStatsBoard> {
         return try {
             val response = voteApi.getVoteStats(battleId)
-            val responseData = response.data
-
-            if (response.statusCode == 200 && responseData != null) {
-                Result.success(responseData.toDomainModel())
-            } else {
-                val errorMessage = response.error?.message ?: "투표 통계를 불러오지 못했습니다."
-                Result.failure(Exception(errorMessage))
-            }
+            val data = response.data ?: throw Exception(response.error?.message ?: "투표 통계를 불러오지 못했습니다.")
+            Result.success(data.toDomainModel())
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
+
+    override suspend fun getMyVoteHistory(battleId: Long): Result<MyVoteBoard> {
+        return try {
+            val response = voteApi.getMyVoteHistory(battleId)
+            val data = response.data ?: throw Exception(response.error?.message ?: "내 투표 내역이 없습니다.")
+            Result.success(data.toDomainModel())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

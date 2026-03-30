@@ -1,9 +1,12 @@
 package com.swyp4.team2.ui.my.discussion
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.swyp4.team2.domain.model.DiscussionHistoryItem
+import com.swyp4.team2.domain.model.MyBattleRecordItem
+import com.swyp4.team2.domain.repository.MyPageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,15 +16,26 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class DiscussionHistoryUiState(
-    val agreeList: List<DiscussionHistoryItem> = emptyList(),
-    val disagreeList: List<DiscussionHistoryItem> = emptyList(),
-    val isLoading: Boolean = false
+    val agreeList: List<MyBattleRecordItem> = emptyList(),
+    val agreeOffset: Int? = 0,
+    val hasMoreAgree: Boolean = true,
+
+    val disagreeList: List<MyBattleRecordItem> = emptyList(),
+    val disagreeOffset: Int? = 0,
+    val hasMoreDisagree: Boolean = true,
+
+    val isLoading: Boolean = false,
+    val isPagingLoading: Boolean = false
 )
 
 @HiltViewModel
-class DiscussionHistoryViewModel @Inject constructor() : ViewModel(){
+class DiscussionHistoryViewModel @Inject constructor(
+    private val myPageRepository: MyPageRepository
+) : ViewModel(){
     private val _uiState = MutableStateFlow(DiscussionHistoryUiState())
     val uiState: StateFlow<DiscussionHistoryUiState> = _uiState.asStateFlow()
+
+    private val TAG = "DiscussionHistoryFlow"
 
     init {
         fetchDiscussionHistory()
@@ -29,24 +43,91 @@ class DiscussionHistoryViewModel @Inject constructor() : ViewModel(){
     private fun fetchDiscussionHistory() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
+            Log.d(TAG, "fetchDiscussionHistory: 통신 시작")
 
-            delay(1000)
+            val agreeDeferred = async {
+                myPageRepository.getMyBattleRecords(offset = 0, size = 20, voteSide = "PRO")
+            }
+            val disagreeDeferred = async {
+                myPageRepository.getMyBattleRecords(offset = 0, size = 20, voteSide = "CON")
+            }
 
-            val dummyAgreeList = listOf(
-                DiscussionHistoryItem("1", "철학", "인간의 본성은 선한가 악한가?", "저는 맹자의 성선설에 전적으로 동의합니다. 인간은 태어날 때부터...", "2026.03.15"),
-                DiscussionHistoryItem("2", "사회", "기본소득제 도입, 필요한가?", "기본소득제는 현대 사회의 양극화를 해소할 수 있는...", "2026.03.12")
-            )
+            val agreeResult = agreeDeferred.await()
+            val disagreeResult = disagreeDeferred.await()
 
-            val dummyDisagreeList = listOf(
-                DiscussionHistoryItem("3", "기술", "AI 발전은 인류에게 위협인가?", "AI는 도구일 뿐, 그것을 사용하는 인간의 윤리적 잣대가...", "2026.03.10")
-            )
+            agreeResult.onSuccess { data ->
+                Log.d(TAG, "찬성 기록 불러오기 성공! 아이템 개수: ${data.items.size}, nextOffset: ${data.nextOffset}")
+            }.onFailure { exception ->
+                Log.e(TAG, "찬성 기록 불러오기 실패: ${exception.message}")
+            }
 
-            _uiState.update {
-                it.copy(
-                    agreeList = dummyAgreeList,
-                    disagreeList = dummyDisagreeList,
+            disagreeResult.onSuccess { data ->
+                Log.d(TAG, "반대 기록 불러오기 성공! 아이템 개수: ${data.items.size}, nextOffset: ${data.nextOffset}")
+            }.onFailure { exception ->
+                Log.e(TAG, "반대 기록 불러오기 실패: ${exception.message}")
+            }
+
+            _uiState.update { state ->
+                state.copy(
+                    agreeList = agreeResult.getOrNull()?.items ?: emptyList(),
+                    agreeOffset = agreeResult.getOrNull()?.nextOffset,
+                    hasMoreAgree = agreeResult.getOrNull()?.hasNext ?: false,
+
+                    disagreeList = disagreeResult.getOrNull()?.items ?: emptyList(),
+                    disagreeOffset = disagreeResult.getOrNull()?.nextOffset,
+                    hasMoreDisagree = disagreeResult.getOrNull()?.hasNext ?: false,
+
                     isLoading = false
                 )
+            }
+        }
+    }
+
+    fun loadMore(voteSide: String) {
+        val currentState = _uiState.value
+
+        if (currentState.isPagingLoading) return
+
+        val (currentOffset, hasNext) = if (voteSide == "PRO") {
+            currentState.agreeOffset to currentState.hasMoreAgree
+        } else {
+            currentState.disagreeOffset to currentState.hasMoreDisagree
+        }
+
+        if (!hasNext || currentOffset == null) return
+
+        viewModelScope.launch {
+            _uiState.update { it.copy(isPagingLoading = true) }
+            Log.d(TAG, "페이징 시작: voteSide=$voteSide, offset=$currentOffset")
+
+            val result = myPageRepository.getMyBattleRecords(
+                offset = currentOffset,
+                size = 20,
+                voteSide = voteSide
+            )
+
+            result.onSuccess { pageData ->
+                Log.d(TAG, "페이징 성공: voteSide=$voteSide, 추가된 개수=${pageData.items.size}")
+                _uiState.update { state ->
+                    if (voteSide == "PRO") {
+                        state.copy(
+                            agreeList = state.agreeList + pageData.items,
+                            agreeOffset = pageData.nextOffset,
+                            hasMoreAgree = pageData.hasNext,
+                            isPagingLoading = false
+                        )
+                    } else {
+                        state.copy(
+                            disagreeList = state.disagreeList + pageData.items,
+                            disagreeOffset = pageData.nextOffset,
+                            hasMoreDisagree = pageData.hasNext,
+                            isPagingLoading = false
+                        )
+                    }
+                }
+            }.onFailure { exception ->
+                Log.e(TAG, "페이징 실패: voteSide=$voteSide, 에러=${exception.message}")
+                _uiState.update { it.copy(isPagingLoading = false) }
             }
         }
     }
