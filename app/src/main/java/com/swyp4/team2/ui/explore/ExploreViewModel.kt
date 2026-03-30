@@ -1,5 +1,6 @@
 package com.swyp4.team2.ui.explore
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -15,12 +16,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
+import androidx.paging.map
 
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
     private val exploreRepository: ExploreRepository
 ) : ViewModel() {
+
+    private companion object {
+        const val TAG = "ExploreFlow"
+    }
 
     // 탭 카테고리 (기본값: 전체)
     private val _selectedCategory = MutableStateFlow("전체")
@@ -38,6 +45,11 @@ class ExploreViewModel @Inject constructor(
             val apiCategory = if (category == "전체") null else category
             ExplorePagingSource(exploreRepository, apiCategory, sort)
         }.flow
+    }.map { pagingData ->
+        pagingData.map { item ->
+            Log.d(TAG, "📦 화면에 뿌려질 데이터: ID=${item.battleId}, 제목=${item.title}, 썸네일=${item.thumbnailUrl}")
+            item
+        }
     }.cachedIn(viewModelScope)
 
     fun updateCategory(newCategory: String) {

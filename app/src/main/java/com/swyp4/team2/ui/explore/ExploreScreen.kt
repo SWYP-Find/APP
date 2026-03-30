@@ -7,11 +7,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,6 +61,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.AppRoute
@@ -107,7 +111,7 @@ fun ExploreScreen(
                 showLogo = true,
                 centerTitle = false,
                 backgroundColor = Beige200,
-                actions = {
+                /*actions = {
                     IconButton(
                         onClick = {
                             onNavigateToAlarm()
@@ -128,7 +132,7 @@ fun ExploreScreen(
                             )
                         }
                     }
-                }
+                }*/
             )
         }
     ) { innerPadding ->
@@ -240,15 +244,16 @@ fun ExploreCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .clickable { onClick(item.battleId) }
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // 썸네일 이미지
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = item.thumbnailUrl,
             contentDescription = "Content Thumbnail",
             modifier = Modifier
@@ -256,45 +261,61 @@ fun ExploreCard(
                 .aspectRatio(3f / 4f)
                 .clip(RoundedCornerShape(2.dp)),
             contentScale = ContentScale.Crop,
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Beige200),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = SwypTheme.colors.primary,
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
         )
 
         // 텍스트 정보들
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+        ) {
             // 1. 타입(뱃지) & 제목
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.Top) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
+                        .padding(top = 1.dp)
+                        .clip(RoundedCornerShape(2.dp))
                         .background(Beige600)
                         .padding(horizontal = 6.dp, vertical = 2.dp)
                 ) {
                     Text(
                         text = item.type,
-                        style = SwypTheme.typography.h5SemiBold,
+                        style = SwypTheme.typography.b4Medium,
                         color = SwypTheme.colors.primary
                     )
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.h5SemiBold,
+                    style = SwypTheme.typography.h5SemiBold.copy(
+                        lineBreak = LineBreak(
+                            strategy = LineBreak.Strategy.HighQuality,
+                            strictness = LineBreak.Strictness.Loose,
+                            wordBreak = LineBreak.WordBreak.Default
+                        )
+                    ),
                     color = Gray500,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
             }
 
             Spacer(modifier = Modifier.height(4.dp))
-
-            // 2. 태그 리스트
-            if (item.tags.isNotEmpty()) {
-                Text(
-                    text = item.tags.joinToString(" ") { "#$it" },
-                    style = SwypTheme.typography.label,
-                    color = SwypTheme.colors.primary
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-            }
 
             // 3. 설명 내용
             Text(
@@ -305,33 +326,57 @@ fun ExploreCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // 4. 오디오 시간 & 조회수
+            // 4. 태그 내용 & 오디오 시간/조회수
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_clock),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Gray300
+                // [왼쪽 그룹] 해시태그
+                Text(
+                    text = item.tags.joinToString(" ") { "#$it" },
+                    style = SwypTheme.typography.label,
+                    color = SwypTheme.colors.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.audioDurationText, style = SwypTheme.typography.label, color = Gray400)
 
-                Spacer(modifier = Modifier.width(12.dp))
+                // 태그와 아이콘 사이의 최소한의 간격
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_eye),
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Gray300
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray400)
+                // [오른쪽 그룹] 오디오 시간 & 조회수
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_clock),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = Gray300
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = item.audioDurationText,
+                        style = SwypTheme.typography.label,
+                        color = Gray400
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_eye),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = Gray300
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = item.viewCountText,
+                        style = SwypTheme.typography.label,
+                        color = Gray400
+                    )
+                }
             }
         }
     }

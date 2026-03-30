@@ -17,21 +17,18 @@ class AdMobManager(private val context: Context) {
     private var rewardedAd: RewardedAd? = null
     private val adUnitId = BuildConfig.ADMOB_REWARDED_AD_UNIT_ID
 
-    /**
-     * 1. 광고 장전하기 (화면에 진입할 때 미리 호출해 두면 유저가 기다리지 않습니다)
-     * @param userId 백엔드가 "누가 광고를 봤는지" 알 수 있게 해주는 고유 식별표
-     */
     fun loadAd(userId: String) {
+        Log.d("AdMobManagerFlow", "1. [광고 로드 요청] userId: $userId 로드 시작")
         val adRequest = AdRequest.Builder().build()
 
         RewardedAd.load(context, adUnitId, adRequest, object : RewardedAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.e("AdMobManagerFlow", "광고 로드 실패: ${adError.message}")
+                Log.e("AdMobManagerFlow", "❌ [광고 로드 실패]: ${adError.message}")
                 rewardedAd = null
             }
 
             override fun onAdLoaded(ad: RewardedAd) {
-                Log.d("AdMobManagerFlow", "광고 로드 성공!")
+                Log.d("AdMobManagerFlow", "2. [광고 로드 성공]")
                 rewardedAd = ad
 
                 // 🌟 SSV (서버 측 검증) 세팅
@@ -39,35 +36,45 @@ class AdMobManager(private val context: Context) {
                     .setCustomData(userId)
                     .build()
                 rewardedAd?.setServerSideVerificationOptions(options)
+
+                // 👉 백엔드 개발자에게 보여줄 핵심 로그 1
+                Log.d("AdMobManagerFlow", "3. [SSV 설정 완료] 구글 서버에 전달될 custom_data(userId) = $userId")
             }
         })
     }
 
-    /**
-     * 2. 광고 띄우기 (유저가 "무료 충전" 버튼을 눌렀을 때 호출)
-     * @param onRewardEarned 30초 영상을 끝까지 다 봤을 때 실행할 콜백 (포인트 새로고침)
-     */
-    fun showAd(activity: Activity, onRewardEarned: () -> Unit) {
+    fun showAd(activity: Activity, onRewardEarned: () -> Unit): Boolean {
         if (rewardedAd != null) {
-            // 광고 화면이 닫히거나 실패했을 때의 이벤트 처리
+            Log.d("AdMobManagerFlow", "4. [광고 띄우기 요청] 유저가 버튼을 클릭함")
+
             rewardedAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdShowedFullScreenContent() {
+                    Log.d("AdMobManagerFlow", "5. ▶️ [광고 노출 성공] 화면에 영상이 재생되기 시작함")
+                }
+
                 override fun onAdDismissedFullScreenContent() {
-                    Log.d("AdMobManagerFlow", "광고 화면이 닫혔습니다.")
+                    Log.d("AdMobManagerFlow", "7. ⏹️ [광고 닫힘] 유저가 X 버튼을 눌러 화면을 닫음")
                     rewardedAd = null
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    Log.e("AdMobManagerFlow", "광고 띄우기 실패: ${adError.message}")
+                    Log.e("AdMobManagerFlow", "❌ [광고 노출 실패]: ${adError.message}")
                     rewardedAd = null
                 }
             }
 
             rewardedAd?.show(activity) { rewardItem ->
-                Log.d("AdMobManagerFlow", "보상 획득 완료! (구글이 천수님 백엔드로 지급 요청을 보냄)")
+                // 👉 백엔드 개발자에게 보여줄 핵심 로그 2
+                Log.d("AdMobManagerFlow", "6. 🎉 [보상 조건 달성!!] 유저가 영상을 끝까지 다 봄")
+                Log.d("AdMobManagerFlow", "   - AdMob 보상 타입: ${rewardItem.type}, 수량: ${rewardItem.amount}")
+                Log.d("AdMobManagerFlow", "   - 💡 안드로이드의 역할은 여기서 끝입니다. 이제 구글 서버가 백엔드로 SSV 웹훅을 발송해야 합니다.")
+
                 onRewardEarned()
             }
+            return true
         } else {
-            Log.d("AdMobManagerFlow", "아직 광고가 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.")
+            Log.d("AdMobManagerFlow", "⚠️ 아직 광고가 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.")
+            return false
         }
     }
 }

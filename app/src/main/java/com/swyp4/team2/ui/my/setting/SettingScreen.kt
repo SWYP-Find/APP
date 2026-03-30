@@ -114,7 +114,7 @@ fun SettingScreen(
 
             if (showLogoutDialog) {
                 CustomConfirmDialog(
-                    message = "로그아웃 시 원활한 이용이 어려울 수 있습니다.\u2028그럼에도 로그아웃하시겠습니까?",
+                    message = "로그아웃 시 원활한 이용이 어려울 수 있습니다.\n그럼에도 로그아웃하시겠습니까?",
                     confirmText = "네, 로그아웃합니다",
                     dismissText = "뒤로가기",
                     onConfirm = {
@@ -129,7 +129,7 @@ fun SettingScreen(
 
             if (showWithdrawDialog) {
                 CustomConfirmDialog(
-                    message = "탈퇴 시 지금까지의 이용기록이 영구 삭제 됩니다.\u2028그럼에도 탈퇴하시겠습니까?",
+                    message = "탈퇴 시 지금까지의 이용기록이 영구 삭제 됩니다.\n그럼에도 탈퇴하시겠습니까?",
                     confirmText = "네, 탈퇴합니다",
                     dismissText = "뒤로가기",
                     onConfirm = {
