@@ -21,7 +21,6 @@ fun SortFilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    // 선택 여부에 따라 색상 반전 처리
     val backgroundColor = if (isSelected) SwypTheme.colors.primary else Primary50
     val contentColor = if (isSelected) Primary50 else SwypTheme.colors.primary
     val borderColor = SwypTheme.colors.primary
@@ -37,7 +36,7 @@ fun SortFilterChip(
     ) {
         Text(
             text = text,
-            style = SwypTheme.typography.b4Medium, // 폰트 사이즈가 작아 보여서 b4Medium으로 설정했습니다. 필요시 조정하세요!
+            style = SwypTheme.typography.b4Medium,
             color = contentColor
         )
     }

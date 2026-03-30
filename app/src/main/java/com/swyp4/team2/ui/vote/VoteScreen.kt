@@ -49,7 +49,8 @@ fun VoteRoute(
                 voteType = voteType,
                 battleDetail = detail,
                 onBackClick = onBackClick,
-                onVoteSubmit = onVoteSubmit
+                onVoteSubmit = onVoteSubmit,
+                viewModel = viewModel
             )
         }
     }
@@ -60,7 +61,8 @@ fun VoteScreen(
     voteType: VoteType,
     battleDetail: BattleDetailBoard,
     onBackClick: () -> Unit,
-    onVoteSubmit: (String) -> Unit
+    onVoteSubmit: (String) -> Unit,
+    viewModel: VoteViewModel
 ) {
     val isPreVote = voteType == VoteType.PRE
     val battleInfo = battleDetail.battleInfo
@@ -84,15 +86,15 @@ fun VoteScreen(
                     onBackClick = onBackClick,
                     backIconColor = Color.White,
                     backgroundColor = Color.Transparent,
-                    actions = {
-                        IconButton(onClick = { /* 공유 로직 */ }) {
+                    /*actions = {
+                        IconButton(onClick = { *//* 공유 로직 *//* }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_share),
                                 contentDescription = "공유",
                                 tint = Color.White
                             )
                         }
-                    }
+                    }*/
                 )
             }
         },
@@ -102,7 +104,13 @@ fun VoteScreen(
                     text = if (isPreVote) stringResource(R.string.prevote) else "사후 투표하기",
                     onClick = {
                         if (selectedOptionId != null) {
-                            onVoteSubmit(battleInfo.battleId.toString())
+                            viewModel.submitVote(
+                                voteType = voteType,
+                                selectedOptionId = selectedOptionId!!,
+                                onSuccess = {
+                                    onVoteSubmit(battleInfo.battleId.toString())
+                                }
+                            )
                         }
                     },
                     modifier = Modifier.padding(20.dp),
@@ -247,11 +255,9 @@ fun VoteOptionCard(
             .padding(vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
+        ProfileImage(
             model = option.imageUrl,
-            contentDescription = option.representative,
-            modifier = Modifier.size(48.dp).clip(CircleShape),
-            contentScale = ContentScale.Crop
+            modifier = Modifier.size(40.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = option.title, style = SwypTheme.typography.h4SemiBold, color = Gray900)

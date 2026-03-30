@@ -1,8 +1,12 @@
 package com.swyp4.team2.ui.my
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.swyp4.team2.domain.model.PhilosopherInfo
+import com.swyp4.team2.domain.model.MyPhilosopher
+import com.swyp4.team2.domain.model.MyProfile
+import com.swyp4.team2.domain.model.MyTier
+import com.swyp4.team2.domain.repository.MyPageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,17 +17,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class MyUiState(
-    val nickname: String = "사색하는 고양이",
-    val userHandle: String = "@user_code",
-    val credit: Int = 240,
-    val userId: String = "user_123",
-    val philosopherInfo: PhilosopherInfo? = null,
+    val profile: MyProfile? = null,
+    val philosopher: MyPhilosopher? = null,
+    val tier: MyTier? = null,
     val hasNewNotice: Boolean = true,
     val isLoading: Boolean = false
 )
 
 @HiltViewModel
-class MyViewModel @Inject constructor() : ViewModel() {
+class MyViewModel @Inject constructor(
+    private val myPageRepository: MyPageRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyUiState())
     val uiState: StateFlow<MyUiState> = _uiState.asStateFlow()
@@ -33,24 +37,35 @@ class MyViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun fetchMyInfo() {
-        // TODO: 나중에 서버에서 GET /my-info API 호출 로직으로 교체!
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+
+            myPageRepository.getMyPageInfo()
+                .onSuccess { infoBoard ->
+                    Log.d("MyPageFlow", "🟢 마이페이지 정보 로드 성공: ${infoBoard}")
+                    _uiState.update {
+                        it.copy(
+                            profile = infoBoard.profile,
+                            philosopher = infoBoard.philosopher,
+                            tier = infoBoard.tier,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    Log.e("MyPageFlow", "🔴 마이페이지 로드 실패: ${error.message}", error)
+                    _uiState.update { it.copy(isLoading = false) }
+                }
+        }
     }
 
     fun refreshPointsAfterAd() {
-        viewModelScope.launch {
-            // TODO: 실제로는 서버에 내 포인트를 다시 조회하는 API를 찔러서 정확한 값을 가져와야 합니다.
-            _uiState.update { currentState ->
-                currentState.copy(credit = currentState.credit + 50)
-            }
-        }
+        fetchMyInfo()
     }
 
     fun readNotice() {
         viewModelScope.launch {
-            // TODO: 나중에 서버에 "알림 읽음 처리해줘!" 라고 API(예: POST /alarms/read)를 찔러야 합니다.
-            _uiState.update { currentState ->
-                currentState.copy(hasNewNotice = false)
-            }
+            _uiState.update { it.copy(hasNewNotice = false) }
         }
     }
 }

@@ -161,7 +161,6 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = innerPadding.calculateTopPadding())
-                    .background(SwypTheme.colors.surface)
                     .verticalScroll(scrollState)
             ) {
                 // 1. 에디터 픽 섹션

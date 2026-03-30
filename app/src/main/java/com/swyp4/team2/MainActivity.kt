@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,18 +23,17 @@ import androidx.navigation.navDeepLink
 import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.util.Utility
 import com.swyp4.team2.ui.alarm.AlarmScreen
-import com.swyp4.team2.ui.curation.CurationScreen
+import com.swyp4.team2.ui.comment.CommentScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.login.LoginScreen
 import com.swyp4.team2.ui.main.MainScreen
-import com.swyp4.team2.ui.my.philosopher.OtherPhilosopherDetailScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
 import com.swyp4.team2.ui.my.setting.policy.PrivacyPolicyScreen
 import com.swyp4.team2.ui.my.setting.policy.TermsOfServiceScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
-import com.swyp4.team2.ui.perspective.PerspectiveDetailScreen
 import com.swyp4.team2.ui.perspective.PerspectiveScreen
+import com.swyp4.team2.ui.recommend.RecommendScreen
 import com.swyp4.team2.ui.splash.SplashScreen
 import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.vote.VoteRoute
@@ -69,7 +70,11 @@ fun AppNavigation() {
         NavHost(
             navController = rootNavController,
             startDestination = AppRoute.Splash.route,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None }
         ) {
             // 스플래시 화면
             composable(AppRoute.Splash.route) {
@@ -83,6 +88,8 @@ fun AppNavigation() {
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Splash.route) { inclusive = true }
                         }
+                        // rootNavController.navigate(AppRoute.Scenario.createRoute("34"))
+                        // rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
                     },
                     onNavigateToOnboarding = {
                         rootNavController.navigate(AppRoute.Onboarding.route) {
@@ -167,8 +174,8 @@ fun AppNavigation() {
                         rootNavController.popBackStack()
                     },
                     onVoteSubmit = { submittedBattleId ->
-                        rootNavController.navigate(AppRoute.PostVote.createRoute(submittedBattleId))
-                        // rootNavController.navigate(AppRoute.Scenario.createRoute(battleId))
+                        //rootNavController.navigate(AppRoute.PostVote.createRoute(submittedBattleId))
+                        rootNavController.navigate(AppRoute.Scenario.createRoute(submittedBattleId))
                     }
                 )
             }
@@ -225,34 +232,33 @@ fun AppNavigation() {
                         // rootNavController.popBackStack()
                     },
                     onNextClick = {
-                        rootNavController.navigate(AppRoute.Curation.route)
+                        rootNavController.navigate(AppRoute.Recommend.route)
                     },
-                    onMoreClick = { submittedBattleId ->
-                        rootNavController.navigate(AppRoute.PerspectiveDetail.createRoute(submittedBattleId))
+                    onMoreClick = { itemId ->
+                        rootNavController.navigate(AppRoute.Comment.createRoute(itemId))
                     }
                 )
             }
 
             // 답글 화면
             composable(
-                route = AppRoute.PerspectiveDetail.route,
+                route = AppRoute.Comment.route,
                 arguments = listOf(
-                    navArgument("battleId") { type = NavType.StringType }
+                    navArgument("itemId") { type = NavType.StringType }
                 )
             ){ backStackEntry ->
-                val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+                val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
 
-                PerspectiveDetailScreen(
-                    // itemId = itemId,
+                CommentScreen(
                     onBackClick = {
                         rootNavController.popBackStack()
                     }
                 )
             }
 
-            // 큐레이션 화면
-            composable(AppRoute.Curation.route) {
-                CurationScreen(
+            // 추천 화면
+            composable(AppRoute.Recommend.route) {
+                RecommendScreen(
                     onCloseClick = {
                         rootNavController.popBackStack(AppRoute.Main.route, inclusive = false)
                     },
@@ -273,7 +279,7 @@ fun AppNavigation() {
                 TermsOfServiceScreen(onBackClick = { rootNavController.popBackStack() })
             }
 
-            composable(
+            /*composable(
                 route = AppRoute.OtherPhilosopher.route,
                 arguments = listOf(
                     navArgument("reportId") { type = NavType.StringType }
@@ -297,7 +303,7 @@ fun AppNavigation() {
                         }
                     }
                 )
-            }
+            }*/
         }
     }
 }

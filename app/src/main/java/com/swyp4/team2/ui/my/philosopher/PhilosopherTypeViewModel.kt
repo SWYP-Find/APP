@@ -7,9 +7,11 @@ import com.swyp4.team2.domain.model.CategoryCount
 import com.swyp4.team2.domain.model.Chemistry
 import com.swyp4.team2.domain.model.ChemistryPhilosopher
 import com.swyp4.team2.domain.model.MainPhilosopherDetail
+import com.swyp4.team2.domain.model.MyRecapBoard
 import com.swyp4.team2.domain.model.PhilosopherReport
 import com.swyp4.team2.domain.model.TasteReport
 import com.swyp4.team2.domain.model.TraitAnalysis
+import com.swyp4.team2.domain.repository.MyPageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,12 +22,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class PhilosopherTypeUiState(
-    val report: PhilosopherReport? = null,
-    val isLoading: Boolean = false
+    val recapBoard: MyRecapBoard? = null,
+    val isLoading: Boolean = false,
+    val isLocked: Boolean = false
 )
 
 @HiltViewModel
-class PhilosopherTypeViewModel @Inject constructor() : ViewModel(){
+class PhilosopherTypeViewModel @Inject constructor(
+    private val myPageRepository: MyPageRepository
+) : ViewModel(){
     private val _uiState = MutableStateFlow(PhilosopherTypeUiState())
     val uiState: StateFlow<PhilosopherTypeUiState> = _uiState.asStateFlow()
 
@@ -33,61 +38,29 @@ class PhilosopherTypeViewModel @Inject constructor() : ViewModel(){
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            // TODO: 실제 서버 API(GET /my/philosopher-report) 호출로 교체해야 함!
-            delay(1000)
+            val result = myPageRepository.getMyRecap()
 
-            val dummyReport = PhilosopherReport(
-                reportId = "1",
-                hasTestResult = true,
-                mainPhilosopher = MainPhilosopherDetail(
-                    name = "칸트형",
-                    description = "결과보다 과정을 중시하고, 보편적 도덕 법칙을 따르는 원칙주의자. 어떤 상황에서도 흔들리지 않는 기준을 가진 사람입니다.",
-                    imageUrl = R.drawable.ic_profile_kant,
-                    tags = listOf("의무론", "규칙 중시", "보편 원칙", "이상적")
-                ),
-                traitAnalysis = TraitAnalysis(
-                    principle = 92,
-                    logic = 85,
-                    individual = 72,
-                    change = 38,
-                    inner = 88,
-                    ideal = 45
-                ),
-                tasteReport = TasteReport(
-                    totalParticipation = 47,
-                    opinionChanges = 12,
-                    winRate = 68,
-                    topCategories = listOf(
-                        CategoryCount("철학", 20),
-                        CategoryCount("문학", 13),
-                        CategoryCount("예술", 8),
-                        CategoryCount("사회", 5)
+            result.onSuccess { data ->
+                _uiState.update {
+                    it.copy(
+                        recapBoard = data,
+                        isLoading = false,
+                        isLocked = false
                     )
-                ),
-                chemistry = Chemistry(
-                    best = ChemistryPhilosopher(
-                        name = "플라톤형",
-                        description = "본질과 이상을 좇으며 더 나은 세계를 꿈꾸는 사람.",
-                        imageUrl = R.drawable.ic_profile_mengzi
-                    ),
-                    worst = ChemistryPhilosopher(
-                        name = "니체형",
-                        description = "기존의 틀을 부수고 자기만의 길을 가는 사람",
-                        imageUrl = R.drawable.ic_profile_niche
+                }
+            }.onFailure { exception ->
+                _uiState.update {
+                    it.copy(
+                        recapBoard = null,
+                        isLoading = false,
+                        isLocked = true
                     )
-                )
-            )
-
-            _uiState.update {
-                it.copy(
-                    report = dummyReport,
-                    isLoading = false
-                )
+                }
             }
         }
     }
 
-    fun fetchOtherPhilosopherReport(reportId: String) {
+    /*fun fetchOtherPhilosopherReport(reportId: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
@@ -138,10 +111,10 @@ class PhilosopherTypeViewModel @Inject constructor() : ViewModel(){
 
             _uiState.update {
                 it.copy(
-                    report = otherDummyReport,
+                    recapBoard = otherDummyReport,
                     isLoading = false
                 )
             }
         }
-    }
+    }*/
 }

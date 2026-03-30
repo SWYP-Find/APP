@@ -48,7 +48,7 @@ fun TodayBattleItemDto.toDomainModel(): TodayBattleItem {
         battleId = this.battleId.toString(),
         title = this.title,
         summary = this.summary,
-        thumbnailUrl = this.thumbnailUrl,
+        thumbnailUrl = this.thumbnailUrl ?: "",
         type = this.type,
         audioDuration = this.audioDuration,
         tags = this.tags.map { it.name },
@@ -61,7 +61,7 @@ fun TodayBattleOptionDto.toDomainModel(): TodayBattleOption {
         optionId = this.optionId.toString(),
         label = this.label,
         title = this.title,
-        representative = this.representative,
+        representative = this.representative ?: "",
         stance = this.stance,
         imageUrl = this.imageUrl
     )

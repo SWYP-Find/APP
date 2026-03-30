@@ -1,18 +1,26 @@
 package com.swyp4.team2.di
 
+import com.swyp4.team2.data.repository.AlarmRepositoryImpl
 import com.swyp4.team2.data.repository.AuthRepositoryImpl
 import com.swyp4.team2.data.repository.BattleRepositoryImpl
+import com.swyp4.team2.data.repository.CommentRepositoryImpl
 import com.swyp4.team2.data.repository.ExploreRepositoryImpl
 import com.swyp4.team2.data.repository.HomeRepositoryImpl
+import com.swyp4.team2.data.repository.MyPageRepositoryImpl
 import com.swyp4.team2.data.repository.PerspectiveRepositoryImpl
+import com.swyp4.team2.data.repository.RecommendRepositoryImpl
 import com.swyp4.team2.data.repository.ScenarioRepositoryImpl
 import com.swyp4.team2.data.repository.TodayBattleRepositoryImpl
 import com.swyp4.team2.data.repository.VoteRepositoryImpl
+import com.swyp4.team2.domain.repository.AlarmRepository
 import com.swyp4.team2.domain.repository.AuthRepository
 import com.swyp4.team2.domain.repository.BattleRepository
+import com.swyp4.team2.domain.repository.CommentRepository
 import com.swyp4.team2.domain.repository.ExploreRepository
 import com.swyp4.team2.domain.repository.HomeRepository
+import com.swyp4.team2.domain.repository.MyPageRepository
 import com.swyp4.team2.domain.repository.PerspectiveRepository
+import com.swyp4.team2.domain.repository.RecommendRepository
 import com.swyp4.team2.domain.repository.ScenarioRepository
 import com.swyp4.team2.domain.repository.TodayBattleRepository
 import com.swyp4.team2.domain.repository.VoteRepository
@@ -72,4 +80,28 @@ abstract class RepositoryModule {
     abstract fun bindBattleRepository(
         battleRepositoryImpl: BattleRepositoryImpl
     ): BattleRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCommentRepository(
+        commentRepositoryImpl: CommentRepositoryImpl
+    ): CommentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRecommendRepository(
+        recommendRepositoryImpl: RecommendRepositoryImpl
+    ): RecommendRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMyPageRepository(
+        myPageRepositoryImpl: MyPageRepositoryImpl
+    ): MyPageRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAlarmRepository(
+        alarmRepositoryImpl: AlarmRepositoryImpl
+    ): AlarmRepository
 }

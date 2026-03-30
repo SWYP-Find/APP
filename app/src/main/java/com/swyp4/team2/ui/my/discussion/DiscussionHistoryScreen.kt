@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swyp4.team2.R
-import com.swyp4.team2.domain.model.DiscussionHistoryItem
+import com.swyp4.team2.domain.model.MyBattleRecordItem
 import com.swyp4.team2.ui.component.CustomTabBar
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.theme.Beige200
@@ -57,6 +58,7 @@ import kotlinx.coroutines.launch
 fun DiscussionHistoryScreen(
     onBackClick: () -> Unit,
     // onNavigateToComment: (Long) -> Unit,
+    onNavigateToDetail: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: DiscussionHistoryViewModel = hiltViewModel()
 ) {
@@ -111,13 +113,17 @@ fun DiscussionHistoryScreen(
                     when (page) {
                         0 -> DiscussionHistoryList(
                             list = uiState.agreeList,
+                            voteSide = "PRO",
                             emptyMessage = "아직 찬성 의견을 남긴 토론이 없습니다",
-                           // onItemClick = onNavigateToComment
+                            onItemClick = onNavigateToDetail,
+                            onLoadMore = { viewModel.loadMore("PRO") }
                         )
                         1 -> DiscussionHistoryList(
                             list = uiState.disagreeList,
+                            voteSide = "CON",
                             emptyMessage = "아직 반대 의견을 남긴 토론이 없습니다",
-                            // onItemClick = onNavigateToComment
+                            onItemClick = onNavigateToDetail,
+                            onLoadMore = { viewModel.loadMore("CON") }
                         )
                     }
                 }
@@ -128,9 +134,11 @@ fun DiscussionHistoryScreen(
 
 @Composable
 fun DiscussionHistoryList(
-    list: List<DiscussionHistoryItem>,
+    list: List<MyBattleRecordItem>,
+    voteSide: String,
     emptyMessage: String,
-    // onItemClick: (Long) -> Unit
+    onItemClick: (String) -> Unit,
+    onLoadMore: () -> Unit
 ) {
     if (list.isEmpty()) {
         Column(
@@ -156,10 +164,15 @@ fun DiscussionHistoryList(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(list) { item ->
+            itemsIndexed(list) { index, item ->
+                // 리스트 끝에서 2번째 아이템에 도달하면 다음 페이지 데이터 호출
+                if (index >= list.size - 2) {
+                    onLoadMore()
+                }
+
                 DiscussionHistoryCard(
                     item = item,
-                    //onClick = { onItemClick(item.id) }
+                    onClick = { onItemClick(item.battleId) }
                 )
             }
         }
@@ -168,8 +181,8 @@ fun DiscussionHistoryList(
 
 @Composable
 fun DiscussionHistoryCard(
-    item: DiscussionHistoryItem,
-   // onClick: () -> Unit
+    item: MyBattleRecordItem,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -177,29 +190,14 @@ fun DiscussionHistoryCard(
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
-            // .clickable { onClick() }
+            .clickable { onClick() }
             .padding(16.dp)
     ) {
-        // [상단] 카테고리 뱃지 & 토론 주제
+        // [상단] 토론 주제
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // 카테고리 뱃지
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(Beige600)
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = "#${item.category}",
-                    style = SwypTheme.typography.b5Medium,
-                    color = Primary500
-                )
-            }
-
-            // 토론 주제
             Text(
                 text = item.title,
                 style = SwypTheme.typography.labelMedium,
@@ -211,9 +209,9 @@ fun DiscussionHistoryCard(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // [중단] 내가 쓴 댓글 내용
+        // [중단] 내가 남긴 요약 내용
         Text(
-            text = item.description,
+            text = item.summary,
             style = SwypTheme.typography.b4Regular,
             color = Gray400,
             maxLines = 3,
@@ -224,7 +222,7 @@ fun DiscussionHistoryCard(
 
         // [하단] 작성 날짜
         Text(
-            text = item.date,
+            text = item.createdAt,
             style = SwypTheme.typography.label,
             color = Gray200
         )

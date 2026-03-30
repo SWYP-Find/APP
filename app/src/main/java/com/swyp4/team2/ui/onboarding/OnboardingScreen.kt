@@ -1,5 +1,6 @@
 package com.swyp4.team2.ui.onboarding
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,25 +27,37 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.swyp4.team2.R
 import com.swyp4.team2.domain.model.PerspectiveStance
 import com.swyp4.team2.domain.model.SpeakerType
@@ -53,7 +67,8 @@ import com.swyp4.team2.ui.home.TodayPickeCard
 import com.swyp4.team2.ui.home.model.TodayPickUiModel
 import com.swyp4.team2.ui.perspective.PerspectiveHeader
 import com.swyp4.team2.ui.perspective.PerspectiveItemCard
-import com.swyp4.team2.ui.perspective.model.PerspectiveUiModel
+import com.swyp4.team2.ui.perspective.PerspectiveMenuItem
+import com.swyp4.team2.ui.perspective.PerspectiveUiModel
 import com.swyp4.team2.ui.scenario.model.ScenarioScriptUiModel
 import com.swyp4.team2.ui.theme.Beige100
 import com.swyp4.team2.ui.theme.Beige300
@@ -62,12 +77,15 @@ import com.swyp4.team2.ui.theme.Beige600
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray600
+import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
 import com.swyp4.team2.ui.theme.Primary500
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.theme.SwypTheme
 import java.time.format.TextStyle
 import com.swyp4.team2.ui.theme.Pretendard
+import com.swyp4.team2.ui.theme.Primary50
+import com.swyp4.team2.ui.theme.Primary600
 
 @Composable
 fun OnboardingScreen(
@@ -260,10 +278,22 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
     }
 }
 
+data class OnboardingUiModel(
+    val commentId: String,
+    val profileImageRes: Any,
+    val nickname: String,
+    val stance: PerspectiveStance,
+    val content: String,
+    val timeAgo: String,
+    val replyCount: Int,
+    val likeCount: Int,
+    val isLiked: Boolean
+)
+
 @Composable
 fun SecondOnboardingCard(modifier: Modifier = Modifier) {
     val dummyPerspectives = listOf(
-        PerspectiveUiModel(
+        OnboardingUiModel(
             commentId = "1",
             profileImageRes = R.drawable.ic_profile_racoon,
             nickname = "사유하는 라쿤",
@@ -274,7 +304,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
             likeCount = 1340,
             isLiked = false
         ),
-        PerspectiveUiModel(
+        OnboardingUiModel(
             commentId = "2",
             profileImageRes = R.drawable.ic_profile_dochi,
             nickname = "사유하는 고슴도치",
@@ -298,7 +328,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .padding(vertical = 16.dp)
         ) {
-            PerspectiveHeader(
+            OnboardingHeader(
                 proPercentage = 78f,
                 conPercentage = 22f
             )
@@ -310,7 +340,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 dummyPerspectives.forEach { item ->
-                    PerspectiveItemCard(
+                    OnboardingItemCard(
                         item = item,
                         isDetail = false,
                         onMoreClick = {},
@@ -336,6 +366,227 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Composable
+fun OnboardingHeader(
+    proPercentage: Float = 59.5f,
+    conPercentage: Float = 40.5f,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+    ) {
+        // 1. 생각이 바뀌었어요 버튼
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Surface(
+                color = Primary50,
+                shape = RoundedCornerShape(4.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_think),
+                        contentDescription = "생각 변경",
+                        tint = Primary500,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "생각이 바뀌었어요",
+                        style = SwypTheme.typography.caption2SemiBold,
+                        color = Primary500
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 2. 찬/반 비율 바
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "찬 ${proPercentage}%",
+                style = SwypTheme.typography.label,
+                color = Gray600
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // 비율에 따라 채워지는 프로그레스 바
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(6.dp)
+                    .clip(CircleShape)
+            ) {
+                // 찬성 비율 (진한 붉은색)
+                Box(
+                    modifier = Modifier
+                        .weight(if (proPercentage > 0) proPercentage else 0.1f)
+                        .fillMaxHeight()
+                        .background(Color(0xFFA64D47))
+                )
+                // 반대 비율 (연한 회색)
+                Box(
+                    modifier = Modifier
+                        .weight(if (conPercentage > 0) conPercentage else 0.1f)
+                        .fillMaxHeight()
+                        .background(Color(0xFFEBEBEB))
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Text(
+                text = "반 ${conPercentage}%",
+                style = SwypTheme.typography.label,
+                color = Gray600
+            )
+        }
+    }
+}
+
+@Composable
+fun OnboardingItemCard(
+    item: OnboardingUiModel,
+    isDetail: Boolean = false,
+    modifier: Modifier = Modifier,
+    onMoreClick: () -> Unit = {},
+    clickable: Boolean = true,
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: () -> Unit = {}
+) {
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(2.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = if (isDetail) null else BorderStroke(width = 1.dp, color = Beige600)
+    ) {
+        Column(modifier = Modifier.padding(14.dp)) {
+
+            // 1. 프로필 영역 (기존 코드와 완벽히 동일)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_profile_racoon),
+                    contentDescription = "캐릭터 프로필",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = item.nickname,
+                            style = SwypTheme.typography.labelMedium,
+                            color = Gray700
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Surface(
+                            color = SwypTheme.colors.primary.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(2.dp)
+                        ) {
+                            Text(
+                                text = item.stance.label,
+                                style = SwypTheme.typography.b5Medium,
+                                color = SwypTheme.colors.primary,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
+                    Text(
+                        text = item.timeAgo,
+                        style = SwypTheme.typography.labelXSmall,
+                        color = SwypTheme.colors.outline
+                    )
+                }
+
+                // 케밥 메뉴 (기존과 동일)
+                Box {
+                    IconButton(
+                        onClick = { if (clickable) isMenuExpanded = true else isMenuExpanded = false },
+                        modifier = Modifier.size(16.dp)
+                    ) {
+                        Icon(painterResource(id = R.drawable.ic_more), "더보기", tint = Gray300)
+                    }
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = { isMenuExpanded = false },
+                        modifier = Modifier.background(Primary600).clip(RoundedCornerShape(8.dp))
+                    ) {
+                        PerspectiveMenuItem(iconRes = R.drawable.ic_trash, text = "삭제") {
+                            isMenuExpanded = false
+                            onDeleteClick()
+                        }
+                        PerspectiveMenuItem(iconRes = R.drawable.ic_edit, text = "수정") {
+                            isMenuExpanded = false
+                            onEditClick(item.content)
+                        }
+                        PerspectiveMenuItem(iconRes = R.drawable.ic_bell, text = "신고") {
+                            isMenuExpanded = false
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 2. 본문 영역: 상세(isDetail)면 무제한, 아니면 3줄 제한!
+            Text(
+                text = item.content,
+                style = SwypTheme.typography.b4Regular,
+                color = Gray600,
+                maxLines = if (isDetail) Int.MAX_VALUE else 3,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 3. 하단 영역
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                if (!isDetail) {
+                    Text(
+                        text = "더보기",
+                        style = SwypTheme.typography.b5Medium,
+                        color = Gray300,
+                        modifier = if (clickable) Modifier.clickable { onMoreClick() } else Modifier
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+
+                if (!isDetail) {
+                    Icon(painterResource(id = R.drawable.ic_message), "댓글", Modifier.size(12.dp), tint = Gray300)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("${item.replyCount}", style = SwypTheme.typography.b5Medium, color = Gray300)
+                    Spacer(modifier = Modifier.width(12.dp))
+                }
+
+                Icon(painterResource(id = R.drawable.ic_heart_plus), "좋아요", Modifier.size(12.dp), tint = Gray300)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("${item.likeCount}", style = SwypTheme.typography.b5Medium, color = Gray300)
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ThirdOnboardingCard(modifier: Modifier = Modifier) {

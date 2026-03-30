@@ -3,6 +3,7 @@ package com.swyp4.team2.ui.my.setting
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,17 +14,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.swyp4.team2.R
+import com.swyp4.team2.ui.component.CustomConfirmDialog
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.theme.Beige600
@@ -31,6 +41,7 @@ import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray700
 import com.swyp4.team2.ui.theme.Gray900
+import com.swyp4.team2.ui.theme.Primary900
 import com.swyp4.team2.ui.theme.SwypTheme
 
 @Composable
@@ -39,54 +50,108 @@ fun SettingScreen(
     onNavigateToSettingProfile: ()->Unit,
     onNavigateToSettingAlarm: ()->Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
-    onNavigateToTermsOfService: () -> Unit
+    onNavigateToTermsOfService: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    viewModel: SettingViewModel = hiltViewModel()
 ) {
-    Scaffold(
-        topBar={
-            CustomTopAppBar(
-                title = stringResource(R.string.setting),
-                centerTitle = true,
-                showLogo = false,
-                showBackButton = true,
-                onBackClick = { onBackClick() },
-                backgroundColor = Beige200
-            )
-        },
-        containerColor = Beige200
-    ){ innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(top = innerPadding.calculateTopPadding())
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ){
-            /*SettingMenuItem(
-                title = stringResource(R.string.my_setting_alarm),
-                onClick = {
-                    onNavigateToSettingAlarm()
-                }
-            )*/
-            SettingMenuItem(
-                title = stringResource(R.string.setting_footer_privacy),
-                onClick = onNavigateToPrivacyPolicy
-            )
-            SettingMenuItem(
-                title = stringResource(R.string.setting_footer_terms),
-                onClick = onNavigateToTermsOfService
-            )
-            SettingMenuItem(
-                title = stringResource(R.string.logout),
-                onClick = {
-                    // 로그아웃 하기
-                }
-            )
-            SettingMenuItem(
-                title = stringResource(R.string.withdraw),
-                onClick = {
-                    // 탈퇴 하기
-                }
-            )
-            Spacer(modifier = Modifier.weight(1f))
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showWithdrawDialog by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.navigateToLogin) {
+        if (uiState.navigateToLogin) {
+            onNavigateToLogin()
+        }
+    }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar={
+                CustomTopAppBar(
+                    title = stringResource(R.string.setting),
+                    centerTitle = true,
+                    showLogo = false,
+                    showBackButton = true,
+                    onBackClick = { onBackClick() },
+                    backgroundColor = Beige200
+                )
+            },
+            containerColor = Beige200
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                /*SettingMenuItem(
+                    title = stringResource(R.string.my_setting_alarm),
+                    onClick = {
+                        onNavigateToSettingAlarm()
+                    }
+                )*/
+                SettingMenuItem(
+                    title = stringResource(R.string.setting_footer_privacy),
+                    onClick = onNavigateToPrivacyPolicy
+                )
+                SettingMenuItem(
+                    title = stringResource(R.string.setting_footer_terms),
+                    onClick = onNavigateToTermsOfService
+                )
+                SettingMenuItem(
+                    title = stringResource(R.string.logout),
+                    onClick = {
+                        showLogoutDialog = true
+                    }
+                )
+                SettingMenuItem(
+                    title = stringResource(R.string.withdraw),
+                    onClick = {
+                        showWithdrawDialog = true
+                    }
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+
+            if (showLogoutDialog) {
+                CustomConfirmDialog(
+                    message = "로그아웃 시 원활한 이용이 어려울 수 있습니다.\u2028그럼에도 로그아웃하시겠습니까?",
+                    confirmText = "네, 로그아웃합니다",
+                    dismissText = "뒤로가기",
+                    onConfirm = {
+                        showLogoutDialog = false
+                        viewModel.logout()
+                    },
+                    onDismiss = {
+                        showLogoutDialog = false
+                    }
+                )
+            }
+
+            if (showWithdrawDialog) {
+                CustomConfirmDialog(
+                    message = "탈퇴 시 지금까지의 이용기록이 영구 삭제 됩니다.\u2028그럼에도 탈퇴하시겠습니까?",
+                    confirmText = "네, 탈퇴합니다",
+                    dismissText = "뒤로가기",
+                    onConfirm = {
+                        showWithdrawDialog = false
+                        viewModel.withdraw()
+                    },
+                    onDismiss = {
+                        showWithdrawDialog = false
+                    }
+                )
+            }
+        }
+
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(enabled = false) { /* 클릭 방지 */ },
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
+            }
         }
     }
 }

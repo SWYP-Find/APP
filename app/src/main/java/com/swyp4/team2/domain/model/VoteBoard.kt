@@ -19,3 +19,31 @@ data class VoteOption(
     val philosopherName: String,
     val opinion: String
 )
+
+data class VoteStatsBoard(
+    val totalCount: Int,
+    val updatedAt: String,
+    val options: List<VoteStatsOptionBoard>
+)
+
+data class VoteStatsOptionBoard(
+    val optionId: Long,
+    val label: String,
+    val title: String,
+    val voteCount: Int,
+    val ratio: Float
+)
+
+data class MyVoteBoard(
+    val battleTitle: String,
+    val preVote: VotedOptionBoard?,
+    val postVote: VotedOptionBoard?,
+    val status: String,
+    val opinionChanged: Boolean
+)
+
+data class VotedOptionBoard(
+    val optionId: Long,
+    val label: String,
+    val title: String
+)
