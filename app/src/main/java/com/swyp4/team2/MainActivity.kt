@@ -28,6 +28,7 @@ import com.swyp4.team2.ui.alarm.AlarmScreen
 import com.swyp4.team2.ui.comment.CommentScreen
 import com.swyp4.team2.ui.theme.SwypAppTheme
 import com.swyp4.team2.ui.login.LoginScreen
+import com.swyp4.team2.ui.main.BottomNavItem
 import com.swyp4.team2.ui.main.MainScreen
 import com.swyp4.team2.ui.onboarding.OnboardingScreen
 import com.swyp4.team2.ui.my.setting.alarm.SettingAlarmScreen
@@ -38,6 +39,7 @@ import com.swyp4.team2.ui.perspective.PerspectiveScreen
 import com.swyp4.team2.ui.recommend.RecommendScreen
 import com.swyp4.team2.ui.splash.SplashScreen
 import com.swyp4.team2.ui.theme.Beige200
+import com.swyp4.team2.ui.todaybattle.TodayBattleScreen
 import com.swyp4.team2.ui.vote.VoteRoute
 import com.swyp4.team2.ui.vote.VoteScreen
 import com.swyp4.team2.ui.vote.VoteType
@@ -45,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -88,10 +91,10 @@ fun AppNavigation() {
                         }
                     },
                     onNavigateToMain = {
-                        /*rootNavController.navigate(AppRoute.Main.route) {
+                        rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Splash.route) { inclusive = true }
-                        }*/
-                        rootNavController.navigate(AppRoute.Scenario.createRoute("17"))
+                        }
+                        // rootNavController.navigate(AppRoute.Scenario.createRoute("81"))
                         // rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
                     },
                     onNavigateToOnboarding = {
@@ -134,6 +137,18 @@ fun AppNavigation() {
                 route = AppRoute.Main.route,
             ) {
                 MainScreen(rootNavController = rootNavController)
+            }
+
+            // 오늘의 배틀 화면
+            composable(BottomNavItem.TodayBattle.route){
+                TodayBattleScreen(
+                    onBackClick = {
+                        rootNavController.popBackStack()
+                    },
+                    onEnterBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.Scenario.createRoute(battleId))
+                    }
+                )
             }
 
             // 알림 화면

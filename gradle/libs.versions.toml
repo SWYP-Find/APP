@@ -34,6 +34,7 @@ playServicesAdsApi = "25.1.0"
 androidxFoundation = "1.10.6"
 pagingCommon = "3.4.2"
 foundationLayoutVersion = "1.10.6"
+animationCoreVersion = "1.10.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -83,6 +84,7 @@ play-services-ads-api = { group = "com.google.android.gms", name = "play-service
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxFoundation" }
 androidx-paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "pagingCommon" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
+androidx-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "animationCoreVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

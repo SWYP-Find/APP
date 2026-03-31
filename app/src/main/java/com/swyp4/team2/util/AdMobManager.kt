@@ -19,6 +19,7 @@ class AdMobManager(private val context: Context) {
 
     fun loadAd(userId: String) {
         Log.d("AdMobManagerFlow", "1. [광고 로드 요청] userId: $userId 로드 시작")
+        Log.d("AdMobManagerFlow", "1. [광고 로드 요청] adUnitId: $adUnitId 로드 시작")
         val adRequest = AdRequest.Builder().build()
 
         RewardedAd.load(context, adUnitId, adRequest, object : RewardedAdLoadCallback() {

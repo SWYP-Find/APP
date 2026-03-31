@@ -31,6 +31,7 @@ import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -156,6 +157,7 @@ fun ExploreScreen(
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
+                        .background(Color.White)
                 ) { _ ->
                     ExploreList(
                         pagingItems = pagingItems,
@@ -205,13 +207,15 @@ fun ExploreList(
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize(),
+                //verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(count = pagingItems.itemCount) { index ->
                     pagingItems[index]?.let { item ->
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = Beige600,
+                        )
                         ExploreCard(
                             item = item,
                             onClick = { id -> onNavigateToVote(id) }
@@ -247,7 +251,6 @@ fun ExploreCard(
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .clickable { onClick(item.battleId) }
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -285,20 +288,6 @@ fun ExploreCard(
         ) {
             // 1. 타입(뱃지) & 제목
             Row(verticalAlignment = Alignment.Top) {
-                Box(
-                    modifier = Modifier
-                        .padding(top = 1.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(Beige600)
-                        .padding(horizontal = 6.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = item.type,
-                        style = SwypTheme.typography.b4Medium,
-                        color = SwypTheme.colors.primary
-                    )
-                }
-                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = item.title,
                     style = SwypTheme.typography.h5SemiBold.copy(
@@ -315,7 +304,7 @@ fun ExploreCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
 
             // 3. 설명 내용
             Text(

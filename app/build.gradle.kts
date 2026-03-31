@@ -97,6 +97,7 @@ dependencies {
     implementation(libs.foundation)
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.foundation.layout)
+    implementation(libs.androidx.animation.core)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 

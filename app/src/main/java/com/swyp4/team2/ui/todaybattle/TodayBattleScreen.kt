@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -70,15 +71,18 @@ fun TodayBattleScreen(
     val battleList = uiState.battleList
 
     if (uiState.isLoading || battleList.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Primary900)
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(Color.Black),
+            contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = Color.White)
         }
         return
     }
 
     val pagerState = rememberPagerState(pageCount = { battleList.size })
-    var selectedSide by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedSide != null
+    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
+    val isButtonEnabled = selectedOptionId != null
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -89,10 +93,17 @@ fun TodayBattleScreen(
                 onClick = {
                     if (isButtonEnabled) {
                         val currentBattleId = battleList[pagerState.currentPage].battleId
-                        onEnterBattle(currentBattleId)
+                        viewModel.submitPreVote(
+                            battleId = currentBattleId.toLong(),
+                            optionId = selectedOptionId!!.toLong(),
+                            onSuccess = {
+                                onEnterBattle(currentBattleId)
+                            }
+                        )
                     }
                 },
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier.navigationBarsPadding()
+                    .padding(20.dp),
                 backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
                 textColor = Beige50
             )
@@ -109,12 +120,12 @@ fun TodayBattleScreen(
             ) { page ->
                 BattleContent(
                     item = battleList[page],
-                    selectedSide = selectedSide,
-                    onSideSelect = { side -> selectedSide = side }
+                    selectedOptionId = selectedOptionId,
+                    onOptionSelect = { optionId -> selectedOptionId = optionId }
                 )
             }
 
-            // 상단 UI (인디케이터 & 뒤로가기/공유 버튼)
+            // 상단 UI (인디케이터 & 뒤로가기 버튼)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,11 +152,7 @@ fun TodayBattleScreen(
                         )
                     }
                     IconButton(onClick = { /* 공유 로직 */ }, modifier = Modifier.size(16.dp)) {
-                        /*Icon(
-                            painter = painterResource(id = R.drawable.ic_share),
-                            contentDescription = "공유",
-                            tint = Color.White
-                        )*/
+                        // 공유 아이콘 부분
                     }
                 }
             }
@@ -156,8 +163,8 @@ fun TodayBattleScreen(
 @Composable
 fun BattleContent(
     item: TodayBattleUiModel,
-    selectedSide: String?,
-    onSideSelect: (String) -> Unit
+    selectedOptionId: String?,
+    onOptionSelect: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // [상단] 배경 이미지 + 그라데이션 페이드 아웃
@@ -261,23 +268,25 @@ fun BattleContent(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 if (item.options.isNotEmpty()) {
+                    val optionA = item.options[0]
                     OpinionCard(
-                        name = item.options[0].name,
-                        opinion = item.options[0].opinion,
-                        quote = item.options[0].quote,
-                        isSelected = selectedSide == "LEFT",
-                        onClick = { onSideSelect("LEFT") }
+                        name = optionA.name,
+                        opinion = optionA.opinion,
+                        quote = optionA.quote,
+                        isSelected = selectedOptionId == optionA.optionId, // 이제 둘 다 String이라 비교가 잘 됩니다!
+                        onClick = { onOptionSelect(optionA.optionId) }
                     )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                // 🌟 오른쪽 의견 (options 배열의 두 번째 값)
+
                 if (item.options.size > 1) {
+                    val optionB = item.options[1]
                     OpinionCard(
-                        name = item.options[1].name,
-                        opinion = item.options[1].opinion,
-                        quote = item.options[1].quote,
-                        isSelected = selectedSide == "RIGHT",
-                        onClick = { onSideSelect("RIGHT") }
+                        name = optionB.name,
+                        opinion = optionB.opinion,
+                        quote = optionB.quote,
+                        isSelected = selectedOptionId == optionB.optionId,
+                        onClick = { onOptionSelect(optionB.optionId) }
                     )
                 }
             }

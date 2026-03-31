@@ -63,17 +63,16 @@ import com.swyp4.team2.domain.model.PerspectiveStance
 import com.swyp4.team2.domain.model.SpeakerType
 import com.swyp4.team2.ui.component.ChatBubble
 import com.swyp4.team2.ui.component.CustomButton
-import com.swyp4.team2.ui.home.TodayPickeCard
-import com.swyp4.team2.ui.home.model.TodayPickUiModel
-import com.swyp4.team2.ui.perspective.PerspectiveHeader
-import com.swyp4.team2.ui.perspective.PerspectiveItemCard
 import com.swyp4.team2.ui.perspective.PerspectiveMenuItem
 import com.swyp4.team2.ui.perspective.PerspectiveUiModel
 import com.swyp4.team2.ui.scenario.model.ScenarioScriptUiModel
 import com.swyp4.team2.ui.theme.Beige100
 import com.swyp4.team2.ui.theme.Beige300
 import com.swyp4.team2.ui.theme.Beige400
+import com.swyp4.team2.ui.theme.Beige500
 import com.swyp4.team2.ui.theme.Beige600
+import com.swyp4.team2.ui.theme.Beige700
+import com.swyp4.team2.ui.theme.Beige900
 import com.swyp4.team2.ui.theme.Gray300
 import com.swyp4.team2.ui.theme.Gray400
 import com.swyp4.team2.ui.theme.Gray600
@@ -152,7 +151,7 @@ fun OnboardingPageContent(page: Int) {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .padding(top = 120.dp),
+            .padding(top = 92.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         val title = when (page) {
@@ -192,13 +191,14 @@ fun OnboardingPageContent(page: Int) {
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
-        // 중앙
+        // 중앙 카드 영역 (높이 증가: aspectRation 대신 고정 높이 400dp, 불투명도 0.8 추가)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
+                .height(400.dp)
+                .alpha(0.8f) // 💡 모든 카드의 투명도를 0.8로 설정
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -214,58 +214,46 @@ fun OnboardingPageContent(page: Int) {
 
 @Composable
 fun FirstOnboardingCard(modifier: Modifier = Modifier) {
-    val onboardingScripts = listOf(
-        ScenarioScriptUiModel(
-            scriptId = "1",
-            startTimeMs = 0,
-            speakerType = SpeakerType.A,
-            speakerName = "칸트",
-            displayText = "인간은 짐승과 달리 스스로 세운 도덕 법칙에 복종할 수 있는 '이성적 존재'입니다.",
-            profileImageUrl = R.drawable.ic_profile_kant
-        ),
-        ScenarioScriptUiModel(
-            scriptId = "2",
-            startTimeMs = 0,
-            speakerType = SpeakerType.B,
-            speakerName = "니체",
-            displayText = "이성이요? 당신은 그 차가운 이성으로 생동감 넘치는 삶의 본능을 죽이고 있습니다.",
-            profileImageUrl = R.drawable.ic_profile_niche
-        ),
-        ScenarioScriptUiModel(
-            scriptId = "3",
-            startTimeMs = 0,
-            speakerType = SpeakerType.A,
-            speakerName = "칸트",
-            displayText = "삶의 목적은 '행복'이 아니라 '행복해질 자격'을 갖추는 것입니다. 그것은 도덕적 의무를 완수하는 삶이죠.",
-            profileImageUrl = R.drawable.ic_profile_kant
-        )
-    )
-
     Box(
-        modifier = modifier.fillMaxSize()
-            .background(Color.White, RoundedCornerShape(2.dp)),
-        contentAlignment = Alignment.Center
+        modifier = modifier
+            .fillMaxSize()
+            .clip(RoundedCornerShape(2.dp))
+            .background(Color.White)
     ) {
+        // 채팅 리스트 영역
         Column(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            onboardingScripts.forEach { script ->
-                ChatBubble(
-                    script = script,
-                    isActive = false,
-                    showAvatarAndName = true,
-                    onClick = {}
-                )
-            }
+            FirstOnboardingChatBubble(
+                profileResId = R.drawable.ic_profile_kant,
+                name = "칸트",
+                message = "인간은 짐승과 달리 스스로 세운 도덕 법칙에 복종할 수 있는 '이성적 존재'입니다.",
+                isLeft = true
+            )
+
+            FirstOnboardingChatBubble(
+                profileResId = R.drawable.ic_profile_niche,
+                name = "니체",
+                message = "이성이요? 당신은 그 차가운 이성으로 생동감 넘치는 삶의 본능을 죽이고 있습니다.",
+                isLeft = false
+            )
+
+            FirstOnboardingChatBubble(
+                profileResId = R.drawable.ic_profile_kant,
+                name = "칸트",
+                message = "삶의 목적은 '행복'이 아니라 '행복해질 자격'을 갖추는 것입니다. 그것은 도덕적 의무를 완수하는 삶이죠.",
+                isLeft = true
+            )
         }
 
+        // 하단 그라데이션 페이드 효과
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(132.dp)
+                .height(120.dp)
                 .align(Alignment.BottomCenter)
                 .background(
                     brush = Brush.verticalGradient(
@@ -279,78 +267,126 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
     }
 }
 
-data class OnboardingUiModel(
-    val commentId: String,
-    val profileImageRes: Any,
-    val nickname: String,
-    val stance: PerspectiveStance,
-    val content: String,
-    val timeAgo: String,
-    val replyCount: Int,
-    val likeCount: Int,
-    val isLiked: Boolean
-)
+@Composable
+private fun FirstOnboardingChatBubble(
+    profileResId: Int,
+    name: String,
+    message: String,
+    isLeft: Boolean
+) {
+    val bubbleBgColor = if (isLeft) Color.White else Beige500
+    val bubbleBorderColor = if (isLeft) Beige500 else Beige700
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        // [왼쪽 슬롯] : 왼쪽 화자(칸트)일 때만 프로필 노출
+        Box(
+            modifier = Modifier.width(36.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            if (isLeft) {
+                Image(
+                    painter = painterResource(id = profileResId),
+                    contentDescription = name,
+                    modifier = Modifier.size(32.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // [가운데 영역] : 이름 + 텍스트 말풍선
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = name,
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray400,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp),
+                textAlign = if (isLeft) TextAlign.Start else TextAlign.End
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(bubbleBgColor, RoundedCornerShape(2.dp))
+                    .border(1.dp, bubbleBorderColor, RoundedCornerShape(2.dp))
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = message,
+                    style = SwypTheme.typography.b5Medium,
+                    color = Gray700,
+                    textAlign = TextAlign.Start
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // [오른쪽 슬롯] : 오른쪽 화자(니체)일 때만 프로필 노출
+        Box(
+            modifier = Modifier.width(36.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            if (!isLeft) {
+                Image(
+                    painter = painterResource(id = profileResId),
+                    contentDescription = name,
+                    modifier = Modifier.size(32.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun SecondOnboardingCard(modifier: Modifier = Modifier) {
-    val dummyPerspectives = listOf(
-        OnboardingUiModel(
-            commentId = "1",
-            profileImageRes = R.drawable.ic_profile_racoon,
-            nickname = "사유하는 라쿤",
-            stance = PerspectiveStance.AGREE,
-            content = "제도화가 무서운 건, 사회적 압력이 '선택'을 '의무'로 바꿀 수 있다는 거예요. 네덜란드 사례를 보면 우려가 현실이 되고 있죠.",
-            timeAgo = "2분 전",
-            replyCount = 23,
-            likeCount = 1340,
-            isLiked = false
-        ),
-        OnboardingUiModel(
-            commentId = "2",
-            profileImageRes = R.drawable.ic_profile_dochi,
-            nickname = "사유하는 고슴도치",
-            stance = PerspectiveStance.AGREE, // 찬성
-            content = "제도화가 무서운 건, 사회적 압력이 '선택'을 '의무'로 바꿀 수 있다는 거예요. 네덜란드 사례를 보면 우려가 현실이 되고 있죠.",
-            timeAgo = "2분 전",
-            replyCount = 0,
-            likeCount = 0,
-            isLiked = false
-        )
-    )
-
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White, RoundedCornerShape(2.dp))
+            .clip(RoundedCornerShape(2.dp))
+            .background(Color.White)
     ) {
-        // 2. 카드 내용물 (헤더 + 리스트)
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(vertical = 16.dp)
         ) {
-            OnboardingHeader(
-                proPercentage = 78f,
-                conPercentage = 22f
-            )
+            // 1. 헤더 (생각이 바뀌었어요 & 비율 바)
+            SecondOnboardingHeader()
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // 2. 리스트 (하드코딩된 아이템 2개)
             Column(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                dummyPerspectives.forEach { item ->
-                    OnboardingItemCard(
-                        item = item,
-                        isDetail = false,
-                        onMoreClick = {},
-                        clickable = false
-                    )
-                }
+                SecondOnboardingItemCard(
+                    profileResId = R.drawable.ic_profile_racoon,
+                    nickname = "사유하는 라쿤",
+                    replyCount = "23",
+                    likeCount = "1,340"
+                )
+                SecondOnboardingItemCard(
+                    profileResId = R.drawable.ic_profile_dochi,
+                    nickname = "사유하는 고슴도치",
+                    replyCount = "0",
+                    likeCount = "0"
+                )
             }
         }
 
+        // 하단 그라데이션 페이드 효과
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -369,220 +405,128 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun OnboardingHeader(
-    proPercentage: Float = 59.5f,
-    conPercentage: Float = 40.5f,
-    modifier: Modifier = Modifier
-) {
+private fun SecondOnboardingHeader() {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
-        // 1. 생각이 바뀌었어요 버튼
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Surface(
-                color = Primary50,
-                shape = RoundedCornerShape(4.dp)
-            ) {
+        // 생각이 바뀌었어요 버튼 (고정 UI)
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Surface(color = Primary50, shape = RoundedCornerShape(4.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_think),
-                        contentDescription = "생각 변경",
-                        tint = Primary500,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Icon(painter = painterResource(id = R.drawable.ic_think), contentDescription = null, tint = Primary500, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "생각이 바뀌었어요",
-                        style = SwypTheme.typography.caption2SemiBold,
-                        color = Primary500
-                    )
+                    Text(text = "생각이 바뀌었어요", style = SwypTheme.typography.caption2SemiBold, color = Primary500)
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 2. 찬/반 비율 바
+        // 비율 바 (고정 UI: 78% vs 22%)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "찬 ${proPercentage}%",
-                style = SwypTheme.typography.label,
-                color = Gray600
-            )
-
+            Text(text = "찬 78.0%", style = SwypTheme.typography.label, color = Gray600)
             Spacer(modifier = Modifier.width(12.dp))
-
-            // 비율에 따라 채워지는 프로그레스 바
             Row(
                 modifier = Modifier
                     .weight(1f)
                     .height(6.dp)
                     .clip(CircleShape)
             ) {
-                // 찬성 비율 (진한 붉은색)
-                Box(
-                    modifier = Modifier
-                        .weight(if (proPercentage > 0) proPercentage else 0.1f)
-                        .fillMaxHeight()
-                        .background(Color(0xFFA64D47))
-                )
-                // 반대 비율 (연한 회색)
-                Box(
-                    modifier = Modifier
-                        .weight(if (conPercentage > 0) conPercentage else 0.1f)
-                        .fillMaxHeight()
-                        .background(Color(0xFFEBEBEB))
-                )
+                Box(modifier = Modifier.weight(0.78f).fillMaxHeight().background(Color(0xFFA64D47)))
+                Box(modifier = Modifier.weight(0.22f).fillMaxHeight().background(Color(0xFFEBEBEB)))
             }
-
             Spacer(modifier = Modifier.width(12.dp))
-
-            Text(
-                text = "반 ${conPercentage}%",
-                style = SwypTheme.typography.label,
-                color = Gray600
-            )
+            Text(text = "반 22.0%", style = SwypTheme.typography.label, color = Gray600)
         }
     }
 }
 
 @Composable
-fun OnboardingItemCard(
-    item: OnboardingUiModel,
-    isDetail: Boolean = false,
-    modifier: Modifier = Modifier,
-    onMoreClick: () -> Unit = {},
-    clickable: Boolean = true,
-    onEditClick: (String) -> Unit = {},
-    onDeleteClick: () -> Unit = {}
+private fun SecondOnboardingItemCard(
+    profileResId: Int,
+    nickname: String,
+    replyCount: String,
+    likeCount: String
 ) {
-    var isMenuExpanded by remember { mutableStateOf(false) }
-
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = if (isDetail) null else BorderStroke(width = 1.dp, color = Beige600)
+        border = BorderStroke(width = 1.dp, color = Beige600)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-
-            // 1. 프로필 영역 (기존 코드와 완벽히 동일)
+            // 프로필 영역
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_profile_racoon),
-                    contentDescription = "캐릭터 프로필",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape),
+                    painter = painterResource(id = profileResId),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp).clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = item.nickname,
-                            style = SwypTheme.typography.labelMedium,
-                            color = Gray700
-                        )
+                        Text(text = nickname, style = SwypTheme.typography.labelMedium, color = Gray700)
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
                             color = SwypTheme.colors.primary.copy(alpha = 0.1f),
                             shape = RoundedCornerShape(2.dp)
                         ) {
                             Text(
-                                text = item.stance.label,
+                                text = "찬성", // 온보딩은 항상 '찬성' 고정
                                 style = SwypTheme.typography.b5Medium,
                                 color = SwypTheme.colors.primary,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
                     }
-                    Text(
-                        text = item.timeAgo,
-                        style = SwypTheme.typography.labelXSmall,
-                        color = SwypTheme.colors.outline
-                    )
+                    Text(text = "2분 전", style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.outline)
                 }
 
-                // 케밥 메뉴 (기존과 동일)
-                Box {
-                    IconButton(
-                        onClick = { if (clickable) isMenuExpanded = true else isMenuExpanded = false },
-                        modifier = Modifier.size(16.dp)
-                    ) {
-                        Icon(painterResource(id = R.drawable.ic_more), "더보기", tint = Gray300)
-                    }
-                    DropdownMenu(
-                        expanded = isMenuExpanded,
-                        onDismissRequest = { isMenuExpanded = false },
-                        modifier = Modifier.background(Primary600).clip(RoundedCornerShape(8.dp))
-                    ) {
-                        PerspectiveMenuItem(iconRes = R.drawable.ic_trash, text = "삭제") {
-                            isMenuExpanded = false
-                            onDeleteClick()
-                        }
-                        PerspectiveMenuItem(iconRes = R.drawable.ic_edit, text = "수정") {
-                            isMenuExpanded = false
-                            onEditClick(item.content)
-                        }
-                        PerspectiveMenuItem(iconRes = R.drawable.ic_bell, text = "신고") {
-                            isMenuExpanded = false
-                        }
-                    }
-                }
+                // 더보기 아이콘 (클릭 안 됨)
+                Icon(painterResource(id = R.drawable.ic_more), null, tint = Gray300, modifier = Modifier.size(16.dp))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 2. 본문 영역: 상세(isDetail)면 무제한, 아니면 3줄 제한!
+            // 본문 영역 (고정 텍스트)
             Text(
-                text = item.content,
+                text = "제도화가 무서운 건, 사회적 압력이 '선택'을 '의무'로 바꿀 수 있다는 거예요. 네덜란드 사례를 보면 우려가 현실이 되고 있죠.",
                 style = SwypTheme.typography.b4Regular,
                 color = Gray600,
-                maxLines = if (isDetail) Int.MAX_VALUE else 3,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 3. 하단 영역
+            // 하단 영역 (더보기, 댓글 수, 좋아요 수)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (!isDetail) {
-                    Text(
-                        text = "더보기",
-                        style = SwypTheme.typography.b5Medium,
-                        color = Gray300,
-                        modifier = if (clickable) Modifier.clickable { onMoreClick() } else Modifier
-                    )
-                }
+                Text(text = "더보기", style = SwypTheme.typography.b5Medium, color = Gray300)
                 Spacer(modifier = Modifier.weight(1f))
 
-                if (!isDetail) {
-                    Icon(painterResource(id = R.drawable.ic_message), "댓글", Modifier.size(12.dp), tint = Gray300)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("${item.replyCount}", style = SwypTheme.typography.b5Medium, color = Gray300)
-                    Spacer(modifier = Modifier.width(12.dp))
-                }
-
-                Icon(painterResource(id = R.drawable.ic_heart_plus), "좋아요", Modifier.size(12.dp), tint = Gray300)
+                Icon(painterResource(id = R.drawable.ic_message), null, Modifier.size(12.dp), tint = Gray300)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("${item.likeCount}", style = SwypTheme.typography.b5Medium, color = Gray300)
+                Text(text = replyCount, style = SwypTheme.typography.b5Medium, color = Gray300)
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Icon(painterResource(id = R.drawable.ic_heart_plus), null, Modifier.size(12.dp), tint = Gray300)
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = likeCount, style = SwypTheme.typography.b5Medium, color = Gray300)
             }
         }
     }
@@ -591,35 +535,109 @@ fun OnboardingItemCard(
 
 @Composable
 fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
-    val dummyQuizItem = TodayPickUiModel.QuizPick(
-        contentId = "dummy_1",
-        title = "가상국가를 만든다면 대통령은 [    ] 이다",
-        summary = "빈칸에 들어갈 가장 적절한 답을 골라주세요",
-        options = listOf("석가모니", "세종대왕", "예수", "일론 머스크"),
-        participantsText = "985명 참여"
-    )
-
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.White, RoundedCornerShape(2.dp))
+            .clip(RoundedCornerShape(2.dp))
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Top
         ) {
-            TodayPickeCard(
-                item = dummyQuizItem,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .border(1.dp, Beige700, RoundedCornerShape(2.dp))
+                    .padding(16.dp)
+            ) {
+                // 상단: 태그 및 참여자 수
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(color = Beige400, shape = RoundedCornerShape(2.dp)) {
+                        Text(
+                            text = "#투표",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = SwypTheme.typography.b4Regular,
+                            color = Primary500
+                        )
+                    }
+                    Text(text = "985명 참여", style = SwypTheme.typography.label, color = Gray400)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 중단: 퀴즈 제목
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "가상국가를 만든다면 대통령은 ",
+                            style = SwypTheme.typography.b3SemiBold,
+                            color = Gray900
+                        )
+                        Box(
+                            modifier = Modifier
+                                .width(40.dp)
+                                .height(20.dp)
+                                .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+                                .background(Beige300)
+                        )
+                        Text(
+                            text = "이다",
+                            style = SwypTheme.typography.b3SemiBold,
+                            color = Gray900
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "빈칸에 들어갈 가장 적절한 답을 골라주세요",
+                        style = SwypTheme.typography.label,
+                        color = Gray300,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // 하단: 2x2 연한 베이지 버튼 그리드
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            ThirdOnboardingButton(modifier = Modifier.weight(1f), index = "1", text = "석가모니")
+                            ThirdOnboardingButton(modifier = Modifier.weight(1f), index = "2", text = "세종대왕")
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            ThirdOnboardingButton(modifier = Modifier.weight(1f), index = "3", text = "예수")
+                            ThirdOnboardingButton(modifier = Modifier.weight(1f), index = "4", text = "일론 머스크")
+                        }
+                    }
+                }
+            }
         }
 
+        // 하단 그라데이션 페이드 효과
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(140.dp)
                 .align(Alignment.BottomCenter)
                 .background(
                     brush = Brush.verticalGradient(
@@ -634,10 +652,27 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun ThirdOnboardingButton(modifier: Modifier, index: String, text: String) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(2.dp))
+            .background(Beige300)
+            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .padding(vertical = 14.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = "$index. ", style = SwypTheme.typography.labelXSmall, color = Color(0xFFCBA572)) // 옅은 금색 번호
+        Text(text = text, style = SwypTheme.typography.label, color = Gray900)
+    }
+}
+
+@Composable
 fun FourthOnboardingCard(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
+            .clip(RoundedCornerShape(2.dp))
             .background(Color.White)
     ) {
         Box(
@@ -724,7 +759,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(132.dp)
+                .height(140.dp)
                 .align(Alignment.BottomCenter)
                 .background(
                     brush = Brush.verticalGradient(
