@@ -272,7 +272,16 @@ class ScenarioViewModel @Inject constructor(
     // 오디오를 15초 앞으로 건너뛰고 바로 재생을 시작
     fun seekForward() {
         Log.d("TTSFlow", "▶️ seekForward() 실행 - 15초 앞으로 가기")
-        // 1. 현재 위치에서 15초 뒤의 목표 지점 계산
+
+        val newPos = minOf(player.duration, player.currentPosition + 15000)
+        player.seekTo(newPos)
+        updateSync(newPos)
+
+        if (!_uiState.value.isPlaying) {
+            playAudio()
+        }
+
+        /*// 1. 현재 위치에서 15초 뒤의 목표 지점 계산
         val targetPos = player.currentPosition + 15000
 
         // 2. 오디오 전체 길이, 현재 챕터(노드)의 끝, 그리고 내가 들었던 최대 시간(maxListened) 중 가장 작은 값을 찾음.
@@ -292,18 +301,7 @@ class ScenarioViewModel @Inject constructor(
 
         if (!_uiState.value.isPlaying) {
             playAudio()
-        }
-        /*
-        val newPos = minOf(player.duration, player.currentPosition + 15000)
-        val safePos = minOf(newPos, _uiState.value.nodeEndTimeMs, _uiState.value.maxListenedPositionMs)
-
-        player.seekTo(safePos)
-        updateSync(newPos)
-
-        if (!_uiState.value.isPlaying) {
-        playAudio()
-        }
-         */
+        }*/
     }
 
     // 사용자가 선택한 답변(nextNodeId)을 처리하고 다음 노드를 재생
