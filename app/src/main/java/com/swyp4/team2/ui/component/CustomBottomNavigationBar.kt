@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -26,7 +27,10 @@ import com.swyp4.team2.ui.theme.SwypTheme
 
 @SuppressLint("RestrictedApi")
 @Composable
-fun CustomBottomNavigationBar(navController: NavHostController) {
+fun CustomBottomNavigationBar(
+    mainNavController: NavController,
+    rootNavController: NavController
+) {
     val items = listOf(
         BottomNavItem.Home,
         BottomNavItem.Explore,
@@ -39,10 +43,10 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
     NavigationBar(
         containerColor = SwypTheme.colors.surface,
     ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
 
         val activeTabRoute = remember(navBackStackEntry) {
-            navController.currentBackStack.value.lastOrNull { entry ->
+            mainNavController.currentBackStack.value.lastOrNull { entry ->
                 entry.destination.route in bottomTabRoutes
             }?.destination?.route
         }
@@ -68,14 +72,12 @@ fun CustomBottomNavigationBar(navController: NavHostController) {
                 selected = isSelected,
 
                 onClick = {
-                    if (isSelected) {
-                        navController.popBackStack(route = item.route, inclusive = false)
+                    if (item.route == BottomNavItem.TodayBattle.route) {
+                        rootNavController.navigate(BottomNavItem.TodayBattle.route)
                     } else {
-                        navController.navigate(item.route) {
-                            if (item.route != BottomNavItem.TodayBattle.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
+                        mainNavController.navigate(item.route) {
+                            popUpTo(mainNavController.graph.findStartDestination().id) {
+                                saveState = true
                             }
                             launchSingleTop = true
                             restoreState = true

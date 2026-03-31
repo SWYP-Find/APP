@@ -111,10 +111,8 @@ fun LoginScreen(
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (uiState is LoginUiState.Loading) {
-                CircularProgressIndicator(color = Primary900)
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+
+
             if (uiState is LoginUiState.Error) {
                 Text(
                     text = (uiState as LoginUiState.Error).message,
@@ -123,41 +121,46 @@ fun LoginScreen(
                 )
             }
 
-            // 카카오 로그인 버튼
-            CustomButton(
-                text = stringResource(R.string.login_with_kakao),
-                onClick = {
-                    // onNavigateToMain()
-                     Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
-                    loginWithKakaoForAuthCode(context) { token ->
-                        Log.d("LoginFlow", "▶️ 카카오 헬퍼: 인가 코드 받기 성공! ViewModel로 넘깁니다.")
-                        viewModel.handleSocialLoginSuccess("kakao", token)
-                    }
-                },
-                backgroundColor = Color(0xFFFEE500),
-                textColor = Gray900,
-                iconResId = R.drawable.ic_kakao
-            )
+            if (uiState is LoginUiState.Loading) {
+                CircularProgressIndicator(color = Primary900)
+                Spacer(modifier = Modifier.height(16.dp))
+            } else if (uiState is LoginUiState.Idle){
+                // 카카오 로그인 버튼
+                CustomButton(
+                    text = stringResource(R.string.login_with_kakao),
+                    onClick = {
+                        // onNavigateToMain()
+                        Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
+                        loginWithKakaoForAuthCode(context) { token ->
+                            Log.d("LoginFlow", "▶️ 카카오 헬퍼: 인가 코드 받기 성공! ViewModel로 넘깁니다.")
+                            viewModel.handleSocialLoginSuccess("kakao", token)
+                        }
+                    },
+                    backgroundColor = Color(0xFFFEE500),
+                    textColor = Gray900,
+                    iconResId = R.drawable.ic_kakao
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // 구글 로그인 버튼
-            CustomButton(
-                text = stringResource(R.string.login_with_google),
-                onClick = {
-                    // onNavigateToMain()
-                    Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
-                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID) // 백엔드용 클라이언트 ID
-                        .requestEmail()
-                        .build()
-                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                    googleSignInLauncher.launch(googleSignInClient.signInIntent)
-                },
-                backgroundColor = Color.White,
-                textColor = Gray900,
-                iconResId = R.drawable.ic_google
-            )
+                // 구글 로그인 버튼
+                CustomButton(
+                    text = stringResource(R.string.login_with_google),
+                    onClick = {
+                        // onNavigateToMain()
+                        Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
+                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID) // 백엔드용 클라이언트 ID
+                            .requestEmail()
+                            .build()
+                        val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                        googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                    },
+                    backgroundColor = Color.White,
+                    textColor = Gray900,
+                    iconResId = R.drawable.ic_google
+                )
+            }
         }
     }
 }

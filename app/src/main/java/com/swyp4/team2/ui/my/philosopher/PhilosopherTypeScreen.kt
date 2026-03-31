@@ -7,8 +7,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -207,6 +209,7 @@ fun PhilosopherTypeScreen(
                         worst = recapBoard.worstMatchCard
                     )
 
+                    Spacer(modifier = Modifier.height(12.dp))
                     // 5. 공유하기 버튼
                     /*CustomButton(
                         text = stringResource(R.string.my_share),
@@ -377,7 +380,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = philosopher.typeName, style = SwypTheme.typography.h1SemiBold, color = Gray900)
+                Text(text = philosopher.philosopherLabel, style = SwypTheme.typography.h2SemiBold, color = Gray900)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -385,7 +388,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
             // 프로필 이미지
             ProfileImage(
                 model = philosopher.imageUrl ?: R.drawable.ic_profile_mengzi, // profile.profileImg,
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(68.dp),
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -400,13 +403,13 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
             Spacer(modifier = Modifier.height(24.dp))
 
             // 키워드 태그
-            if (philosopher.philosopherLabel.isNotEmpty()) {
+            if (philosopher.typeName.isNotEmpty()) {
                 Box(
                     modifier = Modifier
                         .border(1.dp, Beige600, RoundedCornerShape(2.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Text(text = philosopher.philosopherLabel, style = SwypTheme.typography.labelXSmall, color = Color(0xFF8C3E26))
+                    Text(text = philosopher.typeName, style = SwypTheme.typography.labelXSmall, color = Color(0xFF8C3E26))
                 }
             }
         }
@@ -439,7 +442,7 @@ fun TraitAnalysisSection(analysis: RecapScores) {
                         analysis.inner / 100f,
                         analysis.ideal / 100f
                     ),
-                    labels = listOf("원칙", "논리", "일관성", "공감", "실용", "직관")
+                    labels = listOf("원칙", "이성", "개인", "변화", "내면", "직관")
                 )
             }
 
@@ -553,16 +556,23 @@ fun ChemistrySection(best: MyPhilosopher, worst: MyPhilosopher) {
         Text(text = "궁합 유형", style = SwypTheme.typography.h4SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Max),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             ChemistryCard(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 isBest = true,
                 name = best.typeName,
                 desc = best.description,
                 imageUrl = best.imageUrl
             )
             ChemistryCard(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 isBest = false,
                 name = worst.typeName,
                 desc = worst.description,
@@ -604,7 +614,7 @@ fun ChemistryCard(
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = titleText,
-                style = SwypTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                style = SwypTheme.typography.label.copy(fontWeight = FontWeight.Bold),
                 color = titleColor
             )
         }

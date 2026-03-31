@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.swyp4.team2.domain.repository.TodayBattleRepository
+import com.swyp4.team2.domain.repository.VoteRepository
 import com.swyp4.team2.ui.todaybattle.model.TodayBattleUiModel
 import com.swyp4.team2.ui.todaybattle.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,8 @@ data class TodayBattleUiState(
 
 @HiltViewModel
 class TodayBattleViewModel @Inject constructor(
-    private val todayBattleRepository: TodayBattleRepository
+    private val todayBattleRepository: TodayBattleRepository,
+    private val voteRepository: VoteRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayBattleUiState())
@@ -30,6 +32,19 @@ class TodayBattleViewModel @Inject constructor(
 
     init {
         fetchTodayBattles()
+    }
+
+    fun submitPreVote(battleId: Long, optionId: Long, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            voteRepository.submitPreVote(battleId, optionId)
+                .onSuccess {
+                    Log.d("VoteFlow", "🟢 사전 투표 성공! 배틀에 입장합니다.")
+                    onSuccess()
+                }
+                .onFailure { error ->
+                    Log.e("VoteFlow", "🔴 사전 투표 실패!", error)
+                }
+        }
     }
 
     private fun fetchTodayBattles() {

@@ -2,7 +2,12 @@ package com.swyp4.team2.ui.main
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -39,28 +44,21 @@ fun MainScreen(
 ){
     val mainNavController = rememberNavController()
 
-    val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
-
-    val showBottomBar = currentRoute != BottomNavItem.TodayBattle.route
-
     Scaffold(
-        containerColor = if (showBottomBar) Beige200 else Gray900,
+        containerColor = Beige200,
         bottomBar = {
-            if (showBottomBar) {
-                CustomBottomNavigationBar(mainNavController)
-            }
+            CustomBottomNavigationBar(
+                mainNavController = mainNavController,
+                rootNavController = rootNavController
+            )
         }
     ){ innerPadding ->
         NavHost(
             navController = mainNavController,
             startDestination = BottomNavItem.Home.route,
             modifier = Modifier.fillMaxSize()
-                .padding(
-                    top = if (showBottomBar) innerPadding.calculateTopPadding() else 0.dp,
-                    bottom = innerPadding.calculateBottomPadding()
-                )
-                .background(if (showBottomBar) SwypTheme.colors.surface else Gray900),
+                .padding(innerPadding)
+                .background(SwypTheme.colors.surface),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },
@@ -86,16 +84,6 @@ fun MainScreen(
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { battleId ->
-                        rootNavController.navigate(AppRoute.PreVote.createRoute(battleId))
-                    }
-                )
-            }
-            composable(BottomNavItem.TodayBattle.route){
-                TodayBattleScreen(
-                    onBackClick = {
-                        mainNavController.popBackStack()
-                    },
-                    onEnterBattle = { battleId ->
                         rootNavController.navigate(AppRoute.PreVote.createRoute(battleId))
                     }
                 )
