@@ -30,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -41,6 +42,7 @@ import com.swyp4.team2.ui.component.AudioPlayerBar
 import com.swyp4.team2.ui.component.ChatBubble
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.scenario.ScenarioViewModel
+import com.swyp4.team2.ui.scenario.model.ScenarioOptionUiModel
 import com.swyp4.team2.ui.theme.Beige400
 import com.swyp4.team2.ui.theme.Beige700
 import com.swyp4.team2.ui.theme.Gray200
@@ -71,7 +73,16 @@ fun ScenarioScreen(
 
     val allDisplayScripts = uiState.pastScripts + visibleScripts
 
-    LaunchedEffect(uiState.activeIndex, uiState.pastScripts.size) {
+    LaunchedEffect(uiState.showOptions) {
+        if (uiState.showOptions) {
+            kotlinx.coroutines.delay(100)
+            listState.animateScrollToItem(allDisplayScripts.size)
+        }
+    }
+
+    LaunchedEffect(uiState.activeIndex, uiState.pastScripts.size, uiState.showOptions) {
+        if (uiState.showOptions) return@LaunchedEffect
+
         val targetIndex = uiState.pastScripts.size + uiState.activeIndex
         if (targetIndex >= 0 && targetIndex < allDisplayScripts.size) {
             listState.animateScrollToItem(index = targetIndex)
@@ -117,18 +128,21 @@ fun ScenarioScreen(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             itemsIndexed(allDisplayScripts) { index, script ->
-                val isFirstInGroup = index == 0 || allDisplayScripts[index - 1].speakerType != script.speakerType
+                val isNewSpeaker = index == 0 || allDisplayScripts[index - 1].speakerType != script.speakerType
+                val isNewNode = uiState.pastChoices.any { it.scriptIndex == index - 1 }
+                val showAvatarAndName = isNewSpeaker || isNewNode
+
                 val isPastScript = index < uiState.pastScripts.size
                 val currentAudioScriptIndex = index - uiState.pastScripts.size
 
-                if (isFirstInGroup && index > 0) {
+                if (showAvatarAndName && index > 0) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 ChatBubble(
                     script = script,
                     isActive = !isPastScript && currentAudioScriptIndex == uiState.activeIndex && uiState.isPlaying,
-                    showAvatarAndName = isFirstInGroup,
+                    showAvatarAndName = showAvatarAndName,
                     onClick = {
                         if (!isPastScript && uiState.totalDurationMs > 0) {
                             val targetRatio = script.startTimeMs.toFloat() / uiState.totalDurationMs.toFloat()
@@ -136,40 +150,66 @@ fun ScenarioScreen(
                         }
                     }
                 )
+
+                val pastChoice = uiState.pastChoices.find { it.scriptIndex == index }
+                if (pastChoice != null) {
+                    InteractiveOptionsUI(
+                        options = pastChoice.options,
+                        selectedNodeId = pastChoice.selectedNextNodeId,
+                        onOptionClick = {}
+                    )
+                }
             }
 
             if (uiState.interactiveOptions.isNotEmpty() && uiState.showOptions) {
                 item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 32.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
-                            Text(
-                                text = "이제 당신의 입장을 선택해주세요",
-                                style = SwypTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
-                                color = Gray500,
-                                modifier = Modifier.padding(horizontal = 16.dp)
-                            )
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        uiState.interactiveOptions.forEachIndexed { index, option ->
-                            OptionSelectionButton(
-                                text = option.label,
-                                isPrimary = index == 0,
-                                onClick = { viewModel.selectOption(option.nextNodeId) }
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
-                    }
+                    InteractiveOptionsUI(
+                        options = uiState.interactiveOptions,
+                        selectedNodeId = null,
+                        onOptionClick = { viewModel.selectOption(it) }
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun InteractiveOptionsUI(
+    options: List<ScenarioOptionUiModel>,
+    selectedNodeId: String?,
+    onOptionClick: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp, bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
+            Text(
+                text = if (selectedNodeId == null) "이제 당신의 입장을 선택해주세요" else "당신의 선택",
+                style = SwypTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
+                color = Gray500,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        options.forEachIndexed { index, option ->
+            val isSelected = selectedNodeId == option.nextNodeId
+            val isPrimary = if (selectedNodeId == null) (index == 0) else isSelected
+
+            OptionSelectionButton(
+                text = option.label,
+                isPrimary = isPrimary,
+                isEnabled = selectedNodeId == null,
+                onClick = { onOptionClick(option.nextNodeId) }
+            )
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
@@ -178,17 +218,20 @@ fun ScenarioScreen(
 fun OptionSelectionButton(
     text: String,
     isPrimary: Boolean = false,
+    isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
     val borderColor = if (isPrimary) Secondary500 else Beige700
+    val alpha = if (isEnabled) 1f else 0.7f
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .alpha(alpha)
             .clip(RoundedCornerShape(2.dp))
             .border(1.dp, borderColor, RoundedCornerShape(4.dp))
             .background(Beige400)
-            .clickable { onClick() }
+            .then(if (isEnabled) Modifier.clickable { onClick() } else Modifier) // isEnabled일 때만 클릭 가능
             .padding(vertical = 20.dp, horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
