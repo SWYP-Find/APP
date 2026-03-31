@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,6 +42,7 @@ import com.swyp4.team2.ui.component.ChatBubble
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.scenario.ScenarioViewModel
 import com.swyp4.team2.ui.theme.Beige400
+import com.swyp4.team2.ui.theme.Beige700
 import com.swyp4.team2.ui.theme.Gray200
 import com.swyp4.team2.ui.theme.Gray500
 import com.swyp4.team2.ui.theme.Gray900
@@ -62,14 +64,17 @@ fun ScenarioScreen(
         viewModel.loadScenario(battleId)
     }
 
-    val visibleScripts = if (uiState.activeIndex >= 0) {
-        uiState.scripts.subList(0, uiState.activeIndex + 1)
+    val visibleScripts = if (uiState.maxRevealedIndex >= 0) {
+        val safeIndex = minOf(uiState.maxRevealedIndex + 1, uiState.scripts.size)
+        uiState.scripts.subList(0, safeIndex)
     } else emptyList()
 
-    // 활성화된 말풍선 인덱스가 바뀔 때마다 스크롤 부드럽게 이동
-    LaunchedEffect(uiState.activeIndex) {
-        if (uiState.activeIndex >= 0 && uiState.activeIndex < uiState.scripts.size) {
-            listState.animateScrollToItem(index = uiState.activeIndex)
+    val allDisplayScripts = uiState.pastScripts + visibleScripts
+
+    LaunchedEffect(uiState.activeIndex, uiState.pastScripts.size) {
+        val targetIndex = uiState.pastScripts.size + uiState.activeIndex
+        if (targetIndex >= 0 && targetIndex < allDisplayScripts.size) {
+            listState.animateScrollToItem(index = targetIndex)
         }
     }
 
@@ -80,8 +85,7 @@ fun ScenarioScreen(
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
                     title = uiState.title,
-                    showBackButton = true,
-                    onBackClick = onBackClick,
+                    showBackButton = false,
                     backgroundColor = SwypTheme.colors.surface,
                     actions = {
                         IconButton(onClick = { viewModel.loadScenario(battleId) }) {
@@ -92,7 +96,6 @@ fun ScenarioScreen(
             }
         },
         bottomBar = {
-            // 하단 플레이어 바
             AudioPlayerBar(
                 isPlaying = uiState.isPlaying,
                 currentPositionMs = uiState.currentPositionMs,
@@ -113,8 +116,10 @@ fun ScenarioScreen(
             contentPadding = PaddingValues(top = 24.dp, bottom = 40.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            itemsIndexed(visibleScripts) { index, script ->
-                val isFirstInGroup = index == 0 || visibleScripts[index - 1].speakerType != script.speakerType
+            itemsIndexed(allDisplayScripts) { index, script ->
+                val isFirstInGroup = index == 0 || allDisplayScripts[index - 1].speakerType != script.speakerType
+                val isPastScript = index < uiState.pastScripts.size
+                val currentAudioScriptIndex = index - uiState.pastScripts.size
 
                 if (isFirstInGroup && index > 0) {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -122,12 +127,17 @@ fun ScenarioScreen(
 
                 ChatBubble(
                     script = script,
-                    isActive = index == visibleScripts.lastIndex && uiState.isPlaying,
-                    showAvatarAndName = isFirstInGroup
+                    isActive = !isPastScript && currentAudioScriptIndex == uiState.activeIndex && uiState.isPlaying,
+                    showAvatarAndName = isFirstInGroup,
+                    onClick = {
+                        if (!isPastScript && uiState.totalDurationMs > 0) {
+                            val targetRatio = script.startTimeMs.toFloat() / uiState.totalDurationMs.toFloat()
+                            viewModel.seekToPosition(targetRatio)
+                        }
+                    }
                 )
             }
 
-            // 참여형 옵션 (A/B 선택지)
             if (uiState.interactiveOptions.isNotEmpty() && uiState.showOptions) {
                 item {
                     Column(
@@ -137,21 +147,22 @@ fun ScenarioScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray500)
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
                             Text(
                                 text = "이제 당신의 입장을 선택해주세요",
-                                style = SwypTheme.typography.labelMedium,
-                                color = Gray900,
+                                style = SwypTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
+                                color = Gray500,
                                 modifier = Modifier.padding(horizontal = 16.dp)
                             )
-                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray500)
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        uiState.interactiveOptions.forEach { option ->
+                        uiState.interactiveOptions.forEachIndexed { index, option ->
                             OptionSelectionButton(
                                 text = option.label,
+                                isPrimary = index == 0,
                                 onClick = { viewModel.selectOption(option.nextNodeId) }
                             )
                             Spacer(modifier = Modifier.height(12.dp))
@@ -164,12 +175,18 @@ fun ScenarioScreen(
 }
 
 @Composable
-fun OptionSelectionButton(text: String, onClick: () -> Unit) {
+fun OptionSelectionButton(
+    text: String,
+    isPrimary: Boolean = false,
+    onClick: () -> Unit
+) {
+    val borderColor = if (isPrimary) Secondary500 else Beige700
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, Secondary500, RoundedCornerShape(4.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
             .background(Beige400)
             .clickable { onClick() }
             .padding(vertical = 20.dp, horizontal = 16.dp),
@@ -177,7 +194,7 @@ fun OptionSelectionButton(text: String, onClick: () -> Unit) {
     ) {
         Text(
             text = text,
-            style = SwypTheme.typography.b2Medium,
+            style = SwypTheme.typography.b5Medium,
             color = Gray900,
             textAlign = TextAlign.Center
         )

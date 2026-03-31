@@ -27,7 +27,7 @@ fun ChattingLoadingAnimation(
     modifier: Modifier = Modifier
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "audio_bars_5")
-    val baseHeights = listOf(10.dp, 16.dp, 24.dp, 16.dp, 10.dp)
+    val baseHeights = listOf(6.dp, 10.dp, 15.dp, 10.dp, 6.dp)
     val maxScales = listOf(1.1f, 1.3f, 1.6f, 1.3f, 1.1f)
 
     val animations = (0 until 5).map { index ->
@@ -48,15 +48,15 @@ fun ChattingLoadingAnimation(
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
         modifier = modifier
     ) {
         repeat(5) { index ->
             Box(
                 modifier = Modifier
-                    .size(width = 4.dp, height = baseHeights[index])
+                    .size(width = 2.5.dp, height = baseHeights[index])
                     .scale(scaleX = 1f, scaleY = animations[index].value)
-                    .background(Color(0xFF8D4B38), RoundedCornerShape(2.dp))
+                    .background(Color(0xFF8D4B38), RoundedCornerShape(50))
             )
         }
     }
