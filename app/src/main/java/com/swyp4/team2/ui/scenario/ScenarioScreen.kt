@@ -189,7 +189,7 @@ fun InteractiveOptionsUI(
         Row(verticalAlignment = Alignment.CenterVertically) {
             HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
             Text(
-                text = if (selectedNodeId == null) "이제 당신의 입장을 선택해주세요" else "아래가 당신의 선택",
+                text = if (selectedNodeId == null) "이제 당신의 입장을 선택해주세요" else "아래가 당신의 선택입니다.",
                 style = SwypTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
                 color = Gray500,
                 modifier = Modifier.padding(horizontal = 16.dp)

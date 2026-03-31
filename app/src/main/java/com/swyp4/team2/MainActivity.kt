@@ -95,7 +95,7 @@ fun AppNavigation() {
                             popUpTo(AppRoute.Splash.route) { inclusive = true }
                         }
                         // rootNavController.navigate(AppRoute.Scenario.createRoute("81"))
-                        // rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
+                        rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
                     },
                     onNavigateToOnboarding = {
                         rootNavController.navigate(AppRoute.Onboarding.route) {
