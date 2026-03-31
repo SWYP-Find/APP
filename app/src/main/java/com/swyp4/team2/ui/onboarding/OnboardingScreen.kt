@@ -256,7 +256,8 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
                 ChatBubble(
                     script = script,
                     isActive = false,
-                    showAvatarAndName = true
+                    showAvatarAndName = true,
+                    onClick = {}
                 )
             }
         }

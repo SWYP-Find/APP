@@ -68,7 +68,8 @@ fun AudioPlayerBar(
                         activeTrackColor = SwypTheme.colors.primary,
                         inactiveTrackColor = Color(0xFFE0E0E0)
                     ),
-                    modifier = Modifier.height(2.dp)
+                    modifier = Modifier.height(2.dp),
+                    drawStopIndicator = {}
                 )
             }
         )

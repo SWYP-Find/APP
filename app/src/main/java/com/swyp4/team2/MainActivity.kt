@@ -1,11 +1,13 @@
 package com.swyp4.team2
 
 import ScenarioScreen
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresExtension
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun AppNavigation() {
     val rootNavController = rememberNavController()
@@ -85,10 +88,10 @@ fun AppNavigation() {
                         }
                     },
                     onNavigateToMain = {
-                        rootNavController.navigate(AppRoute.Main.route) {
+                        /*rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Splash.route) { inclusive = true }
-                        }
-                        // rootNavController.navigate(AppRoute.Scenario.createRoute("34"))
+                        }*/
+                        rootNavController.navigate(AppRoute.Scenario.createRoute("79"))
                         // rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
                     },
                     onNavigateToOnboarding = {
