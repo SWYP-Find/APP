@@ -138,7 +138,7 @@ class PerspectiveViewModel @Inject constructor(
                     .onSuccess {
                         Log.d(TAG, "🟢 관점 작성 성공")
                         onSuccess()
-                        loadMyPerspective() // 🌟 PENDING 상태일 새 글을 가져오기 위해 호출
+                        loadMyPerspective()
                         loadPerspectives(isRefresh = true)
                     }
                     .onFailure { Log.e(TAG, "🔴 관점 작성 실패", it) }
@@ -152,7 +152,7 @@ class PerspectiveViewModel @Inject constructor(
             perspectiveRepository.deletePerspective(perspectiveId)
                 .onSuccess {
                     Log.d(TAG, "🟢 관점 삭제 성공")
-                    loadMyPerspective() // 🌟 삭제했으니 내 관점 상태도 null로 갱신!
+                    loadMyPerspective()
                     loadPerspectives(isRefresh = true)
                 }
                 .onFailure { Log.e(TAG, "🔴 관점 삭제 실패", it) }
@@ -208,6 +208,18 @@ class PerspectiveViewModel @Inject constructor(
                 sort = state.sort
             ).onSuccess { page ->
                 Log.d(TAG, "🟢 관점 목록 조회 성공 - 가져온 개수: ${page.items.size}, hasNext: ${page.hasNext}")
+                page.items.forEachIndexed { index, board ->
+                    Log.d("PerspectiveFlow", """
+                        --- [Item $index] ---
+                        ID: ${board.commentId}
+                        Nickname: ${board.nickname}
+                        Stance(원래값): ${board.stance}
+                        Content: ${board.content}
+                        IsMine: ${board.isMine}
+                        LikeCount: ${board.likeCount}
+                        -------------------
+                    """.trimIndent())
+                }
 
                 val newItems = page.items.map { it.toUiModel() }
 
@@ -262,13 +274,21 @@ class PerspectiveViewModel @Inject constructor(
 
 //  Domain -> UI
 private fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
+    Log.d("CheckStance", "아이디: ${this.commentId}, 원래 stance 값: '${this.stance}'")
+
+    val displayStance = when (this.stance) {
+        "A", "AGREE", "찬성" -> "찬성"
+        "B", "DISAGREE", "반대" -> "반대"
+        else -> this.stance
+    }
+
     return PerspectiveUiModel(
         commentId = this.commentId,
         profileImageUrl = this.characterImageUrl,
         nickname = this.nickname,
-        stance = this.stance,
+        stance = displayStance,
         content = this.content,
-        timeAgo = this.createdAt,
+        timeAgo = this.createdAt.take(10),
         replyCount = this.replyCount,
         likeCount = this.likeCount,
         isLiked = this.isLiked,

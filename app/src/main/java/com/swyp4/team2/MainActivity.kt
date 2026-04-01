@@ -192,8 +192,11 @@ fun AppNavigation() {
                         rootNavController.popBackStack()
                     },
                     onVoteSubmit = { submittedBattleId ->
-                        //rootNavController.navigate(AppRoute.PostVote.createRoute(submittedBattleId))
-                        rootNavController.navigate(AppRoute.Scenario.createRoute(submittedBattleId))
+                        rootNavController.navigate(AppRoute.Scenario.createRoute(submittedBattleId)) {
+                            popUpTo(AppRoute.PreVote.route) {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }
@@ -211,7 +214,11 @@ fun AppNavigation() {
                         rootNavController.popBackStack()
                     },
                     onNextClick = {
-                        rootNavController.navigate(AppRoute.PostVote.createRoute(contentId))
+                        rootNavController.navigate(AppRoute.PostVote.createRoute(contentId)) {
+                            popUpTo(AppRoute.Scenario.route) {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             }

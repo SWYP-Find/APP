@@ -99,7 +99,12 @@ fun ScenarioScreen(
                     showBackButton = false,
                     backgroundColor = SwypTheme.colors.surface,
                     actions = {
-                        IconButton(onClick = { viewModel.loadScenario(battleId) }) {
+                        IconButton(
+                            onClick = {
+                                // viewModel.loadScenario(battleId)
+                                onNextClick()
+                            }
+                        ) {
                             Icon(painterResource(R.drawable.ic_reload), contentDescription = "다시듣기", tint = Gray900)
                         }
                     }

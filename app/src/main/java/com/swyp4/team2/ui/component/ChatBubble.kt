@@ -38,7 +38,9 @@ fun ChatBubble(
             Text(
                 text = formattedText,
                 color = if (isActive) Gray700 else Gray300,
-                style = SwypTheme.typography.label,
+                style = SwypTheme.typography.label.copy(
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                ),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.clickable { onClick() }
             )

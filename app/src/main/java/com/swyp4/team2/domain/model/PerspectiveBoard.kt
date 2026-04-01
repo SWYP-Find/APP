@@ -1,8 +1,8 @@
 package com.swyp4.team2.domain.model
 
 enum class PerspectiveStance(val label: String) {
-    AGREE("A"),
-    DISAGREE("B")
+    AGREE("찬성"),
+    DISAGREE("반대")
 }
 
 data class PerspectivePage(
@@ -12,16 +12,16 @@ data class PerspectivePage(
 )
 
 data class PerspectiveBoard(
-    val commentId: String,
+    val commentId: String,       // UI 유지보수를 위해 이름 유지 (실제 값은 perspectiveId가 들어감)
     val userTag: String,
     val nickname: String,
     val characterType: String,
     val characterImageUrl: String,
     val content: String,
-    val isMine: Boolean,
+    val isMine: Boolean,         // UI 유지보수를 위해 이름 유지 (실제 값은 isMyPerspective)
     val createdAt: String,
-    val stance: String,
-    val replyCount: Int,
+    val stance: String,          // option 안의 label 값을 매핑함
+    val replyCount: Int,         // commentCount 값을 매핑함
     val likeCount: Int,
     val isLiked: Boolean
 )

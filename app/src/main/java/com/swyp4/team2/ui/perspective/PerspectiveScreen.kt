@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -56,6 +57,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
@@ -181,11 +183,15 @@ fun PerspectiveScreen(
                         verticalAlignment = Alignment.Top
                     ) { pageIndex ->
                         val filteredList = when (pageIndex) {
-                            1 -> uiState.perspectives.filter { it.stance == "찬성" } // 찬성 탭
-                            2 -> uiState.perspectives.filter { it.stance == "반대" } // 반대 탭
-                            else -> uiState.perspectives // 전체 탭
+                            1 -> uiState.perspectives.filter { it.stance == "찬성" }
+                            2 -> uiState.perspectives.filter { it.stance == "반대" }
+                            else -> uiState.perspectives
                         }
+
+                        // 💡 1. 전체를 깔끔하게 위아래(Column)로 나눕니다.
                         Column(modifier = Modifier.fillMaxSize()) {
+
+                            // 💡 2. 칩 영역 (z-index 꼼수 싹 다 지웠습니다! 그냥 맨 위에 둡니다.)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -205,22 +211,26 @@ fun PerspectiveScreen(
                                 )
                             }
 
+                            // 💡 3. 당겨서 새로고침 영역 (칩 아래 남은 공간 전체 차지)
                             PullToRefreshBox(
+                                state = pullToRefreshState,
                                 isRefreshing = isRefreshing,
                                 onRefresh = {
                                     isRefreshing = true
                                     viewModel.refreshAllData()
                                 },
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.weight(1f),
                                 indicator = {
                                     PullToRefreshDefaults.Indicator(
-                                        state = pullToRefreshState,
+                                        state = pullToRefreshState, // 🌟 이 state와 위의 state가 한 몸이어야 합니다!
                                         isRefreshing = isRefreshing,
                                         containerColor = Color.White,
-                                        color = SwypTheme.colors.primary
+                                        color = Primary500, // 원하시던 예쁜 색상!
+                                        modifier = Modifier.align(Alignment.TopCenter)
                                     )
                                 }
                             ) {
+                                // 💡 4. 댓글 목록
                                 LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
                                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
@@ -238,7 +248,7 @@ fun PerspectiveScreen(
                                                         commentId = "-1",
                                                         profileImageUrl = "",
                                                         nickname = "나",
-                                                        stance = myView.optionLabel,
+                                                        stance = myLabel,
                                                         content = myView.content,
                                                         timeAgo = "방금 전",
                                                         replyCount = 0,
@@ -255,14 +265,12 @@ fun PerspectiveScreen(
 
                                     if (filteredList.isEmpty() && !uiState.isLoading) {
                                         item {
-                                            // 탭의 pageIndex에 따라 빈 화면 문구 다르게 설정!
                                             val emptyMsg = when (pageIndex) {
                                                 1 -> "아직 작성된 찬성 관점이 없습니다"
                                                 2 -> "아직 작성된 반대 관점이 없습니다"
                                                 else -> "아직 작성된 관점이 없습니다"
                                             }
 
-                                            // LazyColumn 안에서 중앙에 오도록 fillParentMaxSize() 사용
                                             PerspectiveEmptyState(
                                                 message = emptyMsg,
                                                 modifier = Modifier.fillParentMaxSize()
@@ -364,14 +372,19 @@ fun PerspectiveItemCard(
                             color = Gray700
                         )
                         Spacer(modifier = Modifier.width(6.dp))
+
+                        val isPro = item.stance == "찬성"
+                        val badgeBgColor = if (isPro) Beige600 else SwypTheme.colors.primary
+                        val badgeTextColor = if (isPro) SwypTheme.colors.primary else Beige600
+
                         Surface(
-                            color = SwypTheme.colors.primary.copy(alpha = 0.1f),
+                            color = badgeBgColor,
                             shape = RoundedCornerShape(2.dp)
                         ) {
                             Text(
                                 text = item.stance,
                                 style = SwypTheme.typography.b5Medium,
-                                color = SwypTheme.colors.primary,
+                                color = badgeTextColor,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
@@ -415,16 +428,20 @@ fun PerspectiveItemCard(
                             modifier = Modifier.background(Primary600)
                                 .clip(RoundedCornerShape(8.dp))
                         ) {
-                            PerspectiveMenuItem(iconRes = R.drawable.ic_trash, text = "삭제") {
-                                isMenuExpanded = false
-                                onDeleteClick()
-                            }
-                            PerspectiveMenuItem(iconRes = R.drawable.ic_edit, text = "수정") {
-                                isMenuExpanded = false
-                                onEditClick(item.content)
-                            }
-                            PerspectiveMenuItem(iconRes = R.drawable.ic_bell, text = "신고") {
-                                isMenuExpanded = false
+                            if (item.isMine) {
+                                PerspectiveMenuItem(iconRes = R.drawable.ic_trash, text = "삭제") {
+                                    isMenuExpanded = false
+                                    onDeleteClick()
+                                }
+                                PerspectiveMenuItem(iconRes = R.drawable.ic_edit, text = "수정") {
+                                    isMenuExpanded = false
+                                    onEditClick(item.content)
+                                }
+                            } else {
+                                PerspectiveMenuItem(iconRes = R.drawable.ic_bell, text = "신고") {
+                                    isMenuExpanded = false
+                                    // TODO: 신고 로직 연동
+                                }
                             }
                         }
                     }

@@ -257,7 +257,7 @@ fun BattleContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         // [하단] VS 카드 영역
         Box(
@@ -302,7 +302,7 @@ fun BattleContent(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -355,13 +355,13 @@ fun OpinionCard(
             .border(1.dp, borderColor, RoundedCornerShape(4.dp))
             .background(bgColor)
             .clickable { onClick() }
-            .padding(vertical = 24.dp),
+            .padding(vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = name, style = SwypTheme.typography.labelXSmall, color = Secondary500)
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Text(text = opinion, style = SwypTheme.typography.h3Bold, color = Color.White)
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(text = "\"$quote\"", style = SwypTheme.typography.labelXSmall, color = Color.White.copy(0.3f))
     }
 }

@@ -297,9 +297,15 @@ fun PhilosopherTypeCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = if (isLocked) displayName else "$displayName - $displayDesc",
+                text = if (isLocked) displayName else "$displayName ",
                 style = SwypTheme.typography.b3SemiBold,
                 color = Gray700
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = if (isLocked) displayName else "$displayDesc",
+                style = SwypTheme.typography.labelXSmall,
+                color = Gray300
             )
         }
 

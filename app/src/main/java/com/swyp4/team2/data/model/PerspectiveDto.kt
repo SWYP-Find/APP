@@ -29,13 +29,14 @@ data class PerspectivePageDto(
 )
 
 data class PerspectiveDto(
-    val commentId: Long?,
+    val perspectiveId: Long?,      // 💡 commentId -> perspectiveId 로 변경
     val user: PerspectiveUserDto?,
-    val stance: String?,
+    val option: PerspectiveOptionDto?, // 💡 stance(String) -> option(객체) 로 변경
     val content: String?,
     val likeCount: Int?,
+    val commentCount: Int?,        // 💡 서버에서 내려주는 댓글 수 추가
     val isLiked: Boolean?,
-    val isMine: Boolean?,
+    val isMyPerspective: Boolean?, // 💡 isMine -> isMyPerspective 로 변경
     val createdAt: String?
 )
 
@@ -79,7 +80,10 @@ data class PerspectiveUpdateResponseDto(
     val updatedAt: String?
 )
 
-// DTO -> Domain
+// ==========================================
+// DTO -> Domain Mappers
+// ==========================================
+
 fun PerspectivePageDto.toDomainModel() = PerspectivePage(
     items = this.items?.map { it.toDomainModel() } ?: emptyList(),
     nextCursor = this.nextCursor,
@@ -87,16 +91,16 @@ fun PerspectivePageDto.toDomainModel() = PerspectivePage(
 )
 
 fun PerspectiveDto.toDomainModel() = PerspectiveBoard(
-    commentId = this.commentId?.toString() ?: "",
+    commentId = this.perspectiveId?.toString() ?: "",
     userTag = this.user?.userTag ?: "",
     nickname = this.user?.nickname ?: "알 수 없음",
     characterType = this.user?.characterType ?: "",
     characterImageUrl = this.user?.characterImageUrl ?: "",
     content = this.content ?: "",
-    isMine = this.isMine ?: false,
+    isMine = this.isMyPerspective ?: false,
     createdAt = this.createdAt ?: "",
-    stance = this.stance ?: "A",
-    replyCount = 0,
+    stance = this.option?.label ?: "A",     // 💡 option 객체 안의 label(A/B)을 빼옵니다 (필요시 stance로 변경 가능)
+    replyCount = this.commentCount ?: 0,    // 💡 이제 서버에서 주는 실제 댓글 수를 사용!
     likeCount = this.likeCount ?: 0,
     isLiked = this.isLiked ?: false
 )
@@ -107,7 +111,7 @@ fun PerspectiveCreateResponseDto.toDomainModel() = PerspectiveStatusBoard(
     createdAt = this.createdAt ?: ""
 )
 
-//  내 관점 단건, 일반 단건 매퍼 통합
+// 내 관점 단건, 일반 단건 매퍼 통합
 fun PerspectiveDetailResponseDto.toDomainModel() = PerspectiveDetailBoard(
     perspectiveId = this.perspectiveId ?: 0L,
     userTag = this.user?.userTag ?: "",
