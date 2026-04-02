@@ -54,17 +54,18 @@ class AlarmViewModel @Inject constructor(
 
         viewModelScope.launch {
             val targetPage = if (isRefresh) 0 else _uiState.value.page
+            val category = _uiState.value.selectedCategory
 
-            Log.d("AlarmFlow", "▶️ 알림 목록 API 호출 시작! (category: ${_uiState.value.selectedCategory}, page: $targetPage)")
+            Log.d("AlarmFlow", "🚀 [API 호출] category: $category, page: $targetPage")
 
             val result = alarmRepository.getAlarms(
-                category = _uiState.value.selectedCategory,
+                category = category,
                 page = targetPage,
                 size = 20
             )
 
             result.onSuccess { data ->
-                Log.d("AlarmFlow", "✅ 알림 목록 호출 성공! 아이템 개수: ${data.items.size}")
+                Log.d("AlarmFlow", "✅ [호출 성공] 아이템 개수: ${data.items.size}, 다음 페이지 존재: ${data.hasNext}")
                 _uiState.update { state ->
                     state.copy(
                         alarmList = if (isRefresh) data.items else state.alarmList + data.items,
@@ -74,8 +75,11 @@ class AlarmViewModel @Inject constructor(
                         isPagingLoading = false
                     )
                 }
-            }.onFailure {
-                Log.e("AlarmFlow", "❌ 알림 목록 호출 실패...")
+            }.onFailure { exception ->
+                Log.e("AlarmFlow", "❌ [호출 실패] 에러 발생!", exception)
+                Log.e("AlarmFlow", "실패 메시지: ${exception.message}")
+                Log.e("AlarmFlow", "원인(Cause): ${exception.cause}")
+
                 _uiState.update { it.copy(isLoading = false, isPagingLoading = false) }
             }
         }

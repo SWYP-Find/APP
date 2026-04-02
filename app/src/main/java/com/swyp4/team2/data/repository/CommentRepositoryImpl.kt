@@ -80,10 +80,21 @@ class CommentRepositoryImpl @Inject constructor(
     ): Result<String> {
         return try {
             val response = commentApi.reportComment(perspectiveId, commentId)
-            val data = response.data ?: throw Exception(response.error?.message ?: "댓글 신고에 실패했습니다.")
-            Result.success(data)
+
+            if (response.statusCode == 409) {
+                Result.failure(Exception("ALREADY_REPORTED"))
+            } else if (response.statusCode == 200 || response.statusCode == 0) {
+                Result.success(response.data ?: "Success")
+            } else {
+                Result.failure(Exception(response.error?.message ?: "댓글 신고에 실패했습니다."))
+            }
         } catch (e: Exception) {
-            Result.failure(e)
+            // 만약 Retrofit HttpException이 직접 발생하는 구조라면 여기서도 체크
+            if (e.message?.contains("409") == true) {
+                Result.failure(Exception("ALREADY_REPORTED"))
+            } else {
+                Result.failure(e)
+            }
         }
     }
 }

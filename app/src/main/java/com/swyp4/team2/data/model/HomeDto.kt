@@ -74,7 +74,7 @@ data class TodayVoteDto(
 
 data class OptionDto(
     val label: String?,
-    val title: String? // 명세서에 title로 되어 있으니 이것도 맞췄습니다!
+    val title: String?
 )
 
 data class NewBattleDto(
@@ -82,8 +82,10 @@ data class NewBattleDto(
     val thumbnailUrl: String?,
     val title: String?,
     val summary: String?,
+    val optionATitle: String?,
     val philosopherA: String?,
     val philosopherAImageUrl: String?,
+    val optionBTitle: String?,
     val philosopherB: String?,
     val philosopherBImageUrl: String?,
     val tags: List<TagDto>?,
@@ -101,8 +103,8 @@ fun EditorPickDto.toDomainModel() = HomeContent(
     audioDuration = 0,
     tags = this.tags?.mapNotNull { it.name } ?: emptyList(),
     options = listOf(
-        ContentOption("A", this.optionATitle ?: "", null),
-        ContentOption("B", this.optionBTitle ?: "", null)
+        ContentOption(label = "A", text = this.optionATitle ?: "", philosopherName = null, imageUrl = null),
+        ContentOption(label = "B", text = this.optionBTitle ?: "", philosopherName = null, imageUrl = null)
     )
 )
 
@@ -128,8 +130,18 @@ fun NewBattleDto.toDomainModel() = HomeContent(
     audioDuration = this.audioDuration ?: 0,
     tags = this.tags?.mapNotNull { it.name } ?: emptyList(),
     options = listOf(
-        ContentOption("A", this.philosopherA ?: "", this.philosopherAImageUrl),
-        ContentOption("B", this.philosopherB ?: "", this.philosopherBImageUrl)
+        ContentOption(
+            label = "A",
+            text = this.optionATitle ?: "",
+            philosopherName = this.philosopherA ?: "",
+            imageUrl = this.philosopherAImageUrl
+        ),
+        ContentOption(
+            label = "B",
+            text = this.optionBTitle ?: "",
+            philosopherName = this.philosopherB ?: "",
+            imageUrl = this.philosopherBImageUrl
+        )
     )
 )
 
@@ -160,7 +172,7 @@ fun BestBattleDto.toDomainModel() = HomeContent(
     audioDuration = this.audioDuration ?: 0,
     tags = this.tags?.mapNotNull { it.name } ?: emptyList(),
     options = listOf(
-        ContentOption("A", this.philosopherA ?: "", null),
-        ContentOption("B", this.philosopherB ?: "", null)
+        ContentOption(label = "A", text = "", philosopherName = this.philosopherA ?: "", imageUrl = null),
+        ContentOption(label = "B", text = "", philosopherName = this.philosopherB ?: "", imageUrl = null)
     )
 )

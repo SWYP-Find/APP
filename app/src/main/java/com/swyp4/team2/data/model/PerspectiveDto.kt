@@ -29,14 +29,14 @@ data class PerspectivePageDto(
 )
 
 data class PerspectiveDto(
-    val perspectiveId: Long?,      // 💡 commentId -> perspectiveId 로 변경
+    val perspectiveId: Long?,
     val user: PerspectiveUserDto?,
-    val option: PerspectiveOptionDto?, // 💡 stance(String) -> option(객체) 로 변경
+    val option: PerspectiveOptionDto?,
     val content: String?,
     val likeCount: Int?,
-    val commentCount: Int?,        // 💡 서버에서 내려주는 댓글 수 추가
+    val commentCount: Int?,
     val isLiked: Boolean?,
-    val isMyPerspective: Boolean?, // 💡 isMine -> isMyPerspective 로 변경
+    val isMyPerspective: Boolean?,
     val createdAt: String?
 )
 
@@ -92,15 +92,14 @@ fun PerspectivePageDto.toDomainModel() = PerspectivePage(
 
 fun PerspectiveDto.toDomainModel() = PerspectiveBoard(
     commentId = this.perspectiveId?.toString() ?: "",
-    userTag = this.user?.userTag ?: "",
     nickname = this.user?.nickname ?: "알 수 없음",
     characterType = this.user?.characterType ?: "",
     characterImageUrl = this.user?.characterImageUrl ?: "",
     content = this.content ?: "",
     isMine = this.isMyPerspective ?: false,
     createdAt = this.createdAt ?: "",
-    stance = this.option?.label ?: "A",     // 💡 option 객체 안의 label(A/B)을 빼옵니다 (필요시 stance로 변경 가능)
-    replyCount = this.commentCount ?: 0,    // 💡 이제 서버에서 주는 실제 댓글 수를 사용!
+    stance = this.option?.label ?: "A",
+    replyCount = this.commentCount ?: 0,
     likeCount = this.likeCount ?: 0,
     isLiked = this.isLiked ?: false
 )

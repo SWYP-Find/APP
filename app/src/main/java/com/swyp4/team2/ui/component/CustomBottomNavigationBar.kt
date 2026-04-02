@@ -29,7 +29,9 @@ import com.swyp4.team2.ui.theme.SwypTheme
 @Composable
 fun CustomBottomNavigationBar(
     mainNavController: NavController,
-    rootNavController: NavController
+    rootNavController: NavController,
+    onHomeReselected: () -> Unit = {},
+    onExploreReselected: () -> Unit = {}
 ) {
     val items = listOf(
         BottomNavItem.Home,
@@ -74,13 +76,25 @@ fun CustomBottomNavigationBar(
                 onClick = {
                     if (item.route == BottomNavItem.TodayBattle.route) {
                         rootNavController.navigate(BottomNavItem.TodayBattle.route)
-                    } else {
-                        mainNavController.navigate(item.route) {
-                            popUpTo(mainNavController.graph.findStartDestination().id) {
-                                saveState = true
+                    }else {
+                        if (isSelected) {
+                            when (item.route) {
+                                BottomNavItem.Home.route -> onHomeReselected()
+                                BottomNavItem.Explore.route -> onExploreReselected()
                             }
-                            launchSingleTop = true
-                            restoreState = true
+
+                            mainNavController.popBackStack(
+                                route = item.route,
+                                inclusive = false
+                            )
+                        } else {
+                            mainNavController.navigate(item.route) {
+                                popUpTo(mainNavController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     }
                 },

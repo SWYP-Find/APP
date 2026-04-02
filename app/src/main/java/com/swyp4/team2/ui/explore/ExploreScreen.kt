@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -86,6 +87,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ExploreScreen(
     viewModel: ExploreViewModel = hiltViewModel(),
+    scrollToTopTrigger: Int = 0,
     onNavigateToAlarm: ()->Unit,
     onNavigateToVote: (String) -> Unit,
 ) {
@@ -163,6 +165,7 @@ fun ExploreScreen(
                         pagingItems = pagingItems,
                         isLoading = isLoading,
                         selectedSort = selectedSort,
+                        scrollToTopTrigger = scrollToTopTrigger,
                         onSortChanged = { newSort -> viewModel.updateSort(newSort) },
                         onNavigateToVote = onNavigateToVote
                     )
@@ -176,9 +179,18 @@ fun ExploreList(
     pagingItems: LazyPagingItems<ExploreUiModel>,
     isLoading: Boolean,
     selectedSort: String,
+    scrollToTopTrigger: Int = 0,
     onSortChanged: (String) -> Unit,
     onNavigateToVote: (String) -> Unit
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(scrollToTopTrigger) {
+        if (scrollToTopTrigger > 0) {
+            listState.animateScrollToItem(0)
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
@@ -207,6 +219,7 @@ fun ExploreList(
             }
         } else {
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxSize(),
                 //verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -220,6 +233,12 @@ fun ExploreList(
                             item = item,
                             onClick = { id -> onNavigateToVote(id) }
                         )
+                        if (index == pagingItems.itemCount - 1) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = Beige600,
+                            )
+                        }
                     }
                 }
 
@@ -306,7 +325,7 @@ fun ExploreCard(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // 3. 설명 내용
+            // 2. 설명 내용
             Text(
                 text = item.summary,
                 style = SwypTheme.typography.b4Regular,
@@ -317,7 +336,7 @@ fun ExploreCard(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 4. 태그 내용 & 오디오 시간/조회수
+            // 3. 태그 내용 & 오디오 시간/조회수
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

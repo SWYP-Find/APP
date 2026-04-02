@@ -1,25 +1,30 @@
 package com.swyp4.team2.domain.model
 
-data class RecommendUserBoard(
-    val userTag: String,
-    val nickname: String,
-    val characterType: String,
-    val characterImageUrl: String
+data class RecommendTagBoard(
+    val tagId: Long,
+    val name: String
 )
 
-// 추천 아이템 모델
-data class RecommendBoard(
-    val commentId: Long,
-    val user: RecommendUserBoard,
+data class RecommendOptionBoard(
+    val optionId: Long,
+    val label: String,
+    val title: String,
     val stance: String,
-    val content: String,
-    val likeCount: Int,
-    val isLiked: Boolean,
-    val isMine: Boolean,
-    val createdAt: String
+    val representative: String,
+    val imageUrl: String
 )
 
-// 추천 페이지
+data class RecommendBoard(
+    val battleId: Long,
+    val title: String,
+    val summary: String,
+    val audioDuration: Int,
+    val viewCount: Int,
+    val tags: List<RecommendTagBoard>,
+    val participantsCount: Int,
+    val options: List<RecommendOptionBoard>
+)
+
 data class RecommendPageBoard(
     val items: List<RecommendBoard>,
     val nextCursor: String?,

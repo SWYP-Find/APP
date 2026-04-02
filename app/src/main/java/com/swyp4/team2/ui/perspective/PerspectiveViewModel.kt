@@ -10,14 +10,21 @@ import com.swyp4.team2.domain.model.PerspectiveStance
 import com.swyp4.team2.domain.repository.PerspectiveRepository
 import com.swyp4.team2.domain.repository.VoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private const val TAG = "PerspectiveFlow"
+
+sealed class PerspectiveUiEvent {
+    data class ShowToast(val message: String) : PerspectiveUiEvent()
+}
 
 data class PerspectiveUiModel(
     val commentId: String,
@@ -42,7 +49,8 @@ data class PerspectiveUiState(
     val hasNext: Boolean = true,
     val isLoading: Boolean = false,
     val sort: String = "latest",
-    val opinionChanged: Boolean = false
+    val opinionChanged: Boolean = false,
+    val editingPerspectiveId: Long? = null
 )
 
 @HiltViewModel
@@ -53,7 +61,6 @@ class PerspectiveViewModel @Inject constructor(
 ): ViewModel() {
 
     private val receivedBattleId: String = checkNotNull(savedStateHandle["battleId"])
-
     private val _uiState = MutableStateFlow(
         PerspectiveUiState(
             battleId = receivedBattleId,
@@ -62,8 +69,11 @@ class PerspectiveViewModel @Inject constructor(
         )
     )
     val uiState: StateFlow<PerspectiveUiState> = _uiState.asStateFlow()
-    private var editingPerspectiveId: Long? = null
 
+    private val _uiEvent = MutableSharedFlow<PerspectiveUiEvent>()
+    val uiEvent: SharedFlow<PerspectiveUiEvent> = _uiEvent.asSharedFlow()
+
+    // 뷰모델 생성 시 초기 데이터 로드
     init {
         Log.d(TAG, "ViewModel 생성됨 - 전달받은 battleId: $receivedBattleId")
         loadPerspectives()
@@ -72,6 +82,7 @@ class PerspectiveViewModel @Inject constructor(
         loadMyVoteHistory()
     }
 
+    // 내 투표 내역 (생각 변화 여부 등) 조회
     private fun loadMyVoteHistory() {
         viewModelScope.launch {
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
@@ -87,6 +98,7 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
+    // 내가 작성한 관점(댓글) 조회
     private fun loadMyPerspective() {
         viewModelScope.launch {
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
@@ -102,42 +114,67 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
+    // 정렬 기준 변경 (인기순/최신순) 및 목록 초기화 후 새로고침
     fun updateSort(newSort: String) {
         if (_uiState.value.sort == newSort) return
-        // 정렬이 바뀌면 기존 리스트를 비우고 다시 처음부터 불러옵니다.
         _uiState.update {
             it.copy(sort = newSort, nextCursor = null, hasNext = true, perspectives = emptyList())
         }
         loadPerspectives(isRefresh = true)
     }
 
+    // 관점 수정 모드 진입/해제 (수정할 댓글의 ID를 상태에 저장)
     fun setEditMode(perspectiveId: Long?) {
-        editingPerspectiveId = perspectiveId
+        _uiState.update { it.copy(editingPerspectiveId = perspectiveId) }
     }
 
+    // 관점 작성(생성) 또는 수정 요청 전송
     fun submitPerspective(content: String, onSuccess: () -> Unit) {
         if (content.isBlank()) return
 
-        viewModelScope.launch {
-            val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
-            val editId = editingPerspectiveId
+        val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
+        val editId = _uiState.value.editingPerspectiveId
 
+        _uiState.update { state ->
+            val updatedPerspective = (state.myPerspective ?: PerspectiveDetailBoard(
+                perspectiveId = 0L,
+                content = content,
+                characterImageUrl = "",
+                nickname = "나",
+                optionLabel = "A",
+                status = "PENDING",
+                createdAt = "",
+                likeCount = 0,
+                isLiked = false,
+                isMine = true,
+                commentCount = 0,
+                userTag = "",
+            )).copy(
+                status = "PENDING",
+                content = content
+            )
+
+            state.copy(
+                editingPerspectiveId = null,
+                myPerspective = updatedPerspective
+            )
+        }
+
+        onSuccess()
+
+        viewModelScope.launch {
             if (editId != null) {
-                Log.d(TAG, "관점 수정 요청 - id: $editId")
                 perspectiveRepository.updatePerspective(editId, content)
                     .onSuccess {
                         Log.d(TAG, "🟢 관점 수정 성공")
-                        editingPerspectiveId = null
-                        onSuccess()
+                        loadMyPerspective()
                         loadPerspectives(isRefresh = true)
                     }
                     .onFailure { Log.e(TAG, "🔴 관점 수정 실패", it) }
             } else {
-                Log.d(TAG, "새 관점 작성 요청")
                 perspectiveRepository.createPerspective(battleIdLong, content)
                     .onSuccess {
                         Log.d(TAG, "🟢 관점 작성 성공")
-                        onSuccess()
                         loadMyPerspective()
                         loadPerspectives(isRefresh = true)
                     }
@@ -146,19 +183,32 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
+    // 내 관점 삭제
     fun deletePerspective(perspectiveId: Long) {
+        _uiState.update { state ->
+            state.copy(
+                perspectives = state.perspectives.filter { it.commentId != perspectiveId.toString() },
+                myPerspective = if (state.myPerspective?.perspectiveId == perspectiveId) null else state.myPerspective
+            )
+        }
+
         viewModelScope.launch {
             Log.d(TAG, "관점 삭제 요청 - id: $perspectiveId")
             perspectiveRepository.deletePerspective(perspectiveId)
                 .onSuccess {
-                    Log.d(TAG, "🟢 관점 삭제 성공")
+                    Log.d(TAG, "🟢 관점 삭제 성공 (UI는 이미 업데이트됨!)")
+                    // 성공 시 굳이 서버에 새 리스트를 당장 달라고 조르지 않습니다. (서버 동기화 시간 벌어주기)
+                }
+                .onFailure { error ->
+                    Log.e(TAG, "🔴 관점 삭제 실패 - 원상복구 진행", error)
+                    // 만약 서버 통신에 실패했다면, 지웠던 걸 다시 살려내기 위해 새로고침을 합니다.
                     loadMyPerspective()
                     loadPerspectives(isRefresh = true)
                 }
-                .onFailure { Log.e(TAG, "🔴 관점 삭제 실패", it) }
         }
     }
 
+    // 거절된 관점 재검수 요청
     fun retryModeration(perspectiveId: Long) {
         viewModelScope.launch {
             Log.d(TAG, "검수 재시도 요청 - id: $perspectiveId")
@@ -171,6 +221,7 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
+    // 배틀의 찬/반 투표 비율 통계 조회
     private fun loadVoteStats() {
         viewModelScope.launch {
             Log.d(TAG, "투표 통계(비율) 호출 시작 - battleId: ${_uiState.value.battleId}")
@@ -189,9 +240,12 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
+    // 관점(댓글) 목록 페이징 조회 (무한 스크롤 방어 로직 포함)
     fun loadPerspectives(isRefresh: Boolean = false) {
         val state = _uiState.value
-        if (state.isLoading || (!isRefresh && !state.hasNext)) return
+        // 수정: 새로고침(isRefresh)일 때는 isLoading이어도 무시하고 진행합니다.
+        // 기존: if (state.isLoading || (!isRefresh && !state.hasNext)) return
+        if (!isRefresh && (state.isLoading || !state.hasNext)) return
 
         _uiState.update { it.copy(isLoading = true) }
 
@@ -207,27 +261,20 @@ class PerspectiveViewModel @Inject constructor(
                 size = 10,
                 sort = state.sort
             ).onSuccess { page ->
-                Log.d(TAG, "🟢 관점 목록 조회 성공 - 가져온 개수: ${page.items.size}, hasNext: ${page.hasNext}")
-                page.items.forEachIndexed { index, board ->
-                    Log.d("PerspectiveFlow", """
-                        --- [Item $index] ---
-                        ID: ${board.commentId}
-                        Nickname: ${board.nickname}
-                        Stance(원래값): ${board.stance}
-                        Content: ${board.content}
-                        IsMine: ${board.isMine}
-                        LikeCount: ${board.likeCount}
-                        -------------------
-                    """.trimIndent())
-                }
-
                 val newItems = page.items.map { it.toUiModel() }
+                val actualHasNext = page.hasNext && page.nextCursor != null && newItems.isNotEmpty()
 
-                _uiState.update {
-                    it.copy(
-                        perspectives = if (isRefresh) newItems else it.perspectives + newItems,
+                _uiState.update { currentState ->
+                    val mergedList = if (isRefresh) {
+                        newItems
+                    } else {
+                        (currentState.perspectives + newItems).distinctBy { it.commentId }
+                    }
+
+                    currentState.copy(
+                        perspectives = mergedList,
                         nextCursor = page.nextCursor,
-                        hasNext = page.hasNext,
+                        hasNext = actualHasNext,
                         isLoading = false
                     )
                 }
@@ -238,32 +285,65 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
+    // 관점 좋아요 등록/취소 토글
     fun toggleLike(perspectiveId: Long, isCurrentlyLiked: Boolean) {
         viewModelScope.launch {
+            val actionType = if (isCurrentlyLiked) "취소(Unlike)" else "등록(Like)"
+
+            Log.d(TAG, "=========================================")
+            Log.d(TAG, "🔍 [좋아요 $actionType] 버튼 클릭됨!")
+            Log.d(TAG, "🔍 대상 관점 ID: $perspectiveId | 현재 프론트엔드 좋아요 상태: $isCurrentlyLiked")
+
             val result = if (isCurrentlyLiked) {
-                Log.d(TAG, "관점 좋아요 취소 요청 - id: $perspectiveId")
                 perspectiveRepository.unlikePerspective(perspectiveId)
             } else {
-                Log.d(TAG, "관점 좋아요 등록 요청 - id: $perspectiveId")
                 perspectiveRepository.likePerspective(perspectiveId)
             }
 
             result.onSuccess { toggleData ->
-                Log.d(TAG, "🟢 좋아요 변경 성공 (현재 좋아요 수: ${toggleData.likeCount})")
+                Log.d(TAG, "🟢 [좋아요 $actionType] 서버 통신 성공!")
+                Log.d(TAG, "🟢 서버에서 준 새 데이터 -> 좋아요 수: ${toggleData.likeCount}, 내 좋아요 상태: ${toggleData.isLiked}")
 
                 _uiState.update { state ->
-                    state.copy(
-                        perspectives = state.perspectives.map { item ->
-                            if (item.commentId == perspectiveId.toString()) {
-                                item.copy(likeCount = toggleData.likeCount, isLiked = toggleData.isLiked)
-                            } else item
-                        }
-                    )
+                    val updatedPerspectives = state.perspectives.map { item ->
+                        if (item.commentId == perspectiveId.toString()) {
+                            // UI에 값이 잘 들어가는지 확인하는 로그
+                            Log.d(TAG, "🟢 UI 리스트 업데이트 완료! 기존 좋아요 수[${item.likeCount}] -> 변경된 좋아요 수[${toggleData.likeCount}]")
+                            item.copy(
+                                likeCount = toggleData.likeCount,
+                                isLiked = toggleData.isLiked
+                            )
+                        } else item
+                    }
+                    state.copy(perspectives = updatedPerspectives)
                 }
-            }.onFailure { Log.e(TAG, "🔴 좋아요 변경 실패", it) }
+                Log.d(TAG, "=========================================")
+            }.onFailure { error ->
+                Log.e(TAG, "🔴 [좋아요 $actionType] 서버 통신 실패 - 에러: ${error.message}", error)
+                Log.d(TAG, "=========================================")
+            }
         }
     }
 
+    // 타인 관점 신고
+    fun reportPerspective(perspectiveId: Long) {
+        viewModelScope.launch {
+            Log.d(TAG, "관점 신고 요청 - id: $perspectiveId")
+            perspectiveRepository.reportPerspective(perspectiveId)
+                .onSuccess {
+                    _uiEvent.emit(PerspectiveUiEvent.ShowToast("신고가 정상 접수되었습니다."))
+                }
+                .onFailure { error ->
+                    if (error.message == "ALREADY_REPORTED") {
+                        _uiEvent.emit(PerspectiveUiEvent.ShowToast("이미 신고한 사용자입니다."))
+                    } else {
+                        Log.e(TAG, "🔴 관점 신고 실패", error)
+                    }
+                }
+        }
+    }
+
+    // 당겨서 새로고침 시 모든 데이터 갱신
     fun refreshAllData() {
         loadMyVoteHistory()
         loadVoteStats()
@@ -272,10 +352,9 @@ class PerspectiveViewModel @Inject constructor(
     }
 }
 
-//  Domain -> UI
-private fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
-    Log.d("CheckStance", "아이디: ${this.commentId}, 원래 stance 값: '${this.stance}'")
 
+// Domain Model -> UI Model
+private fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
     val displayStance = when (this.stance) {
         "A", "AGREE", "찬성" -> "찬성"
         "B", "DISAGREE", "반대" -> "반대"

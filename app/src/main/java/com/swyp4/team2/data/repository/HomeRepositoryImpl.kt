@@ -3,7 +3,6 @@ package com.swyp4.team2.data.repository
 import com.swyp4.team2.data.model.toDomainModel
 import com.swyp4.team2.data.model.toTodayPickDomainModel
 import com.swyp4.team2.data.remote.HomeApi
-import com.swyp4.team2.domain.mock.DummyHomeData
 import com.swyp4.team2.domain.model.HomeBoard
 import com.swyp4.team2.domain.repository.HomeRepository
 import kotlinx.coroutines.delay

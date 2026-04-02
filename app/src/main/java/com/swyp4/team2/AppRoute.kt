@@ -8,6 +8,10 @@ sealed class AppRoute(val route: String){
     object Alarm : AppRoute("alarm_screen")
     object Setting : AppRoute("setting_screen")
 
+    object BattleRouting : AppRoute("battle_routing_screen/{battleId}") {
+        fun createRoute(battleId: String) = "battle_routing_screen/$battleId"
+    }
+
     object DiscussionHistory : AppRoute("discussion_history_screen") // 마이-내 토론 기록
     object PhilosopherType : AppRoute("philosopher_type_screen")     // 마이-나는 어떤 철학자 일까?
     object OtherPhilosopher : AppRoute("other_philosopher_screen/{reportId}") {
@@ -42,7 +46,11 @@ sealed class AppRoute(val route: String){
         }
     }
 
-    object Recommend : AppRoute("recommend_screen")
+    object Recommend : AppRoute("recommend_screen/{battleId}"){
+        fun createRoute(battleId: String): String {
+            return "recommend_screen/$battleId"
+        }
+    }
     object PrivacyPolicy : AppRoute("privacy_policy_screen")
     object TermsOfService : AppRoute("terms_of_service_screen")
 }

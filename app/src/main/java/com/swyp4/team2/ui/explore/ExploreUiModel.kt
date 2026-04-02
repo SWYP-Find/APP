@@ -21,8 +21,8 @@ fun ExploreItemBoard.toUiModel(): ExploreUiModel {
         type = if (this.type == "BATTLE") "배틀" else this.type,
         title = this.title,
         summary = this.summary,
-        tags = this.tags.map { it.name }, // 태그 이름만 추출
-        audioDurationText = "${this.audioDuration}분", // 기획에 따라 포맷팅 조절 가능
+        tags = this.tags.map { it.name },
+        audioDurationText = "${this.audioDuration/60}분",
         viewCountText = this.viewCount.toString()
     )
 }

@@ -307,16 +307,24 @@ fun NewBattleCard(
         Spacer(modifier = Modifier.height(12.dp))
         Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = item.summary, style = SwypTheme.typography.label, color = Gray400)
+        Text(
+            text = item.summary,
+            style = SwypTheme.typography.label,
+            color = Gray400,
+            maxLines = 2,
+            minLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
         Spacer(modifier = Modifier.height(8.dp))
 
         // VS 영역
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             BattleOpinionBox(
                 modifier = Modifier.weight(1f),
                 opinion = item.leftOpinion,
                 name = item.leftProfileName,
-                imageUrl = item.leftProfileImageUrl)
+                imageUrl = item.leftProfileImageUrl
+            )
             Surface(modifier = Modifier.size(40.dp).padding(6.dp), shape = CircleShape, color = Secondary200) {
                 Box(contentAlignment = Alignment.Center) { Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = Gray900) }
             }
@@ -331,7 +339,7 @@ fun NewBattleCard(
 }
 
 @Composable
-private fun BattleOpinionBox(
+fun BattleOpinionBox(
     modifier: Modifier = Modifier,
     opinion: String?,
     name: String?,
@@ -351,17 +359,17 @@ private fun BattleOpinionBox(
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = name ?: "이름",
+                text = opinion ?: "의견",
                 style = SwypTheme.typography.label,
-                color = Gray900,
+                color = Gray700,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = opinion ?: "의견",
+                text = name ?: "이름",
                 style = SwypTheme.typography.labelXSmall,
-                color = Gray400,
+                color = Gray300,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

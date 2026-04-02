@@ -14,6 +14,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -23,7 +26,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.swyp4.team2.AppRoute
 import com.swyp4.team2.ui.component.CustomBottomNavigationBar
-import com.swyp4.team2.ui.curation.CurationScreen
 import com.swyp4.team2.ui.explore.ExploreScreen
 import com.swyp4.team2.ui.home.HomeScreen
 import com.swyp4.team2.ui.my.MyScreen
@@ -44,12 +46,17 @@ fun MainScreen(
 ){
     val mainNavController = rememberNavController()
 
+    var homeScrollTrigger by remember { mutableIntStateOf(0) }
+    var exploreScrollTrigger by remember { mutableIntStateOf(0) }
+
     Scaffold(
         containerColor = Beige200,
         bottomBar = {
             CustomBottomNavigationBar(
                 mainNavController = mainNavController,
-                rootNavController = rootNavController
+                rootNavController = rootNavController,
+                onHomeReselected = { homeScrollTrigger++ },
+                onExploreReselected = { exploreScrollTrigger++ }
             )
         }
     ){ innerPadding ->
@@ -66,11 +73,12 @@ fun MainScreen(
         ){
             composable(BottomNavItem.Home.route){
                 HomeScreen(
+                    scrollToTopTrigger = homeScrollTrigger,
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { contentId->
-                        rootNavController.navigate(AppRoute.PreVote.createRoute(contentId))
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(contentId))
                     },
                     onNavigateToTrendingBattle = { },
                     onNavigateToNewBattle = { },
@@ -80,11 +88,12 @@ fun MainScreen(
             }
             composable(BottomNavItem.Explore.route){
                 ExploreScreen(
+                    scrollToTopTrigger = exploreScrollTrigger,
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { battleId ->
-                        rootNavController.navigate(AppRoute.PreVote.createRoute(battleId))
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
                     }
                 )
             }

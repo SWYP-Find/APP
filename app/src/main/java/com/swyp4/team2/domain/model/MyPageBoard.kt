@@ -5,6 +5,7 @@ data class MyBattleRecordItem(
     val battleId: String,
     val recordId: String,
     val voteSide: String, // "PRO" or "CON"
+    val category: String,
     val title: String,
     val summary: String,
     val createdAt: String
@@ -30,7 +31,7 @@ data class MyContentActivityItem(
     val battleId: String,
     val battleTitle: String,
     val author: MyContentActivityAuthor,
-    val stance: String,
+    val voteSide: String,
     val content: String,
     val likeCount: Int,
     val createdAt: String

@@ -37,6 +37,7 @@ import com.swyp4.team2.ui.my.setting.policy.TermsOfServiceScreen
 import com.swyp4.team2.ui.my.setting.profile.SettingProfileScreen
 import com.swyp4.team2.ui.perspective.PerspectiveScreen
 import com.swyp4.team2.ui.recommend.RecommendScreen
+import com.swyp4.team2.ui.routing.BattleRoutingScreen
 import com.swyp4.team2.ui.splash.SplashScreen
 import com.swyp4.team2.ui.theme.Beige200
 import com.swyp4.team2.ui.todaybattle.TodayBattleScreen
@@ -94,8 +95,8 @@ fun AppNavigation() {
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Splash.route) { inclusive = true }
                         }
-                        // rootNavController.navigate(AppRoute.Scenario.createRoute("81"))
-                        rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
+                        rootNavController.navigate(AppRoute.Scenario.createRoute("79"))
+                        //rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
                     },
                     onNavigateToOnboarding = {
                         rootNavController.navigate(AppRoute.Onboarding.route) {
@@ -139,6 +140,25 @@ fun AppNavigation() {
                 MainScreen(rootNavController = rootNavController)
             }
 
+            // 배틀 라우팅
+            composable(
+                route = AppRoute.BattleRouting.route,
+                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+            ) {
+                BattleRoutingScreen(
+                    onNavigateToPreVote = { id ->
+                        rootNavController.navigate(AppRoute.PreVote.createRoute(id)) {
+                            popUpTo(AppRoute.BattleRouting.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToPerspective = { id ->
+                        rootNavController.navigate(AppRoute.Perspective.createRoute(id)) {
+                            popUpTo(AppRoute.BattleRouting.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             // 오늘의 배틀 화면
             composable(BottomNavItem.TodayBattle.route){
                 TodayBattleScreen(
@@ -146,7 +166,7 @@ fun AppNavigation() {
                         rootNavController.popBackStack()
                     },
                     onEnterBattle = { battleId ->
-                        rootNavController.navigate(AppRoute.Scenario.createRoute(battleId))
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
                     }
                 )
             }
@@ -256,8 +276,8 @@ fun AppNavigation() {
                     onBackClick = {
                         // rootNavController.popBackStack()
                     },
-                    onNextClick = {
-                        rootNavController.navigate(AppRoute.Recommend.route)
+                    onNextClick = { itemId->
+                        rootNavController.navigate(AppRoute.Recommend.createRoute(itemId))
                     },
                     onMoreClick = { itemId ->
                         rootNavController.navigate(AppRoute.Comment.createRoute(itemId))
@@ -282,7 +302,12 @@ fun AppNavigation() {
             }
 
             // 추천 화면
-            composable(AppRoute.Recommend.route) {
+            composable(
+                route = AppRoute.Recommend.route,
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType }
+                )
+            ) {
                 RecommendScreen(
                     onCloseClick = {
                         rootNavController.popBackStack(AppRoute.Main.route, inclusive = false)
@@ -290,8 +315,8 @@ fun AppNavigation() {
                     onBackClick = {
                         rootNavController.popBackStack()
                     },
-                    onItemClick = {
-                        rootNavController.navigate(AppRoute.PreVote.route)
+                    onItemClick = {clickedBattleId ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(clickedBattleId))
                     }
                 )
             }
