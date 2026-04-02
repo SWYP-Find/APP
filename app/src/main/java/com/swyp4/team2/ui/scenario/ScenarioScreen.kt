@@ -28,10 +28,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.swyp4.team2.R
 import com.swyp4.team2.ui.component.AudioPlayerBar
 import com.swyp4.team2.ui.component.ChatBubble
+import com.swyp4.team2.ui.component.CustomConfirmDialog
 import com.swyp4.team2.ui.component.CustomTopAppBar
 import com.swyp4.team2.ui.scenario.ScenarioViewModel
 import com.swyp4.team2.ui.scenario.model.ScenarioOptionUiModel
@@ -176,6 +180,21 @@ fun ScenarioScreen(
                 }
             }
         }
+
+        if (uiState.showFinalVoteDialog) {
+            CustomConfirmDialog(
+                message = "최종투표하고 투표 결과를 확인하시겠습니까?",
+                dismissText = "최종투표하기",
+                confirmText= "다시 들어볼래요",
+                 onDismiss= {
+                    viewModel.dismissFinalDialog()
+                    onNextClick()
+                 },
+                 onConfirm= {
+                    viewModel.restartCurrentAudio()
+                }
+            )
+        }
     }
 }
 
@@ -185,6 +204,10 @@ fun InteractiveOptionsUI(
     selectedNodeId: String?,
     onOptionClick: (String) -> Unit
 ) {
+    var pendingSelectedId by remember(options) {
+        androidx.compose.runtime.mutableStateOf<String?>(null)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -204,46 +227,85 @@ fun InteractiveOptionsUI(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        options.forEachIndexed { index, option ->
-            val isSelected = selectedNodeId == option.nextNodeId
-            val isPrimary = if (selectedNodeId == null) (index == 0) else isSelected
+        options.forEach { option ->
+            val isCommitted = selectedNodeId == option.nextNodeId
+            val isPending = pendingSelectedId == option.nextNodeId
+            val isSelected = isCommitted || isPending
 
-            OptionSelectionButton(
+            OptionSelectionCard(
                 text = option.label,
-                isPrimary = isPrimary,
+                isSelected = isSelected,
                 isEnabled = selectedNodeId == null,
-                onClick = { onOptionClick(option.nextNodeId) }
+                onClick = {
+                    if (selectedNodeId == null) {
+                        pendingSelectedId = option.nextNodeId
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(12.dp))
+        }
+        if (selectedNodeId == null) {
+            OptionConfirmButton(
+                isEnabled = pendingSelectedId != null,
+                onClick = {
+                    pendingSelectedId?.let { onOptionClick(it) }
+                }
+            )
         }
     }
 }
 
 @Composable
-fun OptionSelectionButton(
+fun OptionSelectionCard(
     text: String,
-    isPrimary: Boolean = false,
-    isEnabled: Boolean = true,
+    isSelected: Boolean,
+    isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isPrimary) Secondary500 else Beige700
-    val alpha = if (isEnabled) 1f else 0.7f
+    val borderColor = if (isSelected) Secondary500 else Beige700
+    val bgColor = if (isSelected) Beige400 else Beige400
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(alpha)
             .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
-            .background(Beige400)
-            .then(if (isEnabled) Modifier.clickable { onClick() } else Modifier) // isEnabled일 때만 클릭 가능
+            .background(bgColor)
+            .border(1.dp, borderColor, RoundedCornerShape(2.dp))
+            .clickable(enabled = isEnabled) { onClick() }
             .padding(vertical = 20.dp, horizontal = 16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
             style = SwypTheme.typography.b5Medium,
-            color = Gray900,
+            color = if (isSelected) Gray900 else Gray500,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+// 하단 최종 확정 버튼 컴포저블
+@Composable
+fun OptionConfirmButton(
+    isEnabled: Boolean,
+    onClick: () -> Unit
+) {
+    val bgColor = if (isEnabled) Secondary500 else Gray200
+    val textColor = if (isEnabled) Color.White else Color.White
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(2.dp))
+            .background(bgColor)
+            .clickable(enabled = isEnabled) { onClick() }
+            .padding(vertical = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "입장 선택하기",
+            style = SwypTheme.typography.b5Medium,
+            color = textColor,
             textAlign = TextAlign.Center
         )
     }

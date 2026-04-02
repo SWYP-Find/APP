@@ -1,5 +1,6 @@
 package com.swyp4.team2.data.repository
 
+import android.util.Log
 import com.swyp4.team2.data.model.BaseResponse
 import com.swyp4.team2.data.model.PerspectiveRequestDto
 import com.swyp4.team2.data.model.toDomainModel
@@ -133,10 +134,22 @@ class PerspectiveRepositoryImpl @Inject constructor(
     override suspend fun reportPerspective(perspectiveId: Long): Result<String> {
         return try {
             val response = perspectiveApi.reportPerspective(perspectiveId)
-            val data = response.data ?: throw Exception(response.error?.message ?: "관점 신고에 실패했습니다.")
-            Result.success(data)
+            val data = response.data
+
+            if (response.statusCode == 409) {
+                Result.failure(Exception("ALREADY_REPORTED"))
+            } else if (response.statusCode == 200 || response.statusCode == 0) {
+                Result.success(data ?: "Success")
+            } else {
+                val errorMsg = response.error?.message ?: "알 수 없는 에러"
+                Result.failure(Exception("신고 실패(Code: ${response.statusCode}): $errorMsg"))
+            }
         } catch (e: Exception) {
-            Result.failure(e)
+            if (e.message?.contains("409") == true) {
+                Result.failure(Exception("ALREADY_REPORTED"))
+            } else {
+                Result.failure(e)
+            }
         }
     }
 

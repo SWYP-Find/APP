@@ -37,7 +37,7 @@ data class PastChoice(
 )
 
 data class ScenarioUiState(
-    val title: String = "뒤샹의 변기, 예술인가 도발인가",
+    val title: String = "",
     val pastScripts: List<ScenarioScriptUiModel> = emptyList(),
     val pastChoices: List<PastChoice> = emptyList(),
     val scripts: List<ScenarioScriptUiModel> = emptyList(),
@@ -50,7 +50,8 @@ data class ScenarioUiState(
     val totalDurationMs: Long = 0L,
     val interactiveOptions: List<ScenarioOptionUiModel> = emptyList(),
     val currentNodeId: String = "",
-    val showOptions: Boolean = false
+    val showOptions: Boolean = false,
+    val showFinalVoteDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -105,7 +106,11 @@ class ScenarioViewModel @Inject constructor(
             scenarioRepository.fetchBattleScenario(battleId)
                 .onSuccess { board ->
                     Log.d("TTSFlow", "▶️ loadScenario() 성공 - 서버에서 데이터 받아옴")
+
                     fullScenario = board.toUiModel()
+
+                    _uiState.update { it.copy(title = board.title) }
+
                     val firstNodeId = fullScenario?.startNodeId ?: return@onSuccess
                     loadNode(firstNodeId)
                 }
@@ -146,12 +151,12 @@ class ScenarioViewModel @Inject constructor(
             }
         }
 
-        val startMs = node.scripts.firstOrNull()?.startTimeMs ?: _uiState.value.currentPositionMs
+        val sortedScripts = node.scripts.sortedBy { it.startTimeMs }
+        val startMs = sortedScripts.firstOrNull()?.startTimeMs ?: _uiState.value.currentPositionMs
         val endMs = startMs + (node.audioDuration * 1000L)
-
         Log.d("TTSFlow", "▶️ loadNode() - 노드 재생 구간 계산 (start: $startMs, end: $endMs)")
 
-        val splitScripts = splitScriptsBySentence(node.scripts, endMs)
+        val splitScripts = splitScriptsBySentence(sortedScripts, endMs)
 
         val currentScripts = _uiState.value.scripts
         val newPastScripts = if (currentScripts.isNotEmpty() && _uiState.value.currentNodeId != nodeId) {
@@ -212,7 +217,24 @@ class ScenarioViewModel @Inject constructor(
         } else if (currentNode.interactiveOptions.isNotEmpty()) {
             Log.d("TTSFlow", "▶️ handleNodeEnd() - 선택지 띄우기")
             _uiState.update { it.copy(interactiveOptions = currentNode.interactiveOptions) }
+        } else {
+            Log.d("TTSFlow", "▶️ handleNodeEnd() - 시나리오 최종 완료, 투표 다이얼로그 띄우기")
+            _uiState.update { it.copy(showFinalVoteDialog = true) }
         }
+    }
+
+    // 다이얼로그 닫기 (최종 투표로 넘어갈 때 사용)
+    fun dismissFinalDialog() {
+        _uiState.update { it.copy(showFinalVoteDialog = false) }
+    }
+
+    // UI는 그대로 두고 오디오만 처음부터 다시 재생
+    fun restartCurrentAudio() {
+        Log.d("TTSFlow", "▶️ restartCurrentAudio() 실행 - 오디오 처음부터 다시 재생")
+        _uiState.update { it.copy(showFinalVoteDialog = false) } // 다이얼로그 닫기
+        player.seekTo(0) // 재생 위치를 맨 처음(0ms)으로 이동
+        updateSync(0)    // UI 상태(하이라이트 등) 동기화
+        playAudio()      // 다시 재생 시작
     }
 
     // 현재 재생 상태에 따라 오디오를 재생하거나 일시정지

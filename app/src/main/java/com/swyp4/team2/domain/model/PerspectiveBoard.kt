@@ -12,16 +12,15 @@ data class PerspectivePage(
 )
 
 data class PerspectiveBoard(
-    val commentId: String,       // UI 유지보수를 위해 이름 유지 (실제 값은 perspectiveId가 들어감)
-    val userTag: String,
+    val commentId: String,
     val nickname: String,
     val characterType: String,
     val characterImageUrl: String,
     val content: String,
-    val isMine: Boolean,         // UI 유지보수를 위해 이름 유지 (실제 값은 isMyPerspective)
+    val isMine: Boolean,
     val createdAt: String,
-    val stance: String,          // option 안의 label 값을 매핑함
-    val replyCount: Int,         // commentCount 값을 매핑함
+    val stance: String,
+    val replyCount: Int,
     val likeCount: Int,
     val isLiked: Boolean
 )

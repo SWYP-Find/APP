@@ -6,8 +6,18 @@ import com.swyp4.team2.domain.model.ScenarioOption
 import com.swyp4.team2.domain.model.ScenarioScript
 import com.swyp4.team2.domain.model.SpeakerType
 
+data class ScenarioPhilosopherDto(
+    val label: String?,
+    val name: String?,
+    val stance: String?,
+    val quote: String?,
+    val imageUrl: String?
+)
+
 data class ScenarioResponseDto(
     val battleId: Long,
+    val title: String?,
+    val philosophers: List<ScenarioPhilosopherDto>?,
     val isInteractive: Boolean,
     val startNodeId: Long,
     val recommendedPathKey: String,
@@ -19,7 +29,7 @@ data class ScenarioNodeDto(
     val nodeId: Long,
     val nodeName: String,
     val audioDuration: Int,
-    val autoNextNodeId: Long?, // 이 값은 null이 올 수 있으므로 Long? 로 유지
+    val autoNextNodeId: Long?,
     val scripts: List<ScenarioScriptDto>,
     val interactiveOptions: List<ScenarioOptionDto>
 )
@@ -37,38 +47,48 @@ data class ScenarioOptionDto(
     val nextNodeId: Long
 )
 
-// 🌟 2. Dto -> Domain 매퍼: Long으로 받은 ID를 Domain에 맞게 String으로 변환(.toString())
+// 2. Dto -> Domain 매퍼
 fun ScenarioResponseDto.toDomainModel(): ScenarioBoard {
     return ScenarioBoard(
-        battleId = this.battleId.toString(),
-        isInteractive = this.isInteractive,
-        startNodeId = this.startNodeId.toString(),
-        recommendedPathKey = this.recommendedPathKey,
-        audios = this.audios ?: emptyMap(), // 혹시 모를 null 방어
-        nodes = this.nodes.map { node ->
-            ScenarioNode(
-                nodeId = node.nodeId.toString(),
-                nodeName = node.nodeName,
-                audioDuration = node.audioDuration,
-                autoNextNodeId = node.autoNextNodeId?.toString(),
-                interactiveOptions = node.interactiveOptions.map {
-                    ScenarioOption(
-                        label = it.label,
-                        nextNodeId = it.nextNodeId.toString()
-                    )
-                },
-                scripts = node.scripts.map { script ->
-                    ScenarioScript(
-                        scriptId = script.scriptId.toString(),
-                        startTimeMs = script.startTimeMs,
-                        speakerType = runCatching { SpeakerType.valueOf(script.speakerType) }.getOrDefault(
-                            SpeakerType.UNKNOWN
-                        ),
-                        speakerName = script.speakerName,
-                        text = script.text
-                    )
-                }
+        battleId = this.battleId?.toString() ?: "",
+        title = this.title ?: "",
+
+        philosophers = this.philosophers?.map { philosopherDto ->
+            com.swyp4.team2.domain.model.ScenarioPhilosopher(
+                label = philosopherDto.label ?: "",
+                name = philosopherDto.name ?: "",
+                stance = philosopherDto.stance ?: "",
+                quote = philosopherDto.quote ?: "",
+                imageUrl = philosopherDto.imageUrl ?: ""
             )
-        }
+        } ?: emptyList(),
+
+        isInteractive = this.isInteractive ?: false,
+        startNodeId = this.startNodeId?.toString() ?: "",
+        recommendedPathKey = this.recommendedPathKey ?: "COMMON",
+        audios = this.audios ?: emptyMap(),
+        nodes = this.nodes?.map { node ->
+            com.swyp4.team2.domain.model.ScenarioNode(
+                nodeId = node.nodeId?.toString() ?: "",
+                nodeName = node.nodeName ?: "",
+                audioDuration = node.audioDuration ?: 0,
+                autoNextNodeId = node.autoNextNodeId?.toString(),
+                interactiveOptions = node.interactiveOptions?.map {
+                    com.swyp4.team2.domain.model.ScenarioOption(
+                        label = it.label ?: "",
+                        nextNodeId = it.nextNodeId?.toString() ?: ""
+                    )
+                } ?: emptyList(),
+                scripts = node.scripts?.map { script ->
+                    com.swyp4.team2.domain.model.ScenarioScript(
+                        scriptId = script.scriptId?.toString() ?: "",
+                        startTimeMs = script.startTimeMs ?: 0L,
+                        speakerType = runCatching { com.swyp4.team2.domain.model.SpeakerType.valueOf(script.speakerType ?: "UNKNOWN") }.getOrDefault(com.swyp4.team2.domain.model.SpeakerType.UNKNOWN),
+                        speakerName = script.speakerName ?: "",
+                        text = script.text ?: ""
+                    )
+                } ?: emptyList()
+            )
+        } ?: emptyList()
     )
 }

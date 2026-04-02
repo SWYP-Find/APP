@@ -19,6 +19,7 @@ data class DiscussionHistoryUiState(
     val agreeList: List<MyBattleRecordItem> = emptyList(),
     val agreeOffset: Int? = 0,
     val hasMoreAgree: Boolean = true,
+    val category: String = "",
 
     val disagreeList: List<MyBattleRecordItem> = emptyList(),
     val disagreeOffset: Int? = 0,
@@ -72,7 +73,6 @@ class DiscussionHistoryViewModel @Inject constructor(
                     agreeList = agreeResult.getOrNull()?.items ?: emptyList(),
                     agreeOffset = agreeResult.getOrNull()?.nextOffset,
                     hasMoreAgree = agreeResult.getOrNull()?.hasNext ?: false,
-
                     disagreeList = disagreeResult.getOrNull()?.items ?: emptyList(),
                     disagreeOffset = disagreeResult.getOrNull()?.nextOffset,
                     hasMoreDisagree = disagreeResult.getOrNull()?.hasNext ?: false,
@@ -114,7 +114,7 @@ class DiscussionHistoryViewModel @Inject constructor(
                             agreeList = state.agreeList + pageData.items,
                             agreeOffset = pageData.nextOffset,
                             hasMoreAgree = pageData.hasNext,
-                            isPagingLoading = false
+                            isPagingLoading = false,
                         )
                     } else {
                         state.copy(

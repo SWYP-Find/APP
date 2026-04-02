@@ -4,8 +4,18 @@ enum class SpeakerType {
     NARRATOR, A, B, USER, UNKNOWN
 }
 
+data class ScenarioPhilosopher(
+    val label: String,
+    val name: String,
+    val stance: String,
+    val quote: String,
+    val imageUrl: String
+)
+
 data class ScenarioBoard(
     val battleId: String,
+    val title: String,
+    val philosophers: List<ScenarioPhilosopher>,
     val isInteractive: Boolean,
     val startNodeId: String,
     val recommendedPathKey: String,

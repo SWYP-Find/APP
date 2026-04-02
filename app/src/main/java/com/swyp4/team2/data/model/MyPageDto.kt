@@ -36,6 +36,7 @@ data class MyBattleRecordItemDto(
     val battleId: String?,
     val recordId: String?,
     val voteSide: String?,
+    val category: String?,
     val title: String?,
     val summary: String?,
     val createdAt: String?
@@ -60,7 +61,7 @@ data class MyContentActivityItemDto(
     val battleId: String?,
     val battleTitle: String?,
     val author: MyContentActivityAuthorDto?,
-    val stance: String?,
+    val voteSide: String?,
     val content: String?,
     val likeCount: Int?,
     val createdAt: String?
@@ -143,9 +144,10 @@ fun MyBattleRecordItemDto.toDomainModel() = MyBattleRecordItem(
     battleId = this.battleId ?: "",
     recordId = this.recordId ?: "",
     voteSide = this.voteSide ?: "PRO",
+    category = this.category ?: "",
     title = this.title ?: "",
     summary = this.summary ?: "",
-    createdAt = this.createdAt ?: ""
+    createdAt = this.createdAt?.take(10) ?: ""
 )
 
 fun MyBattleRecordPageDto.toDomainModel() = MyBattleRecordPage(
@@ -165,10 +167,10 @@ fun MyContentActivityItemDto.toDomainModel() = MyContentActivityItem(
         nickname = this.author?.nickname ?: "알 수 없음",
         characterType = this.author?.characterType ?: "UNKNOWN"
     ),
-    stance = this.stance ?: "",
+    voteSide = this.voteSide ?: "",
     content = this.content ?: "",
     likeCount = this.likeCount ?: 0,
-    createdAt = this.createdAt ?: ""
+    createdAt = this.createdAt?.take(10) ?: ""
 )
 
 fun MyContentActivityPageDto.toDomainModel() = MyContentActivityPage(

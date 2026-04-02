@@ -64,7 +64,6 @@ import com.swyp4.team2.domain.model.SpeakerType
 import com.swyp4.team2.ui.component.ChatBubble
 import com.swyp4.team2.ui.component.CustomButton
 import com.swyp4.team2.ui.perspective.PerspectiveMenuItem
-import com.swyp4.team2.ui.perspective.PerspectiveUiModel
 import com.swyp4.team2.ui.scenario.model.ScenarioScriptUiModel
 import com.swyp4.team2.ui.theme.Beige100
 import com.swyp4.team2.ui.theme.Beige300

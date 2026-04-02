@@ -224,7 +224,8 @@ fun ContentActivityCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isAgree = item.stance == "찬성"
+                    val isAgree = item.voteSide == "PRO"
+                    val displayStance = if (isAgree) "찬성" else "반대"
                     val badgeBgColor = if (isAgree) Beige400 else SwypTheme.colors.primary
                     val badgeTextColor = if (isAgree) SwypTheme.colors.primary else SwypTheme.colors.surface
 
@@ -235,7 +236,7 @@ fun ContentActivityCard(
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = item.stance,
+                            text = displayStance,
                             style = SwypTheme.typography.b5Medium,
                             color = badgeTextColor
                         )
@@ -261,7 +262,7 @@ fun ContentActivityCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         // [하단] 좋아요 수 (우측 정렬)
         Row(

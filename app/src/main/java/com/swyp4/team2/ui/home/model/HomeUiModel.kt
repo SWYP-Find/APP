@@ -72,26 +72,26 @@ fun HomeBoard.toUiModel(): HomeBoardUiModel {
 
 // 2. Domain의 options 리스트를 UI의 left/right 필드에 매핑하도록 수정
 fun HomeContent.toUiModel(): HomeContentUiModel {
-    val minutes = (this.audioDuration + 59) / 60 // 180초 -> 3분
-
-    val leftOption = this.options.getOrNull(0)
-    val rightOption = this.options.getOrNull(1)
-
     return HomeContentUiModel(
         contentId = this.contentId,
-        type = runCatching { ContentUiType.valueOf(this.type.name) }.getOrDefault(ContentUiType.UNKNOWN),
         title = this.title,
         summary = this.summary,
         thumbnailUrl = this.thumbnailUrl,
-        viewCountText = "%,d".format(this.viewCount),
-        timeInfoText = "${minutes}분",
+        viewCountText = this.viewCount.toString(),
+        timeInfoText = "${this.audioDuration / 60}분",
         tags = this.tags,
-        leftOpinion = leftOption?.text,
-        leftProfileName = leftOption?.label,
-        leftProfileImageUrl = leftOption?.imageUrl,
-        rightOpinion = rightOption?.text,
-        rightProfileName = rightOption?.label,
-        rightProfileImageUrl = rightOption?.imageUrl
+        leftOpinion = this.options.getOrNull(0)?.text ?: "",
+        leftProfileName = this.options.getOrNull(0)?.philosopherName ?: "알 수 없음",
+        leftProfileImageUrl = this.options.getOrNull(0)?.imageUrl ?: "",
+        rightOpinion = this.options.getOrNull(1)?.text ?: "",
+        rightProfileName = this.options.getOrNull(1)?.philosopherName ?: "알 수 없음", // 👇 여기도 동일하게!
+        rightProfileImageUrl = this.options.getOrNull(1)?.imageUrl ?: "",
+        type = when (this.type) {
+            com.swyp4.team2.domain.model.ContentDomainType.BATTLE -> ContentUiType.BATTLE
+            com.swyp4.team2.domain.model.ContentDomainType.VOTE -> ContentUiType.VOTE
+            com.swyp4.team2.domain.model.ContentDomainType.QUIZ -> ContentUiType.QUIZ
+            else -> ContentUiType.UNKNOWN
+        }
     )
 }
 

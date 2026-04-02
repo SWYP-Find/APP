@@ -565,7 +565,7 @@ fun ChemistrySection(best: MyPhilosopher, worst: MyPhilosopher) {
                     .weight(1f)
                     .fillMaxHeight(),
                 isBest = true,
-                name = best.typeName,
+                name = best.philosopherLabel,
                 desc = best.description,
                 imageUrl = best.imageUrl
             )
@@ -574,7 +574,7 @@ fun ChemistrySection(best: MyPhilosopher, worst: MyPhilosopher) {
                     .weight(1f)
                     .fillMaxHeight(),
                 isBest = false,
-                name = worst.typeName,
+                name = worst.philosopherLabel,
                 desc = worst.description,
                 imageUrl = worst.imageUrl
             )
@@ -626,7 +626,7 @@ fun ChemistryCard(
             modifier = Modifier.size(56.dp),
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = name, style = SwypTheme.typography.b2Medium, color = Gray900)
+        Text(text = "${name}형", style = SwypTheme.typography.b2Medium, color = Gray900)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = desc, style = SwypTheme.typography.labelXSmall, color = Gray500, textAlign = TextAlign.Center)
     }
