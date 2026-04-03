@@ -541,7 +541,7 @@ private fun PollStatBar(modifier: Modifier, option: PollQuizOptionStatUiModel) {
         Box(
             modifier = Modifier.weight(1f)
                 .height(4.dp)
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 4.dp)
                 .background(Secondary100, CircleShape)
         ){
             Box(
@@ -552,7 +552,14 @@ private fun PollStatBar(modifier: Modifier, option: PollQuizOptionStatUiModel) {
             )
         }
 
-        Text(text = "${option.ratio.toInt()}%", style = SwypTheme.typography.caption2SemiBold, color = Gray900, fontWeight = FontWeight.Bold)
+        Text(
+            text = "${option.ratio.toInt()}%",
+            style = SwypTheme.typography.caption2SemiBold,
+            color = Gray900,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.End,
+            modifier = Modifier.width(36.dp)
+        )
     }
 }
 
