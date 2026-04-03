@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.swyp4.team2"
+    namespace = "com.picke.app"
     compileSdk = 36
 
     defaultConfig {
@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // [DI - Hilt]
     implementation(libs.hilt.android)
@@ -98,6 +99,7 @@ dependencies {
     implementation(libs.androidx.paging.common)
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.animation.core)
+    implementation(libs.androidx.room.ktx)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
