@@ -1,0 +1,53 @@
+package com.picke.app.ui.splash
+
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.picke.app.R
+import com.picke.app.ui.theme.Primary500
+
+@Composable
+fun SplashScreen(
+    viewModel: SplashViewModel = hiltViewModel(),
+    onNavigateToLogin: ()->Unit,
+    onNavigateToOnboarding: () -> Unit,
+    onNavigateToMain: ()->Unit,
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        Log.d("SplashFlow", "현재 UI 상태 수신됨: $uiState")
+
+        when(uiState){
+            SplashUiState.NavigateToLogin -> onNavigateToLogin()
+            SplashUiState.NavigateToOnboarding -> onNavigateToOnboarding()
+            SplashUiState.NavigateToMain -> onNavigateToMain()
+            SplashUiState.Loading -> { } // 로고 띄우기
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Primary500),
+        contentAlignment = Alignment.Center
+    ){
+        Image(
+            painter = painterResource(id = R.drawable.ic_splash_logo),
+            contentDescription = "로고 이미지",
+            modifier = Modifier.size(200.dp)
+        )
+    }
+}

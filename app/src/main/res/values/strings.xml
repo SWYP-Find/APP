@@ -46,7 +46,7 @@
 
     <!-- tts & 투표  -->
     <string name="prevote">사전 투표하기</string>
-    <string name="postvote">사후 투표하기</string>
+    <string name="postvote">최종 투표하기</string>
 
     <!-- 설정   -->
     <string name="setting_alarm_category_function">기능별 알림 설정</string>
