@@ -17,3 +17,7 @@ Thumbs.db
 
 *.log
 ASMCoreStats/
+
+app/release/
+*.apk
+*.dm
