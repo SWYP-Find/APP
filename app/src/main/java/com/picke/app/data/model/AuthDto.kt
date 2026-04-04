@@ -11,6 +11,11 @@ data class SocialLoginRequest(
     val redirectUri: String
 )
 
+data class KakaoSocialLoginRequest(
+    @SerializedName("authorizationCode")
+    val authorizationCode: String,
+)
+
 data class AuthResponseDto(
     @SerializedName("access_token")
     val accessToken: String,

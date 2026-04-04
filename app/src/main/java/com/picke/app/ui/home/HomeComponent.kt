@@ -437,12 +437,17 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         // 1. [수정] 투표 제목 - 문장 사이에 네모박스 구현
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = item.titlePrefix, style = SwypTheme.typography.b3SemiBold, color = Gray900)
+            Text(
+                text = item.titlePrefix,
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray900,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
 
             // 네모박스 영역
             Box(
@@ -455,17 +460,24 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
                         color = Beige700,
                         shape = RoundedCornerShape(2.dp)
                     )
-                    .background(Beige200),
+                    .background(Beige200)
+                    .align(Alignment.CenterVertically),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (isVoted) selectedOptionText else "",
                     style = SwypTheme.typography.b3SemiBold,
-                    color = Primary500
+                    color = Primary500,
+                    textAlign = TextAlign.Center
                 )
             }
 
-            Text(text = item.titleSuffix, style = SwypTheme.typography.b3SemiBold, color = Gray900)
+            Text(
+                text = item.titleSuffix,
+                style = SwypTheme.typography.b3SemiBold,
+                color = Gray900,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -510,6 +522,7 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
         }
     }
 }
+
 @Composable
 private fun PickeGridButton(modifier: Modifier, index: String, text: String, isVoted: Boolean, isSelected: Boolean, onClick: () -> Unit) {
     val borderColor = if (isSelected) Secondary500 else Beige600

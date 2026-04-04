@@ -11,6 +11,11 @@ interface AuthRepository{
         redirectUri: String
     ): Result<AuthBoard>
 
+    suspend fun loginKakao(
+        provider: String,
+        authCode: String,
+    ): Result<AuthBoard>
+
     suspend fun logout(): Result<Unit>
     suspend fun withdraw(): Result<Unit>
 }

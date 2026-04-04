@@ -3,6 +3,7 @@ package com.picke.app.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.BuildConfig
 import com.picke.app.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,15 +38,13 @@ class LoginViewModel @Inject constructor(
             return
         }
 
-        // ✨ 핵심 해결책: 코루틴에 들어가기 전에 문을 즉시 잠급니다(상태 변경)!
-        // 이렇게 해야 0.01초 뒤에 들어오는 두 번째 '따닥' 요청이 위 if문에서 튕겨나갑니다.
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
             Log.d("LoginFlow", "1. [$provider] 인가 코드 획득 완료! 백엔드에 로그인 요청 시작. (AuthCode: $authCode)")
 
             val redirectUri = when (provider) {
-                "kakao" -> "https://picke.store/oauth/kakao"
+                "kakao" -> "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
                 "google" -> "https://picke.store/oauth/google"
                 else -> ""
             }

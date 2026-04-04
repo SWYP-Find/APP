@@ -2,6 +2,7 @@ package com.picke.app.data.remote
 
 import com.picke.app.data.model.AuthResponseDto
 import com.picke.app.data.model.BaseResponse
+import com.picke.app.data.model.KakaoSocialLoginRequest
 import com.picke.app.data.model.LogoutResponseDto
 import com.picke.app.data.model.SocialLoginRequest
 import com.picke.app.data.model.WithdrawnResponseDto
@@ -17,6 +18,13 @@ interface AuthApi{
     suspend fun login(
         @Path("provider") provider:String,
         @Body request: SocialLoginRequest
+    ) : BaseResponse<AuthResponseDto>
+
+    // 소셜 로그인
+    @POST("/api/v1/auth/login/{provider}")
+    suspend fun loginKakao(
+        @Path("provider") provider:String,
+        @Body request: KakaoSocialLoginRequest
     ) : BaseResponse<AuthResponseDto>
 
     // 토큰 갱신
