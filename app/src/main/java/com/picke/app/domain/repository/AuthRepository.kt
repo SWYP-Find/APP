@@ -17,5 +17,5 @@ interface AuthRepository{
     ): Result<AuthBoard>
 
     suspend fun logout(): Result<Unit>
-    suspend fun withdraw(): Result<Unit>
+    suspend fun withdraw(reason: String): Result<Unit>
 }

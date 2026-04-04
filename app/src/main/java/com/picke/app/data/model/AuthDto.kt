@@ -34,6 +34,13 @@ data class LogoutResponseDto(
     val loggedOut: Boolean,
 )
 
+// 1. 탈퇴 요청 바디 추가
+data class WithdrawalRequest(
+    @SerializedName("reason")
+    val reason: String
+)
+
+// 2. 탈퇴 응답 DTO 수정 (명세서에 withdrawn은 Boolean입니다)
 data class WithdrawnResponseDto(
     @SerializedName("withdrawn")
     val withdrawn: Boolean,
