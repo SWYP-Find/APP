@@ -4,6 +4,7 @@ import android.util.Log
 import com.picke.app.data.local.TokenManager
 import com.picke.app.data.model.KakaoSocialLoginRequest
 import com.picke.app.data.model.SocialLoginRequest
+import com.picke.app.data.model.WithdrawalRequest
 import com.picke.app.data.model.toDomain
 import com.picke.app.data.remote.AuthApi
 import com.picke.app.domain.repository.AuthRepository
@@ -129,13 +130,24 @@ class AuthRepositoryImpl @Inject constructor(
 
 
     // 회원 탈퇴
-    override suspend fun withdraw(): Result<Unit> {
+    override suspend fun withdraw(reason: String): Result<Unit> {
         return try {
-            api.withdraw()
-            tokenManager.clearAll()
-            Result.success(Unit)
+            // 사유를 담은 객체 생성
+            val request = WithdrawalRequest(reason = reason)
+
+            val response = api.withdraw(request)
+
+            if (response.statusCode == 200 && response.data?.withdrawn == true) {
+                Log.d("AuthRepositoryFlow", "✅ [회원 탈퇴 성공]")
+                tokenManager.clearAll()
+                Result.success(Unit)
+            } else {
+                Log.e("AuthRepositoryFlow", "❌ [회원 탈퇴 실패] ${response.error?.message}")
+                Result.failure(Exception(response.error?.message ?: "탈퇴 실패"))
+            }
         } catch (e: Exception) {
-            tokenManager.clearAll()
+            Log.e("AuthRepositoryFlow", "❌ [회원 탈퇴 예외] ${e.message}")
+            // 에러가 나도 토큰은 비워주는 것이 안전할 수 있습니다 (기획에 따라 선택)
             Result.failure(e)
         }
     }

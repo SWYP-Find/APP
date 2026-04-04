@@ -41,11 +41,7 @@ android {
 
     buildTypes {
         release {
-            // ✨ 1. 코드를 난독화하고 사용하지 않는 코드를 제거합니다. (로그 지우기의 기본 설정)
-            isMinifyEnabled = true
-
-            // ✨ 2. 사용하지 않는 이미지나 리소스 파일도 함께 제거해서 앱 용량을 획기적으로 줄여줍니다.
-            isShrinkResources = true
+            isMinifyEnabled = false
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -69,9 +65,6 @@ android {
     }
     kotlinOptions{
         jvmTarget = "17"
-    }
-    buildFeatures {
-        buildConfig = true
     }
 }
 

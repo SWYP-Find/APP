@@ -41,11 +41,6 @@
 -keep class com.picke.app.data.model.** { *; }
 -keep class com.picke.app.domain.model.** { *; }
 
-# 5. 카카오 SDK 난독화 완벽 방어
--keep class com.kakao.sdk.** { *; }
--keep interface com.kakao.sdk.** { *; }
--keep class * extends com.google.gson.TypeAdapter
-
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
     public static int v(...);

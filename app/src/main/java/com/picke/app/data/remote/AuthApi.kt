@@ -5,9 +5,11 @@ import com.picke.app.data.model.BaseResponse
 import com.picke.app.data.model.KakaoSocialLoginRequest
 import com.picke.app.data.model.LogoutResponseDto
 import com.picke.app.data.model.SocialLoginRequest
+import com.picke.app.data.model.WithdrawalRequest
 import com.picke.app.data.model.WithdrawnResponseDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.HTTP
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -38,7 +40,9 @@ interface AuthApi{
     suspend fun logout(): BaseResponse<LogoutResponseDto>
 
     // 회원탈퇴
-    @DELETE("/api/v1/me")
-    suspend fun withdraw(): BaseResponse<WithdrawnResponseDto>
+    @HTTP(method = "DELETE", path = "/api/v1/me", hasBody = true)
+    suspend fun withdraw(
+        @Body request: WithdrawalRequest
+    ): BaseResponse<WithdrawnResponseDto>
 }
 
