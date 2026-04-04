@@ -17,3 +17,8 @@ Thumbs.db
 
 *.log
 ASMCoreStats/
+
+release/
+**/release/
+*.apk
+*.aab
