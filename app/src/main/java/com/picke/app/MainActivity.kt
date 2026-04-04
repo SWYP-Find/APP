@@ -61,13 +61,6 @@ class MainActivity : ComponentActivity() {
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
-        /*installSplashScreen()
-        val splashScreen = installSplashScreen()
-        super.onCreate(savedInstanceState)
-
-        splashScreen.setKeepOnScreenCondition {
-            splashViewModel.uiState.value == SplashUiState.Loading
-        }*/
         super.onCreate(savedInstanceState)
 
         val keyHash = Utility.getKeyHash(this)
