@@ -2,6 +2,7 @@ package com.picke.app.data.repository
 
 import android.util.Log
 import com.picke.app.data.local.TokenManager
+import com.picke.app.data.model.KakaoSocialLoginRequest
 import com.picke.app.data.model.SocialLoginRequest
 import com.picke.app.data.model.toDomain
 import com.picke.app.data.remote.AuthApi
@@ -50,6 +51,43 @@ class AuthRepositoryImpl @Inject constructor(
             Log.e("AuthRepositoryFlow", "서버에 보낸 request: ${request}")
 
             val response = api.login(provider, request)
+
+            if (response.statusCode == 200 && response.data != null) {
+                val data = response.data
+
+                Log.d("AuthRepositoryFlow", "🔑 [로그인 성공] 원본 응답: $data")
+                Log.d("AuthRepositoryFlow", "🔑 [로그인 성공] AccessToken: ${data.accessToken}")
+                Log.d("AuthRepositoryFlow", "🔑 [로그인 성공] RefreshToken: ${data.refreshToken}")
+
+                tokenManager.saveAccessToken(data.accessToken)
+                tokenManager.saveRefreshToken(data.refreshToken)
+
+                val authToken = data.toDomain()
+                Result.success(authToken)
+            } else {
+                Log.e("AuthRepositoryFlow", "❌ [로그인 실패] 상태코드: ${response.statusCode}, 에러: ${response.error?.message}")
+                Result.failure(Exception(response.error?.message ?: "로그인 실패"))
+            }
+        }
+        catch (e: Exception) {
+            e.printStackTrace()
+            Log.e("AuthRepositoryFlow", "❌ [로그인 예외 발생] ${e.message}")
+            Log.e("AuthRepositoryFlow", "❌ [로그인 예외 발생] 상세내용: ${e.localizedMessage}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun loginKakao(
+        provider: String,
+        authCode: String
+    ): Result<AuthBoard> {
+        return try {
+            val request = KakaoSocialLoginRequest(
+                authorizationCode = authCode,
+            )
+            Log.e("AuthRepositoryFlow", "서버에 보낸 request: ${request}")
+
+            val response = api.loginKakao(provider, request)
 
             if (response.statusCode == 200 && response.data != null) {
                 val data = response.data
