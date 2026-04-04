@@ -31,17 +31,18 @@ class LoginViewModel @Inject constructor(
     }
 
     fun handleSocialLoginSuccess(provider: String, authCode: String) {
-        if (_uiState.value is LoginUiState.Loading) return
+        // 1. 방어막: 현재 로딩 중이면 튕겨냅니다.
+        if (_uiState.value is LoginUiState.Loading) {
+            Log.d("LoginFlow", "🚨 이미 로그인 처리 중입니다! 중복 호출 방어 성공!")
+            return
+        }
+
+        // ✨ 핵심 해결책: 코루틴에 들어가기 전에 문을 즉시 잠급니다(상태 변경)!
+        // 이렇게 해야 0.01초 뒤에 들어오는 두 번째 '따닥' 요청이 위 if문에서 튕겨나갑니다.
+        _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
             Log.d("LoginFlow", "1. [$provider] 인가 코드 획득 완료! 백엔드에 로그인 요청 시작. (AuthCode: $authCode)")
-            _uiState.value = LoginUiState.Loading
-
-            /*val redirectUri = if (provider == "kakao") {
-                "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
-            } else {
-                "" // 구글은 보통 안드로이드 클라이언트에서 빈 문자열이거나 특정 설정을 따릅니다.
-            }*/
 
             val redirectUri = when (provider) {
                 "kakao" -> "https://picke.store/oauth/kakao"
@@ -56,15 +57,11 @@ class LoginViewModel @Inject constructor(
                 redirectUri = redirectUri
             )
 
-
-
             result.onSuccess { authToken ->
-                Log.d("LoginFlow", "$result")
                 Log.d("LoginFlow", "3. 🟢 백엔드 로그인 통신 성공! (신규 유저 여부: ${authToken.isNewUser})")
                 _uiState.value = LoginUiState.Success(isNewUser = authToken.isNewUser)
             }.onFailure { error ->
-                Log.e("LoginFlow", "3. 🔴 백엔드 로그인 통신 실패!", error.message as Throwable?)
-                Log.d("LoginFlow", "$result")
+                Log.e("LoginFlow", "3. 🔴 백엔드 로그인 통신 실패!", error)
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")
             }
         }
