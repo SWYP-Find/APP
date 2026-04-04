@@ -29,6 +29,11 @@ android {
 
         val kakaoKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
         val googleClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
+        if (googleClientId.isEmpty()) {
+            println("🚨 경고: GOOGLE_WEB_CLIENT_ID가 비어있습니다!")
+        } else {
+            println("✅ 현재 빌드에 포함된 Google Client ID: $googleClientId")
+        }
         val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
         val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
 
@@ -41,7 +46,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
