@@ -45,7 +45,7 @@ fun SplashScreen(
         contentAlignment = Alignment.Center
     ){
         Image(
-            painter = painterResource(id = R.drawable.ic_splash_logo),
+            painter = painterResource(id = R.drawable.symbol_picke),
             contentDescription = "로고 이미지",
             modifier = Modifier.size(200.dp)
         )
