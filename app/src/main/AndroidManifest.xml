@@ -18,9 +18,11 @@
         android:roundIcon="@drawable/ic_splash_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.SwypApp">
+        <!-- AdMob 키 등록 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}" />
+        <!-- 파일 공유자 -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -30,6 +32,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+        <!-- 앱의 첫 화면 -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -39,18 +42,16 @@
             android:configChanges="orientation|screenSize|screenLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="kakao${kakaoDebugAppKey}" android:host="kakaolink" />
             </intent-filter>
         </activity>
-
+       <!-- 카카오 로그인 전용 액티비티 -->
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
@@ -58,7 +59,6 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="kakao${kakaoDebugAppKey}" android:host="oauth" />
             </intent-filter>
         </activity>

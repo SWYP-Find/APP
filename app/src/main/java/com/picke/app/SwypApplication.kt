@@ -9,7 +9,6 @@ import dagger.hilt.android.HiltAndroidApp
 class SwypApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        // 앱이 시작될 때 필요한 초기화 작업 후에 추가
         KakaoSdk.init(this, BuildConfig.KAKAO_DEBUG_APPKEY)
         MobileAds.initialize(this) {}
     }
