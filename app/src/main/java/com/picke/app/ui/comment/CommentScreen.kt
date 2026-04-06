@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,6 +67,7 @@ import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentScreen(
     onBackClick: () -> Unit,

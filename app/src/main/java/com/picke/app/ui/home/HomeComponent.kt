@@ -38,7 +38,9 @@ fun HomeSectionHeader(
     onMoreClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -206,13 +208,21 @@ fun EditorPickSection(
 @Composable
 fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
     Column(
-        modifier = Modifier.width(220.dp).border(1.dp, Beige600, RoundedCornerShape(2.dp)).background(SwypTheme.colors.surface).clickable { onClick() }.padding(12.dp)
+        modifier = Modifier
+            .width(220.dp)
+            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .background(SwypTheme.colors.surface)
+            .clickable { onClick() }
+            .padding(12.dp)
     ) {
-        Surface(modifier = Modifier.fillMaxWidth().aspectRatio(1.2f), shape = RoundedCornerShape(4.dp), border = BorderStroke(4.dp, Beige700)) {
+        Surface(modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1.2f), shape = RoundedCornerShape(4.dp), border = BorderStroke(4.dp, Beige700)) {
             SubcomposeAsyncImage(
                 model = item.thumbnailUrl,
                 contentDescription = null,
-                modifier = Modifier.clip(RoundedCornerShape(2.dp))
+                modifier = Modifier
+                    .clip(RoundedCornerShape(2.dp))
                     .background(Beige200),
                 contentScale = ContentScale.Crop,
                 loading = {
@@ -250,10 +260,17 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
 // 4. Best Battle
 @Composable
 fun BestBattleRankItem(item: HomeContentUiModel, rank: Int, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    Column(modifier = modifier.fillMaxWidth().clickable { onClick() }) {
-        Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp, horizontal = 16.dp), verticalAlignment = Alignment.Top) {
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .clickable { onClick() }) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 16.dp), verticalAlignment = Alignment.Top) {
             val rankColor = if (rank == 1) SwypTheme.colors.primary else if(rank ==2) Secondary500 else Beige700
-            Text(text = rank.toString(), style = SwypTheme.typography.h1SemiBold, color = rankColor, modifier = Modifier.fillMaxHeight().width(24.dp).align(Alignment.CenterVertically), textAlign = TextAlign.Center)
+            Text(text = rank.toString(), style = SwypTheme.typography.h1SemiBold, color = rankColor, modifier = Modifier
+                .fillMaxHeight()
+                .width(24.dp)
+                .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
@@ -287,7 +304,13 @@ fun NewBattleCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Column(modifier = modifier.fillMaxWidth().clip(RoundedCornerShape(2.dp)).background(SwypTheme.colors.surface).border(1.dp, Beige600, RoundedCornerShape(2.dp)).clickable { onClick() }.padding(12.dp)) {
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .clip(RoundedCornerShape(2.dp))
+        .background(SwypTheme.colors.surface)
+        .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+        .clickable { onClick() }
+        .padding(12.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
                 Text(text = "#${item.tags.firstOrNull() ?: "이슈"}", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = SwypTheme.typography.label, color = SwypTheme.colors.primary)
@@ -323,7 +346,9 @@ fun NewBattleCard(
                 name = item.leftProfileName,
                 imageUrl = item.leftProfileImageUrl
             )
-            Surface(modifier = Modifier.size(40.dp).padding(6.dp), shape = CircleShape, color = Secondary200) {
+            Surface(modifier = Modifier
+                .size(40.dp)
+                .padding(6.dp), shape = CircleShape, color = Secondary200) {
                 Box(contentAlignment = Alignment.Center) { Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = Gray900) }
             }
             BattleOpinionBox(
@@ -428,6 +453,7 @@ fun TodayPickeCard(
 }
 
 // 투표 (Vote) 전용
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long) -> Unit) {
     val isVoted = item.selectedOptionId != null
@@ -552,7 +578,8 @@ private fun PollStatBar(modifier: Modifier, option: PollQuizOptionStatUiModel) {
         Text(text = option.title, style = SwypTheme.typography.labelXSmall, color = Gray400, modifier = Modifier.width(44.dp))
 
         Box(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
                 .height(4.dp)
                 .padding(horizontal = 4.dp)
                 .background(Secondary100, CircleShape)
@@ -590,10 +617,14 @@ private fun QuizPickeContent(item: TodayPickUiModel.QuizPick, onVoteClick: (Long
         Spacer(modifier = Modifier.height(20.dp))
 
         // 2. 퀴즈 선택지
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             item.options.forEach { option ->
                 QuizOptionCard(
-                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                     option = option,
                     isVoted = isVoted,
                     selectedOptionId = item.selectedOptionId,
