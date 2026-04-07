@@ -1,6 +1,5 @@
 package com.picke.app.ui.splash
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -28,13 +27,11 @@ fun SplashScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState) {
-        Log.d("SplashFlow", "현재 UI 상태 수신됨: $uiState")
-
         when(uiState){
             SplashUiState.NavigateToLogin -> onNavigateToLogin()
             SplashUiState.NavigateToOnboarding -> onNavigateToOnboarding()
             SplashUiState.NavigateToMain -> onNavigateToMain()
-            SplashUiState.Loading -> { } // 로고 띄우기
+            SplashUiState.Loading -> { }
         }
     }
 
@@ -46,7 +43,7 @@ fun SplashScreen(
     ){
         Image(
             painter = painterResource(id = R.drawable.symbol_picke),
-            contentDescription = "로고 이미지",
+            contentDescription = "Picke Logo",
             modifier = Modifier.size(200.dp)
         )
     }

@@ -18,25 +18,30 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager
 ) : AuthRepository {
 
+    companion object{
+        private const val TAG = "Picke_AuthRepositoryImpl"
+    }
+
     // 토큰 갱신
     override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
+            Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken}")
             val response = api.refreshAccessToken(refreshToken)
 
             if (response.statusCode == 200 && response.data != null) {
-                Log.d("AuthRepositoryFlow", "🔄 [토큰 갱신 성공] 원본 응답: ${response.data}")
-                Log.d("AuthRepositoryFlow", "🔄 [토큰 갱신 성공] AccessToken: ${response.data.accessToken}")
-                Log.d("AuthRepositoryFlow", "🔄 [토큰 갱신 성공] RefreshToken: ${response.data.refreshToken}")
+                Log.d(TAG, "[API_RES] 토큰 갱신 성공: ${response.data}")
 
                 tokenManager.saveAccessToken(response.data.accessToken)
                 tokenManager.saveRefreshToken(response.data.refreshToken)
+                Log.d(TAG, "[LOCAL] 새로운 토큰 기기 저장 완료")
+
                 Result.success(Unit)
             } else {
-                Log.e("AuthRepositoryFlow", "❌ [토큰 갱신 실패] 상태코드: ${response.statusCode}, 에러: ${response.error?.message}")
+                Log.e(TAG, "[API_RES] 토큰 갱신 실패: ${response.statusCode}, 에러: ${response.error?.message}")
                 Result.failure(Exception(response.error?.message ?: "토큰 갱신 실패"))
             }
         } catch (e: Exception) {
-            Log.e("AuthRepositoryFlow", "❌ [토큰 갱신 예외 발생] ${e.message}")
+            Log.e(TAG, "[API_ERR] 토큰 갱신 예외 발생: ${e.message}")
             Result.failure(e)
         }
     }

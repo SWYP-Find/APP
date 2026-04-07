@@ -247,7 +247,6 @@ fun AppNavigation() {
                 )
             }
 
-
             // 프로필 편집 화면
             composable(AppRoute.SettingProfile.route) {
                 SettingProfileScreen(
