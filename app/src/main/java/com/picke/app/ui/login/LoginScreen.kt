@@ -45,6 +45,8 @@ import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import com.picke.app.ui.theme.Primary900
 
+private const val TAG = "LoginScreen_Picke"
+
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
@@ -53,6 +55,7 @@ fun LoginScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
 
+    // 구글 로그인 런처
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -60,28 +63,26 @@ fun LoginScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             account.serverAuthCode?.let { authCode ->
-                Log.d("LoginFlow", "▶️ 구글 런처: 인가 코드 빼오기 성공! ViewModel로 넘깁니다.")
+                Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
                 viewModel.handleSocialLoginSuccess("google", authCode)
-            } ?: Log.e("LoginFlow", "▶️ 구글 런처: 엥? serverAuthCode가 null입니다!")
+            } ?: Log.e(TAG, "[ERROR] 구글 인가 코드가 null입니다.")
         } catch (e: ApiException) {
-            Log.e("LoginFlow", "▶️ 구글 런처: 구글 SDK 로그인 실패 (StatusCode: ${e.statusCode})", e)
-            // 구글 SDK 자체 에러 발생 시 토스트 띄우기
-            Toast.makeText(context, "구글 로그인에 실패했습니다. 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
-            viewModel.resetState() // ✨ 다시 버튼이 보이도록 상태 초기화
+            Log.e(TAG, "[ERROR] 구글 SDK 로그인 실패 (Code: \${e.statusCode})", e)
+            Toast.makeText(context, "구글 로그인에 실패했습니다. \n다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
+            viewModel.resetState()
         }
     }
 
-    // ✨ LaunchedEffect 수정: Error 상태일 때 토스트 띄우고 상태 초기화
     LaunchedEffect(uiState){
         when (val state = uiState) {
             is LoginUiState.Success -> {
-                Log.d("LoginFlow", "✅ 화면 이동: 메인(또는 온보딩)으로 넘어갑니다! (신규 유저: ${state.isNewUser})")
+                Log.i(TAG, "[NAV] 로그인 성공 -> 메인 화면으로 이동 (신규 유저 여부: ${state.isNewUser})")
                 onNavigateToMain()
             }
             is LoginUiState.Error -> {
-                Log.d("LoginFlow", "❌ 에러 발생: ${state.message}")
+                Log.e(TAG, "[ERROR] 로그인 실패: ${state.message}")
                 Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                viewModel.resetState() // ✨ 다시 버튼이 보이도록 상태 초기화
+                viewModel.resetState()
             }
             else -> { }
         }
@@ -93,19 +94,21 @@ fun LoginScreen(
         contentAlignment = Alignment.Center
 
     ){
-        // 중앙: 중앙 텍스트 + 로고
+        // 중앙: 텍스트 + 로고
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // 1. 텍스트
             Text(
                 style = SwypTheme.typography.h4SemiBold,
                 color = Primary300,
                 text = stringResource(R.string.login_your_think)
             )
+            // 2. 로고
             Image(
                 painter = painterResource(id = R.drawable.ic_login_logo),
-                contentDescription = "Pické 로고",
+                contentDescription = "Picke Logo",
                 modifier = Modifier.size(width = 320.dp, height = 120.dp)
             )
             Spacer(modifier = Modifier.height(72.dp))
@@ -121,22 +124,19 @@ fun LoginScreen(
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 로딩 중일 때만 스피너 돌리기
+            // [로딩중]
             if (uiState is LoginUiState.Loading) {
                 CircularProgressIndicator(color = Primary900)
                 Spacer(modifier = Modifier.height(16.dp))
-            } else if (uiState is LoginUiState.Idle) {
-                // 카카오 로그인 버튼
+            }
+            // [로딩중 X]
+            else if (uiState is LoginUiState.Idle) {
+                // 1. 카카오 로그인 버튼
                 CustomButton(
                     text = stringResource(R.string.login_with_kakao),
                     onClick = {
-                        Log.d("LoginFlow", "👆 카카오 로그인 버튼 클릭!")
                         loginWithKakaoForAuthCode(context, viewModel) { token ->
-                            Log.d("LoginFlow", "========================================")
-                            Log.d("LoginFlow", "💎 [인가 코드 획득] SDK가 배달해준 token 확인")
-                            Log.d("LoginFlow", "👉 값: $token")
-                            Log.d("LoginFlow", "========================================")
-                            Log.d("LoginFlow", "▶️ 카카오 헬퍼: 인가 코드 받기 성공! ViewModel로 넘깁니다.")
+                            Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
                             viewModel.handleSocialLoginSuccess("kakao", token)
                         }
                     },
@@ -147,11 +147,11 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 구글 로그인 버튼
+                // 2. 구글 로그인 버튼
                 CustomButton(
                     text = stringResource(R.string.login_with_google),
                     onClick = {
-                        Log.d("LoginFlow", "👆 구글 로그인 버튼 클릭!")
+                        Log.d(TAG, "[FLOW] 구글 로그인 버튼 클릭")
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
                             .requestEmail()
@@ -176,7 +176,7 @@ private fun loginWithKakaoForAuthCode(
 ) {
     val callback: (String?, Throwable?) -> Unit = { authCode, error ->
         if (error != null) {
-            Log.e("LoginFlow", "카카오 계정 로그인 실패", error)
+            Log.e(TAG, "[ERROR] 카카오 계정 로그인 실패", error)
             Toast.makeText(context, "카카오 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
             viewModel.resetState()
         } else if (authCode != null) {
@@ -185,11 +185,12 @@ private fun loginWithKakaoForAuthCode(
     }
 
     if (AuthCodeClient.instance.isKakaoTalkLoginAvailable(context)) {
+        Log.d(TAG, "[SDK] 카카오톡 앱으로 로그인 시도")
         AuthCodeClient.instance.authorizeWithKakaoTalk(context) { authCode, error ->
             if (error != null) {
-                Log.e("LoginFlow", "카카오톡으로 로그인 실패", error)
+                Log.w(TAG, "[SDK] 카카오톡 앱 로그인 실패 -> 계정 로그인 시도")
                 if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                    Log.d("LoginFlow", "사용자가 카카오 로그인 취소함")
+                    Log.d(TAG, "[STATE] 유저가 카카오 로그인을 취소함")
                     viewModel.resetState()
                     return@authorizeWithKakaoTalk
                 }
@@ -199,6 +200,7 @@ private fun loginWithKakaoForAuthCode(
             }
         }
     } else {
+        Log.d(TAG, "[SDK] 카카오 계정(웹)으로 로그인 시도")
         AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
     }
 }

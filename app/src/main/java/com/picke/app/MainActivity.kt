@@ -47,27 +47,34 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Base64
+import androidx.activity.SystemBarStyle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import androidx.activity.viewModels
+import androidx.core.view.WindowInsetsControllerCompat
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val splashViewModel: SplashViewModel by viewModels()
-
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
 
-        val keyHash = Utility.getKeyHash(this)
-        Log.d("Hash", "내 키 해시값: $keyHash")
-        getKeyHash(this)
-        MobileAds.initialize(this) {}
-        enableEdgeToEdge()
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            splashScreenView.remove()
+        }
+
+        // val keyHash = Utility.getKeyHash(this)
+        // Log.d("Hash", "내 키 해시값: $keyHash")
+
+        MobileAds.initialize(this) {} // 광고 sdk 초기화
+
+        enableEdgeToEdge() // 앱의 콘텐츠를 화면 끝에서부터 끝까지 꽉 채우기
+
         setContent {
             SwypAppTheme {
                 AppNavigation()
@@ -104,7 +111,6 @@ fun getKeyHash(context: Context) {
                 md.update(signature.toByteArray())
                 val keyHash = Base64.encodeToString(md.digest(), Base64.DEFAULT)
 
-                // ✨ 로그캣에서 "KeyHash"라고 검색하면 확인 가능!
                 Log.d("KeyHashFlow", "현재 기기의 키 해시값: $keyHash")
             }
         }
@@ -238,7 +244,6 @@ fun AppNavigation() {
                     }
                 )
             }
-
 
             // 프로필 편집 화면
             composable(AppRoute.SettingProfile.route) {
