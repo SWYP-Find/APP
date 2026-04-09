@@ -47,6 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Base64
+import androidx.activity.SystemBarStyle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -73,9 +74,6 @@ class MainActivity : ComponentActivity() {
         MobileAds.initialize(this) {} // 광고 sdk 초기화
 
         enableEdgeToEdge() // 앱의 콘텐츠를 화면 끝에서부터 끝까지 꽉 채우기
-        WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = true
-        }
 
         setContent {
             SwypAppTheme {

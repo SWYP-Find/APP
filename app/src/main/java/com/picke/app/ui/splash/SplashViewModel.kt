@@ -26,7 +26,7 @@ class SplashViewModel @Inject constructor(
     private val tokenManager: TokenManager
 ) : ViewModel() {
     companion object {
-        private const val TAG = "Picke_SplashViewModel"
+        private const val TAG = "SplashViewModel_Picke"
     }
 
     private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
@@ -54,7 +54,7 @@ class SplashViewModel @Inject constructor(
                     Log.i(TAG, "[NAV] 인증 성공: 메인 화면")
                     _uiState.value = SplashUiState.NavigateToMain
                 }.onFailure { error ->
-                    Log.w(TAG, "[NAV] 인증 실패: 로그인 화면 (사유: ${error.message})")
+                    Log.w(TAG, "[NAV] 인증 실패: 로그인 화면")
                     tokenManager.clearAll()
                     _uiState.value = SplashUiState.NavigateToLogin
                 }

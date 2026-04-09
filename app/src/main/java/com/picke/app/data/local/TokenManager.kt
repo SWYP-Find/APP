@@ -15,7 +15,7 @@ class TokenManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     companion object {
-        private const val TAG = "Picke_TokenManager"
+        private const val TAG = "TokenManager_Picke"
     }
 
     private var prefs: SharedPreferences? = null

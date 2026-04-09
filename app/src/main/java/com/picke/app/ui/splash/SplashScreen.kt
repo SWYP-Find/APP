@@ -35,6 +35,7 @@ fun SplashScreen(
         }
     }
 
+    // 중앙: 로고
     Box(
         modifier = Modifier
             .fillMaxSize()

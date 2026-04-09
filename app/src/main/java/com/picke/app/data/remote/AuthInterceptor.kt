@@ -12,7 +12,7 @@ class AuthInterceptor @Inject constructor(
 ) : Interceptor {
 
     companion object {
-        private const val TAG = "Picke_AuthInterceptor"
+        private const val TAG = "AuthInterceptor_Picke"
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -35,7 +35,7 @@ class AuthInterceptor @Inject constructor(
 
         // 3. 토큰이 존재하면서, 동시에 예외 API(로그인, 재발급)가 '아닐 때만' 헤더에 추가!
         if (!accessToken.isNullOrEmpty() && !isLoginRequest && !isRefreshRequest) {
-            requestBuilder.addHeader(TAG, "Bearer $accessToken")
+            requestBuilder.header("Authorization", "Bearer $accessToken")
         }
         // 4. 서버로 요청을 보내고 응답을 받음
         val response = chain.proceed(requestBuilder.build())
