@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,10 +71,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.app.BuildConfig
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.PreferenceReport
 import com.picke.app.domain.model.RecapScores
+import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.component.ShareDialog
 import com.picke.app.ui.theme.Beige200
@@ -85,10 +87,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PhilosopherTypeScreen(
+    reportId: String? = null,
     onBackClick: () -> Unit,
+    onGoToSplashClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: PhilosopherTypeViewModel = hiltViewModel()
 ) {
+    val isMyReport = reportId == null
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val recapBoard = uiState.recapBoard
 
@@ -101,7 +106,11 @@ fun PhilosopherTypeScreen(
     var showShareDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchPhilosopherReport()
+        if (isMyReport) {
+            viewModel.fetchPhilosopherReport()
+        } else {
+            // viewModel.fetchOtherPhilosopherReport(reportId!!)
+        }
     }
 
     val onKakaoShareClick = {
@@ -135,26 +144,28 @@ fun PhilosopherTypeScreen(
     Scaffold(
         containerColor = Beige200,
         topBar = {
-            CustomTopAppBar(
-                title = stringResource(R.string.my_menu_philosopher),
-                centerTitle = true,
-                showLogo = false,
-                showBackButton = true,
-                onBackClick = onBackClick,
-                backgroundColor = Beige200,
-                /*actions = {
-                    if (recapBoard != null) {
-                        IconButton(onClick = { showShareDialog = true }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_share),
-                                contentDescription = "공유",
-                                tint = Gray900,
-                                modifier = modifier.size(16.dp)
-                            )
+            Box(modifier = Modifier.statusBarsPadding()) {
+                CustomTopAppBar(
+                    title = if (isMyReport) "나의 철학자 유형" else "상대방의 철학자 유형",
+                    centerTitle = true,
+                    showLogo = false,
+                    showBackButton = true,
+                    onBackClick = onBackClick,
+                    backgroundColor = Beige200,
+                    actions = {
+                        if (isMyReport && recapBoard != null) {
+                            IconButton(onClick = { showShareDialog = true }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_share),
+                                    contentDescription = "공유",
+                                    tint = Gray900,
+                                    modifier = modifier.size(16.dp)
+                                )
+                            }
                         }
                     }
-                }*/
-            )
+                )
+            }
         }
     ) { innerPadding ->
         if (uiState.isLoading) {
@@ -176,43 +187,37 @@ fun PhilosopherTypeScreen(
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(32.dp)
             ) {
-                if (uiState.isLocked || recapBoard == null) {
+                if (isMyReport && (uiState.isLocked || recapBoard == null)) {
                     LockedPhilosopherHeaderSection()
                     LockedTraitAnalysisSection()
                 }
-                else {
+                else if (recapBoard != null) {
                     Box(
                         modifier = Modifier.drawWithContent {
                             graphicsLayer.record { this@drawWithContent.drawContent() }
                             drawLayer(graphicsLayer)
                         }
                     ) {
-                        // 1. 철학자 유형 헤더
                         PhilosopherHeaderSection(recapBoard.myCard)
                     }
 
-                    // 2. 성향 분석
                     TraitAnalysisSection(recapBoard.scores)
-
-                    // 3. 취향 리포트
                     TasteReportSection(recapBoard.preferenceReport)
-
-                    // 4. 궁합 유형
-                    ChemistrySection(
-                        best = recapBoard.bestMatchCard,
-                        worst = recapBoard.worstMatchCard
-                    )
+                    ChemistrySection(best = recapBoard.bestMatchCard, worst = recapBoard.worstMatchCard)
 
                     Spacer(modifier = Modifier.height(12.dp))
-                    // 5. 공유하기 버튼
-                    /*CustomButton(
-                        text = stringResource(R.string.my_share),
-                        onClick = { showShareDialog = true },
-                        modifier = Modifier.padding(bottom = 24.dp),
-                        backgroundColor = SwypTheme.colors.primary,
-                        textColor = Color.White,
-                        iconResId = R.drawable.ic_share
-                    )*/
+
+                    // 하단: 공유하기 버튼
+                    if (isMyReport) {
+                        CustomButton(
+                            text = stringResource(R.string.my_share),
+                            onClick = { showShareDialog = true },
+                            modifier = Modifier.padding(bottom = 24.dp),
+                            backgroundColor = SwypTheme.colors.primary,
+                            textColor = Color.White,
+                            iconResId = R.drawable.ic_share
+                        )
+                    }
                 }
             }
         }
@@ -232,18 +237,20 @@ fun PhilosopherTypeScreen(
                     showShareDialog = false
                 },
                 onCopyLinkClick = {
-                    val reportId = "my_report"
-                    val packageName = context.packageName
-                    val appKey = BuildConfig.KAKAO_DEBUG_APPKEY
-
-                    // 안드로이드 시스템이 해석하는 인텐트 URI 생성
-                    val deepLinkUrl = "intent://kakaolink?reportId=$reportId#Intent;scheme=kakao${BuildConfig.KAKAO_DEBUG_APPKEY};package=$packageName;end"
-
-                    // 클립보드에 텍스트 복사
-                    clipboardManager.setText(AnnotatedString(deepLinkUrl))
-
                     showShareDialog = false
-                    Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+
+                    val reportId = 1
+
+                    viewModel.getShareLink(
+                        reportId = reportId,
+                        onSuccess = { url ->
+                            clipboardManager.setText(AnnotatedString(url))
+                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 }
             )
         }

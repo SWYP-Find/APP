@@ -95,7 +95,7 @@ fun PerspectiveScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
 
-    val tabList = listOf("전체", "찬성", "반대")
+    val tabList = listOf("전체", "A", "B")
     var inputText by remember { mutableStateOf("") }
     val pagerState = rememberPagerState(pageCount = { tabList.size })
     val coroutineScope = rememberCoroutineScope()
@@ -234,8 +234,8 @@ fun PerspectiveScreen(
                     }
                 }
                 val filteredList = when (pageIndex) {
-                    1 -> uiState.perspectives.filter { it.stance == "찬성" }
-                    2 -> uiState.perspectives.filter { it.stance == "반대" }
+                    1 -> uiState.perspectives.filter { it.stance == "A" }
+                    2 -> uiState.perspectives.filter { it.stance == "B" }
                     else -> uiState.perspectives
                 }
 
@@ -310,7 +310,7 @@ fun PerspectiveScreen(
                                 uiState.myPerspective?.let { myView ->
                                     if (myView.status != "PUBLISHED") {
                                         item {
-                                            val myLabel = if (myView.optionLabel == "A" || myView.optionLabel == "AGREE") "찬성" else "반대"
+                                            val myLabel = if (myView.optionLabel == "A" || myView.optionLabel == "AGREE") "A" else "B"
 
                                             // 검수중 일때 내 관점
                                             PerspectiveItemCard(
@@ -351,8 +351,8 @@ fun PerspectiveScreen(
                                 if (filteredList.isEmpty() && !uiState.isLoading && !isShowingMyPendingOrRejected) {
                                     item {
                                         val emptyMsg = when (pageIndex) {
-                                            1 -> "아직 작성된 찬성 관점이 없습니다"
-                                            2 -> "아직 작성된 반대 관점이 없습니다"
+                                            1 -> "아직 작성된 A 관점이 없습니다"
+                                            2 -> "아직 작성된 B 관점이 없습니다"
                                             else -> "아직 작성된 관점이 없습니다"
                                         }
 
@@ -537,7 +537,7 @@ fun PerspectiveItemCard(
                         // 2. 일반 상태일 때 (찬성/반대 뱃지만 노출)
                         else {
 
-                            val isPro = item.stance == "찬성"
+                            val isPro = item.stance == "A"
                             Surface(
                                 color = if (isPro) Beige600 else SwypTheme.colors.primary,
                                 shape = RoundedCornerShape(2.dp)
@@ -851,7 +851,7 @@ fun PerspectiveHeader(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "찬성 ${proPercentage}%",
+                text = "A ${proPercentage}%",
                 style = SwypTheme.typography.label,
                 color = Gray600
             )
@@ -884,7 +884,7 @@ fun PerspectiveHeader(
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = "반대 ${conPercentage}%",
+                text = "B ${conPercentage}%",
                 style = SwypTheme.typography.label,
                 color = Gray600
             )

@@ -213,7 +213,7 @@ fun ContentActivityCard(
                     Spacer(modifier = Modifier.width(6.dp))
 
                     val isAgree = item.voteSide == "PRO"
-                    val displayStance = if (isAgree) "찬성" else "반대"
+                    val displayStance = if (isAgree) "A" else "B"
                     val badgeBgColor = if (isAgree) Beige400 else SwypTheme.colors.primary
                     val badgeTextColor = if (isAgree) SwypTheme.colors.primary else SwypTheme.colors.surface
 

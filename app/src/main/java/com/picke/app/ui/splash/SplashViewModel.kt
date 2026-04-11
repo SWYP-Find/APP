@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,8 @@ sealed class SplashUiState{
     object NavigateToLogin : SplashUiState() // 소셜로그인
     object NavigateToOnboarding : SplashUiState() // 온보딩
     object NavigateToMain : SplashUiState() // 메인화면
+    data class NavigateToOtherPhilosopher(val reportId: String) : SplashUiState()
+    data class NavigateToBattle(val battleId: String) : SplashUiState()
 }
 
 @HiltViewModel
@@ -52,7 +55,23 @@ class SplashViewModel @Inject constructor(
 
                 result.onSuccess {
                     Log.i(TAG, "[NAV] 인증 성공: 메인 화면")
-                    _uiState.value = SplashUiState.NavigateToMain
+                    val pendingReport = DeepLinkManager.pendingReportId
+                    val pendingBattle = DeepLinkManager.pendingBattleId
+
+                    when {
+                        pendingReport != null -> {
+                            Log.i(TAG, "[NAV] 딥링크 감지 -> 상대방 철학자 리포트 화면으로 이동")
+                            _uiState.value = SplashUiState.NavigateToOtherPhilosopher(pendingReport)
+                        }
+                        pendingBattle != null -> {
+                            Log.i(TAG, "[NAV] 딥링크 감지 -> 배틀 화면으로 이동")
+                            _uiState.value = SplashUiState.NavigateToBattle(pendingBattle)
+                        }
+                        else -> {
+                            Log.i(TAG, "[NAV] 일반 접속 -> 메인 화면으로 이동")
+                            _uiState.value = SplashUiState.NavigateToMain
+                        }
+                    }
                 }.onFailure { error ->
                     Log.w(TAG, "[NAV] 인증 실패: 로그인 화면")
                     tokenManager.clearAll()

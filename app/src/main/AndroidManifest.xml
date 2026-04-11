@@ -29,11 +29,30 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="kakao${kakaoDebugAppKey}" android:host="kakaolink" />
+            </intent-filter>
+            <!-- 철학자 유형 공유 링크 받기 -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"
+                    android:host="picke.store"
+                    android:pathPrefix="/report/"/>
+            </intent-filter>
+            <!-- 배틀 공유 링크 받기 -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https"
+                    android:host="picke.store"
+                    android:pathPrefix="/battle/"/>
             </intent-filter>
         </activity>
         <!-- AdMob 키 등록 -->

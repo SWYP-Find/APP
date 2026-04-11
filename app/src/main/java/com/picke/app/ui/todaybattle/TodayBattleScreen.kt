@@ -48,7 +48,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
+import com.picke.app.ui.theme.Beige200
+import com.picke.app.ui.theme.Beige400
 import com.picke.app.ui.theme.Beige50
+import com.picke.app.ui.theme.Beige600
+import com.picke.app.ui.theme.Beige800
+import com.picke.app.ui.theme.Beige900
 import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray700
 import com.picke.app.ui.theme.Gray800
@@ -69,19 +74,80 @@ fun TodayBattleScreen(
     val uiState by viewModel.uiState.collectAsState()
     val battleList = uiState.battleList
 
-    if (uiState.isLoading || battleList.isEmpty()) {
+    val pagerState = rememberPagerState(pageCount = { battleList.size })
+    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
+    val isButtonEnabled = selectedOptionId != null
+
+    if (uiState.isLoading) {
         Box(
-            modifier = Modifier.fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color.White)
+            modifier = Modifier.fillMaxSize().background(Color.Black)
+        ) {
+            // 상단 뒤로가기 버튼
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_left),
+                        contentDescription = "뒤로가기",
+                        tint = Color.White
+                    )
+                }
+            }
+            // 정중앙 스피너
+            CircularProgressIndicator(
+                color = Beige200,
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
         return
     }
 
-    val pagerState = rememberPagerState(pageCount = { battleList.size })
-    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null
+    if (battleList.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color.Black)
+        ) {
+            // 상단 뒤로가기 버튼
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_left),
+                        contentDescription = "뒤로가기",
+                        tint = Color.White
+                    )
+                }
+            }
+
+            // 정중앙 안내 문구
+            Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "빈 화면 로고",
+                    modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                    tint = Beige600
+                )
+                Text(
+                    text = "아직 빠른 배틀이 선정되지 않았어요\n조금만 기다려주세요!",
+                    style = SwypTheme.typography.b3Regular,
+                    color = Beige400,
+                    textAlign = TextAlign.Center // 두 줄일 때 예쁘게 보이도록 가운데 정렬 추가
+                )
+            }
+        }
+        return
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

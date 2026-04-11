@@ -76,7 +76,7 @@ fun LoginScreen(
     LaunchedEffect(uiState){
         when (val state = uiState) {
             is LoginUiState.Success -> {
-                Log.i(TAG, "[NAV] 로그인 성공 -> 메인 화면으로 이동 (신규 유저 여부: ${state.isNewUser})")
+                Log.i(TAG, "[NAV] 로그인 성공 -> 목적지(메인 또는 딥링크)로 이동 (신규 유저 여부: ${state.isNewUser})")
                 onNavigateToMain()
             }
             is LoginUiState.Error -> {

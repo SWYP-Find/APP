@@ -405,7 +405,7 @@ private fun SecondOnboardingHeader() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "찬 78.0%", style = SwypTheme.typography.label, color = Gray600)
+            Text(text = "A 78.0%", style = SwypTheme.typography.label, color = Gray600)
             Spacer(modifier = Modifier.width(12.dp))
             Row(
                 modifier = Modifier
@@ -417,7 +417,7 @@ private fun SecondOnboardingHeader() {
                 Box(modifier = Modifier.weight(0.22f).fillMaxHeight().background(Color(0xFFEBEBEB)))
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = "반 22.0%", style = SwypTheme.typography.label, color = Gray600)
+            Text(text = "B 22.0%", style = SwypTheme.typography.label, color = Gray600)
         }
     }
 }
