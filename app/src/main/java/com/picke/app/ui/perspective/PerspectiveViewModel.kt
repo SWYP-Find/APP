@@ -405,8 +405,8 @@ class PerspectiveViewModel @Inject constructor(
 
 private fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
     val displayStance = when (this.stance) {
-        "A", "AGREE", "찬성" -> "찬성"
-        "B", "DISAGREE", "반대" -> "반대"
+        "A", "AGREE", "찬성" -> "A"
+        "B", "DISAGREE", "반대" -> "B"
         else -> this.stance
     }
 

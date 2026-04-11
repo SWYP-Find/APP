@@ -405,7 +405,7 @@ private fun SecondOnboardingHeader() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "찬 78.0%", style = SwypTheme.typography.label, color = Gray600)
+            Text(text = "A 78.0%", style = SwypTheme.typography.label, color = Gray600)
             Spacer(modifier = Modifier.width(12.dp))
             Row(
                 modifier = Modifier
@@ -417,7 +417,7 @@ private fun SecondOnboardingHeader() {
                 Box(modifier = Modifier.weight(0.22f).fillMaxHeight().background(Color(0xFFEBEBEB)))
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = "반 22.0%", style = SwypTheme.typography.label, color = Gray600)
+            Text(text = "B 22.0%", style = SwypTheme.typography.label, color = Gray600)
         }
     }
 }
@@ -456,7 +456,7 @@ private fun SecondOnboardingItemCard(
                             shape = RoundedCornerShape(2.dp)
                         ) {
                             Text(
-                                text = "찬성", // 온보딩은 항상 '찬성' 고정
+                                text = "A", // 온보딩은 항상 '찬성' 고정
                                 style = SwypTheme.typography.b5Medium,
                                 color = SwypTheme.colors.primary,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)

@@ -2,6 +2,7 @@ package com.picke.app
 
 import ScenarioScreen
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -52,27 +53,30 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.view.WindowInsetsControllerCompat
+import com.picke.app.ui.my.philosopher.PhilosopherTypeScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
+import com.picke.app.util.DeepLinkEvent
+import com.picke.app.util.DeepLinkManager
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-
         super.onCreate(savedInstanceState)
 
         splashScreen.setOnExitAnimationListener { splashScreenView ->
             splashScreenView.remove()
         }
 
-        // val keyHash = Utility.getKeyHash(this)
-        // Log.d("Hash", "내 키 해시값: $keyHash")
+        // 🌟 1. 기존에 길게 있던 딥링크 if문을 지우고, 이 한 줄로 교체합니다!
+        handleDeepLink(intent)
 
         MobileAds.initialize(this) {} // 광고 sdk 초기화
-
         enableEdgeToEdge() // 앱의 콘텐츠를 화면 끝에서부터 끝까지 꽉 채우기
 
         setContent {
@@ -80,6 +84,43 @@ class MainActivity : ComponentActivity() {
                 AppNavigation()
             }
         }
+    }
+
+    // 앱이 백그라운드에 켜져 있을 때 딥링크를 낚아채는 함수 추가!
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    // 웹 링크(picke.store)와 카카오 링크(kakaolink)를 모두 처리하는 만능 함수 추가!
+    private fun handleDeepLink(intent: Intent?) {
+        val uri = intent?.data ?: return
+        Log.d("DeepLinkFlow", "딥링크 감지됨: $uri")
+
+        var targetBattleId: String? = null
+        var targetReportId: String? = null
+
+        // 1) 일반 웹 링크인 경우 (인스타, 웹사이트)
+        if (uri.host == "picke.store") {
+            if (uri.path?.startsWith("/report/") == true) targetReportId = uri.lastPathSegment
+            if (uri.path?.startsWith("/battle/") == true) targetBattleId = uri.lastPathSegment
+        }
+        // 2) 카카오톡 공유 링크인 경우 (호스트가 kakaolink로 들어옴)
+        else if (uri.host == "kakaolink") {
+            targetReportId = uri.getQueryParameter("reportId")
+            targetBattleId = uri.getQueryParameter("battleId")
+        }
+
+        // 수첩(DeepLinkManager)에 목적지 저장
+        if (targetReportId != null) DeepLinkManager.pendingReportId = targetReportId
+        if (targetBattleId != null) DeepLinkManager.pendingBattleId = targetBattleId
+
+        // 앱이 이미 켜져있는 상태라면 즉시 화면 이동 이벤트를 발사!
+        if (targetReportId != null) DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToReport(targetReportId))
+        if (targetBattleId != null) DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToBattle(targetBattleId))
+
+        // 네비게이션이 무한 반복되지 않도록 쓴 링크는 지워주기
+        intent.data = null
     }
 }
 
@@ -125,11 +166,34 @@ fun getKeyHash(context: Context) {
 @Composable
 fun AppNavigation() {
     val rootNavController = rememberNavController()
+    val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = Beige200
     ) {
+        LaunchedEffect(Unit) {
+            DeepLinkManager.deepLinkEvent.collect { event ->
+                rootNavController.navigate(AppRoute.Main.route) {
+                    popUpTo(AppRoute.Main.route) {
+                        inclusive = false
+                    }
+                    launchSingleTop = true
+                }
+
+                kotlinx.coroutines.delay(100)
+
+                when (event) {
+                    is DeepLinkEvent.GoToBattle -> {
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
+                    }
+                    is DeepLinkEvent.GoToReport -> {
+                        rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
+                    }
+                }
+            }
+        }
+
         NavHost(
             navController = rootNavController,
             startDestination = AppRoute.Splash.route,
@@ -148,14 +212,46 @@ fun AppNavigation() {
                         }
                     },
                     onNavigateToMain = {
-                        rootNavController.navigate(AppRoute.Main.route) {
-                            popUpTo(AppRoute.Splash.route) { inclusive = true }
+                        val pendingReport = DeepLinkManager.pendingReportId
+                        val pendingBattle = DeepLinkManager.pendingBattleId
+
+                        when {
+                            pendingReport != null -> {
+                                rootNavController.navigate(AppRoute.Main.route) {
+                                    popUpTo(AppRoute.Splash.route) { inclusive = true }
+                                }
+                                rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(pendingReport))
+                            }
+                            pendingBattle != null -> {
+                                rootNavController.navigate(AppRoute.Main.route) {
+                                    popUpTo(AppRoute.Splash.route) { inclusive = true }
+                                }
+                                rootNavController.navigate(AppRoute.BattleRouting.createRoute(pendingBattle))
+                            }
+                            else -> {
+                                rootNavController.navigate(AppRoute.Main.route) {
+                                    popUpTo(AppRoute.Splash.route) { inclusive = true }
+                                }
+                            }
                         }
+                        // rootNavController.navigate(AppRoute.Main.route) {
+                        // popUpTo(AppRoute.Splash.route) { inclusive = true }
+                        // }
                         //rootNavController.navigate(AppRoute.Scenario.createRoute("79"))
                         //rootNavController.navigate(AppRoute.Perspective.createRoute("79"))
                     },
                     onNavigateToOnboarding = {
                         rootNavController.navigate(AppRoute.Onboarding.route) {
+                            popUpTo(AppRoute.Splash.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToOtherPhilosopher = { reportId ->
+                        rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(reportId)) {
+                            popUpTo(AppRoute.Splash.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId)) {
                             popUpTo(AppRoute.Splash.route) { inclusive = true }
                         }
                     }
@@ -182,8 +278,26 @@ fun AppNavigation() {
             ) {
                 LoginScreen(
                     onNavigateToMain = {
+                        val pendingReport = DeepLinkManager.pendingReportId
+                        val pendingBattle = DeepLinkManager.pendingBattleId
+
+                        // 1. 무조건 메인 화면을 깝니다.
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Login.route) { inclusive = true }
+                        }
+
+                        // 2. 딥링크 목적지가 있다면 0.1초 쉬고 얹어줍니다!
+                        if (pendingReport != null || pendingBattle != null) {
+                            coroutineScope.launch {
+                                kotlinx.coroutines.delay(100)
+                                if (pendingReport != null) {
+                                    rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(pendingReport))
+                                    DeepLinkManager.pendingReportId = null
+                                } else if (pendingBattle != null) {
+                                    rootNavController.navigate(AppRoute.BattleRouting.createRoute(pendingBattle))
+                                    DeepLinkManager.pendingBattleId = null
+                                }
+                            }
                         }
                     },
                 )
@@ -200,14 +314,18 @@ fun AppNavigation() {
             composable(
                 route = AppRoute.BattleRouting.route,
                 arguments = listOf(navArgument("battleId") { type = NavType.StringType })
-            ) {
+            ) { backStackEntry ->
+                val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+
                 BattleRoutingScreen(
                     onNavigateToPreVote = { id ->
+                        DeepLinkManager.pendingBattleId = null
                         rootNavController.navigate(AppRoute.PreVote.createRoute(id)) {
                             popUpTo(AppRoute.BattleRouting.route) { inclusive = true }
                         }
                     },
                     onNavigateToPerspective = { id ->
+                        DeepLinkManager.pendingBattleId = null
                         rootNavController.navigate(AppRoute.Perspective.createRoute(id)) {
                             popUpTo(AppRoute.BattleRouting.route) { inclusive = true }
                         }
@@ -264,7 +382,17 @@ fun AppNavigation() {
                 VoteRoute(
                     voteType = VoteType.PRE,
                     onBackClick = {
-                        rootNavController.popBackStack()
+                        val prevRoute = rootNavController.previousBackStackEntry?.destination?.route
+
+                        // 만약 바닥에 깔린 화면이 없거나, 스플래시 화면이라면? -> 무조건 메인으로 강제 이동
+                        if (prevRoute == null || prevRoute == AppRoute.Splash.route) {
+                            rootNavController.navigate(AppRoute.Main.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else {
+                            // 바닥에 메인이나 다른 화면이 정상적으로 잘 깔려있다면 원래대로 뒤로 가기
+                            rootNavController.popBackStack()
+                        }
                     },
                     onVoteSubmit = { submittedBattleId ->
                         rootNavController.navigate(AppRoute.Scenario.createRoute(submittedBattleId)) {
@@ -312,9 +440,6 @@ fun AppNavigation() {
                     },
                     onVoteSubmit = { submittedBattleId ->
                         rootNavController.navigate(AppRoute.Perspective.createRoute(submittedBattleId)) {
-                            // ✨ 핵심 1: 사후투표까지 완료했으므로 스택 대청소!
-                            // Main(처음 페이지) 화면 위에 쌓여있던 모든 이전 꼬리들(이전 관점, 추천 등)을 싹 다 날리고,
-                            // Main 화면 위에 '새로운 관점 화면' 딱 하나만 남깁니다.
                             popUpTo(AppRoute.Main.route) { inclusive = false }
                         }
                     }
@@ -332,10 +457,14 @@ fun AppNavigation() {
 
                 PerspectiveScreen(
                     onBackClick = {
-                        // ✨ 핵심 2: 주석 해제!
-                        // 위에서 PostVote가 스택을 싹 청소해줬기 때문에,
-                        // 여기서 뒤로가기를 누르면 무조건 맨 처음 페이지(Main)로 돌아갑니다.
-                        rootNavController.popBackStack()
+                        val prevRoute = rootNavController.previousBackStackEntry?.destination?.route
+                        if (prevRoute == null || prevRoute == AppRoute.Splash.route || prevRoute == AppRoute.Login.route) {
+                            rootNavController.navigate(AppRoute.Main.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else {
+                            rootNavController.popBackStack()
+                        }
                     },
                     onNextClick = { itemId->
                         rootNavController.navigate(AppRoute.Recommend.createRoute(itemId))
@@ -389,31 +518,33 @@ fun AppNavigation() {
                 TermsOfServiceScreen(onBackClick = { rootNavController.popBackStack() })
             }
 
-            /*composable(
+            composable(
                 route = AppRoute.OtherPhilosopher.route,
-                arguments = listOf(
-                    navArgument("reportId") { type = NavType.StringType }
-                ),
-                deepLinks = listOf(
-                    navDeepLink {
-                        uriPattern = "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://kakaolink?reportId={reportId}"
-                    }
-                )
+                arguments = listOf(navArgument("reportId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val reportId = backStackEntry.arguments?.getString("reportId") ?: ""
 
-                OtherPhilosopherDetailScreen(
+                PhilosopherTypeScreen(
                     reportId = reportId,
                     onBackClick = {
-                        rootNavController.popBackStack()
+                        val prevRoute = rootNavController.previousBackStackEntry?.destination?.route
+                        if (prevRoute == null || prevRoute == AppRoute.Splash.route || prevRoute == AppRoute.Login.route) {
+                            rootNavController.navigate(AppRoute.Main.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else {
+                            rootNavController.popBackStack()
+                        }
                     },
                     onGoToSplashClick = {
+                        DeepLinkManager.pendingReportId = null
                         rootNavController.navigate(AppRoute.Splash.route) {
                             popUpTo(0) { inclusive = true }
                         }
                     }
                 )
-            }*/
+            }
+
         }
     }
 }

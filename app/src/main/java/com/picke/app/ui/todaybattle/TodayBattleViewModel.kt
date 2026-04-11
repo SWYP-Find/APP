@@ -3,6 +3,7 @@ package com.picke.app.ui.todaybattle
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.domain.repository.ShareRepository
 import com.picke.app.domain.repository.TodayBattleRepository
 import com.picke.app.domain.repository.VoteRepository
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
@@ -24,7 +25,8 @@ data class TodayBattleUiState(
 @HiltViewModel
 class TodayBattleViewModel @Inject constructor(
     private val todayBattleRepository: TodayBattleRepository,
-    private val voteRepository: VoteRepository
+    private val voteRepository: VoteRepository,
+    private val shareRepository: ShareRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayBattleUiState())
@@ -67,6 +69,24 @@ class TodayBattleViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(isLoading = false, errorMessage = error.message)
                     }
+                }
+        }
+    }
+
+    fun getShareLink(
+        battleId: Int,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            shareRepository.getBattleShareLink(battleId)
+                .onSuccess { shareUrl ->
+                    Log.d("ShareFlow", "🟢 배틀 공유 링크 획득 성공! url: ${shareUrl.shareUrl}")
+                    onSuccess(shareUrl.shareUrl)
+                }
+                .onFailure { error ->
+                    Log.e("ShareFlow", "🔴 배틀 공유 링크 획득 실패!", error)
+                    onError(error.message ?: "링크를 불러오는데 실패했습니다.")
                 }
         }
     }

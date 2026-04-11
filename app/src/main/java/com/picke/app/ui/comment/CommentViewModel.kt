@@ -257,7 +257,6 @@ class CommentViewModel @Inject constructor(
                     _uiEvent.emit(CommentUiEvent.ShowToast("신고가 정상 접수되었습니다."))
                 }
                 .onFailure { error ->
-                    // 🌟 409 에러 키워드 확인
                     if (error.message == "ALREADY_REPORTED") {
                         _uiEvent.emit(CommentUiEvent.ShowToast("이미 신고한 사용자입니다."))
                     } else {
@@ -276,8 +275,8 @@ class CommentViewModel @Inject constructor(
 
 private fun CommentBoard.toUiModel(): CommentUiModel {
     val displayStance = when (this.stance){
-        "A", "AGREE", "찬성" -> "찬성"
-        "B", "DISAGREE", "반대" -> "반대"
+        "A", "AGREE", "찬성" -> "A"
+        "B", "DISAGREE", "반대" -> "B"
         else -> this.stance
     }
 

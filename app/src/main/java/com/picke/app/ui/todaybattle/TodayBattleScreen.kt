@@ -1,5 +1,6 @@
 package com.picke.app.ui.todaybattle
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,26 +41,43 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
+import com.picke.app.ui.component.ShareDialog
+import com.picke.app.ui.theme.Beige200
+import com.picke.app.ui.theme.Beige400
 import com.picke.app.ui.theme.Beige50
+import com.picke.app.ui.theme.Beige600
+import com.picke.app.ui.theme.Beige800
+import com.picke.app.ui.theme.Beige900
 import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray700
 import com.picke.app.ui.theme.Gray800
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Primary300
+import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.Secondary200
 import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
+import com.picke.app.util.shareBattleToInstagramStory
+import com.picke.app.util.shareBattleToKakao
+import kotlinx.coroutines.launch
 
 @Composable
 fun TodayBattleScreen(
@@ -69,91 +88,263 @@ fun TodayBattleScreen(
     val uiState by viewModel.uiState.collectAsState()
     val battleList = uiState.battleList
 
-    if (uiState.isLoading || battleList.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color.White)
-        }
-        return
-    }
-
     val pagerState = rememberPagerState(pageCount = { battleList.size })
     var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     val isButtonEnabled = selectedOptionId != null
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Color.Black,
-        bottomBar = {
-            CustomButton(
-                text = stringResource(R.string.battle_start),
-                onClick = {
-                    if (isButtonEnabled) {
-                        val currentBattleId = battleList[pagerState.currentPage].battleId
-                        viewModel.submitPreVote(
-                            battleId = currentBattleId.toLong(),
-                            optionId = selectedOptionId!!.toLong(),
-                            onSuccess = {
-                                onEnterBattle(currentBattleId)
-                            }
-                        )
-                    }
-                },
-                modifier = Modifier.navigationBarsPadding()
-                    .padding(20.dp),
-                backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
-                textColor = Beige50
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding())
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                BattleContent(
-                    item = battleList[page],
-                    selectedOptionId = selectedOptionId,
-                    onOptionSelect = { optionId -> selectedOptionId = optionId }
-                )
+    val context = LocalContext.current
+    var showShareDialog by remember { mutableStateOf(false) }
+    val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
+    val clipboardManager = LocalClipboardManager.current
+    var isSharing by remember { mutableStateOf(false) }
+
+    val onKakaoShareClick = {
+        currentBattle?.let { battle ->
+            isSharing = true
+            coroutineScope.launch {
+                try {
+                    val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+
+                    shareBattleToKakao(
+                        context = context,
+                        bitmap = bitmap,
+                        battleId = battle.battleId,
+                        battleTitle = battle.title,
+                        battleDescription = battle.description,
+                        onComplete = { isSharing = false }
+                    )
+                } catch (e: Exception) {
+                    isSharing = false
+                    Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+                }
             }
+        }
+    }
 
-            // 상단 UI (인디케이터 & 뒤로가기 버튼)
-            Column(
+    val onInstaShareClick = {
+        isSharing = true
+        coroutineScope.launch {
+            try {
+                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                shareBattleToInstagramStory(
+                    context = context,
+                    bitmap = bitmap,
+                    onComplete = { isSharing = false }
+                )
+            } catch (e: Exception) {
+                isSharing = false
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color.Black)
+        ) {
+            // 상단 뒤로가기 버튼
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                TopIndicatorBar(
-                    currentPage = pagerState.currentPage,
-                    totalPages = battleList.size
+                IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_left),
+                        contentDescription = "뒤로가기",
+                        tint = Color.White
+                    )
+                }
+            }
+            // 정중앙 스피너
+            CircularProgressIndicator(
+                color = Beige200,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        return
+    }
+
+    if (battleList.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize().background(Color.Black)
+        ) {
+            // 상단 뒤로가기 버튼
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_left),
+                        contentDescription = "뒤로가기",
+                        tint = Color.White
+                    )
+                }
+            }
+
+            // 정중앙 안내 문구
+            Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "빈 화면 로고",
+                    modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                    tint = Beige600
                 )
+                Text(
+                    text = "아직 빠른 배틀이 선정되지 않았어요\n조금만 기다려주세요!",
+                    style = SwypTheme.typography.b3Regular,
+                    color = Beige400,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        return
+    }
 
-                Spacer(modifier = Modifier.height(16.dp))
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Black,
+            bottomBar = {
+                CustomButton(
+                    text = stringResource(R.string.battle_start),
+                    onClick = {
+                        if (isButtonEnabled) {
+                            val currentBattleId = battleList[pagerState.currentPage].battleId
+                            viewModel.submitPreVote(
+                                battleId = currentBattleId.toLong(),
+                                optionId = selectedOptionId!!.toLong(),
+                                onSuccess = {
+                                    onEnterBattle(currentBattleId)
+                                }
+                            )
+                        }
+                    },
+                    modifier = Modifier.navigationBarsPadding()
+                        .padding(20.dp),
+                    backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
+                    textColor = Beige50
+                )
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = innerPadding.calculateBottomPadding())
+                    .drawWithCache {
+                        onDrawWithContent {
+                            graphicsLayer.record {
+                                this@onDrawWithContent.drawContent()
+                            }
+                            drawLayer(graphicsLayer)
+                        }
+                    }
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    BattleContent(
+                        item = battleList[page],
+                        selectedOptionId = selectedOptionId,
+                        onOptionSelect = { optionId -> selectedOptionId = optionId }
+                    )
+                }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // 상단 UI (인디케이터 & 뒤로가기 버튼)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                    TopIndicatorBar(
+                        currentPage = pagerState.currentPage,
+                        totalPages = battleList.size
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.size(20.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_left),
+                                contentDescription = "뒤로가기",
+                                tint = Color.White
+                            )
+                        }
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_left),
-                            contentDescription = "뒤로가기",
+                            modifier = Modifier.size(20.dp)
+                                .clickable { showShareDialog = true },
+                            painter = painterResource(id = R.drawable.ic_share),
+                            contentDescription = "공유",
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* 공유 로직 */ }, modifier = Modifier.size(16.dp)) {
-                        // 공유 아이콘 부분
-                    }
                 }
+            }
+        }
+
+        if (showShareDialog) {
+            ShareDialog(
+                onDismiss = { showShareDialog = false },
+                onKakaoClick = {
+                    showShareDialog = false
+                    onKakaoShareClick()
+                },
+                onInstaClick = {
+                    showShareDialog = false
+                    onInstaShareClick()
+                },
+                onFacebookClick = {
+                    showShareDialog = false
+                },
+                onCopyLinkClick = {
+                    showShareDialog = false
+
+                    val currentBattleId = battleList[pagerState.currentPage].battleId.toInt()
+
+                    viewModel.getShareLink(
+                        battleId = currentBattleId,
+                        onSuccess = { url ->
+                            clipboardManager.setText(AnnotatedString(url))
+                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            )
+        }
+
+        if (isSharing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)) // 반투명 검은색 배경
+                    .pointerInput(Unit) {},
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
             }
         }
     }

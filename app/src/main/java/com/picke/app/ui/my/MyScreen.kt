@@ -176,7 +176,7 @@ fun MyScreen(
                             onRewardEarned = {
                                 viewModel.refreshPointsAfterAd()
                                 uiState.profile?.userTag?.let { tag -> adMobManager.loadAd(userId = tag) }
-                                Toast.makeText(context, "50포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "20포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
                             }
                         )
 

@@ -11,6 +11,7 @@ import com.picke.app.data.repository.PerspectiveRepositoryImpl
 import com.picke.app.data.repository.PollQuizRepositoryImpl
 import com.picke.app.data.repository.RecommendRepositoryImpl
 import com.picke.app.data.repository.ScenarioRepositoryImpl
+import com.picke.app.data.repository.ShareRepositoryImpl
 import com.picke.app.data.repository.TodayBattleRepositoryImpl
 import com.picke.app.data.repository.VoteRepositoryImpl
 import com.picke.app.domain.repository.AlarmRepository
@@ -24,6 +25,7 @@ import com.picke.app.domain.repository.PerspectiveRepository
 import com.picke.app.domain.repository.PollQuizRepository
 import com.picke.app.domain.repository.RecommendRepository
 import com.picke.app.domain.repository.ScenarioRepository
+import com.picke.app.domain.repository.ShareRepository
 import com.picke.app.domain.repository.TodayBattleRepository
 import com.picke.app.domain.repository.VoteRepository
 import dagger.Binds
@@ -112,4 +114,10 @@ abstract class RepositoryModule {
     abstract fun bindPollQuizRepository(
         pollQuizRepositoryImpl: PollQuizRepositoryImpl
     ): PollQuizRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindShareRepository(
+        shareRepositoryImpl: ShareRepositoryImpl
+    ): ShareRepository
 }

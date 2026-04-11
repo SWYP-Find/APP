@@ -11,6 +11,7 @@ import com.picke.app.data.remote.PerspectiveApi
 import com.picke.app.data.remote.PollQuizApi
 import com.picke.app.data.remote.RecommendApi
 import com.picke.app.data.remote.ScenarioApi
+import com.picke.app.data.remote.ShareApi
 import com.picke.app.data.remote.TodayBattleApi
 import com.picke.app.data.remote.VoteApi
 import dagger.Module
@@ -99,5 +100,11 @@ object ApiModule {
     @Singleton
     fun providePollQuizApi(retrofit: Retrofit): PollQuizApi {
         return retrofit.create(PollQuizApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideShareApi(retrofit: Retrofit): ShareApi {
+        return retrofit.create(ShareApi::class.java)
     }
  }

@@ -1,5 +1,6 @@
 package com.picke.app.ui.login
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.Toast // ✨ 추가
@@ -44,6 +45,7 @@ import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import com.picke.app.ui.theme.Primary900
+import androidx.activity.compose.BackHandler
 
 private const val TAG = "LoginScreen_Picke"
 
@@ -54,6 +56,11 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    // 뒤로가기 -> 앱 종료
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
 
     // 구글 로그인 런처
     val googleSignInLauncher = rememberLauncherForActivityResult(
@@ -76,7 +83,7 @@ fun LoginScreen(
     LaunchedEffect(uiState){
         when (val state = uiState) {
             is LoginUiState.Success -> {
-                Log.i(TAG, "[NAV] 로그인 성공 -> 메인 화면으로 이동 (신규 유저 여부: ${state.isNewUser})")
+                Log.i(TAG, "[NAV] 로그인 성공 -> 목적지(메인 또는 딥링크)로 이동 (신규 유저 여부: ${state.isNewUser})")
                 onNavigateToMain()
             }
             is LoginUiState.Error -> {

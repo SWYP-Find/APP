@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.BattleDetailBoard
 import com.picke.app.domain.repository.BattleRepository
+import com.picke.app.domain.repository.ShareRepository
 import com.picke.app.domain.repository.VoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,8 @@ data class VoteUiState(
 class VoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val battleRepository: BattleRepository,
-    private val voteRepository: VoteRepository
+    private val voteRepository: VoteRepository,
+    private val shareRepository: ShareRepository
 ) : ViewModel() {
 
     val battleId: String = checkNotNull(savedStateHandle["battleId"])
@@ -84,6 +86,22 @@ class VoteViewModel @Inject constructor(
                 Log.e("VoteDetailFlow", "🔴 투표 전송 실패: ${error.message}", error)
                 _uiState.update { it.copy(error = error.message) }
             }
+        }
+    }
+
+    fun getShareLink(
+        battleId: Int,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            shareRepository.getBattleShareLink(battleId)
+                .onSuccess { shareUrl ->
+                    onSuccess(shareUrl.shareUrl)
+                }
+                .onFailure { error ->
+                    onError(error.message ?: "링크를 불러오는데 실패했습니다.")
+                }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.picke.app.ui.my.setting.policy
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -36,12 +37,13 @@ fun PrivacyPolicyScreen(
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = Beige200
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(horizontal = 20.dp)
                 .verticalScroll(scrollState)
         ) {
