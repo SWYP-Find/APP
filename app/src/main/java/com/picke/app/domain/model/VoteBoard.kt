@@ -1,25 +1,5 @@
 package com.picke.app.domain.model
 
-import com.picke.app.ui.PhilosopherType
-
-data class VoteBoard(
-    val battleId: String,
-    val bgImageUrl: String?,
-    val tags: List<String>,
-    val title: String,
-    val preDescription: String,
-    val postDescription: String,
-    val optionA: VoteOption,
-    val optionB: VoteOption
-)
-
-data class VoteOption(
-    val optionId: String,
-    val philosopherType: PhilosopherType,
-    val philosopherName: String,
-    val opinion: String
-)
-
 data class VoteStatsBoard(
     val totalCount: Int,
     val updatedAt: String,

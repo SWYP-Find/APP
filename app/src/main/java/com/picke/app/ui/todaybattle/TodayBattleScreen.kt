@@ -42,7 +42,9 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -67,6 +69,7 @@ import com.picke.app.ui.theme.Gray700
 import com.picke.app.ui.theme.Gray800
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Primary300
+import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.Secondary200
 import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.Secondary700
@@ -74,9 +77,6 @@ import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.util.shareBattleToInstagramStory
 import com.picke.app.util.shareBattleToKakao
-import com.picke.app.util.shareCapturedImageToKakao
-import com.picke.app.util.shareToInstagramStory
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -98,9 +98,11 @@ fun TodayBattleScreen(
     var showShareDialog by remember { mutableStateOf(false) }
     val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
     val clipboardManager = LocalClipboardManager.current
+    var isSharing by remember { mutableStateOf(false) }
 
     val onKakaoShareClick = {
         currentBattle?.let { battle ->
+            isSharing = true
             coroutineScope.launch {
                 try {
                     val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
@@ -110,9 +112,11 @@ fun TodayBattleScreen(
                         bitmap = bitmap,
                         battleId = battle.battleId,
                         battleTitle = battle.title,
-                        battleDescription = battle.description
+                        battleDescription = battle.description,
+                        onComplete = { isSharing = false }
                     )
                 } catch (e: Exception) {
+                    isSharing = false
                     Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -120,12 +124,17 @@ fun TodayBattleScreen(
     }
 
     val onInstaShareClick = {
+        isSharing = true
         coroutineScope.launch {
             try {
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-
-                shareBattleToInstagramStory(context = context, bitmap = bitmap)
+                shareBattleToInstagramStory(
+                    context = context,
+                    bitmap = bitmap,
+                    onComplete = { isSharing = false }
+                )
             } catch (e: Exception) {
+                isSharing = false
                 Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
         }
@@ -203,83 +212,93 @@ fun TodayBattleScreen(
         return
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = Color.Black,
-        bottomBar = {
-            CustomButton(
-                text = stringResource(R.string.battle_start),
-                onClick = {
-                    if (isButtonEnabled) {
-                        val currentBattleId = battleList[pagerState.currentPage].battleId
-                        viewModel.submitPreVote(
-                            battleId = currentBattleId.toLong(),
-                            optionId = selectedOptionId!!.toLong(),
-                            onSuccess = {
-                                onEnterBattle(currentBattleId)
-                            }
-                        )
-                    }
-                },
-                modifier = Modifier.navigationBarsPadding()
-                    .padding(20.dp),
-                backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
-                textColor = Beige50
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = innerPadding.calculateBottomPadding())
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                BattleContent(
-                    item = battleList[page],
-                    selectedOptionId = selectedOptionId,
-                    onOptionSelect = { optionId -> selectedOptionId = optionId }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = Color.Black,
+            bottomBar = {
+                CustomButton(
+                    text = stringResource(R.string.battle_start),
+                    onClick = {
+                        if (isButtonEnabled) {
+                            val currentBattleId = battleList[pagerState.currentPage].battleId
+                            viewModel.submitPreVote(
+                                battleId = currentBattleId.toLong(),
+                                optionId = selectedOptionId!!.toLong(),
+                                onSuccess = {
+                                    onEnterBattle(currentBattleId)
+                                }
+                            )
+                        }
+                    },
+                    modifier = Modifier.navigationBarsPadding()
+                        .padding(20.dp),
+                    backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
+                    textColor = Beige50
                 )
             }
-
-            // 상단 UI (인디케이터 & 뒤로가기 버튼)
-            Column(
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
+                    .fillMaxSize()
+                    .padding(bottom = innerPadding.calculateBottomPadding())
+                    .drawWithCache {
+                        onDrawWithContent {
+                            graphicsLayer.record {
+                                this@onDrawWithContent.drawContent()
+                            }
+                            drawLayer(graphicsLayer)
+                        }
+                    }
             ) {
-                TopIndicatorBar(
-                    currentPage = pagerState.currentPage,
-                    totalPages = battleList.size
-                )
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    BattleContent(
+                        item = battleList[page],
+                        selectedOptionId = selectedOptionId,
+                        onOptionSelect = { optionId -> selectedOptionId = optionId }
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // 상단 UI (인디케이터 & 뒤로가기 버튼)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    IconButton(
-                        onClick = onBackClick,
-                        modifier = Modifier.size(20.dp)
+                    TopIndicatorBar(
+                        currentPage = pagerState.currentPage,
+                        totalPages = battleList.size
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        IconButton(
+                            onClick = onBackClick,
+                            modifier = Modifier.size(20.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_left),
+                                contentDescription = "뒤로가기",
+                                tint = Color.White
+                            )
+                        }
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_left),
-                            contentDescription = "뒤로가기",
+                            modifier = Modifier.size(20.dp)
+                                .clickable { showShareDialog = true },
+                            painter = painterResource(id = R.drawable.ic_share),
+                            contentDescription = "공유",
                             tint = Color.White
                         )
                     }
-                    Icon(
-                        modifier = Modifier.size(20.dp)
-                            .clickable{showShareDialog = true},
-                        painter = painterResource(id = R.drawable.ic_share),
-                        contentDescription = "공유",
-                        tint = Color.White
-                    )
                 }
             }
         }
@@ -315,6 +334,18 @@ fun TodayBattleScreen(
                     )
                 }
             )
+        }
+
+        if (isSharing) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)) // 반투명 검은색 배경
+                    .pointerInput(Unit) {},
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
+            }
         }
     }
 }
