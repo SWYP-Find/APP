@@ -1,5 +1,6 @@
 package com.picke.app.ui.login
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.Toast // ✨ 추가
@@ -44,6 +45,7 @@ import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import com.picke.app.ui.theme.Primary900
+import androidx.activity.compose.BackHandler
 
 private const val TAG = "LoginScreen_Picke"
 
@@ -54,6 +56,11 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+
+    // 뒤로가기 -> 앱 종료
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
 
     // 구글 로그인 런처
     val googleSignInLauncher = rememberLauncherForActivityResult(

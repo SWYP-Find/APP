@@ -1,5 +1,6 @@
 package com.picke.app.ui.todaybattle
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,6 +33,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,15 +41,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
+import com.picke.app.ui.component.ShareDialog
 import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Beige400
 import com.picke.app.ui.theme.Beige50
@@ -64,6 +72,12 @@ import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
+import com.picke.app.util.shareBattleToInstagramStory
+import com.picke.app.util.shareBattleToKakao
+import com.picke.app.util.shareCapturedImageToKakao
+import com.picke.app.util.shareToInstagramStory
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun TodayBattleScreen(
@@ -77,6 +91,46 @@ fun TodayBattleScreen(
     val pagerState = rememberPagerState(pageCount = { battleList.size })
     var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     val isButtonEnabled = selectedOptionId != null
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+
+    val context = LocalContext.current
+    var showShareDialog by remember { mutableStateOf(false) }
+    val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
+    val clipboardManager = LocalClipboardManager.current
+
+    val onKakaoShareClick = {
+        currentBattle?.let { battle ->
+            coroutineScope.launch {
+                try {
+                    val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+
+                    shareBattleToKakao(
+                        context = context,
+                        bitmap = bitmap,
+                        battleId = battle.battleId,
+                        battleTitle = battle.title,
+                        battleDescription = battle.description
+                    )
+                } catch (e: Exception) {
+                    Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    val onInstaShareClick = {
+        coroutineScope.launch {
+            try {
+                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+
+                shareBattleToInstagramStory(context = context, bitmap = bitmap)
+            } catch (e: Exception) {
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     if (uiState.isLoading) {
         Box(
@@ -142,7 +196,7 @@ fun TodayBattleScreen(
                     text = "아직 빠른 배틀이 선정되지 않았어요\n조금만 기다려주세요!",
                     style = SwypTheme.typography.b3Regular,
                     color = Beige400,
-                    textAlign = TextAlign.Center // 두 줄일 때 예쁘게 보이도록 가운데 정렬 추가
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -209,18 +263,58 @@ fun TodayBattleScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                    IconButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.size(20.dp)
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_left),
                             contentDescription = "뒤로가기",
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { /* 공유 로직 */ }, modifier = Modifier.size(16.dp)) {
-                        // 공유 아이콘 부분
-                    }
+                    Icon(
+                        modifier = Modifier.size(20.dp)
+                            .clickable{showShareDialog = true},
+                        painter = painterResource(id = R.drawable.ic_share),
+                        contentDescription = "공유",
+                        tint = Color.White
+                    )
                 }
             }
+        }
+
+        if (showShareDialog) {
+            ShareDialog(
+                onDismiss = { showShareDialog = false },
+                onKakaoClick = {
+                    showShareDialog = false
+                    onKakaoShareClick()
+                },
+                onInstaClick = {
+                    showShareDialog = false
+                    onInstaShareClick()
+                },
+                onFacebookClick = {
+                    showShareDialog = false
+                },
+                onCopyLinkClick = {
+                    showShareDialog = false
+
+                    val currentBattleId = battleList[pagerState.currentPage].battleId.toInt()
+
+                    viewModel.getShareLink(
+                        battleId = currentBattleId,
+                        onSuccess = { url ->
+                            clipboardManager.setText(AnnotatedString(url))
+                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                        },
+                        onError = { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            )
         }
     }
 }

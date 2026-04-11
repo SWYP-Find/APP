@@ -34,7 +34,7 @@ private fun saveBitmapToCache(context: Context, bitmap: Bitmap, fileName: String
 }
 
 /**
- * 카카오톡 공유기능
+ * [철학자 유형] 카카오톡 공유기능
  */
 fun shareCapturedImageToKakao(
     context: Context,
@@ -97,7 +97,7 @@ fun shareCapturedImageToKakao(
 }
 
 /**
- * 인스타그램 스토리 공유기능
+ * [철학자 유형] 인스타그램 스토리 공유기능
  */
 fun shareToInstagramStory(
     context: Context,
@@ -138,6 +138,105 @@ fun shareToInstagramStory(
     } catch (e: Exception) {
         e.printStackTrace()
         android.util.Log.e("InstagramShare", "🚨 인스타 공유 실패 원인: ", e)
+        Toast.makeText(context, "이미지 처리 중 에러가 발생했습니다.", Toast.LENGTH_SHORT).show()
+    }
+}
+
+/**
+ * [배틀 주제] 카카오톡 공유기능
+ */
+fun shareBattleToKakao(
+    context: Context,
+    bitmap: Bitmap,
+    battleId: String,
+    battleTitle: String,
+    battleDescription: String
+) {
+    val file = saveBitmapToCache(context, bitmap, "kakao_battle_share.png") ?: return
+
+    val currentPackageName = context.packageName
+    val playStoreUrl = "https://play.google.com/store/apps/details?id=$currentPackageName"
+
+    ShareClient.instance.uploadImage(file) { imageUploadResult, error ->
+        if (error != null) {
+            Toast.makeText(context, "이미지 업로드 실패: ${error.message}", Toast.LENGTH_SHORT).show()
+        } else if (imageUploadResult != null) {
+            val uploadedImageUrl = imageUploadResult.infos.original.url
+
+            val feed = FeedTemplate(
+                content = Content(
+                    title = "🔥 오늘의 배틀: $battleTitle",
+                    description = battleDescription,
+                    imageUrl = uploadedImageUrl,
+                    link = Link(
+                        webUrl = playStoreUrl,
+                        mobileWebUrl = playStoreUrl,
+                        androidExecutionParams = mapOf("battleId" to battleId) // 🌟 딥링크 파라미터 변경!
+                    )
+                ),
+                buttons = listOf(
+                    Button(
+                        title = "배틀 참여하기",
+                        link = Link(
+                            webUrl = playStoreUrl,
+                            mobileWebUrl = playStoreUrl,
+                            androidExecutionParams = mapOf("battleId" to battleId) // 🌟 딥링크 파라미터 변경!
+                        )
+                    )
+                )
+            )
+
+            if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
+                ShareClient.instance.shareDefault(context, feed) { sharingResult, shareError ->
+                    if (shareError != null) {
+                        Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT).show()
+                    } else if (sharingResult != null) {
+                        context.startActivity(sharingResult.intent)
+                    }
+                }
+            } else {
+                Toast.makeText(context, "카카오톡이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+/**
+ * [배틀 주제] 인스타그램 스토리 공유기능
+ */
+fun shareBattleToInstagramStory(
+    context: Context,
+    bitmap: Bitmap
+) {
+    try {
+        val imageFile = saveBitmapToCache(context, bitmap, "instagram_battle_story.png")
+        if (imageFile == null) {
+            Toast.makeText(context, "이미지 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val authority = "${context.packageName}.fileprovider"
+        val uri = FileProvider.getUriForFile(context, authority, imageFile)
+
+        val intent = Intent("com.instagram.share.ADD_TO_STORY").apply {
+            type = "image/png"
+            putExtra("interactive_asset_uri", uri)
+            putExtra("top_background_color", "#000000")
+            putExtra("bottom_background_color", "#1A1A1A")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        val activity = context as? Activity
+        activity?.grantUriPermission("com.instagram.android", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        if (context.packageManager.resolveActivity(intent, 0) != null) {
+            context.startActivity(intent)
+        } else {
+            Toast.makeText(context, "인스타그램이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+    } catch (e: Exception) {
+        e.printStackTrace()
         Toast.makeText(context, "이미지 처리 중 에러가 발생했습니다.", Toast.LENGTH_SHORT).show()
     }
 }

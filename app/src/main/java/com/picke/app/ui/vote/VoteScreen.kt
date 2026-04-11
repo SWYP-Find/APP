@@ -1,5 +1,6 @@
 package com.picke.app.ui.vote
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,12 +23,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
 import com.picke.app.R
+import com.picke.app.SwypApplication
 import com.picke.app.domain.model.BattleDetailBoard
 import com.picke.app.domain.model.BattleOptionBoard
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.theme.*
+import org.json.JSONObject
 
 @Composable
 fun VoteRoute(
@@ -36,6 +39,9 @@ fun VoteRoute(
     onVoteSubmit: (String) -> Unit,
     viewModel: VoteViewModel = hiltViewModel()
 ) {
+    BackHandler {
+        onBackClick()
+    }
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
@@ -107,6 +113,17 @@ fun VoteScreen(
                                 voteType = voteType,
                                 selectedOptionId = selectedOptionId!!,
                                 onSuccess = {
+                                    /*val props = JSONObject().apply {
+                                        put("battle_id", battleInfo.battleId.toString())
+                                        put("battle_title", battleInfo.title)
+                                    }
+
+                                    if (isPreVote) {
+                                        SwypApplication.mixpanel.track("pre_vote", props) // 기획서 명칭 일치
+                                    } else {
+                                        SwypApplication.mixpanel.track("post_vote", props) // 기획서 명칭 일치
+                                    }*/
+
                                     onVoteSubmit(battleInfo.battleId.toString())
                                 }
                             )

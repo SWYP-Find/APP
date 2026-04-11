@@ -1,6 +1,7 @@
 package com.picke.app.ui.my.philosopher
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -93,6 +94,10 @@ fun PhilosopherTypeScreen(
     modifier: Modifier = Modifier,
     viewModel: PhilosopherTypeViewModel = hiltViewModel()
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
     val isMyReport = reportId == null
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val recapBoard = uiState.recapBoard

@@ -1,5 +1,6 @@
 package com.picke.app.ui.perspective
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -91,6 +92,10 @@ fun PerspectiveScreen(
     modifier: Modifier = Modifier,
     viewModel: PerspectiveViewModel = hiltViewModel()
 ) {
+    BackHandler {
+        onBackClick()
+    }
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = androidx.compose.ui.platform.LocalFocusManager.current

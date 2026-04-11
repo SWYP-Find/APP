@@ -456,7 +456,7 @@ private fun SecondOnboardingItemCard(
                             shape = RoundedCornerShape(2.dp)
                         ) {
                             Text(
-                                text = "찬성", // 온보딩은 항상 '찬성' 고정
+                                text = "A", // 온보딩은 항상 '찬성' 고정
                                 style = SwypTheme.typography.b5Medium,
                                 color = SwypTheme.colors.primary,
                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
