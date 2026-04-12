@@ -53,4 +53,5 @@ sealed class AppRoute(val route: String){
     }
     object PrivacyPolicy : AppRoute("privacy_policy_screen")
     object TermsOfService : AppRoute("terms_of_service_screen")
+    object Withdraw : AppRoute("withdraw_screen")
 }

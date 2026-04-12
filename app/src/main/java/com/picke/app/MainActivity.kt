@@ -59,6 +59,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowInsetsControllerCompat
 import com.picke.app.ui.my.philosopher.PhilosopherTypeScreen
+import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
 import com.picke.app.ui.theme.Primary500
@@ -591,6 +592,16 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
 
+            composable(AppRoute.Withdraw.route){
+                WithdrawScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToLogin = {
+                        rootNavController.navigate(AppRoute.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
+            }
         }
     }
 }
