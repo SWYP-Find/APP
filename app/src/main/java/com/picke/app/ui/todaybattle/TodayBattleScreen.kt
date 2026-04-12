@@ -1,5 +1,6 @@
 package com.picke.app.ui.todaybattle
 
+import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -55,6 +56,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.ShareDialog
@@ -62,8 +66,6 @@ import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Beige400
 import com.picke.app.ui.theme.Beige50
 import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Beige900
 import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray700
 import com.picke.app.ui.theme.Gray800
@@ -75,7 +77,7 @@ import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
-import com.picke.app.util.shareBattleToInstagramStory
+import com.picke.app.util.shareBattleToInstagramStoryDarkMode
 import com.picke.app.util.shareBattleToKakao
 import kotlinx.coroutines.launch
 
@@ -105,19 +107,29 @@ fun TodayBattleScreen(
             isSharing = true
             coroutineScope.launch {
                 try {
-                    val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
+                    val request = ImageRequest.Builder(context)
+                        .data(battle.imageUrl)
+                        .allowHardware(false)
+                        .build()
+                    val result = context.imageLoader.execute(request)
+                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
 
-                    shareBattleToKakao(
-                        context = context,
-                        bitmap = bitmap,
-                        battleId = battle.battleId,
-                        battleTitle = battle.title,
-                        battleDescription = battle.description,
-                        onComplete = { isSharing = false }
-                    )
+                    if (bitmap != null) {
+                        shareBattleToKakao(
+                            context = context,
+                            bitmap = bitmap,
+                            battleId = battle.battleId,
+                            battleTitle = battle.title,
+                            battleDescription = battle.description,
+                            onComplete = { isSharing = false }
+                        )
+                    } else {
+                        isSharing = false
+                        Toast.makeText(context, "이미지 로드 실패", Toast.LENGTH_SHORT).show()
+                    }
                 } catch (e: Exception) {
                     isSharing = false
-                    Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -127,15 +139,18 @@ fun TodayBattleScreen(
         isSharing = true
         coroutineScope.launch {
             try {
+                kotlinx.coroutines.delay(100)
+
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                shareBattleToInstagramStory(
+
+                shareBattleToInstagramStoryDarkMode(
                     context = context,
                     bitmap = bitmap,
                     onComplete = { isSharing = false }
                 )
             } catch (e: Exception) {
                 isSharing = false
-                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "캡처 실패", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -242,6 +257,7 @@ fun TodayBattleScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = innerPadding.calculateBottomPadding())
+                    .background(Color.Black)
                     .drawWithCache {
                         onDrawWithContent {
                             graphicsLayer.record {
@@ -262,7 +278,7 @@ fun TodayBattleScreen(
                     )
                 }
 
-                // 상단 UI (인디케이터 & 뒤로가기 버튼)
+                // 상단 UI (인디케이터 & 뒤로가기 버튼 & 공유하기 버튼)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -283,21 +299,26 @@ fun TodayBattleScreen(
                     ) {
                         IconButton(
                             onClick = onBackClick,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_arrow_left),
                                 contentDescription = "뒤로가기",
-                                tint = Color.White
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
-                        Icon(
-                            modifier = Modifier.size(20.dp)
-                                .clickable { showShareDialog = true },
-                            painter = painterResource(id = R.drawable.ic_share),
-                            contentDescription = "공유",
-                            tint = Color.White
-                        )
+                        IconButton(
+                            onClick = { showShareDialog = true },
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_share),
+                                contentDescription = "공유",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -362,7 +383,7 @@ fun BattleContent(
             modifier = Modifier.fillMaxWidth()
                 .weight(1f)
         ) {
-            AsyncImage(
+            SubcomposeAsyncImage(
                 model = item.imageUrl,
                 contentDescription = null,
                 modifier = Modifier
@@ -383,7 +404,18 @@ fun BattleContent(
                             )
                         }
                     },
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                loading = {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = SwypTheme.colors.primary, // 테마 색상에 맞게 조절 가능
+                            modifier = Modifier.size(44.dp)
+                        )
+                    }
+                }
             )
 
             // 텍스트 정보들 (이미지 위에 오버레이)

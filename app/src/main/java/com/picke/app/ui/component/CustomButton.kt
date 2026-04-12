@@ -1,6 +1,5 @@
 package com.picke.app.ui.component
 
-// 🌟 1. 이 임포트들이 정확해야 빨간 줄이 사라집니다!
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

@@ -39,7 +39,6 @@ import com.picke.app.ui.my.setting.profile.SettingProfileScreen
 import com.picke.app.ui.perspective.PerspectiveScreen
 import com.picke.app.ui.recommend.RecommendScreen
 import com.picke.app.ui.routing.BattleRoutingScreen
-import com.picke.app.ui.splash.SplashScreen
 import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.todaybattle.TodayBattleScreen
 import com.picke.app.ui.vote.VoteRoute
@@ -53,24 +52,35 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.view.WindowInsetsControllerCompat
 import com.picke.app.ui.my.philosopher.PhilosopherTypeScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
+import com.picke.app.ui.theme.Primary500
 import com.picke.app.util.DeepLinkEvent
 import com.picke.app.util.DeepLinkManager
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val splashViewModel: SplashViewModel by viewModels()
+
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        splashScreen.setOnExitAnimationListener { splashScreenView ->
+        /*splashScreen.setOnExitAnimationListener { splashScreenView ->
             splashScreenView.remove()
+        }*/
+        splashScreen.setKeepOnScreenCondition {
+            splashViewModel.uiState.value is SplashUiState.Loading
         }
 
         // 🌟 1. 기존에 길게 있던 딥링크 if문을 지우고, 이 한 줄로 교체합니다!
@@ -81,7 +91,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SwypAppTheme {
-                AppNavigation()
+                AppNavigation(splashViewModel)
             }
         }
     }
@@ -164,9 +174,39 @@ fun getKeyHash(context: Context) {
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
-fun AppNavigation() {
+fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()
+    val uiState by splashViewModel.uiState.collectAsState()
     val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()
+
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is SplashUiState.NavigateToOnboarding -> {
+                rootNavController.navigate(AppRoute.Onboarding.route) {
+                    popUpTo(0)
+                }
+            }
+            is SplashUiState.NavigateToLogin -> {
+                rootNavController.navigate(AppRoute.Login.route) {
+                    popUpTo(0)
+                }
+            }
+            is SplashUiState.NavigateToMain -> {
+                rootNavController.navigate(AppRoute.Main.route) {
+                    popUpTo(0)
+                }
+            }
+            is SplashUiState.NavigateToOtherPhilosopher -> {
+                rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
+                rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(state.reportId))
+            }
+            is SplashUiState.NavigateToBattle -> {
+                rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
+                rootNavController.navigate(AppRoute.BattleRouting.createRoute(state.battleId))
+            }
+            is SplashUiState.Loading -> { /* 가만히 스플래시 유지 */ }
+        }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -196,7 +236,7 @@ fun AppNavigation() {
 
         NavHost(
             navController = rootNavController,
-            startDestination = AppRoute.Splash.route,
+            startDestination = "blank_start", //AppRoute.Splash.route,
             modifier = Modifier.fillMaxSize(),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
@@ -204,7 +244,12 @@ fun AppNavigation() {
             popExitTransition = { ExitTransition.None }
         ) {
             // 스플래시 화면
-            composable(AppRoute.Splash.route) {
+            composable("blank_start") {
+                Box(modifier = Modifier.fillMaxSize().background(Primary500))
+            }
+
+            // 스플래시 화면
+            /* composable(AppRoute.Splash.route) {
                 SplashScreen(
                     onNavigateToLogin = {
                         rootNavController.navigate(AppRoute.Login.route) {
@@ -257,6 +302,7 @@ fun AppNavigation() {
                     }
                 )
             }
+            */
 
             // 온보딩 화면
             composable(AppRoute.Onboarding.route) {

@@ -143,7 +143,7 @@ fun shareToInstagramStory(
 }
 
 /**
- * [배틀 주제] 카카오톡 공유기능
+ * [배틀 주제] 카카오톡 공유기능 (순수 비트맵 썸네일 업로드 방식)
  */
 fun shareBattleToKakao(
     context: Context,
@@ -153,57 +153,55 @@ fun shareBattleToKakao(
     battleDescription: String,
     onComplete: () -> Unit = {}
 ) {
-    val file = saveBitmapToCache(context, bitmap, "kakao_battle_share.png") ?: return
+    // 1. 비트맵을 캐시에 파일로 저장
+    val file = saveBitmapToCache(context, bitmap, "kakao_battle_share.png")
     if (file == null) {
         onComplete()
+        Toast.makeText(context, "이미지 저장 실패", android.widget.Toast.LENGTH_SHORT).show()
         return
     }
 
-    val currentPackageName = context.packageName
-    val playStoreUrl = "https://play.google.com/store/apps/details?id=$currentPackageName"
-
+    // 2. 카카오 서버에 파일 직접 업로드 (URL 스크랩 우회!)
     ShareClient.instance.uploadImage(file) { imageUploadResult, error ->
-        if (error != null) {
+        if (error != null || imageUploadResult == null) {
             onComplete()
-            Toast.makeText(context, "이미지 업로드 실패: ${error.message}", Toast.LENGTH_SHORT).show()
-        } else if (imageUploadResult != null) {
+            android.widget.Toast.makeText(context, "카카오 이미지 업로드 실패", android.widget.Toast.LENGTH_SHORT).show()
+            android.util.Log.e("KakaoShare", "업로드 실패: ${error?.message}")
+        } else {
             val uploadedImageUrl = imageUploadResult.infos.original.url
 
+            // 3. 업로드 성공한 안전한 카카오 URL로 템플릿 조립
             val feed = FeedTemplate(
                 content = Content(
-                    title = "🔥 오늘의 배틀: $battleTitle",
+                    title = "💥 배틀 주제: $battleTitle",
                     description = battleDescription,
                     imageUrl = uploadedImageUrl,
                     link = Link(
-                        webUrl = playStoreUrl,
-                        mobileWebUrl = playStoreUrl,
-                        androidExecutionParams = mapOf("battleId" to battleId) // 🌟 딥링크 파라미터 변경!
+                        webUrl = "https://picke.store/battle/$battleId",
+                        mobileWebUrl = "https://picke.store/battle/$battleId",
+                        androidExecutionParams = mapOf("battleId" to battleId)
                     )
                 ),
                 buttons = listOf(
                     Button(
-                        title = "배틀 참여하기",
+                        title = "배틀 참여하러 가기🙆‍♂️",
                         link = Link(
-                            webUrl = playStoreUrl,
-                            mobileWebUrl = playStoreUrl,
-                            androidExecutionParams = mapOf("battleId" to battleId) // 🌟 딥링크 파라미터 변경!
+                            webUrl = "https://picke.store/battle/$battleId",
+                            mobileWebUrl = "https://picke.store/battle/$battleId",
+                            androidExecutionParams = mapOf("battleId" to battleId)
                         )
                     )
                 )
             )
 
-            if (ShareClient.instance.isKakaoTalkSharingAvailable(context)) {
-                ShareClient.instance.shareDefault(context, feed) { sharingResult, shareError ->
-                    onComplete()
-                    if (shareError != null) {
-                        Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT).show()
-                    } else if (sharingResult != null) {
-                        context.startActivity(sharingResult.intent)
-                    }
-                }
-            } else {
+            // 4. 공유 창 띄우기
+            ShareClient.instance.shareDefault(context, feed) { result, shareError ->
                 onComplete()
-                Toast.makeText(context, "카카오톡이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+                if (shareError == null && result != null) {
+                    context.startActivity(result.intent)
+                } else {
+                    Toast.makeText(context, "카카오톡 공유 실패", android.widget.Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -212,7 +210,48 @@ fun shareBattleToKakao(
 /**
  * [배틀 주제] 인스타그램 스토리 공유기능
  */
-fun shareBattleToInstagramStory(
+fun shareBattleToInstagramStoryBrightMode(
+    context: Context,
+    bitmap: Bitmap,
+    onComplete: () -> Unit = {}
+) {
+    try {
+        val imageFile = saveBitmapToCache(context, bitmap, "instagram_battle_story.png")
+        if (imageFile == null) {
+            Toast.makeText(context, "이미지 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val authority = "${context.packageName}.fileprovider"
+        val uri = FileProvider.getUriForFile(context, authority, imageFile)
+
+        val intent = Intent("com.instagram.share.ADD_TO_STORY").apply {
+            type = "image/png"
+            putExtra("interactive_asset_uri", uri)
+            putExtra("top_background_color", "#FFFFFF")
+            putExtra("bottom_background_color", "#FFFFFF")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        val activity = context as? Activity
+        activity?.grantUriPermission("com.instagram.android", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        if (context.packageManager.resolveActivity(intent, 0) != null) {
+            context.startActivity(intent)
+            onComplete()
+        } else {
+            onComplete()
+            Toast.makeText(context, "인스타그램이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+    } catch (e: Exception) {
+        onComplete()
+        e.printStackTrace()
+        Toast.makeText(context, "이미지 처리 중 에러가 발생했습니다.", Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun shareBattleToInstagramStoryDarkMode(
     context: Context,
     bitmap: Bitmap,
     onComplete: () -> Unit = {}
@@ -231,7 +270,7 @@ fun shareBattleToInstagramStory(
             type = "image/png"
             putExtra("interactive_asset_uri", uri)
             putExtra("top_background_color", "#000000")
-            putExtra("bottom_background_color", "#1A1A1A")
+            putExtra("bottom_background_color", "#000000")
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
 

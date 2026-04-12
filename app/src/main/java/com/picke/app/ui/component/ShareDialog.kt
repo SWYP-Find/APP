@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -82,14 +84,12 @@ fun ShareDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 24.dp),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ShareItem(iconRes = R.drawable.ic_kakao_share, title = "카카오톡", onClick = onKakaoClick)
-                Spacer(modifier = Modifier.width(32.dp))
                 ShareItem(iconRes = R.drawable.ic_instagram, title = "인스타그램", onClick = onInstaClick)
                 // ShareItem(iconRes = R.drawable.ic_facebook, title = "페이스북", onClick = onFacebookClick)
-                Spacer(modifier = Modifier.width(32.dp))
                 ShareItem(iconRes = R.drawable.ic_link, title = "링크 복사", onClick = onCopyLinkClick)
             }
         }
@@ -103,13 +103,14 @@ fun ShareItem(
     onClick: () -> Unit
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() }
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = title,
             modifier = Modifier.size(42.dp)
+                .clip(CircleShape)
+                .clickable { onClick() }
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(

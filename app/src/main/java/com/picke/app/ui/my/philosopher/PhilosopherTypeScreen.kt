@@ -149,16 +149,16 @@ fun PhilosopherTypeScreen(
     Scaffold(
         containerColor = Beige200,
         topBar = {
-            Box(modifier = Modifier.statusBarsPadding()) {
+            if(isMyReport) {
                 CustomTopAppBar(
-                    title = if (isMyReport) "나의 철학자 유형" else "상대방의 철학자 유형",
+                    title = "나의 철학자 유형",
                     centerTitle = true,
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = onBackClick,
                     backgroundColor = Beige200,
                     actions = {
-                        if (isMyReport && recapBoard != null) {
+                        if (recapBoard != null) {
                             IconButton(onClick = { showShareDialog = true }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_share),
@@ -170,6 +170,17 @@ fun PhilosopherTypeScreen(
                         }
                     }
                 )
+            } else {
+                Box(modifier = Modifier.statusBarsPadding()) {
+                    CustomTopAppBar(
+                        title = "상대방의 철학자 유형",
+                        centerTitle = true,
+                        showLogo = false,
+                        showBackButton = true,
+                        onBackClick = onBackClick,
+                        backgroundColor = Beige200
+                    )
+                }
             }
         }
     ) { innerPadding ->
