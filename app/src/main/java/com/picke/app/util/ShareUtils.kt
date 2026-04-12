@@ -59,7 +59,7 @@ fun shareCapturedImageToKakao(
             // 3. FeedTemplate 조립
             val feed = FeedTemplate(
                 content = Content(
-                    title = "나의 철학자 유형은 [$philosopherName]!",
+                    title = "나의 철학자 유형은 [${philosopherName}형]!",
                     description = description,
                     imageUrl = uploadedImageUrl,
                     link = Link(
@@ -119,8 +119,8 @@ fun shareToInstagramStory(
         val intent = Intent("com.instagram.share.ADD_TO_STORY").apply {
             type = "image/png"
             putExtra("interactive_asset_uri", uri)
-            putExtra("top_background_color", "#F4EFEA")
-            putExtra("bottom_background_color", "#E2CFA7")
+            putExtra("top_background_color", "#893825")
+            putExtra("bottom_background_color", "#653226")
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
 

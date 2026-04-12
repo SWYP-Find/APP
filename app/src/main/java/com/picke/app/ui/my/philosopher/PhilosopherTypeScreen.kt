@@ -127,7 +127,7 @@ fun PhilosopherTypeScreen(
                     context = context,
                     bitmap = bitmap,
                     resultId = "my_recap",
-                    philosopherName = recapBoard?.myCard?.typeName ?: "알 수 없음",
+                    philosopherName = recapBoard?.myCard?.philosopherLabel ?: "알 수 없음",
                     description = recapBoard?.myCard?.description ?: ""
                 )
             } catch (e: Exception) {
@@ -397,7 +397,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = philosopher.philosopherLabel, style = SwypTheme.typography.h2SemiBold, color = Gray900)
+                Text(text = "${philosopher.philosopherLabel}형", style = SwypTheme.typography.h2SemiBold, color = Gray900)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
