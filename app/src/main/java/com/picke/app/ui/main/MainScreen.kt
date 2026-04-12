@@ -26,6 +26,7 @@ import com.picke.app.ui.my.discussion.DiscussionHistoryScreen
 import com.picke.app.ui.my.notice.NoticeEventScreen
 import com.picke.app.ui.my.philosopher.PhilosopherTypeScreen
 import com.picke.app.ui.my.setting.SettingScreen
+import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.theme.Beige200
 
@@ -138,7 +139,7 @@ fun MainScreen(
                     onNavigateToSettingAlarm = { rootNavController.navigate(AppRoute.SettingAlarm.route) },
                     onNavigateToPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
                     onNavigateToTermsOfService = { rootNavController.navigate(AppRoute.TermsOfService.route) },
-                    onNavigateToLogin = { rootNavController.navigate(AppRoute.Login.route) }
+                    onNavigateToWithdraw = { rootNavController.navigate(AppRoute.Withdraw.route)}
                 )
             }
         }

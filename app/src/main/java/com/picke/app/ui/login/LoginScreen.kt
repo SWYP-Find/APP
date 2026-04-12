@@ -46,6 +46,7 @@ import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import com.picke.app.ui.theme.Primary900
 import androidx.activity.compose.BackHandler
+import com.kakao.sdk.auth.model.Prompt
 
 private const val TAG = "LoginScreen_Picke"
 
@@ -164,7 +165,9 @@ fun LoginScreen(
                             .requestEmail()
                             .build()
                         val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                        googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                        googleSignInClient.signOut().addOnCompleteListener {
+                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                        }
                     },
                     backgroundColor = Color.White,
                     textColor = Gray900,
@@ -201,13 +204,23 @@ private fun loginWithKakaoForAuthCode(
                     viewModel.resetState()
                     return@authorizeWithKakaoTalk
                 }
-                AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
+                // AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
+                AuthCodeClient.instance.authorizeWithKakaoAccount(
+                    context,
+                    prompts = listOf(Prompt.LOGIN),
+                    callback = callback
+                )
             } else if (authCode != null) {
                 onSuccess(authCode)
             }
         }
     } else {
         Log.d(TAG, "[SDK] 카카오 계정(웹)으로 로그인 시도")
-        AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
+        // AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
+        AuthCodeClient.instance.authorizeWithKakaoAccount(
+            context,
+            prompts = listOf(Prompt.LOGIN),
+            callback = callback
+        )
     }
 }
