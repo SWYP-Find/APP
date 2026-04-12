@@ -1,5 +1,6 @@
 package com.picke.app.ui.vote
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
+import coil.imageLoader
 import com.picke.app.R
 import com.picke.app.SwypApplication
 import com.picke.app.domain.model.BattleDetailBoard
@@ -34,7 +36,8 @@ import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.theme.*
-import com.picke.app.util.shareBattleToInstagramStory
+import com.picke.app.util.shareBattleToInstagramStoryBrightMode
+import com.picke.app.util.shareBattleToInstagramStoryDarkMode
 import com.picke.app.util.shareBattleToKakao
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -87,8 +90,8 @@ fun VoteScreen(
     val isButtonEnabled = selectedOptionId != null
 
     val context = androidx.compose.ui.platform.LocalContext.current
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
     val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
     val graphicsLayer = androidx.compose.ui.graphics.rememberGraphicsLayer()
     var showShareDialog by remember { mutableStateOf(false) }
     var isSharing by remember { mutableStateOf(false) }
@@ -97,35 +100,58 @@ fun VoteScreen(
         isSharing = true
         coroutineScope.launch {
             try {
-                val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                shareBattleToKakao(
-                    context = context,
-                    bitmap = bitmap,
-                    battleId = battleInfo.battleId.toString(),
-                    battleTitle = battleInfo.title,
-                    battleDescription = if (isPreVote) battleInfo.summary else battleDetail.description,
-                    onComplete = { isSharing = false }
-                )
+                val request = coil.request.ImageRequest.Builder(context)
+                    .data(battleInfo.thumbnailUrl)
+                    .allowHardware(false)
+                    .build()
+                val result = context.imageLoader.execute(request)
+                val bitmap = (result.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+
+                if (bitmap != null) {
+                    shareBattleToKakao(
+                        context = context,
+                        bitmap = bitmap,
+                        battleId = battleInfo.battleId,
+                        battleTitle = battleInfo.title,
+                        battleDescription = if (isPreVote) battleInfo.summary else battleDetail.description,
+                        onComplete = { isSharing = false }
+                    )
+                } else {
+                    isSharing = false
+                    android.widget.Toast.makeText(context, "이미지 로드 실패", android.widget.Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
                 isSharing = false
-                android.widget.Toast.makeText(context, "캡처 실패", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, "공유 실패", android.widget.Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     val onInstaShareClick = {
+        isSharing = true
         coroutineScope.launch {
-            isSharing = true
             try {
+                kotlinx.coroutines.delay(100)
+
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-                shareBattleToInstagramStory(
-                    context = context,
-                    bitmap = bitmap,
-                    onComplete = { isSharing = false }
-                )
+
+                if (isPreVote){
+                    shareBattleToInstagramStoryBrightMode(
+                        context = context,
+                        bitmap = bitmap,
+                        onComplete = { isSharing = false }
+                    )
+                } else{
+                    shareBattleToInstagramStoryDarkMode(
+                        context = context,
+                        bitmap = bitmap,
+                        onComplete = { isSharing = false }
+                    )
+                }
+
             } catch (e: Exception) {
                 isSharing = false
-                android.widget.Toast.makeText(context, "캡처 실패", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -192,6 +218,7 @@ fun VoteScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = innerPadding.calculateBottomPadding())
+                    .background(bgColor)
                     .drawWithCache {
                         onDrawWithContent {
                             graphicsLayer.record {
@@ -267,7 +294,6 @@ fun VoteScreen(
                                 }
                             }
                         }
-
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = battleInfo.title.replace(", ", ",\n"),
@@ -381,7 +407,6 @@ fun VoteScreen(
     }
 }
 
-// 3. 개별 옵션 카드
 @Composable
 fun VoteOptionCard(
     modifier: Modifier = Modifier,

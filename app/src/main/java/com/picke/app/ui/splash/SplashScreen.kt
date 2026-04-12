@@ -25,6 +25,7 @@ import com.picke.app.R
 import com.picke.app.ui.theme.Primary500
 import kotlinx.coroutines.launch
 
+/*
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
@@ -78,11 +79,11 @@ fun SplashScreen(
         contentAlignment = Alignment.Center
     ){
         Image(
-            painter = painterResource(id = R.drawable.symbol_picke),
+            painter = painterResource(id = R.drawable.splash_logo),
             contentDescription = "Picke Logo",
             modifier = Modifier.size(200.dp)
                 .scale(scale.value)
                 .alpha(alpha.value)
         )
     }
-}
+}*/
