@@ -68,6 +68,7 @@ fun MyScreen(
     onNavigateToPhilosopher: () -> Unit,
     onNavigateToContent: () -> Unit,
     onNavigateToNotice: () -> Unit,
+    onNavigateToPoint: ()->Unit,
     viewModel: MyViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -169,6 +170,9 @@ fun MyScreen(
 
                 CreditCard(
                     credit = uiState.tier?.currentPoint ?: 0,
+                    onClick = {
+                        onNavigateToPoint()
+                    },
                     onChargeClick = {
                         activity?.let {
                         val isAdReady = adMobManager.showAd(
@@ -307,13 +311,15 @@ fun PhilosopherTypeCard(
 @Composable
 fun CreditCard(
     credit: Int,
-    onChargeClick: () -> Unit = {}
+    onClick: ()->Unit,
+    onChargeClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(Primary800)
+            .clickable{ onClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

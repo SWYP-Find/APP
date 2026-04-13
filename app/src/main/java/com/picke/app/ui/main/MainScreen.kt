@@ -23,8 +23,10 @@ import com.picke.app.ui.home.HomeScreen
 import com.picke.app.ui.my.MyScreen
 import com.picke.app.ui.my.content.ContentActivityScreen
 import com.picke.app.ui.my.discussion.DiscussionHistoryScreen
+import com.picke.app.ui.my.makebattle.MakeBattleScreen
 import com.picke.app.ui.my.notice.NoticeEventScreen
 import com.picke.app.ui.my.philosopher.PhilosopherTypeScreen
+import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.my.setting.SettingScreen
 import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.theme.SwypTheme
@@ -107,6 +109,22 @@ fun MainScreen(
                     onNavigateToNotice={
                         mainNavController.navigate(AppRoute.NoticeEvent.route)
                     },
+                    onNavigateToPoint = {
+                        mainNavController.navigate(AppRoute.Point.route)
+                    }
+                )
+            }
+
+            composable(AppRoute.Point.route){
+                PointScreen(
+                    onBackClick = { mainNavController.popBackStack() },
+                    onNavigateToMakeBattle = { mainNavController.navigate(AppRoute.MakeBattle.route) }
+                )
+            }
+
+            composable(AppRoute.MakeBattle.route){
+                MakeBattleScreen(
+                    onBackClick = { mainNavController.popBackStack() }
                 )
             }
 

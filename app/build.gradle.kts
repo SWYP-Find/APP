@@ -65,7 +65,7 @@ android {
         debug {
             isMinifyEnabled = false
             // 개발용 서버 주소 설정
-            buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
+            buildConfigField("String", "BASE_URL", "\"https://dev.picke.store/\"")
         }
     }
     // [7. 컴파일러 및 언어 옵션]
@@ -107,6 +107,7 @@ dependencies {
 
     // [DI - Hilt] 의존성 주입
     implementation(libs.hilt.android)
+    implementation(libs.androidx.foundation)
     kapt(libs.hilt.compiler)
 
     // [Network - Retrofit] 서버 API 통신
