@@ -44,6 +44,9 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 foundation = "1.10.6"
 
+# [MixPanel]
+mixpanel = "7.5.0"
+
 
 [libraries]
 # [AndroidX Core & Lifecycle]
@@ -107,6 +110,9 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+
+# [MixPanel]
+mixpanel-android = { group = "com.mixpanel.android", name = "mixpanel-android", version.ref = "mixpanel" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

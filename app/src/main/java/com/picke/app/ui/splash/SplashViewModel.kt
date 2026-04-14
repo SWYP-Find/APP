@@ -3,8 +3,10 @@ package com.picke.app.ui.splash
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.di.AdMobManager
 import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -26,7 +28,9 @@ sealed class SplashUiState{
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val mixpanel: MixpanelAPI,
+    private val adMobManager: AdMobManager
 ) : ViewModel() {
     companion object {
         private const val TAG = "SplashViewModel_Picke"
@@ -55,6 +59,19 @@ class SplashViewModel @Inject constructor(
 
                 result.onSuccess {
                     Log.i(TAG, "[NAV] 인증 성공: 메인 화면")
+
+                    val savedUserTag = tokenManager.getUserTag()
+
+                    if (savedUserTag != null) {
+                        // 3. 믹스패널 유저 식별 (DAU 집계)
+                        mixpanel.identify(savedUserTag)
+                        Log.d(TAG, "[Mixpanel] 유저 식별 완료: $savedUserTag")
+
+                        // 4. 광고 미리 로드 (프리패치)
+                        adMobManager.loadAd(userId = savedUserTag)
+                        Log.d(TAG, "[AdMob] 광고 프리패치 시작")
+                    }
+
                     val pendingReport = DeepLinkManager.pendingReportId
                     val pendingBattle = DeepLinkManager.pendingBattleId
 

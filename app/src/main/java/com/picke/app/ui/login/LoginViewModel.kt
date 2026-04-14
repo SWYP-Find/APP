@@ -3,7 +3,9 @@ package com.picke.app.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.picke.app.BuildConfig
+import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +23,9 @@ sealed class LoginUiState {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager,
+    private val mixpanel: MixpanelAPI
 ) : ViewModel() {
     companion object {
         private const val TAG = "LoginViewModel_Picke"
@@ -62,6 +66,10 @@ class LoginViewModel @Inject constructor(
             result.onSuccess { authToken ->
                 Log.i(TAG, "[NAV] ${provider} 로그인 성공 (신규 유저 여부: ${authToken.isNewUser})")
                 _uiState.value = LoginUiState.Success(isNewUser = authToken.isNewUser)
+
+                val userTag = authToken.userTag ?: "unknown_user"
+                tokenManager.saveUserTag(userTag)
+                mixpanel.identify(userTag)
             }.onFailure { error ->
                 Log.w(TAG, "[FLOW] ${provider} 로그인 실패: ${error.message}")
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")

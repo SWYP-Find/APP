@@ -3,6 +3,7 @@ package com.picke.app.ui.my
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.MyProfile
 import com.picke.app.domain.model.MyTier
@@ -25,7 +26,8 @@ data class MyUiState(
 
 @HiltViewModel
 class MyViewModel @Inject constructor(
-    private val myPageRepository: MyPageRepository
+    private val myPageRepository: MyPageRepository,
+    val adMobManager: AdMobManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyUiState(isLoading = true))
