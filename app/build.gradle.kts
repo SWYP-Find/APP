@@ -137,6 +137,9 @@ dependencies {
     implementation(libs.androidx.security.crypto) // 보안 공유 환경설정(EncryptedSharedPreferences) 등 암호화
     implementation(libs.play.services.ads.api) // 구글 AdMob 광고
 
+    // [SSE] 실시간 통신
+    implementation(libs.okhttp.sse)
+
     // [보류] 로컬 데이터베이스 (Room)
     // implementation(libs.androidx.room.ktx)
 

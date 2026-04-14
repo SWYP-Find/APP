@@ -14,6 +14,7 @@ import com.picke.app.data.repository.ScenarioRepositoryImpl
 import com.picke.app.data.repository.ShareRepositoryImpl
 import com.picke.app.data.repository.TodayBattleRepositoryImpl
 import com.picke.app.data.repository.VoteRepositoryImpl
+import com.picke.app.data.repository.VoteStreamRepositoryImpl
 import com.picke.app.domain.repository.AlarmRepository
 import com.picke.app.domain.repository.AuthRepository
 import com.picke.app.domain.repository.BattleRepository
@@ -28,6 +29,7 @@ import com.picke.app.domain.repository.ScenarioRepository
 import com.picke.app.domain.repository.ShareRepository
 import com.picke.app.domain.repository.TodayBattleRepository
 import com.picke.app.domain.repository.VoteRepository
+import com.picke.app.domain.repository.VoteStreamRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -120,4 +122,10 @@ abstract class RepositoryModule {
     abstract fun bindShareRepository(
         shareRepositoryImpl: ShareRepositoryImpl
     ): ShareRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindVoteStreamRepository(
+        voteStreamRepositoryImpl: VoteStreamRepositoryImpl
+    ): VoteStreamRepository
 }

@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.PerspectiveBoard
 import com.picke.app.domain.model.PerspectiveDetailBoard
+import com.picke.app.domain.model.PollQuizVoteBoard
 import com.picke.app.domain.repository.PerspectiveRepository
 import com.picke.app.domain.repository.VoteRepository
+import com.picke.app.domain.repository.VoteStreamRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,7 +58,8 @@ data class PerspectiveUiState(
 class PerspectiveViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val perspectiveRepository: PerspectiveRepository,
-    private val voteRepository: VoteRepository
+    private val voteRepository: VoteRepository,
+    private val voteStreamRepository: VoteStreamRepository
 ): ViewModel() {
 
     private val receivedBattleId: String = checkNotNull(savedStateHandle["battleId"])
@@ -68,6 +71,18 @@ class PerspectiveViewModel @Inject constructor(
         )
     )
     val uiState: StateFlow<PerspectiveUiState> = _uiState.asStateFlow()
+
+    private val _realTimeStats = MutableStateFlow<PollQuizVoteBoard?>(null)
+    val realTimeStats: StateFlow<PollQuizVoteBoard?> = _realTimeStats.asStateFlow()
+
+    fun startListeningVoteStats(battleId: Long) {
+        viewModelScope.launch {
+            voteStreamRepository.getVoteStatsStream(battleId)
+                .collect { newStats ->
+                    _realTimeStats.value = newStats
+                }
+        }
+    }
 
     private val _uiEvent = MutableSharedFlow<PerspectiveUiEvent>()
     val uiEvent: SharedFlow<PerspectiveUiEvent> = _uiEvent.asSharedFlow()
