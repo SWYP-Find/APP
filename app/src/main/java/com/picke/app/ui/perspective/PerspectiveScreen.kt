@@ -97,6 +97,20 @@ fun PerspectiveScreen(
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // 1. 뷰모델의 실시간(SSE) 데이터를 관찰합니다.
+    val realTimeStats by viewModel.realTimeStats.collectAsStateWithLifecycle()
+
+    // 2. 화면이 켜지면 실시간 통계 스트림(SSE) 연결을 시작합니다.
+    LaunchedEffect(uiState.battleId) {
+        val battleIdLong = uiState.battleId.toLongOrNull() ?: return@LaunchedEffect
+        viewModel.startListeningVoteStats(battleIdLong)
+    }
+
+    // 3. 실시간 데이터가 있으면 그걸 쓰고, 없으면 기존(uiState) 데이터를 씁니다.
+    val currentProRatio = realTimeStats?.stats?.find { it.label == "A" }?.ratio ?: uiState.proRatio
+    val currentConRatio = realTimeStats?.stats?.find { it.label == "B" }?.ratio ?: uiState.conRatio
+
     val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
 
@@ -207,8 +221,8 @@ fun PerspectiveScreen(
         ) {
             // 1. 투표 통계
             PerspectiveHeader(
-                proPercentage = uiState.proRatio,
-                conPercentage = uiState.conRatio,
+                proPercentage = currentProRatio,
+                conPercentage = currentConRatio,
                 opinionChanged = uiState.opinionChanged
             )
 
