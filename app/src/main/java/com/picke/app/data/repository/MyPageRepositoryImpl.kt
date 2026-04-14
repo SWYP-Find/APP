@@ -4,6 +4,7 @@ import com.picke.app.data.model.ProfileUpdateRequestDto
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.model.toDto
 import com.picke.app.data.remote.MyPageApi
+import com.picke.app.domain.model.CreditHistoryPage
 import com.picke.app.domain.model.MyBattleRecordPage
 import com.picke.app.domain.model.MyContentActivityPage
 import com.picke.app.domain.model.MyPageInfoBoard
@@ -80,6 +81,19 @@ class MyPageRepositoryImpl @Inject constructor(
         return try {
             val response = myPageApi.getMyRecap()
             val data = response.data ?: throw Exception(response.error?.message ?: "연말 결산 정보를 불러오지 못했습니다.")
+            Result.success(data.toDomainModel())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getCreditHistory(
+        offset: Int?,
+        size: Int
+    ): Result<CreditHistoryPage> {
+        return try {
+            val response = myPageApi.getCreditHistory(offset, size)
+            val data = response.data ?: throw Exception(response.error?.message ?: "크레딧 내역을 불러오지 못했습니다.")
             Result.success(data.toDomainModel())
         } catch (e: Exception) {
             Result.failure(e)
