@@ -13,9 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -33,18 +36,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.app.R
 import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.component.CustomReverseConfirmDialog
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Beige600
+import com.picke.app.ui.theme.Beige800
 import com.picke.app.ui.theme.Gray300
 import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray500
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.Primary800
+import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 
 data class PointHistoryUiModel(
@@ -59,23 +66,9 @@ fun PointScreen(
     modifier: Modifier = Modifier,
     onBackClick : ()->Unit,
     onNavigateToMakeBattle : ()->Unit,
+    viewModel: PointViewModel = hiltViewModel()
 ) {
-    val mockData = listOf(
-        PointHistoryUiModel("무료 충전", "2026.4.10", 10, "적립"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("무료 충전", "2026.4.10", 20, "적립"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-        PointHistoryUiModel("배틀 참여", "2026.4.10", -5, "사용"),
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showChargeDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -104,16 +97,65 @@ fun PointScreen(
             )
         }
     ){ innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement =  Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
-        ){
-            items(mockData) { pointItem ->
-                PointHistoryItem(item = pointItem)
+        // 1. 로딩 상태 처리
+        if (uiState.isLoading && uiState.pointList.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Primary900)
+            }
+        }
+        // 2. 빈 내역
+        else if (uiState.pointList.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "빈 화면 로고",
+                    modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                    tint = Beige600
+                )
+                Text(
+                    text = "아직 포인트 내역이 없습니다",
+                    style = SwypTheme.typography.b3Regular,
+                    color = Beige800
+                )
+            }
+        }
+        // 3. 정상적으로 데이터가 있을 때 리스트 노출
+        else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement =  Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp)
+            ){
+                itemsIndexed(uiState.pointList) { index, pointItem ->
+                    if (index >= uiState.pointList.size - 3) {
+                        viewModel.loadPointHistory()
+                    }
+
+                    PointHistoryItem(item = pointItem)
+                }
+
+                // 포인트 내역 로딩중
+                if (uiState.isLoading && uiState.pointList.isNotEmpty()) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = Primary900)
+                        }
+                    }
+                }
             }
         }
     }

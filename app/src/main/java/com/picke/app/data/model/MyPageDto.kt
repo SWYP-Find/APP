@@ -1,5 +1,7 @@
 package com.picke.app.data.model
 
+import com.picke.app.domain.model.CreditHistoryItem
+import com.picke.app.domain.model.CreditHistoryPage
 import com.picke.app.domain.model.FavoriteTopic
 import com.picke.app.domain.model.MyBattleRecordItem
 import com.picke.app.domain.model.MyBattleRecordPage
@@ -139,6 +141,34 @@ data class MyRecapDto(
     val worstMatchCard: MyPhilosopherDto?,
     val scores: RecapScoresDto?,
     val preferenceReport: PreferenceReportDto?
+)
+
+data class CreditHistoryItemDto(
+    val id: Long?,
+    val creditType: String?,
+    val amount: Int?,
+    val referenceId: Long?,
+    val createdAt: String?
+)
+
+data class CreditHistoryPageDto(
+    val items: List<CreditHistoryItemDto>?,
+    val nextOffset: Int?,
+    val hasNext: Boolean?
+)
+
+fun CreditHistoryItemDto.toDomainModel() = CreditHistoryItem(
+    id = this.id ?: 0L,
+    creditType = this.creditType ?: "UNKNOWN",
+    amount = this.amount ?: 0,
+    referenceId = this.referenceId ?: 0L,
+    createdAt = this.createdAt?.take(10) ?: ""
+)
+
+fun CreditHistoryPageDto.toDomainModel() = CreditHistoryPage(
+    items = this.items?.map { it.toDomainModel() } ?: emptyList(),
+    nextOffset = this.nextOffset,
+    hasNext = this.hasNext ?: false
 )
 
 // Mappers DTO -> Domain
