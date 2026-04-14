@@ -366,6 +366,8 @@ fun LockedTraitAnalysisSection() {
                 lineHeight = 24.sp
             )
         }
+
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
