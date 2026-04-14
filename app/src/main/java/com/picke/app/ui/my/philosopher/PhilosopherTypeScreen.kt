@@ -72,6 +72,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.picke.app.BuildConfig
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.PreferenceReport
 import com.picke.app.domain.model.RecapScores
@@ -114,7 +115,7 @@ fun PhilosopherTypeScreen(
         if (isMyReport) {
             viewModel.fetchPhilosopherReport()
         } else {
-            // viewModel.fetchOtherPhilosopherReport(reportId!!)
+            viewModel.fetchOtherPhilosopherReport(shareKey = reportId!!)
         }
     }
 
@@ -233,6 +234,14 @@ fun PhilosopherTypeScreen(
                             textColor = Color.White,
                             iconResId = R.drawable.ic_share
                         )
+                    } else {
+                        CustomButton(
+                            text = "나의 철학자 유형 알아보기",
+                            onClick = { onGoToSplashClick() },
+                            modifier = Modifier.padding(bottom = 24.dp),
+                            backgroundColor = SwypTheme.colors.primary,
+                            textColor = Color.White
+                        )
                     }
                 }
             }
@@ -255,12 +264,11 @@ fun PhilosopherTypeScreen(
                 onCopyLinkClick = {
                     showShareDialog = false
 
-                    val reportId = 1
+                    viewModel.getRecapShareKey(
+                        onSuccess = { shareKey ->
+                            val shareUrl = "${BuildConfig.BASE_URL}recap/$shareKey"
 
-                    viewModel.getShareLink(
-                        reportId = reportId,
-                        onSuccess = { url ->
-                            clipboardManager.setText(AnnotatedString(url))
+                            clipboardManager.setText(AnnotatedString(shareUrl))
                             Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
                         },
                         onError = { errorMessage ->

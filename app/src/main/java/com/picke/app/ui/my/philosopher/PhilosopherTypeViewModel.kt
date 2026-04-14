@@ -33,6 +33,7 @@ class PhilosopherTypeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PhilosopherTypeUiState())
     val uiState: StateFlow<PhilosopherTypeUiState> = _uiState.asStateFlow()
 
+    // 나의 철학자 유형 정보 가져오기
     fun fetchPhilosopherReport() {
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 철학자 리포트 데이터 요청 시작")
@@ -66,17 +67,50 @@ class PhilosopherTypeViewModel @Inject constructor(
         }
     }
 
-    fun getShareLink(reportId: Int, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
-        viewModelScope.launch {
-            Log.d(TAG, "[FLOW] 리포트 공유 링크 요청 시작 (reportId: $reportId)")
-            val result = shareRepository.getReportShareLink(reportId)
+    // 타인의 철학자 유형 정보 가져오기
 
-            result.onSuccess { shareUrl ->
-                Log.i(TAG, "[STATE] 공유 링크 발급 성공: ${shareUrl.shareUrl}")
-                onSuccess(shareUrl.shareUrl)
+    fun fetchOtherPhilosopherReport(shareKey: String) {
+        viewModelScope.launch {
+            Log.d(TAG, "[FLOW] 타인의 철학자 리포트 데이터 요청 시작 (shareKey: $shareKey)")
+            _uiState.update { it.copy(isLoading = true) }
+
+            val result = shareRepository.getRecapDetail(shareKey)
+
+            result.onSuccess { data ->
+                Log.i(TAG, "[STATE] 타인 리포트 데이터 로드 성공")
+                _uiState.update {
+                    it.copy(
+                        recapBoard = data,
+                        isLoading = false,
+                        isLocked = false
+                    )
+                }
             }.onFailure { exception ->
-                Log.e(TAG, "[STATE] 공유 링크 발급 실패: ${exception.message}")
-                onError(exception.message ?: "공유 링크를 가져오지 못했습니다.")
+                Log.e(TAG, "[STATE] 타인 리포트 로드 실패: ${exception.message}")
+                _uiState.update {
+                    it.copy(
+                        recapBoard = null,
+                        isLoading = false,
+                        isLocked = true
+                    )
+                }
+            }
+        }
+    }
+
+    // 나의 철학자 유형 공유키 발급받기 (기존 getShareLink 교체)
+    fun getRecapShareKey(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            Log.d(TAG, "[FLOW] 리캡 공유 키 발급 요청 시작")
+            val result = shareRepository.getRecapShareKey()
+
+            result.onSuccess { shareKeyData ->
+                val key = shareKeyData.shareKey
+                Log.i(TAG, "[STATE] 리캡 공유 키 발급 성공: $key")
+                onSuccess(key)
+            }.onFailure { exception ->
+                Log.e(TAG, "[STATE] 공유 키 발급 실패: ${exception.message}")
+                onError(exception.message ?: "공유 링크를 생성하지 못했습니다.")
             }
         }
     }
