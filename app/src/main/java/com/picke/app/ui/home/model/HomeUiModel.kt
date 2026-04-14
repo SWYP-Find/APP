@@ -41,6 +41,7 @@ data class PollQuizOptionStatUiModel(
     val label: String,
     val title: String,
     val isCorrect: Boolean,
+    val stance: String,
     val voteCount: Int,
     val ratio: Float
 )
@@ -120,7 +121,8 @@ fun PollQuizOptionStatBoard.toUiModel() = PollQuizOptionStatUiModel(
     title = this.title,
     isCorrect = this.isCorrect,
     voteCount = this.voteCount,
-    ratio = this.ratio
+    ratio = this.ratio,
+    stance = this.stance
 )
 
 fun TodayPick.toUiModel(): TodayPickUiModel {

@@ -6,8 +6,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ScenarioApi {
-    @GET("/api/v1/battles/{battle_id}/scenario")
+    @GET("/api/v1/battles/{battleId}/scenario")
     suspend fun getScenario(
-        @Path("battle_id") battleId: String
+        @Path("battleId") battleId: String
     ): BaseResponse<ScenarioResponseDto>
 }
