@@ -11,6 +11,7 @@ data class PollQuizOptionStatBoard(
     val optionId: Long,
     val label: String,
     val title: String,
+    val stance: String,
     val isCorrect: Boolean,
     val voteCount: Int,
     val ratio: Float

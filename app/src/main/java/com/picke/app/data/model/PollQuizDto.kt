@@ -18,7 +18,7 @@ data class PollQuizOptionStatDto(
     val optionId: Long?,
     val label: String?,
     val title: String?,
-    val description: String?,
+    val stance: String?,
     val isCorrect: Boolean?,
     val voteCount: Int?,
     val ratio: Float?
@@ -36,6 +36,7 @@ fun PollQuizOptionStatDto.toDomainModel() = PollQuizOptionStatBoard(
     label = this.label ?: "",
     title = this.title ?: "",
     isCorrect = this.isCorrect ?: false,
+    stance = this.stance ?: "",
     voteCount = this.voteCount ?: 0,
     ratio = this.ratio ?: 0f
 )

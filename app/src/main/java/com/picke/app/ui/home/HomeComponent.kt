@@ -658,7 +658,7 @@ private fun QuizOptionCard(modifier: Modifier, option: PollQuizOptionStatUiModel
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (isVoted) {
+        if (isVoted) { // 참여 후 상태: 본문 + 정답 유무
             val resultColor = if (option.isCorrect) Secondary500 else Primary500
             val resultText = if (option.isCorrect) "O 정답" else "X 오답"
 
@@ -666,10 +666,18 @@ private fun QuizOptionCard(modifier: Modifier, option: PollQuizOptionStatUiModel
             Spacer(modifier = Modifier.height(4.dp))
             Text(text = option.title, style = SwypTheme.typography.chipSmall, color = Gray900, textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.height(4.dp))
-            // Text(text = option.description ?: "", style = SwypTheme.typography.labelXSmall, color = Gray400, textAlign = TextAlign.Center)
         } else {
-            // 참여 전 상태: 본문만 심플하게
+            // 참여 전 상태: 본문 + 설명
             Text(text = option.title, style = SwypTheme.typography.chipSmall, color = Gray900, textAlign = TextAlign.Center)
+            if (option.stance.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = option.stance,
+                    style = SwypTheme.typography.labelXSmall, // 기존 description 스타일 재활용
+                    color = Gray400,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
