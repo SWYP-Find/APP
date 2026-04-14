@@ -43,6 +43,7 @@ android {
         buildConfigField("String", "KAKAO_DEBUG_APPKEY", "\"$kakaoDebugAppKey\"")
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", "\"$admobRewardedAdUnitId\"")
+        buildConfigField("String", "MIXPANEL_PROJECT_TOKEN", "\"${properties.getProperty("MIXPANEL_PROJECT_TOKEN")}\"")
 
         manifestPlaceholders["admobAppId"] = admobAppId
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoDebugAppKey
@@ -151,6 +152,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // [MixPanel]
+    implementation(libs.mixpanel.android)
 }
 
 configurations.all {

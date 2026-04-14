@@ -106,12 +106,21 @@ class TokenManager @Inject constructor(
         }
     }
 
+    fun saveUserTag(tag: String) {
+        prefs?.edit()?.putString("user_tag", tag)?.apply()
+    }
+
+    fun getUserTag(): String? {
+        return prefs?.getString("user_tag", null)
+    }
+
     // 토큰 삭제
     fun clearAll() {
         prefs?.edit()
             ?.remove("access_token")
             ?.remove("refresh_token")
             ?.remove("user_status")
+            ?.remove("user_tag")
             ?.apply()
     }
 }

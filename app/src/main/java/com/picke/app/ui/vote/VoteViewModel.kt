@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.picke.app.domain.model.BattleDetailBoard
 import com.picke.app.domain.repository.BattleRepository
 import com.picke.app.domain.repository.ShareRepository
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import javax.inject.Inject
 
 enum class VoteType {
@@ -32,7 +34,8 @@ class VoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val battleRepository: BattleRepository,
     private val voteRepository: VoteRepository,
-    private val shareRepository: ShareRepository
+    private val shareRepository: ShareRepository,
+    private val mixpanel: MixpanelAPI
 ) : ViewModel() {
 
     val battleId: String = checkNotNull(savedStateHandle["battleId"])
@@ -81,6 +84,25 @@ class VoteViewModel @Inject constructor(
 
             result.onSuccess {
                 Log.d("VoteDetailFlow", "🟢 투표 전송 성공!")
+
+                try {
+                    val props = JSONObject().apply {
+                        put("battle_id", battleIdLong)
+                        put("selected_option_id", optionIdLong)
+                    }
+
+                    if (voteType == VoteType.PRE) {
+                        mixpanel.track("pre_vote", props)
+                        Log.d("MixpanelFlow", "pre_vote 이벤트 전송 완료")
+                    } else {
+                        mixpanel.track("post_vote", props)
+                        Log.d("MixpanelFlow", "post_vote 이벤트 전송 완료")
+                    }
+                } catch (e: Exception) {
+                    Log.e("MixpanelFlow", "믹스패널 이벤트 전송 실패: ${e.message}")
+                }
+
+                // 기존 성공 콜백
                 onSuccess()
             }.onFailure { error ->
                 Log.e("VoteDetailFlow", "🔴 투표 전송 실패: ${error.message}", error)
