@@ -33,6 +33,7 @@ import com.picke.app.SwypApplication
 import com.picke.app.domain.model.BattleDetailBoard
 import com.picke.app.domain.model.BattleOptionBoard
 import com.picke.app.ui.component.CustomButton
+import com.picke.app.ui.component.CustomSingleActionDialog
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.theme.*
@@ -63,6 +64,7 @@ fun VoteRoute(
             VoteScreen(
                 voteType = voteType,
                 battleDetail = detail,
+                uiState = uiState,
                 onBackClick = onBackClick,
                 onVoteSubmit = onVoteSubmit,
                 viewModel = viewModel
@@ -75,6 +77,7 @@ fun VoteRoute(
 fun VoteScreen(
     voteType: VoteType,
     battleDetail: BattleDetailBoard,
+    uiState: VoteUiState,
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit,
     viewModel: VoteViewModel
@@ -95,7 +98,9 @@ fun VoteScreen(
     val graphicsLayer = androidx.compose.ui.graphics.rememberGraphicsLayer()
     var showShareDialog by remember { mutableStateOf(false) }
     var isSharing by remember { mutableStateOf(false) }
+    val activity = context as? android.app.Activity
 
+    // 공유하기 함수
     val onKakaoShareClick = {
         isSharing = true
         coroutineScope.launch {
@@ -126,7 +131,6 @@ fun VoteScreen(
             }
         }
     }
-
     val onInstaShareClick = {
         isSharing = true
         coroutineScope.launch {
@@ -350,7 +354,7 @@ fun VoteScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
-
+        // 공유하기 다이얼로그
         if (showShareDialog) {
             com.picke.app.ui.component.ShareDialog(
                 onDismiss = { showShareDialog = false },
@@ -403,6 +407,35 @@ fun VoteScreen(
             ) {
                 CircularProgressIndicator(color = Primary900)
             }
+        }
+
+        if (uiState.isInsufficientPoints) {
+            CustomSingleActionDialog(
+                message = "컨텐츠를 시청하기 위한\n포인트가 부족해요!",
+                buttonText = "무료충전 하러 가기",
+                onDismiss = { viewModel.dismissPointDialog() },
+                onConfirm = {
+                    viewModel.dismissPointDialog()
+
+                    activity?.let { act ->
+                        val isAdReady = viewModel.adMobManager.showAd(
+                            activity = act,
+                            onRewardEarned = {
+                                // 1. 보상 획득 성공!
+                                Toast.makeText(context, "포인트가 충전되었습니다. 다시 투표를 시도해보세요!", Toast.LENGTH_SHORT).show()
+                                // 2. 광고 재장전
+                                viewModel.reloadAd()
+                                // 3. (선택사항) 여기서 바로 투표를 한 번 더 자동으로 쏴줄 수도 있습니다.
+                            }
+                        )
+
+                        if (!isAdReady) {
+                            Toast.makeText(context, "광고가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                            viewModel.reloadAd()
+                        }
+                    }
+                }
+            )
         }
     }
 }

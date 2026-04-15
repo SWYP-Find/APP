@@ -57,6 +57,16 @@ class MyViewModel @Inject constructor(
     }
 
     fun refreshPointsAfterAd() {
+        _uiState.update { currentState ->
+            val currentTier = currentState.tier
+            if (currentTier != null) {
+                currentState.copy(
+                    tier = currentTier.copy(currentPoint = currentTier.currentPoint + 20)
+                )
+            } else {
+                currentState
+            }
+        }
         fetchMyInfo()
     }
 

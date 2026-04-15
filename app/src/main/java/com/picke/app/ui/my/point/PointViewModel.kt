@@ -74,10 +74,13 @@ class PointViewModel @Inject constructor(
 
 private fun CreditHistoryItem.toUiModel(): PointHistoryUiModel {
     val title = when (this.creditType) {
-        "BATTLE_VOTE" -> "배틀 참여"
-        "AD_REWARD" -> "무료 충전"
-        "BATTLE_PROPOSAL" -> "배틀 제안"
+        "FREE_CHARGE" -> "무료 충전"
+        "TOPIC_SUGGEST" -> "배틀 제안"
+        "BATTLE_ENTRY" -> "배틀 참여"
+        "BEST_COMMENT" -> "베스트 댓글 보상"
         "BATTLE_PROPOSAL_ACCEPTED" -> "제안 배틀 채택"
+        "MAJORITY_WIN" -> "다수결 보상"
+        "WEEKLY_CHARGE" -> "자동 충전"
         "SIGNUP_REWARD" -> "가입 축하 포인트"
         else -> "포인트 내역"
     }

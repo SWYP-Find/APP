@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.picke.app.data.local.TokenManager
+import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.BattleDetailBoard
 import com.picke.app.domain.repository.BattleRepository
 import com.picke.app.domain.repository.ShareRepository
@@ -26,7 +28,8 @@ enum class VoteType {
 data class VoteUiState(
     val isLoading: Boolean = false,
     val battleDetail: BattleDetailBoard? = null,
-    val error: String? = null
+    val error: String? = null,
+    val isInsufficientPoints: Boolean = false
 )
 
 @HiltViewModel
@@ -35,6 +38,8 @@ class VoteViewModel @Inject constructor(
     private val battleRepository: BattleRepository,
     private val voteRepository: VoteRepository,
     private val shareRepository: ShareRepository,
+    private val tokenManager: TokenManager,
+    val adMobManager: AdMobManager,
     private val mixpanel: MixpanelAPI
 ) : ViewModel() {
 
@@ -45,6 +50,13 @@ class VoteViewModel @Inject constructor(
 
     init {
         fetchVoteDetail()
+        reloadAd()
+    }
+
+    fun reloadAd() {
+        tokenManager.getUserTag()?.let { tag ->
+            adMobManager.loadAd(tag)
+        }
     }
 
     private fun fetchVoteDetail() {
@@ -69,13 +81,17 @@ class VoteViewModel @Inject constructor(
         }
     }
 
-    fun submitVote(voteType: VoteType, selectedOptionId: String, onSuccess: () -> Unit) {
+    fun submitVote(
+        voteType: VoteType,
+        selectedOptionId: String,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
             val optionIdLong = selectedOptionId.toLongOrNull() ?: 0L
             val battleIdLong = battleId.toLongOrNull() ?: 0L
 
             Log.d("VoteDetailFlow", "투표 전송 시작 - type: $voteType, battleId: $battleIdLong, optionId: $optionIdLong")
-
             val result = if (voteType == VoteType.PRE) {
                 voteRepository.submitPreVote(battleIdLong, optionIdLong)
             } else {
@@ -103,10 +119,15 @@ class VoteViewModel @Inject constructor(
                 }
 
                 // 기존 성공 콜백
+                _uiState.update { it.copy(isLoading = false) }
                 onSuccess()
             }.onFailure { error ->
                 Log.e("VoteDetailFlow", "🔴 투표 전송 실패: ${error.message}", error)
-                _uiState.update { it.copy(error = error.message) }
+                if (error.message?.contains("CREDIT_400_INSUFFICIENT") == true) {
+                    _uiState.update { it.copy(isInsufficientPoints = true, isLoading = false) }
+                } else {
+                    _uiState.update { it.copy(error = error.message, isLoading = false) }
+                }
             }
         }
     }
@@ -125,5 +146,9 @@ class VoteViewModel @Inject constructor(
                     onError(error.message ?: "링크를 불러오는데 실패했습니다.")
                 }
         }
+    }
+
+    fun dismissPointDialog() {
+        _uiState.update { it.copy(isInsufficientPoints = false) }
     }
 }

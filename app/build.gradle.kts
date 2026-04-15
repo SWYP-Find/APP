@@ -9,41 +9,42 @@ plugins {
 }
 
 android {
-    // [1. 앱의 고유 식별자 및 컴파일 도구
-    namespace = "com.picke.app" // 패키지 명칭
-    compileSdk = 36 // 앱 빌드할 때 사용할 안드로이드 SDK 버전
+    // [1. 앱의 고유 식별자 및 컴파일 도구]
+    namespace = "com.picke.app"
+    compileSdk = 36
+
+    val properties = Properties()
+    val propertiesFile = project.rootProject.file("local.properties")
+    if (propertiesFile.exists()) {
+        properties.load(propertiesFile.inputStream())
+    }
+
+    val kakaoDebugAppKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
+    val googleWebClientIdDebug = properties.getProperty("GOOGLE_WEB_CLIENT_ID_DEBUG") ?: ""
+    val googleWebClientIdRelease = properties.getProperty("GOOGLE_WEB_CLIENT_ID_RELEASE") ?: ""
+    val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
+    val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
+    val mixpanelToken = properties.getProperty("MIXPANEL_PROJECT_TOKEN") ?: ""
+
+    println("🔑💛 KAKAO_DEBUG_APPKEY: $kakaoDebugAppKey")
+    println("🔑💚 GOOGLE_WEB_CLIENT_ID_DEBUG: $googleWebClientIdDebug")
+    println("🔑💚 GOOGLE_WEB_CLIENT_ID_RELEASE: $googleWebClientIdRelease")
+    println("🔑🤍 ADMOB_APP_ID: $admobAppId")
+    println("🔑🤍 ADMOB_REWARDED_AD_UNIT_ID: $admobRewardedAdUnitId")
 
     // [2. 앱의 기본 정보]
     defaultConfig {
-        applicationId = "com.picke.app" // 플레이 스토어에서 앱을 구분하는 ID
-        minSdk = 26 // 앱 실행 가능한 최소 안드로이드 버전
-        targetSdk = 35 // 앱 최적화되어 동작할 안드로이드 버전
-        versionCode = 1 // 기계가 인식하는 버전, TODO 업데이트 시 무조건 이전보다 커야함
-        versionName = "1.0" // 사용자에게 보여질 버전
+        applicationId = "com.picke.app"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // [3. 외부 비밀 키 로드 로직]
-        // local.properties 파일에서 읽어오는 과정
-        val properties = Properties()
-        val propertiesFile = project.rootProject.file("local.properties")
-        if (propertiesFile.exists()) {
-            properties.load(propertiesFile.inputStream())
-        }
-
-        val kakaoDebugAppKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
-        val googleWebClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
-        val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
-        val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
-        println("🔑💛 KAKAO_DEBUG_APPKEY: $kakaoDebugAppKey")
-        println("🔑💚 GOOGLE_WEB_CLIENT_ID: $googleWebClientId")
-        println("🔑🤍 ADMOB_APP_ID: $admobAppId")
-        println("🔑🤍 ADMOB_REWARDED_AD_UNIT_ID: $admobRewardedAdUnitId")
 
         // [4. 코드 및 매니페스트로 값 전달]
         buildConfigField("String", "KAKAO_DEBUG_APPKEY", "\"$kakaoDebugAppKey\"")
-        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", "\"$admobRewardedAdUnitId\"")
-        buildConfigField("String", "MIXPANEL_PROJECT_TOKEN", "\"${properties.getProperty("MIXPANEL_PROJECT_TOKEN")}\"")
+        buildConfigField("String", "MIXPANEL_PROJECT_TOKEN", "\"$mixpanelToken\"")
 
         manifestPlaceholders["admobAppId"] = admobAppId
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoDebugAppKey
@@ -52,8 +53,8 @@ android {
     buildTypes {
         // [5. 배포용 빌드 설정]
         release {
-            isMinifyEnabled = true // 코드 난독화 및 최적화
-            isShrinkResources = true // 미사용 이미지, 레이아웃 리소스 삭제하여 용량 줄이기
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -61,14 +62,19 @@ android {
             )
             // 배포용 서버 주소 설정
             buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
+            // 배포용 구글 클라이언트 ID 설정 (이제 밖에서 만든 변수를 정상적으로 가져옵니다!)
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientIdRelease\"")
         }
         // [6. 개발용 빌드 설정]
         debug {
             isMinifyEnabled = false
             // 개발용 서버 주소 설정
             buildConfigField("String", "BASE_URL", "\"https://dev.picke.store/\"")
+            // 개발용 구글 클라이언트 ID 설정 (이제 밖에서 만든 변수를 정상적으로 가져옵니다!)
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientIdDebug\"")
         }
     }
+
     // [7. 컴파일러 및 언어 옵션]
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -79,7 +85,7 @@ android {
         buildConfig = true
     }
     kotlinOptions{
-        jvmTarget = "17" // 코틀린 코드를 jvm 17 타겟으로 변환
+        jvmTarget = "17"
     }
 }
 

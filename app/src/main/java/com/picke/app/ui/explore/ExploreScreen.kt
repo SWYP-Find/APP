@@ -55,6 +55,7 @@ import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.SortFilterChip
 import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Beige600
+import com.picke.app.ui.theme.Beige800
 import com.picke.app.ui.theme.Gray300
 import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray500
@@ -195,7 +196,28 @@ fun ExploreList(
             ) {
                 CircularProgressIndicator(color = Primary900)
             }
-        } else {
+        }
+        else if (pagingItems.itemCount == 0) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "빈 화면 로고",
+                    modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                    tint = Beige600
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "아직 준비된 배틀이 없어요!",
+                    style = SwypTheme.typography.b3Regular,
+                    color = Beige800
+                )
+            }
+        }
+        else {
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
