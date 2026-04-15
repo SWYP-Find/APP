@@ -9,6 +9,7 @@ import com.picke.app.data.remote.HomeApi
 import com.picke.app.data.remote.MyPageApi
 import com.picke.app.data.remote.PerspectiveApi
 import com.picke.app.data.remote.PollQuizApi
+import com.picke.app.data.remote.ProposalApi
 import com.picke.app.data.remote.RecommendApi
 import com.picke.app.data.remote.ScenarioApi
 import com.picke.app.data.remote.ShareApi
@@ -106,5 +107,11 @@ object ApiModule {
     @Singleton
     fun provideShareApi(retrofit: Retrofit): ShareApi {
         return retrofit.create(ShareApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProposalApi(retrofit: Retrofit): ProposalApi {
+        return retrofit.create(ProposalApi::class.java)
     }
  }

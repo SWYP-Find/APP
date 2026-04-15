@@ -9,6 +9,7 @@ import com.picke.app.data.repository.HomeRepositoryImpl
 import com.picke.app.data.repository.MyPageRepositoryImpl
 import com.picke.app.data.repository.PerspectiveRepositoryImpl
 import com.picke.app.data.repository.PollQuizRepositoryImpl
+import com.picke.app.data.repository.ProposalRepositoryImpl
 import com.picke.app.data.repository.RecommendRepositoryImpl
 import com.picke.app.data.repository.ScenarioRepositoryImpl
 import com.picke.app.data.repository.ShareRepositoryImpl
@@ -24,6 +25,7 @@ import com.picke.app.domain.repository.HomeRepository
 import com.picke.app.domain.repository.MyPageRepository
 import com.picke.app.domain.repository.PerspectiveRepository
 import com.picke.app.domain.repository.PollQuizRepository
+import com.picke.app.domain.repository.ProposalRepository
 import com.picke.app.domain.repository.RecommendRepository
 import com.picke.app.domain.repository.ScenarioRepository
 import com.picke.app.domain.repository.ShareRepository
@@ -128,4 +130,10 @@ abstract class RepositoryModule {
     abstract fun bindVoteStreamRepository(
         voteStreamRepositoryImpl: VoteStreamRepositoryImpl
     ): VoteStreamRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindProposalRepository(
+        proposalRepositoryImpl: ProposalRepositoryImpl
+    ): ProposalRepository
 }

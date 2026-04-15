@@ -84,10 +84,12 @@ class MainActivity : ComponentActivity() {
             splashViewModel.uiState.value is SplashUiState.Loading
         }
 
-        // 🌟 1. 기존에 길게 있던 딥링크 if문을 지우고, 이 한 줄로 교체합니다!
         handleDeepLink(intent)
 
         MobileAds.initialize(this) {} // 광고 sdk 초기화
+        splashScreen.setKeepOnScreenCondition {
+            splashViewModel.uiState.value is SplashUiState.Loading
+        }
         enableEdgeToEdge() // 앱의 콘텐츠를 화면 끝에서부터 끝까지 꽉 채우기
 
         setContent {

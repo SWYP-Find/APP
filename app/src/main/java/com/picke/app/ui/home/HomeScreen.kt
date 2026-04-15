@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,6 +36,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.theme.Beige200
+import com.picke.app.ui.theme.Beige600
+import com.picke.app.ui.theme.Beige800
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 
@@ -50,6 +54,11 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val isDataEmpty = uiState.editorPicks.isEmpty() &&
+            uiState.trendingBattles.isEmpty() &&
+            uiState.bestBattles.isEmpty() &&
+            uiState.todayPicks.isEmpty() &&
+            uiState.newBattles.isEmpty()
 
     LaunchedEffect(scrollToTopTrigger) {
         if (scrollToTopTrigger > 0) {
@@ -88,6 +97,7 @@ fun HomeScreen(
             )
         }
     ){ innerPadding ->
+        // 1. 데이터 로딩중
         if (uiState.isLoading) {
             Box(
                 modifier = Modifier
@@ -97,7 +107,32 @@ fun HomeScreen(
             ) {
                 CircularProgressIndicator(color = Primary900)
             }
-        } else {
+        }
+        // 2. 데이터가 없을떄
+        else if (isDataEmpty) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_logo),
+                    contentDescription = "빈 화면 로고",
+                    modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                    tint = Beige600
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "아직 준비된 배틀이 없어요!",
+                    style = SwypTheme.typography.b3Regular,
+                    color = Beige800
+                )
+            }
+        }
+        // 3. 데이터 있을때
+        else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

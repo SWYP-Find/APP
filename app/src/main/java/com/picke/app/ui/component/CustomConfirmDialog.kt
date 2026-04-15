@@ -209,3 +209,66 @@ fun CustomReverseConfirmDialog(
         }
     }
 }
+
+@Composable
+fun CustomSingleActionDialog(
+    message: String,
+    buttonText: String,
+    imageResId: Int? = null,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Surface(
+                shape = RoundedCornerShape(2.dp),
+                color = Beige500,
+                border = BorderStroke(1.dp, Primary500),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = if (imageResId != null) 16.dp else 0.dp)
+            ) {
+                Column {
+                    // 텍스트 영역
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = message,
+                            style = SwypTheme.typography.h4SemiBold,
+                            color = Primary500,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 24.sp
+                        )
+                    }
+
+                    // 가로 구분선
+                    HorizontalDivider(thickness = 1.dp, color = Primary500)
+
+                    // 버튼 영역
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Primary500)
+                            .clickable { onConfirm() }
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = buttonText,
+                            style = SwypTheme.typography.b3SemiBold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
