@@ -46,6 +46,7 @@ fun SettingScreen(
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToTermsOfService: () -> Unit,
     onNavigateToWithdraw: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -109,6 +110,7 @@ fun SettingScreen(
                     onConfirm = {
                         showLogoutDialog = false
                         viewModel.logout()
+                        onNavigateToLogin()
                     },
                     onDismiss = {
                         showLogoutDialog = false
@@ -123,7 +125,6 @@ fun SettingScreen(
                     dismissText = "뒤로가기",
                     onConfirm = {
                         showWithdrawDialog = false
-                        // viewModel.withdraw()
                         onNavigateToWithdraw()
                     },
                     onDismiss = {

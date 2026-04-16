@@ -160,6 +160,12 @@ fun LoginScreen(
                     text = stringResource(R.string.login_with_google),
                     onClick = {
                         Log.d(TAG, "[FLOW] 구글 로그인 버튼 클릭")
+                        if (BuildConfig.GOOGLE_WEB_CLIENT_ID.isEmpty()) {
+                            Log.e(TAG, "[ERROR] GOOGLE_WEB_CLIENT_ID가 설정되지 않았습니다. local.properties를 확인하세요.")
+                            Toast.makeText(context, "로그인 설정 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                            return@CustomButton
+                        }
+
                         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
                             .requestEmail()

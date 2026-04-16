@@ -422,10 +422,9 @@ fun VoteScreen(
                             activity = act,
                             onRewardEarned = {
                                 // 1. 보상 획득 성공!
-                                Toast.makeText(context, "포인트가 충전되었습니다. 다시 투표를 시도해보세요!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "20포인트가 충전되었습니다. 다시 투표를 시도해보세요!", Toast.LENGTH_SHORT).show()
                                 // 2. 광고 재장전
                                 viewModel.reloadAd()
-                                // 3. (선택사항) 여기서 바로 투표를 한 번 더 자동으로 쏴줄 수도 있습니다.
                             }
                         )
 

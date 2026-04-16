@@ -98,18 +98,10 @@ fun PerspectiveScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // 1. 뷰모델의 실시간(SSE) 데이터를 관찰합니다.
-    val realTimeStats by viewModel.realTimeStats.collectAsStateWithLifecycle()
-
-    // 2. 화면이 켜지면 실시간 통계 스트림(SSE) 연결을 시작합니다.
-    LaunchedEffect(uiState.battleId) {
-        val battleIdLong = uiState.battleId.toLongOrNull() ?: return@LaunchedEffect
-        viewModel.startListeningVoteStats(battleIdLong)
-    }
-
-    // 3. 실시간 데이터가 있으면 그걸 쓰고, 없으면 기존(uiState) 데이터를 씁니다.
-    val currentProRatio = realTimeStats?.stats?.find { it.label == "A" }?.ratio ?: uiState.proRatio
-    val currentConRatio = realTimeStats?.stats?.find { it.label == "B" }?.ratio ?: uiState.conRatio
+    // ✨ [수정됨] SSE 관련 로직(realTimeStats, LaunchedEffect) 싹 다 날렸습니다!
+    // 이제 무겁게 실시간 통신을 열어두지 않고, 처음에 불러온 투표 통계(proRatio, conRatio)만 씁니다.
+    val currentProRatio = uiState.proRatio
+    val currentConRatio = uiState.conRatio
 
     val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
@@ -488,6 +480,7 @@ fun PerspectiveScreen(
     }
 }
 
+// ... 아래의 하위 컴포넌트들(PerspectiveItemCard 등)은 기존과 완벽하게 100% 동일합니다 ...
 @Composable
 fun PerspectiveItemCard(
     item: PerspectiveUiModel,

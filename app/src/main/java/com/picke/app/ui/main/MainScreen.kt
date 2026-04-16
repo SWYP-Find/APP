@@ -157,7 +157,12 @@ fun MainScreen(
                     onNavigateToSettingAlarm = { rootNavController.navigate(AppRoute.SettingAlarm.route) },
                     onNavigateToPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
                     onNavigateToTermsOfService = { rootNavController.navigate(AppRoute.TermsOfService.route) },
-                    onNavigateToWithdraw = { rootNavController.navigate(AppRoute.Withdraw.route)}
+                    onNavigateToWithdraw = { rootNavController.navigate(AppRoute.Withdraw.route)},
+                    onNavigateToLogin = {rootNavController.navigate(AppRoute.Login.route) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }},
                 )
             }
         }

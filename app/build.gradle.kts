@@ -20,6 +20,7 @@ android {
     }
 
     val kakaoDebugAppKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
+    val googleWebClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
     val googleWebClientIdDebug = properties.getProperty("GOOGLE_WEB_CLIENT_ID_DEBUG") ?: ""
     val googleWebClientIdRelease = properties.getProperty("GOOGLE_WEB_CLIENT_ID_RELEASE") ?: ""
     val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
@@ -62,16 +63,16 @@ android {
             )
             // 배포용 서버 주소 설정
             buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
-            // 배포용 구글 클라이언트 ID 설정 (이제 밖에서 만든 변수를 정상적으로 가져옵니다!)
-            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientIdRelease\"")
+            // 배포용 구글 클라이언트 ID 설정
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         }
         // [6. 개발용 빌드 설정]
         debug {
             isMinifyEnabled = false
             // 개발용 서버 주소 설정
-            buildConfigField("String", "BASE_URL", "\"https://dev.picke.store/\"")
-            // 개발용 구글 클라이언트 ID 설정 (이제 밖에서 만든 변수를 정상적으로 가져옵니다!)
-            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientIdDebug\"")
+            buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
+            // 개발용 구글 클라이언트 ID 설정
+            buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         }
     }
 

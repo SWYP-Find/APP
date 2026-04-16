@@ -55,7 +55,7 @@ class LoginViewModel @Inject constructor(
                 "google" -> "https://picke.store/oauth/google"
                 else -> ""
             }
-            Log.d("LoginFlow", "[STATE] Redirect URI 결정: $redirectUri")
+            Log.d(TAG, "[STATE] Redirect URI 결정: $redirectUri")
 
             val result = authRepository.login(
                 provider = provider,

@@ -315,7 +315,7 @@ fun CommentItemCard(
                     Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = Gray700)
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isPro = item.stance == "찬성"
+                    val isPro = item.stance == "A"
                     val badgeBgColor = if (isPro) Beige600 else SwypTheme.colors.primary
                     val badgeTextColor = if (isPro) SwypTheme.colors.primary else Beige600
 
