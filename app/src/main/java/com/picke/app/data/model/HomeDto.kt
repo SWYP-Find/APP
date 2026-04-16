@@ -58,8 +58,10 @@ data class TodayQuizDto(
     val summary: String?,
     val participantsCount: Int?,
     val itemA: String?,
+    val itemADesc: String?,
     val isCorrectA: Boolean?,
     val itemB: String?,
+    val itemBDesc: String?,
     val isCorrectB: Boolean?
 )
 
@@ -158,7 +160,8 @@ fun TodayQuizDto.toTodayPickDomainModel() = TodayPick.QuizPick(
             title = this.itemA ?: "",
             isCorrect = this.isCorrectA ?: false,
             voteCount = 0,
-            ratio = 0f
+            ratio = 0f,
+            stance = this.itemADesc ?: "",
         ),
         PollQuizOptionStatBoard(
             optionId = 2L,
@@ -167,6 +170,7 @@ fun TodayQuizDto.toTodayPickDomainModel() = TodayPick.QuizPick(
             isCorrect = this.isCorrectB ?: false,
             voteCount = 0,
             ratio = 0f,
+            stance = this.itemBDesc ?: "",
         )
     )
 )
@@ -175,8 +179,8 @@ fun TodayVoteDto.toTodayPickDomainModel() = TodayPick.VotePick(
     contentId = this.battleId?.toString() ?: "",
     // 전체 문장이 필요할 때를 대비해 합쳐줍니다.
     title = "${this.titlePrefix ?: ""} ${this.titleSuffix ?: ""}".trim(),
-    titlePrefix = this.titlePrefix ?: "", // ✨ DTO에서 꺼내기
-    titleSuffix = this.titleSuffix ?: "", // ✨ DTO에서 꺼내기
+    titlePrefix = this.titlePrefix ?: "",
+    titleSuffix = this.titleSuffix ?: "",
     summary = this.summary ?: "",
     participantsCount = this.participantsCount ?: 0,
     selectedOptionId = null,
@@ -187,7 +191,8 @@ fun TodayVoteDto.toTodayPickDomainModel() = TodayPick.VotePick(
             title = option.title ?: "",
             isCorrect = false,
             voteCount = 0,
-            ratio = 0f
+            ratio = 0f,
+            stance = "",
         )
     } ?: emptyList()
 )

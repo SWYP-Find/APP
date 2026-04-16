@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 data class SettingUiState(
     val isLoading: Boolean = false,
-    val navigateToLogin: Boolean = false, // 로그아웃이나 탈퇴 완료 후 로그인 창으로 보낼 플래그
+    val navigateToLogin: Boolean = false,
     val errorMessage: String? = null
 )
 
@@ -57,16 +57,23 @@ class SettingViewModel @Inject constructor(
     }
 
     // 2. 회원 탈퇴
-    fun withdraw() {
-        // 명세서에 따른 탈퇴 사유 (필요에 따라 UI에서 선택받게 바꿀 수 있어요!)
-        val withdrawalReason = "NOT_USED_OFTEN"
+    fun withdraw(selectedKoreanReason: String) {
+        // 명세서에 따른 탈퇴 사유
+        val withdrawalReason = when (selectedKoreanReason) {
+            "자주 이용하지 않아요" -> "NOT_USED_OFTEN"
+            "보고 싶은 배틀 주제가 없어요" -> "NO_INTERESTING_BATTLES"
+            "배틀 방식이 제게 잘 맞지 않아요" -> "BATTLE_STYLE_NOT_FIT"
+            "서비스 이용이 불편해요" -> "SERVICE_INCONVENIENT"
+            "이용할 시간이 없어요" -> "NO_TIME"
+            "기타" -> "OTHER"
+            else -> "OTHER"
+        }
 
         Log.d(TAG, "▶️ [회원탈퇴] 프로세스 시작 (사유: $withdrawalReason)")
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            // Repository에서 'reason'을 받도록 인터페이스를 수정했다는 전제하에 보냅니다.
             val result = authRepository.withdraw(reason = withdrawalReason)
             Log.d(TAG, "➡️ [회원탈퇴] 서버 응답 결과: $result")
 

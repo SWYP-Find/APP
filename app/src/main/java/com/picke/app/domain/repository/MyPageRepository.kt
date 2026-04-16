@@ -1,5 +1,6 @@
 package com.picke.app.domain.repository
 
+import com.picke.app.domain.model.CreditHistoryPage
 import com.picke.app.domain.model.MyBattleRecordPage
 import com.picke.app.domain.model.MyContentActivityPage
 import com.picke.app.domain.model.MyPageInfoBoard
@@ -15,4 +16,5 @@ interface MyPageRepository {
     suspend fun updateNotificationSettings(settings: NotificationSettingsBoard): Result<NotificationSettingsBoard>
     suspend fun updateProfile(nickname: String, characterType: String): Result<ProfileUpdateBoard>
     suspend fun getMyRecap(): Result<MyRecapBoard>
+    suspend fun getCreditHistory(offset: Int?, size: Int): Result<CreditHistoryPage>
 }

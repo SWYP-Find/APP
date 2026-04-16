@@ -45,6 +45,7 @@ fun SettingScreen(
     onNavigateToSettingAlarm: ()->Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToTermsOfService: () -> Unit,
+    onNavigateToWithdraw: () -> Unit,
     onNavigateToLogin: () -> Unit,
     viewModel: SettingViewModel = hiltViewModel()
 ) {
@@ -52,11 +53,6 @@ fun SettingScreen(
     var showWithdrawDialog by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.navigateToLogin) {
-        if (uiState.navigateToLogin) {
-            onNavigateToLogin()
-        }
-    }
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar={
@@ -114,6 +110,7 @@ fun SettingScreen(
                     onConfirm = {
                         showLogoutDialog = false
                         viewModel.logout()
+                        onNavigateToLogin()
                     },
                     onDismiss = {
                         showLogoutDialog = false
@@ -128,7 +125,7 @@ fun SettingScreen(
                     dismissText = "뒤로가기",
                     onConfirm = {
                         showWithdrawDialog = false
-                        viewModel.withdraw()
+                        onNavigateToWithdraw()
                     },
                     onDismiss = {
                         showWithdrawDialog = false

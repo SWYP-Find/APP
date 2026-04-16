@@ -63,3 +63,14 @@
     public static int d(...);
     public static int e(...);
 }
+
+# ==========================================
+# Room & WorkManager 예외 처리 (크래시 방지)
+# ==========================================
+-keep class androidx.work.** { *; }
+-keep class androidx.room.** { *; }
+-keep class * extends androidx.room.RoomDatabase
+-keep class * extends androidx.room.RoomDatabase$Builder
+-keep @androidx.room.Entity class *
+-dontwarn androidx.work.**
+-dontwarn androidx.room.**

@@ -1,5 +1,6 @@
 package com.picke.app.di
 
+import com.google.gson.Gson
 import com.picke.app.BuildConfig
 import com.picke.app.data.remote.AuthInterceptor
 import dagger.Module
@@ -37,5 +38,11 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGson(): Gson {
+        return Gson()
     }
 }

@@ -34,7 +34,7 @@ private fun saveBitmapToCache(context: Context, bitmap: Bitmap, fileName: String
 }
 
 /**
- * 카카오톡 공유기능
+ * [철학자 유형] 카카오톡 공유기능
  */
 fun shareCapturedImageToKakao(
     context: Context,
@@ -59,7 +59,7 @@ fun shareCapturedImageToKakao(
             // 3. FeedTemplate 조립
             val feed = FeedTemplate(
                 content = Content(
-                    title = "나의 철학자 유형은 [$philosopherName]!",
+                    title = "나의 철학자 유형은 [${philosopherName}형]!",
                     description = description,
                     imageUrl = uploadedImageUrl,
                     link = Link(
@@ -97,7 +97,7 @@ fun shareCapturedImageToKakao(
 }
 
 /**
- * 인스타그램 스토리 공유기능
+ * [철학자 유형] 인스타그램 스토리 공유기능
  */
 fun shareToInstagramStory(
     context: Context,
@@ -119,8 +119,8 @@ fun shareToInstagramStory(
         val intent = Intent("com.instagram.share.ADD_TO_STORY").apply {
             type = "image/png"
             putExtra("interactive_asset_uri", uri)
-            putExtra("top_background_color", "#F4EFEA")
-            putExtra("bottom_background_color", "#E2CFA7")
+            putExtra("top_background_color", "#893825")
+            putExtra("bottom_background_color", "#653226")
             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
         }
 
@@ -138,6 +138,156 @@ fun shareToInstagramStory(
     } catch (e: Exception) {
         e.printStackTrace()
         android.util.Log.e("InstagramShare", "🚨 인스타 공유 실패 원인: ", e)
+        Toast.makeText(context, "이미지 처리 중 에러가 발생했습니다.", Toast.LENGTH_SHORT).show()
+    }
+}
+
+/**
+ * [배틀 주제] 카카오톡 공유기능 (순수 비트맵 썸네일 업로드 방식)
+ */
+fun shareBattleToKakao(
+    context: Context,
+    bitmap: Bitmap,
+    battleId: String,
+    battleTitle: String,
+    battleDescription: String,
+    onComplete: () -> Unit = {}
+) {
+    // 1. 비트맵을 캐시에 파일로 저장
+    val file = saveBitmapToCache(context, bitmap, "kakao_battle_share.png")
+    if (file == null) {
+        onComplete()
+        Toast.makeText(context, "이미지 저장 실패", android.widget.Toast.LENGTH_SHORT).show()
+        return
+    }
+
+    // 2. 카카오 서버에 파일 직접 업로드 (URL 스크랩 우회!)
+    ShareClient.instance.uploadImage(file) { imageUploadResult, error ->
+        if (error != null || imageUploadResult == null) {
+            onComplete()
+            android.widget.Toast.makeText(context, "카카오 이미지 업로드 실패", android.widget.Toast.LENGTH_SHORT).show()
+            android.util.Log.e("KakaoShare", "업로드 실패: ${error?.message}")
+        } else {
+            val uploadedImageUrl = imageUploadResult.infos.original.url
+
+            // 3. 업로드 성공한 안전한 카카오 URL로 템플릿 조립
+            val feed = FeedTemplate(
+                content = Content(
+                    title = "💥 배틀 주제: $battleTitle",
+                    description = battleDescription,
+                    imageUrl = uploadedImageUrl,
+                    link = Link(
+                        webUrl = "https://picke.store/battle/$battleId",
+                        mobileWebUrl = "https://picke.store/battle/$battleId",
+                        androidExecutionParams = mapOf("battleId" to battleId)
+                    )
+                ),
+                buttons = listOf(
+                    Button(
+                        title = "배틀 참여하러 가기🙆‍♂️",
+                        link = Link(
+                            webUrl = "https://picke.store/battle/$battleId",
+                            mobileWebUrl = "https://picke.store/battle/$battleId",
+                            androidExecutionParams = mapOf("battleId" to battleId)
+                        )
+                    )
+                )
+            )
+
+            // 4. 공유 창 띄우기
+            ShareClient.instance.shareDefault(context, feed) { result, shareError ->
+                onComplete()
+                if (shareError == null && result != null) {
+                    context.startActivity(result.intent)
+                } else {
+                    Toast.makeText(context, "카카오톡 공유 실패", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * [배틀 주제] 인스타그램 스토리 공유기능
+ */
+fun shareBattleToInstagramStoryBrightMode(
+    context: Context,
+    bitmap: Bitmap,
+    onComplete: () -> Unit = {}
+) {
+    try {
+        val imageFile = saveBitmapToCache(context, bitmap, "instagram_battle_story.png")
+        if (imageFile == null) {
+            Toast.makeText(context, "이미지 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val authority = "${context.packageName}.fileprovider"
+        val uri = FileProvider.getUriForFile(context, authority, imageFile)
+
+        val intent = Intent("com.instagram.share.ADD_TO_STORY").apply {
+            type = "image/png"
+            putExtra("interactive_asset_uri", uri)
+            putExtra("top_background_color", "#FFFFFF")
+            putExtra("bottom_background_color", "#FFFFFF")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        val activity = context as? Activity
+        activity?.grantUriPermission("com.instagram.android", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        if (context.packageManager.resolveActivity(intent, 0) != null) {
+            context.startActivity(intent)
+            onComplete()
+        } else {
+            onComplete()
+            Toast.makeText(context, "인스타그램이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+    } catch (e: Exception) {
+        onComplete()
+        e.printStackTrace()
+        Toast.makeText(context, "이미지 처리 중 에러가 발생했습니다.", Toast.LENGTH_SHORT).show()
+    }
+}
+
+fun shareBattleToInstagramStoryDarkMode(
+    context: Context,
+    bitmap: Bitmap,
+    onComplete: () -> Unit = {}
+) {
+    try {
+        val imageFile = saveBitmapToCache(context, bitmap, "instagram_battle_story.png")
+        if (imageFile == null) {
+            Toast.makeText(context, "이미지 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val authority = "${context.packageName}.fileprovider"
+        val uri = FileProvider.getUriForFile(context, authority, imageFile)
+
+        val intent = Intent("com.instagram.share.ADD_TO_STORY").apply {
+            type = "image/png"
+            putExtra("interactive_asset_uri", uri)
+            putExtra("top_background_color", "#000000")
+            putExtra("bottom_background_color", "#000000")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        val activity = context as? Activity
+        activity?.grantUriPermission("com.instagram.android", uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        if (context.packageManager.resolveActivity(intent, 0) != null) {
+            context.startActivity(intent)
+            onComplete()
+        } else {
+            onComplete()
+            Toast.makeText(context, "인스타그램이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+    } catch (e: Exception) {
+        onComplete()
+        e.printStackTrace()
         Toast.makeText(context, "이미지 처리 중 에러가 발생했습니다.", Toast.LENGTH_SHORT).show()
     }
 }

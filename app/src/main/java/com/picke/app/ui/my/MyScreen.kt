@@ -58,7 +58,7 @@ import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.Secondary300
 import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.util.AdMobManager
+import com.picke.app.di.AdMobManager
 
 @Composable
 fun MyScreen(
@@ -68,18 +68,12 @@ fun MyScreen(
     onNavigateToPhilosopher: () -> Unit,
     onNavigateToContent: () -> Unit,
     onNavigateToNotice: () -> Unit,
+    onNavigateToPoint: ()->Unit,
     viewModel: MyViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val activity = context as? Activity
-
-    val adMobManager = remember { AdMobManager(context) }
-    LaunchedEffect(uiState.profile?.userTag) {
-        uiState.profile?.userTag?.let {
-            adMobManager.loadAd(userId = it)
-        }
-    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
@@ -169,14 +163,17 @@ fun MyScreen(
 
                 CreditCard(
                     credit = uiState.tier?.currentPoint ?: 0,
+                    onClick = {
+                        onNavigateToPoint()
+                    },
                     onChargeClick = {
                         activity?.let {
-                        val isAdReady = adMobManager.showAd(
+                        val isAdReady = viewModel.adMobManager.showAd(
                             activity = it,
                             onRewardEarned = {
                                 viewModel.refreshPointsAfterAd()
-                                uiState.profile?.userTag?.let { tag -> adMobManager.loadAd(userId = tag) }
-                                Toast.makeText(context, "50포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
+                                uiState.profile?.userTag?.let { tag -> viewModel.adMobManager.loadAd(userId = tag) }
+                                Toast.makeText(context, "20포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
                             }
                         )
 
@@ -307,13 +304,15 @@ fun PhilosopherTypeCard(
 @Composable
 fun CreditCard(
     credit: Int,
-    onChargeClick: () -> Unit = {}
+    onClick: ()->Unit,
+    onChargeClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(Primary800)
+            .clickable{ onClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

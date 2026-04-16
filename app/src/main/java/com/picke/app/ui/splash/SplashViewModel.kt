@@ -3,8 +3,11 @@ package com.picke.app.ui.splash
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.di.AdMobManager
+import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,16 +17,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class SplashUiState{
-    object Loading : SplashUiState()
+    object Loading : SplashUiState() // 로딩중
     object NavigateToLogin : SplashUiState() // 소셜로그인
     object NavigateToOnboarding : SplashUiState() // 온보딩
-    object NavigateToMain : SplashUiState() // 홈화면
+    object NavigateToMain : SplashUiState() // 메인화면
+    data class NavigateToOtherPhilosopher(val reportId: String) : SplashUiState()
+    data class NavigateToBattle(val battleId: String) : SplashUiState()
 }
+
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val mixpanel: MixpanelAPI,
+    private val adMobManager: AdMobManager
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "SplashViewModel_Picke"
+    }
+
     private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
@@ -33,27 +45,52 @@ class SplashViewModel @Inject constructor(
 
     private fun checkAutoLogin() {
         viewModelScope.launch {
+            Log.d(TAG, "[FLOW] 자동 로그인 체크 시작")
             delay(1000)
 
             val localRefreshToken = tokenManager.getRefreshToken()
-            val localAccessToken = tokenManager.getAccessToken()
-
-            Log.d("TokenFlow", "🔥 AccessToken: $localAccessToken")
-            Log.d("TokenFlow", "🔥 RefreshToken: $localRefreshToken")
-            Log.d("SplashFlow", "1. 저장된 리프레시 토큰: $localRefreshToken")
 
             if (localRefreshToken.isNullOrBlank()) {
-                Log.d("SplashFlow", "2. 토큰 없음 -> 신규 유저 판단 (온보딩 이동)")
+                Log.i(TAG, "[NAV] 토큰 없음: 신규 유저로 판단 -> 온보딩")
                 _uiState.value = SplashUiState.NavigateToOnboarding
             } else {
-                Log.d("SplashFlow", "2. 토큰 있음 -> 기존 유저 판단 (토큰 갱신 시도)")
+                Log.d(TAG, "[STATE] 기존 토큰 발견: 서버 확인 절차 진입")
                 val result = authRepository.refreshAccessToken(localRefreshToken)
 
                 result.onSuccess {
-                    Log.d("SplashFlow", "3. 토큰 갱신 성공! -> 홈(Main) 화면 이동")
-                    _uiState.value = SplashUiState.NavigateToMain
+                    Log.i(TAG, "[NAV] 인증 성공: 메인 화면")
+
+                    val savedUserTag = tokenManager.getUserTag()
+
+                    if (savedUserTag != null) {
+                        // 3. 믹스패널 유저 식별 (DAU 집계)
+                        mixpanel.identify(savedUserTag)
+                        Log.d(TAG, "[Mixpanel] 유저 식별 완료: $savedUserTag")
+
+                        // 4. 광고 미리 로드 (프리패치)
+                        adMobManager.loadAd(userId = savedUserTag)
+                        Log.d(TAG, "[AdMob] 광고 프리패치 시작")
+                    }
+
+                    val pendingReport = DeepLinkManager.pendingReportId
+                    val pendingBattle = DeepLinkManager.pendingBattleId
+
+                    when {
+                        pendingReport != null -> {
+                            Log.i(TAG, "[NAV] 딥링크 감지 -> 상대방 철학자 리포트 화면으로 이동")
+                            _uiState.value = SplashUiState.NavigateToOtherPhilosopher(pendingReport)
+                        }
+                        pendingBattle != null -> {
+                            Log.i(TAG, "[NAV] 딥링크 감지 -> 배틀 화면으로 이동")
+                            _uiState.value = SplashUiState.NavigateToBattle(pendingBattle)
+                        }
+                        else -> {
+                            Log.i(TAG, "[NAV] 일반 접속 -> 메인 화면으로 이동")
+                            _uiState.value = SplashUiState.NavigateToMain
+                        }
+                    }
                 }.onFailure { error ->
-                    Log.e("SplashFlow", "3. 토큰 갱신 실패! -> 로그인 화면 이동", error)
+                    Log.w(TAG, "[NAV] 인증 실패: 로그인 화면")
                     tokenManager.clearAll()
                     _uiState.value = SplashUiState.NavigateToLogin
                 }

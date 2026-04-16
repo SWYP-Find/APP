@@ -70,7 +70,6 @@ class BattleRoutingViewModel @Inject constructor(
     }
 }
 
-// --- Screen ---
 @Composable
 fun BattleRoutingScreen(
     onNavigateToPreVote: (String) -> Unit,

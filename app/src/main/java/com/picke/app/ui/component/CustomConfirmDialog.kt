@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -102,6 +103,166 @@ fun CustomConfirmDialog(
                     ) {
                         Text(
                             text = dismissText,
+                            style = SwypTheme.typography.b3SemiBold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomReverseConfirmDialog(
+    title: String? = null,
+    message: String,
+    dismissText: String = "뒤로가기",
+    confirmText: String = "제안하기",
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    val modalBackgroundColor = Beige500
+    val pointColor = Primary500
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(2.dp),
+            color = modalBackgroundColor,
+            border = BorderStroke(1.dp, pointColor),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Column {
+                // 1. 텍스트 영역 (상단)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // 타이틀
+                    if (title != null) {
+                        Text(
+                            text = title,
+                            style = SwypTheme.typography.labelLarge,
+                            color = pointColor,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    // 본문
+                    Text(
+                        text = message,
+                        style = if (title != null) SwypTheme.typography.b3Regular else SwypTheme.typography.b3SemiBold,
+                        color = pointColor,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+                }
+
+                // 2. 가로 구분선
+                HorizontalDivider(thickness = 1.dp, color = pointColor)
+
+                // 3. 버튼 영역 (하단)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min)
+                ) {
+                    // 왼쪽 버튼 (뒤로가기/취소)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onDismiss() }
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = dismissText,
+                            style = SwypTheme.typography.b3SemiBold,
+                            color = pointColor
+                        )
+                    }
+
+                    // 수직 구분선
+                    VerticalDivider(thickness = 1.dp, color = pointColor)
+
+                    // 오른쪽 버튼 (제안하기/확인)
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(pointColor)
+                            .clickable { onConfirm() }
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = confirmText,
+                            style = SwypTheme.typography.b3SemiBold,
+                            color = Color.White
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomSingleActionDialog(
+    message: String,
+    buttonText: String,
+    imageResId: Int? = null,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Surface(
+                shape = RoundedCornerShape(2.dp),
+                color = Beige500,
+                border = BorderStroke(1.dp, Primary500),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = if (imageResId != null) 16.dp else 0.dp)
+            ) {
+                Column {
+                    // 텍스트 영역
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = message,
+                            style = SwypTheme.typography.h4SemiBold,
+                            color = Primary500,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 24.sp
+                        )
+                    }
+
+                    // 가로 구분선
+                    HorizontalDivider(thickness = 1.dp, color = Primary500)
+
+                    // 버튼 영역
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Primary500)
+                            .clickable { onConfirm() }
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = buttonText,
                             style = SwypTheme.typography.b3SemiBold,
                             color = Color.White
                         )

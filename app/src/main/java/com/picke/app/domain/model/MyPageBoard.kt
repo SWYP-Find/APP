@@ -123,3 +123,18 @@ data class MyRecapBoard(
     val scores: RecapScores,
     val preferenceReport: PreferenceReport
 )
+
+// 8. 내 크레딧 내역
+data class CreditHistoryItem(
+    val id: Long,
+    val creditType: String,
+    val amount: Int,
+    val referenceId: Long,
+    val createdAt: String
+)
+
+data class CreditHistoryPage(
+    val items: List<CreditHistoryItem>,
+    val nextOffset: Int?,
+    val hasNext: Boolean
+)

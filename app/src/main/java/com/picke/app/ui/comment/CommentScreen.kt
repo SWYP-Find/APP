@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,6 +67,7 @@ import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommentScreen(
     onBackClick: () -> Unit,
@@ -313,7 +315,7 @@ fun CommentItemCard(
                     Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = Gray700)
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isPro = item.stance == "찬성"
+                    val isPro = item.stance == "A"
                     val badgeBgColor = if (isPro) Beige600 else SwypTheme.colors.primary
                     val badgeTextColor = if (isPro) SwypTheme.colors.primary else Beige600
 

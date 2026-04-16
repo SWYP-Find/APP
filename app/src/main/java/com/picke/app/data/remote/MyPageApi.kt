@@ -1,6 +1,7 @@
 package com.picke.app.data.remote
 
 import com.picke.app.data.model.BaseResponse
+import com.picke.app.data.model.CreditHistoryPageDto
 import com.picke.app.data.model.MyBattleRecordPageDto
 import com.picke.app.data.model.MyContentActivityPageDto
 import com.picke.app.data.model.MyPageInfoDto
@@ -53,4 +54,11 @@ interface MyPageApi {
     // 7. 내 결산(Recap) 조회
     @GET("/api/v1/me/recap")
     suspend fun getMyRecap(): BaseResponse<MyRecapDto>
+
+    // 8. 내 크레딧 내역 조회
+    @GET("/api/v1/me/credits/history")
+    suspend fun getCreditHistory(
+        @Query("offset") offset: Int? = null,
+        @Query("size") size: Int = 10
+    ): BaseResponse<CreditHistoryPageDto>
 }

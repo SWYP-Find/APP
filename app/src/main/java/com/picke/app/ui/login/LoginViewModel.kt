@@ -3,7 +3,9 @@ package com.picke.app.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.picke.app.BuildConfig
+import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,18 +14,23 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// 화면 상태 정의
 sealed class LoginUiState {
     object Idle : LoginUiState()
-    object Loading : LoginUiState()
-    data class Success(val isNewUser: Boolean) : LoginUiState()
-    data class Error(val message: String) : LoginUiState()
+    object Loading : LoginUiState() // 로딩중
+    data class Success(val isNewUser: Boolean) : LoginUiState() // 로그인 성공
+    data class Error(val message: String) : LoginUiState() // 에러 발생
 }
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val tokenManager: TokenManager,
+    private val mixpanel: MixpanelAPI
 ) : ViewModel() {
+    companion object {
+        private const val TAG = "LoginViewModel_Picke"
+    }
+
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
     val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -32,23 +39,23 @@ class LoginViewModel @Inject constructor(
     }
 
     fun handleSocialLoginSuccess(provider: String, authCode: String) {
-        // 1. 방어막: 현재 로딩 중이면 튕겨냅니다.
+        // API 중복 요청 방지
         if (_uiState.value is LoginUiState.Loading) {
-            Log.d("LoginFlow", "🚨 이미 로그인 처리 중입니다! 중복 호출 방어 성공!")
+            Log.d(TAG, "[FLOW] 중복 로그인 요청 차단")
             return
         }
 
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
-            Log.d("LoginFlow", "1. [$provider] 인가 코드 획득 완료! 백엔드에 로그인 요청 시작. (AuthCode: $authCode)")
+            Log.d(TAG, "[FLOW] $provider 인가 코드 획득 완료. AuthCode: $authCode")
 
             val redirectUri = when (provider) {
                 "kakao" -> "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
                 "google" -> "https://picke.store/oauth/google"
                 else -> ""
             }
-            Log.d("LoginFlow", "2. 전송할 Redirect URI: $redirectUri")
+            Log.d(TAG, "[STATE] Redirect URI 결정: $redirectUri")
 
             val result = authRepository.login(
                 provider = provider,
@@ -57,10 +64,14 @@ class LoginViewModel @Inject constructor(
             )
 
             result.onSuccess { authToken ->
-                Log.d("LoginFlow", "3. 🟢 백엔드 로그인 통신 성공! (신규 유저 여부: ${authToken.isNewUser})")
+                Log.i(TAG, "[NAV] ${provider} 로그인 성공 (신규 유저 여부: ${authToken.isNewUser})")
                 _uiState.value = LoginUiState.Success(isNewUser = authToken.isNewUser)
+
+                val userTag = authToken.userTag ?: "unknown_user"
+                tokenManager.saveUserTag(userTag)
+                mixpanel.identify(userTag)
             }.onFailure { error ->
-                Log.e("LoginFlow", "3. 🔴 백엔드 로그인 통신 실패!", error)
+                Log.w(TAG, "[FLOW] ${provider} 로그인 실패: ${error.message}")
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")
             }
         }

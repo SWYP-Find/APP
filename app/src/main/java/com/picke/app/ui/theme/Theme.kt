@@ -24,16 +24,21 @@ fun SwypAppTheme(
     // 🌟 1. 현재 화면(View) 정보를 가져옵니다.
     val view = LocalView.current
 
-    // 🌟 2. 화면이 렌더링될 때 상태바 색상을 세팅하는 마법의 주문!
+    // 🌟 2. 화면이 그려질 때마다 안드로이드 시스템의 고집을 꺾고 강제로 설정합니다.
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
 
-            // 상태바 배경색을 우리 앱의 배경색(Beige50)으로 맞추거나 투명하게 만듭니다.
-            window.statusBarColor = Beige50.toArgb()
+            // 핵심 1: 상태바와 하단바 배경을 '완벽한 투명'으로 만듭니다. (Edge-to-Edge 꽉 차게!)
+            // 예전처럼 Beige50으로 칠해버리면 화면이 위로 밀려버리니 꼭 TRANSPARENT를 써야 합니다.
+            window.statusBarColor = android.graphics.Color.TRANSPARENT
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
-            // 🚀 핵심: "배경이 밝으니까(Light), 아이콘은 어둡게 해줘!" (true = 어두운 아이콘)
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
+            // 핵심 2: "내 앱은 밝은 배경이니까 아이콘은 까맣게(Dark) 그려!" 하고 강제 명령을 내립니다.
+            // true = 어두운 아이콘 적용
+            val insetsController = WindowCompat.getInsetsController(window, view)
+            insetsController.isAppearanceLightStatusBars = true
+            insetsController.isAppearanceLightNavigationBars = true
         }
     }
 
