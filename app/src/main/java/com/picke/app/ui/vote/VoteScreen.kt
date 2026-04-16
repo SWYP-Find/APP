@@ -322,18 +322,20 @@ fun VoteScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Max),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         if (battleInfo.options.size >= 2) {
                             VoteOptionCard(
-                                modifier = Modifier.weight(0.5f),
+                                modifier = Modifier.weight(0.5f).fillMaxHeight(),
                                 option = battleInfo.options[0],
                                 isSelected = selectedOptionId == battleInfo.options[0].optionId,
                                 onClick = { selectedOptionId = battleInfo.options[0].optionId }
                             )
                             VoteOptionCard(
-                                modifier = Modifier.weight(0.5f),
+                                modifier = Modifier.weight(0.5f).fillMaxHeight(),
                                 option = battleInfo.options[1],
                                 isSelected = selectedOptionId == battleInfo.options[1].optionId,
                                 onClick = { selectedOptionId = battleInfo.options[1].optionId }
@@ -457,7 +459,8 @@ fun VoteOptionCard(
             .background(Beige300)
             .clickable { onClick() }
             .padding(vertical = 24.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         ProfileImage(
             model = option.imageUrl,
