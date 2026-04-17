@@ -84,7 +84,7 @@ class CommentViewModel @Inject constructor(
 
             perspectiveRepository.getPerspective(targetIdLong)
                 .onSuccess { perspective ->
-                    Log.i(TAG, "[STATE] 메인 관점(본문) 조회 성공")
+                    Log.i(TAG, "[STATE] 메인 관점(perspectiveId: ${perspective.perspectiveId}) 조회 성공")
 
                     val displayStance = if (perspective.optionLabel == "A" || perspective.optionLabel == "AGREE") "A" else "B"
 

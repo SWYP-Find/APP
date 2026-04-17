@@ -34,7 +34,7 @@ class CommentRepositoryImpl @Inject constructor(
                 domainData.items.forEachIndexed { index, item ->
                     // 가독성을 위해 본문이 너무 길면 20자까지만 자르고 줄바꿈을 공백으로 바꿉니다.
                     val shortContent = item.content.take(20).replace("\n", " ")
-                    Log.d(TAG, "   └ [$index] ID: ${item.commentId} | 입장(Stance): ${item.stance} | 작성자: ${item.user.nickname} | 내용: $shortContent...")
+                    Log.d(TAG, "   └ [$index] commentId: ${item.commentId} | 입장(Stance): ${item.stance} | 작성자: ${item.user.nickname} | 내용: $shortContent...")
                 }
 
                 Result.success(domainData)
