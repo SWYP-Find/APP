@@ -21,15 +21,17 @@ class AuthRepositoryImpl @Inject constructor(
         private const val TAG = "AuthRepositoryImpl_Picke"
     }
 
-    // 토큰 재발급
+    /**
+     * 1. 토큰 재발급 수행
+     */
     override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
-            Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken}")
+            Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken}") // FIXME: 토큰 로그 노출 X
             val response = api.refreshAccessToken(refreshToken)
 
             if (response.statusCode == 200 && response.data != null) {
                 val data = response.data
-                Log.d(TAG, "[API_RES] 토큰 갱신 성공: ${data}")
+                Log.d(TAG, "[API_RES] 토큰 갱신 성공: ${data.status}")
 
                 tokenManager.saveAccessToken(data.accessToken)
                 tokenManager.saveRefreshToken(data.refreshToken)
@@ -41,20 +43,22 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.error?.message ?: "토큰 갱신 실패"))
             }
         } catch (e: Exception) {
-            Log.e(TAG, "[API_ERR] 토큰 갱신 예외 발생: ${e.message}")
+            Log.e(TAG, "[API_ERR] 토큰 갱신 예외 발생: ${e.message}", e)
             Result.failure(e)
         }
     }
 
 
-    // 소셜 로그인
+    /**
+     * 2. 소셜 로그인 수행
+     */
     override suspend fun login(provider: String, authCode: String, redirectUri: String): Result<AuthBoard> {
         return try {
             val request = SocialLoginRequest(
                 authorizationCode = authCode,
                 redirectUri = redirectUri
             )
-            Log.d(TAG, "[API_REQ] 로그인 시도: ${request}")
+            Log.d(TAG, "[API_REQ] 로그인 시도: ${request}") // FIXME: 인가 코드 & 리다이렉트 URI 로그 노출 X
             val response = api.login(provider, request)
 
             if (response.statusCode == 200 && response.data != null) {
@@ -73,13 +77,15 @@ class AuthRepositoryImpl @Inject constructor(
         }
         catch (e: Exception) {
             e.printStackTrace()
-            Log.e(TAG, "[API_ERR] 로그인 예외 발생: ${e.message}")
+            Log.e(TAG, "[API_ERR] 로그인 예외 발생: ${e.message}", e)
             Result.failure(e)
         }
     }
 
 
-    // 로그아웃
+    /**
+     * 3. 로그아웃 수행
+     */
     override suspend fun logout(): Result<Unit> {
         return try {
             Log.d(TAG, "[API_REQ] 로그아웃 시도")
@@ -96,17 +102,19 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e(TAG, "[API_ERR] 로그아웃 예외 발생: ${e.message}")
+            Log.e(TAG, "[API_ERR] 로그아웃 예외 발생: ${e.message}", e)
             tokenManager.clearAll()
             Result.failure(e)
         }
     }
 
 
-    // 회원 탈퇴
+    /**
+     * 4. 회원 탈퇴 수행
+     */
     override suspend fun withdraw(reason: String): Result<Unit> {
         return try {
-            Log.d(TAG, "[API_REQ] 탈퇴 시도")
+            Log.d(TAG, "[API_REQ] 탈퇴 시도 사유: $reason")
             val request = WithdrawalRequest(reason = reason)
             val response = api.withdraw(request)
 
@@ -121,7 +129,7 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e(TAG, "[API_ERR] 탈퇴 예외 발생 ${e.message}")
+            Log.e(TAG, "[API_ERR] 탈퇴 예외 발생 ${e.message}", e)
             tokenManager.clearAll()
             Result.failure(e)
         }

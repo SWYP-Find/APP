@@ -1,5 +1,6 @@
 package com.picke.app.data.repository
 
+import android.util.Log
 import com.picke.app.data.model.ProfileUpdateRequestDto
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.model.toDto
@@ -17,6 +18,11 @@ import javax.inject.Inject
 class MyPageRepositoryImpl @Inject constructor(
     private val myPageApi: MyPageApi
 ): MyPageRepository {
+
+    companion object {
+        private const val TAG = "MyPageRepo_Picke"
+    }
+
     override suspend fun getMyBattleRecords(offset: Int?, size: Int, voteSide: String?): Result<MyBattleRecordPage> {
         return try {
             val response = myPageApi.getMyBattleRecords(offset, size, voteSide)
@@ -81,6 +87,8 @@ class MyPageRepositoryImpl @Inject constructor(
         return try {
             val response = myPageApi.getMyRecap()
             val data = response.data ?: throw Exception(response.error?.message ?: "연말 결산 정보를 불러오지 못했습니다.")
+            val domainModel = data.toDomainModel()
+            Log.d(TAG, "[API_RES] 철학자 유형 응답 성공! 전체 데이터: $domainModel")
             Result.success(data.toDomainModel())
         } catch (e: Exception) {
             Result.failure(e)
