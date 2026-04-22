@@ -97,16 +97,6 @@ fun ScenarioScreen(
                     title = uiState.title,
                     showBackButton = false,
                     backgroundColor = Beige200,
-                    /*actions = {
-                        IconButton(
-                            onClick = {
-                                // viewModel.loadScenario(battleId)
-                                onNextClick()
-                            }
-                        ) {
-                            Icon(painterResource(R.drawable.ic_reload), contentDescription = "다시듣기", tint = Gray900)
-                        }
-                    }*/
                 )
             }
         },

@@ -71,7 +71,7 @@ fun LoginScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             account.serverAuthCode?.let { authCode ->
-                Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
                 viewModel.handleSocialLoginSuccess("google", authCode)
             } ?: Log.e(TAG, "[ERROR] 구글 인가 코드가 null입니다.")
         } catch (e: ApiException) {
@@ -144,7 +144,7 @@ fun LoginScreen(
                     text = stringResource(R.string.login_with_kakao),
                     onClick = {
                         loginWithKakaoForAuthCode(context, viewModel) { token ->
-                            Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
+                            if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
                             viewModel.handleSocialLoginSuccess("kakao", token)
                         }
                     },

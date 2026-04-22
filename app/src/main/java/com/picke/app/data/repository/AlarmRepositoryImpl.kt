@@ -2,6 +2,7 @@ package com.picke.app.data.repository
 
 import com.picke.app.data.model.AlarmDetailBoard
 import com.picke.app.data.model.toDomainModel
+import com.picke.app.data.model.toResult
 import com.picke.app.data.remote.AlarmApi
 import com.picke.app.domain.model.AlarmPageBoard
 import com.picke.app.domain.repository.AlarmRepository
@@ -13,15 +14,9 @@ class AlarmRepositoryImpl @Inject constructor(
 
     override suspend fun getAlarms(category: String, page: Int, size: Int): Result<AlarmPageBoard> {
         return try {
-            val response = alarmApi.getAlarms(category, page, size)
-            val data = response.data
-
-            if (response.statusCode == 200 && data != null) {
-                Result.success(data.toDomainModel())
-            } else {
-                val errorMessage = response.error?.message ?: "알림 목록을 불러오지 못했습니다."
-                Result.failure(Exception(errorMessage))
-            }
+            alarmApi.getAlarms(category, page, size)
+                .toResult("알림 목록을 불러오지 못했습니다.")
+                .map { it.toDomainModel() }
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -29,15 +24,9 @@ class AlarmRepositoryImpl @Inject constructor(
 
     override suspend fun getAlarmDetail(notificationId: Long): Result<AlarmDetailBoard> {
         return try {
-            val response = alarmApi.getAlarmDetail(notificationId)
-            val data = response.data
-
-            if (response.statusCode == 200 && data != null) {
-                Result.success(data.toDomainModel())
-            } else {
-                val errorMessage = response.error?.message ?: "알림 상세 정보를 불러오지 못했습니다."
-                Result.failure(Exception(errorMessage))
-            }
+            alarmApi.getAlarmDetail(notificationId)
+                .toResult("알림 상세 정보를 불러오지 못했습니다.")
+                .map { it.toDomainModel() }
         } catch (e: Exception) {
             Result.failure(e)
         }

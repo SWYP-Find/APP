@@ -1,6 +1,7 @@
 package com.picke.app.data.repository
 
 import android.util.Log
+import com.picke.app.BuildConfig
 import com.picke.app.data.local.TokenManager
 import com.picke.app.data.model.SocialLoginRequest
 import com.picke.app.data.model.WithdrawalRequest
@@ -26,7 +27,7 @@ class AuthRepositoryImpl @Inject constructor(
      */
     override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
-            Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken}") // FIXME: 토큰 로그 노출 X
+            if (BuildConfig.DEBUG) Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken}")
             val response = api.refreshAccessToken(refreshToken)
 
             if (response.statusCode == 200 && response.data != null) {
@@ -58,7 +59,7 @@ class AuthRepositoryImpl @Inject constructor(
                 authorizationCode = authCode,
                 redirectUri = redirectUri
             )
-            Log.d(TAG, "[API_REQ] 로그인 시도: ${request}") // FIXME: 인가 코드 & 리다이렉트 URI 로그 노출 X
+            if (BuildConfig.DEBUG) Log.d(TAG, "[API_REQ] 로그인 시도: ${request}")
             val response = api.login(provider, request)
 
             if (response.statusCode == 200 && response.data != null) {

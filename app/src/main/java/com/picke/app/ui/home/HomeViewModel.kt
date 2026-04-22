@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.repository.HomeRepository
+import com.picke.app.util.ContentType
 import com.picke.app.domain.repository.PollQuizRepository
 import com.picke.app.ui.home.model.HomeContentUiModel
 import com.picke.app.ui.home.model.TodayPickUiModel
@@ -91,7 +92,7 @@ class HomeViewModel @Inject constructor(
 
                 Log.d("HomeFlow", "   - 📤 [Request] 동기화 요청: battleId=$battleIdLong, type=${pick.type}")
 
-                val result = if (pick.type == "QUIZ") {
+                val result = if (pick.type == ContentType.QUIZ) {
                     pollQuizRepository.getMyQuizVote(battleIdLong)
                 } else {
                     pollQuizRepository.getMyPollVote(battleIdLong)
@@ -142,7 +143,7 @@ class HomeViewModel @Inject constructor(
             Log.d("HomeFlow", "   - 보낸 데이터 (타입): $type")
             Log.d("HomeFlow", "   - 보낸 데이터 (선택한옵션ID): $optionId")
 
-            val result = if (type == "QUIZ") {
+            val result = if (type == ContentType.QUIZ) {
                 pollQuizRepository.submitQuizVote(battleIdLong, optionId)
             } else {
                 pollQuizRepository.submitPollVote(battleIdLong, optionId)

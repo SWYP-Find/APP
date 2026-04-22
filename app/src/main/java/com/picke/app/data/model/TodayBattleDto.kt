@@ -14,7 +14,8 @@ data class TodayBattleItemDto(
     val title: String,
     val summary: String,
     val thumbnailUrl: String,
-    val type: String,
+//    val viewCount: Int,
+//    val participantsCount: Int,
     val audioDuration: Int,
     val tags: List<TodayBattleTagDto>,
     val options: List<TodayBattleOptionDto>
@@ -49,7 +50,7 @@ fun TodayBattleItemDto.toDomainModel(): TodayBattleItem {
         title = this.title,
         summary = this.summary,
         thumbnailUrl = this.thumbnailUrl ?: "",
-        type = this.type,
+        type = "",
         audioDuration = this.audioDuration,
         tags = this.tags.map { it.name },
         options = this.options.map { it.toDomainModel() }
