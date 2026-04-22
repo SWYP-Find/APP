@@ -578,12 +578,31 @@ fun OpinionCard(
             .background(bgColor)
             .clickable { onClick() }
             .padding(vertical = 18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Text(text = name, style = SwypTheme.typography.labelXSmall, color = Secondary500)
+        Text(
+            text = name,
+            style = SwypTheme.typography.labelXSmall,
+            color = Secondary500,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = opinion,
+            style = SwypTheme.typography.h3Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = opinion, style = SwypTheme.typography.h3Bold, color = Color.White)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "\"$quote\"", style = SwypTheme.typography.labelXSmall, color = Color.White.copy(0.3f))
+        Text(
+            text = "\"$quote\"",
+            style = SwypTheme.typography.labelXSmall,
+            color = Color.White.copy(0.3f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

@@ -124,12 +124,19 @@ fun PhilosopherTypeScreen(
             try {
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
 
-                shareCapturedImageToKakao(
-                    context = context,
-                    bitmap = bitmap,
-                    resultId = "my_recap",
-                    philosopherName = recapBoard?.myCard?.philosopherLabel ?: "알 수 없음",
-                    description = recapBoard?.myCard?.description ?: ""
+                viewModel.getRecapShareKey(
+                    onSuccess = { shareKey ->
+                        shareCapturedImageToKakao(
+                            context = context,
+                            bitmap = bitmap,
+                            resultId = shareKey,
+                            philosopherName = recapBoard?.myCard?.philosopherLabel ?: "알 수 없음",
+                            description = recapBoard?.myCard?.description ?: ""
+                        )
+                    },
+                    onError = { errorMessage ->
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
                 )
             } catch (e: Exception) {
                 Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
@@ -241,6 +248,7 @@ fun PhilosopherTypeScreen(
                             backgroundColor = SwypTheme.colors.primary,
                             textColor = Color.White
                         )
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
             }

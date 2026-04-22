@@ -7,9 +7,13 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import com.picke.app.R
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -108,7 +112,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             popExitTransition = { ExitTransition.None }
         ) {
             composable("blank_start") {
-                Box(modifier = Modifier.fillMaxSize().background(Primary500))
+                val isDeepLink = DeepLinkManager.pendingReportId != null || DeepLinkManager.pendingBattleId != null
+                Box(
+                    modifier = Modifier.fillMaxSize().background(Primary500),
+                    contentAlignment = Alignment.Center
+                ) { }
             }
 
             composable(AppRoute.Onboarding.route) {

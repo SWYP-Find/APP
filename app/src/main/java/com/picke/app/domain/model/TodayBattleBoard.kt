@@ -11,6 +11,8 @@ data class TodayBattleItem(
     val summary: String,
     val thumbnailUrl: String,
     val type: String,
+    val viewCount: Int,
+    val participantsCount: Long,
     val audioDuration: Int,
     val tags: List<String>,
     val options: List<TodayBattleOption>

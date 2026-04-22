@@ -42,7 +42,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"
                     android:host="picke.store"
-                    android:pathPrefix="/report/"/>
+                    android:pathPrefix="/recap/"/>
             </intent-filter>
             <!-- 배틀 공유 링크 받기 -->
             <intent-filter android:autoVerify="true">

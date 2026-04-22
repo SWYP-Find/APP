@@ -8,6 +8,7 @@ import com.picke.app.BuildConfig
 import androidx.security.crypto.MasterKey
 import com.picke.app.domain.model.UserStatus
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.security.KeyStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,7 +58,17 @@ class TokenManager @Inject constructor(
             Log.e(TAG, "[LOCAL] EncryptedSharedPreferences 초기화 실패, 기존 파일 삭제 후 재시도", e)
 
             // NOTE: 유저가 기기의 잠금 방식(PIN, 생체인식 등)을 변경하면 기존 Keystore가 초기화되며 복호화 불가 상태가 됨.
-            context.getSharedPreferences("auth_prefs_v2", Context.MODE_PRIVATE).edit().clear().apply()
+            // clear()는 XML의 keyset 메타데이터를 남기므로 deleteSharedPreferences()로 파일 자체를 삭제해야 함.
+            context.deleteSharedPreferences("auth_prefs_v2")
+            try {
+                val keyStore = KeyStore.getInstance("AndroidKeyStore")
+                keyStore.load(null)
+                if (keyStore.containsAlias(MasterKey.DEFAULT_MASTER_KEY_ALIAS)) {
+                    keyStore.deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+                }
+            } catch (keyStoreException: Exception) {
+                Log.e(TAG, "[LOCAL] Keystore 마스터 키 삭제 실패", keyStoreException)
+            }
 
             // 삭제 후 다시 한 번 생성 시도
             try {
