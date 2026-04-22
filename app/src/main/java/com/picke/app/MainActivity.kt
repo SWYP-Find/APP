@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
         var targetReportId: String? = null
 
         if (uri.host == "picke.store") {
-            if (uri.path?.startsWith("/report/") == true) targetReportId = uri.lastPathSegment
+            if (uri.path?.startsWith("/recap/") == true) targetReportId = uri.lastPathSegment
             if (uri.path?.startsWith("/battle/") == true) targetBattleId = uri.lastPathSegment
         } else if (uri.host == "kakaolink") {
             targetReportId = uri.getQueryParameter("reportId")

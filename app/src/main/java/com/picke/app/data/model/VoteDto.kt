@@ -19,8 +19,10 @@ data class VoteStatsOptionDto(
     val optionId: Long?,
     val label: String?,
     val title: String?,
+    val isCorrect: Boolean?,
     val voteCount: Int?,
-    val ratio: Float?
+    val ratio: Float?,
+    val stance: String?
 )
 
 // [응답 DTO] 내 투표 내역 조회
@@ -44,8 +46,10 @@ fun VoteStatsOptionDto.toDomainModel() = VoteStatsOptionBoard(
     optionId = this.optionId ?: 0L,
     label = this.label ?: "",
     title = this.title ?: "",
+    isCorrect = this.isCorrect ?: false,
     voteCount = this.voteCount ?: 0,
-    ratio = this.ratio ?: 0f
+    ratio = this.ratio ?: 0f,
+    stance = this.stance ?: ""
 )
 
 fun VoteStatsDto.toDomainModel() = VoteStatsBoard(

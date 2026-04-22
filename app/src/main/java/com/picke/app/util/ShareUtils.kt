@@ -65,7 +65,7 @@ fun shareCapturedImageToKakao(
                     link = Link(
                         webUrl = playStoreUrl,
                         mobileWebUrl = playStoreUrl,
-                        androidExecutionParams = mapOf("resultId" to resultId)
+                        androidExecutionParams = mapOf("reportId" to resultId)
                     )
                 ),
                 buttons = listOf(
@@ -74,7 +74,7 @@ fun shareCapturedImageToKakao(
                         link = Link(
                             webUrl = playStoreUrl,
                             mobileWebUrl = playStoreUrl,
-                            androidExecutionParams = mapOf("resultId" to resultId)
+                            androidExecutionParams = mapOf("reportId" to resultId)
                         )
                     )
                 )
