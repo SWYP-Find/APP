@@ -232,7 +232,6 @@ fun PhilosopherTypeScreen(
                             modifier = Modifier.padding(bottom = 24.dp),
                             backgroundColor = SwypTheme.colors.primary,
                             textColor = Color.White,
-                            iconResId = R.drawable.ic_share
                         )
                     } else {
                         CustomButton(

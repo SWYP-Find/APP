@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
+import com.picke.app.BuildConfig
 import androidx.security.crypto.MasterKey
 import com.picke.app.domain.model.UserStatus
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -85,7 +86,7 @@ class TokenManager @Inject constructor(
      */
     fun saveAccessToken(token: String) {
         prefs?.edit()?.putString("access_token", token)?.apply()
-        Log.d(TAG, "[LOCAL] AccessToken 저장 완료: ${token}")
+        if (BuildConfig.DEBUG) Log.d(TAG, "[LOCAL] AccessToken 저장 완료: ${token}")
     }
 
     /**
@@ -111,7 +112,7 @@ class TokenManager @Inject constructor(
      */
     fun saveRefreshToken(token: String) {
         prefs?.edit()?.putString("refresh_token", token)?.apply()
-        Log.d(TAG, "[LOCAL] RefreshToken 저장 완료: ${token}")
+        if (BuildConfig.DEBUG) Log.d(TAG, "[LOCAL] RefreshToken 저장 완료: ${token}")
     }
 
     /**

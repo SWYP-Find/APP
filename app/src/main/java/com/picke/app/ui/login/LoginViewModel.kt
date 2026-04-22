@@ -48,14 +48,14 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
-            Log.d(TAG, "[FLOW] $provider 인가 코드 획득 완료. AuthCode: $authCode")
+            if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] $provider 인가 코드 획득 완료. AuthCode: $authCode")
 
             val redirectUri = when (provider) {
                 "kakao" -> "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
                 "google" -> "https://picke.store/oauth/google"
                 else -> ""
             }
-            Log.d(TAG, "[STATE] Redirect URI 결정: $redirectUri")
+            if (BuildConfig.DEBUG) Log.d(TAG, "[STATE] Redirect URI 결정: $redirectUri")
 
             val result = authRepository.login(
                 provider = provider,

@@ -1,5 +1,6 @@
 package com.picke.app.data.repository
 
+import com.picke.app.data.model.toResult
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.remote.RecommendApi
 import com.picke.app.domain.model.RecommendPageBoard
@@ -11,19 +12,11 @@ class RecommendRepositoryImpl @Inject constructor(
 ) : RecommendRepository {
     override suspend fun getInterestingRecommendations(battleId: Long): Result<RecommendPageBoard> {
         return try {
-            val response = recommendApi.getInterestingRecommendations(battleId)
-            val data = response.data
-
-            if ((response.statusCode == 200 || response.statusCode == 0) && data != null) {
-                Result.success(data.toDomainModel())
-            } else {
-                val errorMessage = response.error?.message ?: "흥미로운 배틀 추천 목록을 불러오지 못했습니다."
-                Result.failure(Exception(errorMessage))
-            }
+            recommendApi.getInterestingRecommendations(battleId)
+                .toResult("흥미로운 배틀 추천 목록을 불러오지 못했습니다.")
+                .map { it.toDomainModel() }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
-
-
 }

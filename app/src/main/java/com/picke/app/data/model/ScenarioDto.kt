@@ -1,6 +1,11 @@
 package com.picke.app.data.model
 
 import com.picke.app.domain.model.ScenarioBoard
+import com.picke.app.domain.model.ScenarioNode
+import com.picke.app.domain.model.ScenarioOption
+import com.picke.app.domain.model.ScenarioPhilosopher
+import com.picke.app.domain.model.ScenarioScript
+import com.picke.app.domain.model.SpeakerType
 
 data class ScenarioPhilosopherDto(
     val label: String?,
@@ -43,48 +48,46 @@ data class ScenarioOptionDto(
     val nextNodeId: Long
 )
 
-// 2. Dto -> Domain 매퍼
 fun ScenarioResponseDto.toDomainModel(): ScenarioBoard {
     return ScenarioBoard(
-        battleId = this.battleId?.toString() ?: "",
-        title = this.title ?: "",
-
-        philosophers = this.philosophers?.map { philosopherDto ->
-            com.picke.app.domain.model.ScenarioPhilosopher(
-                label = philosopherDto.label ?: "",
-                name = philosopherDto.name ?: "",
-                stance = philosopherDto.stance ?: "",
-                quote = philosopherDto.quote ?: "",
-                imageUrl = philosopherDto.imageUrl ?: ""
+        battleId = battleId.toString(),
+        title = title ?: "",
+        philosophers = philosophers?.map { dto ->
+            ScenarioPhilosopher(
+                label = dto.label ?: "",
+                name = dto.name ?: "",
+                stance = dto.stance ?: "",
+                quote = dto.quote ?: "",
+                imageUrl = dto.imageUrl ?: ""
             )
         } ?: emptyList(),
-
-        isInteractive = this.isInteractive ?: false,
-        startNodeId = this.startNodeId?.toString() ?: "",
-        recommendedPathKey = this.recommendedPathKey ?: "COMMON",
-        audios = this.audios ?: emptyMap(),
-        nodes = this.nodes?.map { node ->
-            com.picke.app.domain.model.ScenarioNode(
-                nodeId = node.nodeId?.toString() ?: "",
-                nodeName = node.nodeName ?: "",
-                audioDuration = node.audioDuration ?: 0,
+        isInteractive = isInteractive,
+        startNodeId = startNodeId.toString(),
+        recommendedPathKey = recommendedPathKey,
+        audios = audios,
+        nodes = nodes.map { node ->
+            ScenarioNode(
+                nodeId = node.nodeId.toString(),
+                nodeName = node.nodeName,
+                audioDuration = node.audioDuration,
                 autoNextNodeId = node.autoNextNodeId?.toString(),
-                interactiveOptions = node.interactiveOptions?.map {
-                    com.picke.app.domain.model.ScenarioOption(
-                        label = it.label ?: "",
-                        nextNodeId = it.nextNodeId?.toString() ?: ""
+                interactiveOptions = node.interactiveOptions.map {
+                    ScenarioOption(
+                        label = it.label,
+                        nextNodeId = it.nextNodeId.toString()
                     )
-                } ?: emptyList(),
-                scripts = node.scripts?.map { script ->
-                    com.picke.app.domain.model.ScenarioScript(
-                        scriptId = script.scriptId?.toString() ?: "",
-                        startTimeMs = script.startTimeMs ?: 0L,
-                        speakerType = runCatching { com.picke.app.domain.model.SpeakerType.valueOf(script.speakerType ?: "UNKNOWN") }.getOrDefault(com.picke.app.domain.model.SpeakerType.UNKNOWN),
-                        speakerName = script.speakerName ?: "",
-                        text = script.text ?: ""
+                },
+                scripts = node.scripts.map { script ->
+                    ScenarioScript(
+                        scriptId = script.scriptId.toString(),
+                        startTimeMs = script.startTimeMs,
+                        speakerType = runCatching { SpeakerType.valueOf(script.speakerType) }
+                            .getOrDefault(SpeakerType.UNKNOWN),
+                        speakerName = script.speakerName,
+                        text = script.text
                     )
-                } ?: emptyList()
+                }
             )
-        } ?: emptyList()
+        }
     )
 }
