@@ -38,8 +38,8 @@ android {
         applicationId = "com.picke.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // [4. 코드 및 매니페스트로 값 전달]
@@ -70,7 +70,7 @@ android {
         debug {
             isMinifyEnabled = false
             // 개발용 서버 주소 설정
-            buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
+            buildConfigField("String", "BASE_URL", "\"https://dev.picke.store/\"")
             // 개발용 구글 클라이언트 ID 설정
             buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         }

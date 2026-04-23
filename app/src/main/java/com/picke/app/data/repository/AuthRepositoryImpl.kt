@@ -27,7 +27,7 @@ class AuthRepositoryImpl @Inject constructor(
      */
     override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
-            if (BuildConfig.DEBUG) Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken}")
+            if (BuildConfig.DEBUG) Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken.take(8)}...")
             val response = api.refreshAccessToken(refreshToken)
 
             if (response.statusCode == 200 && response.data != null) {
