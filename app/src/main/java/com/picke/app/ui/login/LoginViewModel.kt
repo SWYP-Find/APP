@@ -4,9 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import com.picke.app.BuildConfig
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,7 @@ sealed class LoginUiState {
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val loginUseCase: LoginUseCase,
     private val tokenManager: TokenManager,
     private val mixpanel: MixpanelAPI
 ) : ViewModel() {
@@ -48,20 +47,9 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
-            if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] $provider 인가 코드 획득 완료. AuthCode: $authCode")
+            Log.d(TAG, "[FLOW] $provider 인가 코드 획득 완료. AuthCode: ${authCode.take(8)}...")
 
-            val redirectUri = when (provider) {
-                "kakao" -> "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
-                "google" -> "https://picke.store/oauth/google"
-                else -> ""
-            }
-            if (BuildConfig.DEBUG) Log.d(TAG, "[STATE] Redirect URI 결정: $redirectUri")
-
-            val result = authRepository.login(
-                provider = provider,
-                authCode = authCode,
-                redirectUri = redirectUri
-            )
+            val result = loginUseCase(provider = provider, authCode = authCode)
 
             result.onSuccess { authToken ->
                 Log.i(TAG, "[NAV] ${provider} 로그인 성공 (신규 유저 여부: ${authToken.isNewUser})")
