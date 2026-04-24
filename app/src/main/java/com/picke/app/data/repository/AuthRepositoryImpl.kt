@@ -63,7 +63,7 @@ class AuthRepositoryImpl @Inject constructor(
             val response = api.login(provider, request)
 
             if (response.statusCode == 200 && response.data != null) {
-                Log.d(TAG, "[API_RES] 로그인 성공: ${response.data}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 로그인 성공: ${response.data}")
 
                 tokenManager.saveAccessToken(response.data.accessToken)
                 tokenManager.saveRefreshToken(response.data.refreshToken)
