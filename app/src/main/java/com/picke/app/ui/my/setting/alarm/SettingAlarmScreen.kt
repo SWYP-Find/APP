@@ -37,6 +37,7 @@ import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray700
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 
 @Composable
 fun SettingAlarmScreen(
@@ -175,9 +176,9 @@ fun AlarmSettingItem(
             checked = isChecked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
+                checkedThumbColor = White,
                 checkedTrackColor = SwypTheme.colors.primary,
-                uncheckedThumbColor = Color.White,
+                uncheckedThumbColor = White,
                 uncheckedTrackColor = Gray300,
                 uncheckedBorderColor = Color.Transparent
             )

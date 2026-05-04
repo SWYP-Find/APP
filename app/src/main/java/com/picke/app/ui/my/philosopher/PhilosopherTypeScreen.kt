@@ -83,6 +83,7 @@ import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Primary100
 import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.Primary900
+import com.picke.app.ui.theme.White
 import com.picke.app.util.shareCapturedImageToKakao
 import com.picke.app.util.shareToInstagramStory
 import kotlinx.coroutines.launch
@@ -238,7 +239,7 @@ fun PhilosopherTypeScreen(
                             onClick = { showShareDialog = true },
                             modifier = Modifier.padding(bottom = 24.dp),
                             backgroundColor = SwypTheme.colors.primary,
-                            textColor = Color.White,
+                            textColor = White,
                         )
                     } else {
                         CustomButton(
@@ -246,7 +247,7 @@ fun PhilosopherTypeScreen(
                             onClick = { onGoToSplashClick() },
                             modifier = Modifier.padding(bottom = 24.dp),
                             backgroundColor = SwypTheme.colors.primary,
-                            textColor = Color.White
+                            textColor = White
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -297,7 +298,7 @@ fun LockedPhilosopherHeaderSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, cardShape)
+            .background(White, cardShape)
             .border(1.dp, Beige400, cardShape)
     ) {
         Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(Primary500))
@@ -353,7 +354,7 @@ fun LockedTraitAnalysisSection() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(240.dp)
-                .background(Color.White, RoundedCornerShape(4.dp))
+                .background(White, RoundedCornerShape(4.dp))
                 .border(1.dp, Beige400, RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
@@ -391,7 +392,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, cardShape)
+            .background(White, cardShape)
             .border(1.dp, Beige400, cardShape)
     ) {
         Box(
@@ -472,7 +473,7 @@ fun TraitAnalysisSection(analysis: RecapScores) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, RoundedCornerShape(4.dp))
+                .background(White, RoundedCornerShape(4.dp))
                 .border(1.dp, Beige400, RoundedCornerShape(4.dp))
                 .padding(vertical = 24.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -550,7 +551,7 @@ fun TasteReportSection(report: PreferenceReport) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White, RoundedCornerShape(4.dp))
+                .background(White, RoundedCornerShape(4.dp))
                 .border(1.dp, Beige400, RoundedCornerShape(4.dp))
         ) {
             // 상단 3개 요약 수치
@@ -641,7 +642,7 @@ fun ChemistryCard(
 
     Column(
         modifier = modifier
-            .background(Color.White, RoundedCornerShape(4.dp))
+            .background(White, RoundedCornerShape(4.dp))
             .border(1.dp, Beige400, RoundedCornerShape(4.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally

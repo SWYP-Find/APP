@@ -55,7 +55,7 @@ fun HomeSectionHeader(
                 append(title)
             }
         }
-        Text(text = annotatedTitle, style = SwypTheme.typography.h3Bold, color = Gray900)
+        Text(text = annotatedTitle, style = SwypTheme.typography.h3SemiBold, color = Gray900)
         /*Text(
             text = stringResource(R.string.more),
             style = SwypTheme.typography.b4Medium,
@@ -243,7 +243,7 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
             Text(modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), text = "#${item.tags.firstOrNull() ?: "이슈"}", style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.primary)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(modifier = Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(painterResource(id = R.drawable.ic_clock), null, Modifier.size(12.dp), tint = Gray400)
@@ -277,7 +277,7 @@ fun BestBattleRankItem(item: HomeContentUiModel, rank: Int, modifier: Modifier =
                     Text(text = "${item.leftProfileName ?: "A"} VS ${item.rightProfileName ?: "B"}", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.primary)
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text(text = item.tags.joinToString(" ") { "#$it" }, style = SwypTheme.typography.label, color = Gray300)
@@ -326,7 +326,7 @@ fun NewBattleCard(
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900)
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.summary,

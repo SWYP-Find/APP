@@ -51,7 +51,7 @@ fun CustomButton(
                 Spacer(modifier = Modifier.width(2.dp))
             }
             Text(
-                style = SwypTheme.typography.h5SemiBold,
+                style = SwypTheme.typography.b3SemiBold,
                 text = text,
                 color = textColor,
             )

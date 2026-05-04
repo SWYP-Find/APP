@@ -49,6 +49,7 @@ import com.picke.app.ui.theme.Gray500
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -289,7 +290,7 @@ fun OptionConfirmButton(
     onClick: () -> Unit
 ) {
     val bgColor = if (isEnabled) Secondary500 else Gray200
-    val textColor = if (isEnabled) Color.White else Color.White
+    val textColor = if (isEnabled) White else White
 
     Box(
         modifier = Modifier

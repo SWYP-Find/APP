@@ -58,6 +58,7 @@ import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.theme.Pretendard
 import com.picke.app.ui.theme.Primary50
+import com.picke.app.ui.theme.White
 
 @Composable
 fun OnboardingScreen(
@@ -112,7 +113,7 @@ fun OnboardingScreen(
                 text = stringResource(R.string.onboarding_start),
                 onClick = onNavigateToLogin,
                 backgroundColor = Primary500,
-                textColor = Color.White
+                textColor = White
             )
         }
     }
@@ -191,7 +192,7 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(Color.White)
+            .background(White)
     ) {
         // 채팅 리스트 영역
         Column(
@@ -231,7 +232,7 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0f),
+                            White.copy(alpha = 0f),
                             Beige300
                         )
                     )
@@ -247,7 +248,7 @@ private fun FirstOnboardingChatBubble(
     message: String,
     isLeft: Boolean
 ) {
-    val bubbleBgColor = if (isLeft) Color.White else Beige500
+    val bubbleBgColor = if (isLeft) White else Beige500
     val bubbleBorderColor = if (isLeft) Beige500 else Beige700
 
     Row(
@@ -327,7 +328,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(Color.White)
+            .background(White)
     ) {
         Column(
             modifier = Modifier
@@ -368,7 +369,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0f),
+                            White.copy(alpha = 0f),
                             Beige300
                         )
                     )
@@ -431,7 +432,7 @@ private fun SecondOnboardingItemCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = White),
         shape = RoundedCornerShape(2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(width = 1.dp, color = Beige600)
@@ -512,7 +513,7 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(Color.White)
+            .background(White)
     ) {
         Column(
             modifier = Modifier
@@ -523,7 +524,7 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(White)
                     .border(1.dp, Beige700, RoundedCornerShape(2.dp))
                     .padding(16.dp)
             ) {
@@ -615,7 +616,7 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0f),
+                            White.copy(alpha = 0f),
                             Beige300
                         )
                     )
@@ -646,7 +647,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(Color.White)
+            .background(White)
     ) {
         Box(
             modifier = Modifier
@@ -679,7 +680,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
 
                     Text(
                         text = "칸트형",
-                        style = SwypTheme.typography.h3Bold,
+                        style = SwypTheme.typography.h3SemiBold,
                         color = Gray600
                     )
 
@@ -737,7 +738,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color.White.copy(alpha = 0f),
+                            White.copy(alpha = 0f),
                             Beige300
                         )
                     )

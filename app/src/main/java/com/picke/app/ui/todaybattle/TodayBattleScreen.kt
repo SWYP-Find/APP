@@ -76,6 +76,7 @@ import com.picke.app.ui.theme.Secondary200
 import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.util.shareBattleToInstagramStoryDarkMode
 import com.picke.app.util.shareBattleToKakao
@@ -171,7 +172,7 @@ fun TodayBattleScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = Color.White
+                        tint = White
                     )
                 }
             }
@@ -199,7 +200,7 @@ fun TodayBattleScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = Color.White
+                        tint = White
                     )
                 }
             }
@@ -304,7 +305,7 @@ fun TodayBattleScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_arrow_left),
                                 contentDescription = "뒤로가기",
-                                tint = Color.White,
+                                tint = White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -315,7 +316,7 @@ fun TodayBattleScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_share),
                                 contentDescription = "공유",
-                                tint = Color.White,
+                                tint = White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -431,7 +432,7 @@ fun BattleContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item.tags.forEach { tag ->
                         Surface(
-                            color = Color.White,
+                            color = White,
                             shape = RoundedCornerShape(2.dp)
                         ) {
                             Text(
@@ -545,7 +546,7 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
                     modifier = Modifier
                         .weight(1f)
                         .height(2.dp)
-                        .background(if (i == currentPage) Color.White else Color.White.copy(alpha = 0.3f))
+                        .background(if (i == currentPage) White else White.copy(alpha = 0.3f))
                 )
             }
         }
@@ -554,7 +555,7 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
         Text(
             text = "${currentPage + 1}/$totalPages",
             style = SwypTheme.typography.labelXSmall,
-            color = Color.White.copy(alpha = 0.3f)
+            color = White.copy(alpha = 0.3f)
         )
     }
 }
@@ -591,8 +592,8 @@ fun OpinionCard(
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = opinion,
-            style = SwypTheme.typography.h3Bold,
-            color = Color.White,
+            style = SwypTheme.typography.h3SemiBold,
+            color = White,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -600,7 +601,7 @@ fun OpinionCard(
         Text(
             text = "\"$quote\"",
             style = SwypTheme.typography.labelXSmall,
-            color = Color.White.copy(0.3f),
+            color = White.copy(0.3f),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )

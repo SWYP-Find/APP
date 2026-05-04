@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
         }
 
         handleDeepLink(intent)
+
         enableEdgeToEdge()
 
         setContent {
@@ -74,33 +75,5 @@ class MainActivity : ComponentActivity() {
         if (targetBattleId != null) DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToBattle(targetBattleId))
 
         intent.data = null
-    }
-}
-
-fun getKeyHash(context: Context) {
-    try {
-        val info: PackageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNING_CERTIFICATES)
-        } else {
-            @Suppress("DEPRECATION")
-            context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES)
-        }
-
-        val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            info.signingInfo?.apkContentsSigners
-        } else {
-            @Suppress("DEPRECATION")
-            info.signatures
-        }
-
-        signatures?.forEach { signature ->
-            val md = MessageDigest.getInstance("SHA")
-            md.update(signature.toByteArray())
-            Log.d("KeyHashFlow", "현재 기기의 키 해시값: ${Base64.encodeToString(md.digest(), Base64.DEFAULT)}")
-        }
-    } catch (e: PackageManager.NameNotFoundException) {
-        Log.e("KeyHashFlow", "패키지 이름을 찾을 수 없습니다.", e)
-    } catch (e: NoSuchAlgorithmException) {
-        Log.e("KeyHashFlow", "해당 알고리즘을 사용할 수 없습니다.", e)
     }
 }

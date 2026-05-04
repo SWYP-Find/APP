@@ -171,7 +171,7 @@ fun VoteScreen(
                         centerTitle = false,
                         showBackButton = true,
                         onBackClick = onBackClick,
-                        backIconColor = Color.White,
+                        backIconColor = White,
                         backgroundColor = Color.Transparent,
                         actions = {
                             Icon(
@@ -179,7 +179,7 @@ fun VoteScreen(
                                     .clickable { showShareDialog = true },
                                 painter = painterResource(id = R.drawable.ic_share),
                                 contentDescription = "공유",
-                                tint = Color.White
+                                tint = White
                             )
                         }
                     )
@@ -283,7 +283,7 @@ fun VoteScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             battleInfo.tags.forEach { tag ->
                                 Surface(
-                                    color = Color.White.copy(alpha = 0.8f),
+                                    color = White.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(2.dp)
                                 ) {
                                     Text(

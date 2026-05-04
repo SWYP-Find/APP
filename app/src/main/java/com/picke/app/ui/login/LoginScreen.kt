@@ -45,6 +45,7 @@ import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import com.picke.app.ui.theme.Primary900
+import com.picke.app.ui.theme.White
 import androidx.activity.compose.BackHandler
 import com.kakao.sdk.auth.model.Prompt
 
@@ -175,7 +176,7 @@ fun LoginScreen(
                             googleSignInLauncher.launch(googleSignInClient.signInIntent)
                         }
                     },
-                    backgroundColor = Color.White,
+                    backgroundColor = White,
                     textColor = Gray900,
                     iconResId = R.drawable.ic_google
                 )
