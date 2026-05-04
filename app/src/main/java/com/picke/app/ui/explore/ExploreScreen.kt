@@ -61,6 +61,7 @@ import com.picke.app.ui.theme.Gray400
 import com.picke.app.ui.theme.Gray500
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import kotlinx.coroutines.launch
 
 @Composable
@@ -138,7 +139,7 @@ fun ExploreScreen(
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
-                        .background(Color.White)
+                        .background(White)
                 ) { _ ->
                     ExploreList(
                         pagingItems = pagingItems,
@@ -309,7 +310,7 @@ fun ExploreCard(
             Row(verticalAlignment = Alignment.Top) {
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.h5SemiBold.copy(
+                    style = SwypTheme.typography.b3SemiBold.copy(
                         lineBreak = LineBreak(
                             strategy = LineBreak.Strategy.HighQuality,
                             strictness = LineBreak.Strictness.Loose,

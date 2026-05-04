@@ -54,6 +54,7 @@ import com.picke.app.ui.theme.Gray500
 import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import kotlinx.coroutines.launch
 import com.picke.app.R
 
@@ -262,7 +263,7 @@ fun NoticeEventDetailContent(
                     Text(
                         text = "목록",
                         style = SwypTheme.typography.b3SemiBold,
-                        color = Color.White
+                        color = White
                     )
                 }
             }

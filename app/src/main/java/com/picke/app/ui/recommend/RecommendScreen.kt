@@ -138,7 +138,7 @@ fun RecommendItemCard(
         Spacer(modifier = Modifier.height(12.dp))
 
         // 2. 제목 및 요약
-        Text(text = item.title, style = SwypTheme.typography.h5SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.summary,

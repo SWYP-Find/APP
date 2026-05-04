@@ -63,6 +63,7 @@ import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.Primary800
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 
 data class PointHistoryUiModel(
     val title: String,
@@ -122,7 +123,7 @@ fun PointScreen(
                 PullToRefreshDefaults.Indicator(
                     state = pullToRefreshState,
                     isRefreshing = uiState.isLoading,
-                    containerColor = Color.White,
+                    containerColor = White,
                     color = Primary500,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
@@ -226,7 +227,7 @@ fun PointHistoryItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(Color.White)
+            .background(White)
             .border(1.dp, Beige600, RoundedCornerShape(2.dp))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {

@@ -49,3 +49,6 @@ val Beige300 = Color(0xFFF9F7F2)
 val Beige200 = Color(0xFFFBF9F7)
 val Beige100 = Color(0xFFFDFCFB)
 val Beige50 = Color(0xFFFEFEFD)
+
+// White Color
+val White = Color(0xFFFFFFFF)

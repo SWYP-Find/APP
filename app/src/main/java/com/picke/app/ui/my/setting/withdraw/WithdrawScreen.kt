@@ -33,6 +33,7 @@ import com.picke.app.ui.my.setting.SettingViewModel
 import com.picke.app.ui.theme.Gray200
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Primary900
+import com.picke.app.ui.theme.White
 
 @Composable
 fun WithdrawScreen(
@@ -103,7 +104,7 @@ fun WithdrawScreen(
                     ) {
                         Text(
                             text = "픽케로 다시 돌아가기",
-                            color = Color.White,
+                            color = White,
                             style = SwypTheme.typography.h4SemiBold
                         )
                     }
@@ -122,7 +123,7 @@ fun WithdrawScreen(
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 text = "정말 떠나시나요? 아쉬워요 😢",
-                style = SwypTheme.typography.h3Bold,
+                style = SwypTheme.typography.h3SemiBold,
                 color = Primary800
             )
 

@@ -21,16 +21,15 @@ private val LightColorScheme = lightColorScheme(
 fun SwypAppTheme(
     content: @Composable () -> Unit
 ) {
-    // 🌟 1. 현재 화면(View) 정보를 가져옵니다.
+    // 1. 현재 화면(View) 정보를 가져옵니다.
     val view = LocalView.current
 
-    // 🌟 2. 화면이 그려질 때마다 안드로이드 시스템의 고집을 꺾고 강제로 설정합니다.
+    // 2. 화면이 그려질 때마다 안드로이드 시스템의 고집을 꺾고 강제로 설정합니다.
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
 
-            // 핵심 1: 상태바와 하단바 배경을 '완벽한 투명'으로 만듭니다. (Edge-to-Edge 꽉 차게!)
-            // 예전처럼 Beige50으로 칠해버리면 화면이 위로 밀려버리니 꼭 TRANSPARENT를 써야 합니다.
+            // 핵심 1: 상태바와 하단바 배경을 '완벽한 투명'으로 만듭니다.
             window.statusBarColor = android.graphics.Color.TRANSPARENT
             window.navigationBarColor = android.graphics.Color.TRANSPARENT
 
@@ -44,7 +43,6 @@ fun SwypAppTheme(
 
     CompositionLocalProvider(
         LocalSwypTypography provides swypTypography,
-        LocalElevation provides Elevation()
     ) {
         MaterialTheme(
             colorScheme = LightColorScheme,
@@ -62,12 +60,4 @@ object SwypTheme {
     val typography: SwypTypography
         @Composable
         get() = LocalSwypTypography.current
-
-    /*val spacing: Spacing
-        @Composable
-        get() = LocalSpacing.current*/
-
-    val elevation: Elevation
-        @Composable
-        get() = LocalElevation.current
 }
