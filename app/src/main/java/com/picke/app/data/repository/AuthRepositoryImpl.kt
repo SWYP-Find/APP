@@ -1,7 +1,6 @@
 package com.picke.app.data.repository
 
 import android.util.Log
-import com.picke.app.BuildConfig
 import com.picke.app.data.local.TokenManager
 import com.picke.app.data.model.SocialLoginRequest
 import com.picke.app.data.model.WithdrawalRequest
@@ -27,7 +26,6 @@ class AuthRepositoryImpl @Inject constructor(
      */
     override suspend fun refreshAccessToken(refreshToken: String): Result<Unit> {
         return try {
-            if (BuildConfig.DEBUG) Log.d(TAG, "[API_REQ] 토큰 갱신 시도: ${refreshToken.take(8)}...")
             val response = api.refreshAccessToken(refreshToken)
 
             if (response.statusCode == 200 && response.data != null) {
@@ -59,11 +57,9 @@ class AuthRepositoryImpl @Inject constructor(
                 authorizationCode = authCode,
                 redirectUri = redirectUri
             )
-            if (BuildConfig.DEBUG) Log.d(TAG, "[API_REQ] 로그인 시도: ${request}")
             val response = api.login(provider, request)
 
             if (response.statusCode == 200 && response.data != null) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 로그인 성공: ${response.data}")
 
                 tokenManager.saveAccessToken(response.data.accessToken)
                 tokenManager.saveRefreshToken(response.data.refreshToken)
@@ -77,7 +73,6 @@ class AuthRepositoryImpl @Inject constructor(
             }
         }
         catch (e: Exception) {
-            e.printStackTrace()
             Log.e(TAG, "[API_ERR] 로그인 예외 발생: ${e.message}", e)
             Result.failure(e)
         }
@@ -102,7 +97,6 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.error?.message ?: "로그아웃 실패"))
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             Log.e(TAG, "[API_ERR] 로그아웃 예외 발생: ${e.message}", e)
             tokenManager.clearAll()
             Result.failure(e)
@@ -129,7 +123,6 @@ class AuthRepositoryImpl @Inject constructor(
                 Result.failure(Exception(response.error?.message ?: "탈퇴 실패"))
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             Log.e(TAG, "[API_ERR] 탈퇴 예외 발생 ${e.message}", e)
             tokenManager.clearAll()
             Result.failure(e)
