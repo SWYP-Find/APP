@@ -21,15 +21,12 @@ android {
 
     val kakaoDebugAppKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
     val googleWebClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
-    val googleWebClientIdDebug = properties.getProperty("GOOGLE_WEB_CLIENT_ID_DEBUG") ?: ""
-    val googleWebClientIdRelease = properties.getProperty("GOOGLE_WEB_CLIENT_ID_RELEASE") ?: ""
     val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
     val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
     val mixpanelToken = properties.getProperty("MIXPANEL_PROJECT_TOKEN") ?: ""
 
     println("🔑💛 KAKAO_DEBUG_APPKEY: $kakaoDebugAppKey")
-    println("🔑💚 GOOGLE_WEB_CLIENT_ID_DEBUG: $googleWebClientIdDebug")
-    println("🔑💚 GOOGLE_WEB_CLIENT_ID_RELEASE: $googleWebClientIdRelease")
+    println("🔑🤍 GOOGLE_WEB_CLIENT_ID: ${if (googleWebClientId.isNotEmpty()) "${googleWebClientId.take(20)}..." else "❌ 미설정 (local.properties 확인)"}")
     println("🔑🤍 ADMOB_APP_ID: $admobAppId")
     println("🔑🤍 ADMOB_REWARDED_AD_UNIT_ID: $admobRewardedAdUnitId")
 
@@ -38,8 +35,8 @@ android {
         applicationId = "com.picke.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.0"
+        versionCode = 4
+        versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // [4. 코드 및 매니페스트로 값 전달]
@@ -70,7 +67,7 @@ android {
         debug {
             isMinifyEnabled = false
             // 개발용 서버 주소 설정
-            buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
+            buildConfigField("String", "BASE_URL", "\"https://dev.picke.store/\"")
             // 개발용 구글 클라이언트 ID 설정
             buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
         }

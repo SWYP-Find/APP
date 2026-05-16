@@ -54,6 +54,7 @@ import com.picke.app.ui.theme.Primary800
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -128,7 +129,7 @@ fun MakeBattleScreen(
                     },
                     modifier = Modifier.fillMaxWidth().height(54.dp),
                     backgroundColor = if (isFormValid) Primary500 else Primary300,
-                    textColor = Color.White
+                    textColor = White
                 )
             }
         }
@@ -154,7 +155,7 @@ fun MakeBattleScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth()
-                        .background(Color.White)
+                        .background(White)
                 ) {
                     categories.forEach { category ->
                         CategoryTab(
@@ -272,8 +273,8 @@ fun CategoryTab(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isSelected) Primary500 else Color.White
-    val textColor = if (isSelected) Color.White else Gray300
+    val bgColor = if (isSelected) Primary500 else White
+    val textColor = if (isSelected) White else Gray300
 
     Box(
         modifier = modifier
@@ -303,7 +304,7 @@ fun CustomFormTextField(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(White)
             .border(1.dp, Beige600)
             .padding(16.dp)
     ) {

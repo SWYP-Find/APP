@@ -7,15 +7,10 @@ import com.picke.app.domain.model.BattleTagBoard
 
 data class BattleDetailDto(
     val battleInfo: BattleInfoDto?,
-    val titlePrefix: String?,
-    val titleSuffix: String?,
-    val itemA: String?,
-    val itemADesc: String?,
-    val itemB: String?,
-    val itemBDesc: String?,
     val description: String?,
     val shareUrl: String?,
     val userVoteStatus: String?,
+    val currentStep: String?,
     val categoryTags: List<BattleTagDto>?,
     val philosopherTags: List<BattleTagDto>?,
     val valueTags: List<BattleTagDto>?
@@ -26,7 +21,6 @@ data class BattleInfoDto(
     val title: String?,
     val summary: String?,
     val thumbnailUrl: String?,
-    val type: String?,
     val viewCount: Int?,
     val participantsCount: Int?,
     val audioDuration: Int?,
@@ -40,7 +34,6 @@ data class BattleOptionDto(
     val title: String?,
     val stance: String?,
     val representative: String?,
-    val quote: String?,
     val imageUrl: String?,
     val tags: List<BattleTagDto>?
 )
@@ -54,15 +47,10 @@ data class BattleTagDto(
 // Data -> Domain
 fun BattleDetailDto.toDomainModel() = BattleDetailBoard(
     battleInfo = this.battleInfo?.toDomainModel() ?: BattleInfoBoard.empty(),
-    titlePrefix = this.titlePrefix ?: "",
-    titleSuffix = this.titleSuffix ?: "",
-    itemA = this.itemA ?: "",
-    itemADesc = this.itemADesc ?: "",
-    itemB = this.itemB ?: "",
-    itemBDesc = this.itemBDesc ?: "",
     description = this.description ?: "",
     shareUrl = this.shareUrl ?: "",
     userVoteStatus = this.userVoteStatus ?: "NONE",
+    currentStep = this.currentStep ?: "",
     categoryTags = this.categoryTags?.map { it.toDomainModel() } ?: emptyList(),
     philosopherTags = this.philosopherTags?.map { it.toDomainModel() } ?: emptyList(),
     valueTags = this.valueTags?.map { it.toDomainModel() } ?: emptyList()
@@ -73,7 +61,6 @@ fun BattleInfoDto.toDomainModel() = BattleInfoBoard(
     title = this.title ?: "",
     summary = this.summary ?: "",
     thumbnailUrl = this.thumbnailUrl ?: "",
-    type = this.type ?: "BATTLE",
     viewCount = this.viewCount ?: 0,
     participantsCount = this.participantsCount ?: 0,
     audioDuration = this.audioDuration ?: 0,
@@ -87,7 +74,6 @@ fun BattleOptionDto.toDomainModel() = BattleOptionBoard(
     title = this.title ?: "",
     stance = this.stance ?: "",
     representative = this.representative ?: "",
-    quote = this.quote ?: "",
     imageUrl = this.imageUrl ?: "",
     tags = this.tags?.map { it.toDomainModel() } ?: emptyList()
 )

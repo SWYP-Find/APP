@@ -45,6 +45,7 @@ import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import com.picke.app.ui.theme.Primary900
+import com.picke.app.ui.theme.White
 import androidx.activity.compose.BackHandler
 import com.kakao.sdk.auth.model.Prompt
 
@@ -71,11 +72,18 @@ fun LoginScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             account.serverAuthCode?.let { authCode ->
-                Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
                 viewModel.handleSocialLoginSuccess("google", authCode)
             } ?: Log.e(TAG, "[ERROR] 구글 인가 코드가 null입니다.")
         } catch (e: ApiException) {
-            Log.e(TAG, "[ERROR] 구글 SDK 로그인 실패 (Code: \${e.statusCode})", e)
+            val hint = when (e.statusCode) {
+                10 -> "DEVELOPER_ERROR: 클라이언트 ID 타입 오류 또는 SHA-1 미등록"
+                12500 -> "Google Play Services 미지원 기기"
+                12501 -> "사용자가 로그인 취소"
+                7 -> "NETWORK_ERROR: 네트워크 연결 확인 필요"
+                else -> "알 수 없는 오류"
+            }
+            Log.e(TAG, "[ERROR] 구글 SDK 로그인 실패 (Code: ${e.statusCode} / $hint)", e)
             Toast.makeText(context, "구글 로그인에 실패했습니다. \n다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
             viewModel.resetState()
         }
@@ -144,7 +152,7 @@ fun LoginScreen(
                     text = stringResource(R.string.login_with_kakao),
                     onClick = {
                         loginWithKakaoForAuthCode(context, viewModel) { token ->
-                            Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
+                            if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
                             viewModel.handleSocialLoginSuccess("kakao", token)
                         }
                     },
@@ -175,7 +183,7 @@ fun LoginScreen(
                             googleSignInLauncher.launch(googleSignInClient.signInIntent)
                         }
                     },
-                    backgroundColor = Color.White,
+                    backgroundColor = White,
                     textColor = Gray900,
                     iconResId = R.drawable.ic_google
                 )

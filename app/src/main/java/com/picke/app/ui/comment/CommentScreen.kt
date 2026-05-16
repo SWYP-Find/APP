@@ -65,6 +65,7 @@ import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.Primary600
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -187,7 +188,7 @@ fun CommentScreen(
                         PullToRefreshDefaults.Indicator(
                             state = pullToRefreshState,
                             isRefreshing = isRefreshing,
-                            containerColor = Color.White,
+                            containerColor = White,
                             color = Primary500,
                             modifier = Modifier.align(Alignment.TopCenter)
                         )
@@ -300,7 +301,7 @@ fun CommentItemCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(White)
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -423,11 +424,11 @@ fun CommentMenuItem(
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = text,
-            tint = Color.White,
+            tint = White,
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, style = SwypTheme.typography.labelMedium, color = Color.White)
+        Text(text = text, style = SwypTheme.typography.labelMedium, color = White)
     }
 }
 

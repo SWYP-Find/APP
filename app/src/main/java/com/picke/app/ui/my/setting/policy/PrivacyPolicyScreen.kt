@@ -16,6 +16,7 @@ import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Gray300
 import com.picke.app.ui.theme.Gray600
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import com.picke.app.util.PolicyStrings
 
 @Composable
@@ -43,7 +44,7 @@ fun PrivacyPolicyScreen(
             modifier = Modifier
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
-                .background(Color.White)
+                .background(White)
                 .padding(horizontal = 20.dp)
                 .verticalScroll(scrollState)
         ) {

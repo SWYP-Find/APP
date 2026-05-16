@@ -58,7 +58,7 @@ fun DiscussionHistoryScreen(
     modifier: Modifier = Modifier,
     viewModel: DiscussionHistoryViewModel = hiltViewModel()
 ) {
-    val tabs = listOf("찬성", "반대")
+    val tabs = listOf("A", "B")
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(pageCount = { tabs.size })
@@ -110,14 +110,14 @@ fun DiscussionHistoryScreen(
                         0 -> DiscussionHistoryList(
                             list = uiState.agreeList,
                             voteSide = "PRO",
-                            emptyMessage = "아직 찬성 의견을 남긴 토론이 없습니다",
+                            emptyMessage = "아직 A 의견을 남긴 토론이 없습니다",
                             onItemClick = onNavigateToDetail,
                             onLoadMore = { viewModel.loadMore("PRO") }
                         )
                         1 -> DiscussionHistoryList(
                             list = uiState.disagreeList,
                             voteSide = "CON",
-                            emptyMessage = "아직 반대 의견을 남긴 토론이 없습니다",
+                            emptyMessage = "아직 B 의견을 남긴 토론이 없습니다",
                             onItemClick = onNavigateToDetail,
                             onLoadMore = { viewModel.loadMore("CON") }
                         )

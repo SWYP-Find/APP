@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -80,6 +81,7 @@ import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.Secondary50
 import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -147,6 +149,7 @@ fun PerspectiveScreen(
 
     Scaffold(
         containerColor = Beige200,
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
@@ -305,7 +308,7 @@ fun PerspectiveScreen(
                                 PullToRefreshDefaults.Indicator(
                                     state = pullToRefreshState,
                                     isRefreshing = isRefreshing,
-                                    containerColor = Color.White,
+                                    containerColor = White,
                                     color = Primary500,
                                     modifier = Modifier.align(Alignment.TopCenter)
                                 )
@@ -498,7 +501,7 @@ fun PerspectiveItemCard(
     val cardBgColor = when(status){
         "REJECTED" -> Color(0xFFFFF9F9)
         "PENDING" -> Secondary50
-        else -> Color.White
+        else -> White
     }
     val borderBadgeColor = when (status) {
         "REJECTED" -> Color(0xFFA64D47)
@@ -541,7 +544,7 @@ fun PerspectiveItemCard(
                                 Text(
                                     text = if (status == "PENDING") "검수중" else "거절됨",
                                     style = SwypTheme.typography.b5Medium,
-                                    color = Color.White,
+                                    color = White,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -726,14 +729,14 @@ fun PerspectiveMenuItem(
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = text,
-            tint = Color.White,
+            tint = White,
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
             style = SwypTheme.typography.labelMedium,
-            color = Color.White
+            color = White
         )
     }
 }

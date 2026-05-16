@@ -51,6 +51,7 @@ import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.White
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -204,7 +205,7 @@ fun AlarmCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(Color.White)
+            .background(White)
             .border(1.dp, Beige600, RoundedCornerShape(4.dp))
             // .clickable { onClick() }
             .padding(16.dp),

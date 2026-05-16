@@ -10,8 +10,10 @@ data class VoteStatsOptionBoard(
     val optionId: Long,
     val label: String,
     val title: String,
+    val isCorrect: Boolean,
     val voteCount: Int,
-    val ratio: Float
+    val ratio: Float,
+    val stance: String
 )
 
 data class MyVoteBoard(

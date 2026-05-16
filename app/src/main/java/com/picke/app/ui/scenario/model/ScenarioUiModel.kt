@@ -26,7 +26,7 @@ data class ScenarioScriptUiModel(
     val speakerType: SpeakerType,
     val speakerName: String,
     val displayText: String,
-    val profileImageUrl: Any? = null
+    val profileImageUrl: String? = null
 )
 
 data class ScenarioOptionUiModel(
@@ -36,6 +36,8 @@ data class ScenarioOptionUiModel(
 
 // Domain -> UI Mapper
 fun ScenarioBoard.toUiModel(): ScenarioUiModel {
+    val philosopherImageMap = this.philosophers.associate { it.label to it.imageUrl }
+
     val nodeMap = this.nodes.associateBy(
         keySelector = { it.nodeId },
         valueTransform = { node ->
@@ -53,7 +55,8 @@ fun ScenarioBoard.toUiModel(): ScenarioUiModel {
                         startTimeMs = script.startTimeMs,
                         speakerType = script.speakerType,
                         speakerName = script.speakerName,
-                        displayText = script.text.replace(Regex("<[^>]*>"), "") // 🧹 SSML 태그 제거!
+                        displayText = script.text.replace(Regex("<[^>]*>"), ""),
+                        profileImageUrl = philosopherImageMap[script.speakerType.name]
                     )
                 }
             )
