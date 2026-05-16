@@ -75,7 +75,10 @@ fun HomeScreen(
                 centerTitle = false,
                 backgroundColor = Beige200,
                 actions = {
-                    IconButton(onClick = { onNavigateToAlarm() }) {
+                    IconButton(onClick = {
+                        viewModel.clearNewNotice()
+                        onNavigateToAlarm()
+                    }) {
                         BadgedBox(
                             badge = {
                                 if (uiState.hasNewNotice) {
