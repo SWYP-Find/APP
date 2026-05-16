@@ -76,7 +76,14 @@ fun LoginScreen(
                 viewModel.handleSocialLoginSuccess("google", authCode)
             } ?: Log.e(TAG, "[ERROR] 구글 인가 코드가 null입니다.")
         } catch (e: ApiException) {
-            Log.e(TAG, "[ERROR] 구글 SDK 로그인 실패 (Code: \${e.statusCode})", e)
+            val hint = when (e.statusCode) {
+                10 -> "DEVELOPER_ERROR: 클라이언트 ID 타입 오류 또는 SHA-1 미등록"
+                12500 -> "Google Play Services 미지원 기기"
+                12501 -> "사용자가 로그인 취소"
+                7 -> "NETWORK_ERROR: 네트워크 연결 확인 필요"
+                else -> "알 수 없는 오류"
+            }
+            Log.e(TAG, "[ERROR] 구글 SDK 로그인 실패 (Code: ${e.statusCode} / $hint)", e)
             Toast.makeText(context, "구글 로그인에 실패했습니다. \n다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
             viewModel.resetState()
         }

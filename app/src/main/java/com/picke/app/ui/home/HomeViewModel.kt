@@ -133,6 +133,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun clearNewNotice() {
+        _uiState.update { it.copy(hasNewNotice = false) }
+    }
+
     // 투표/퀴즈 제출 로직
     fun submitTodayPickVote(battleId: String, optionId: Long, type: String) {
         viewModelScope.launch {

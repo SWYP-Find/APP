@@ -21,15 +21,12 @@ android {
 
     val kakaoDebugAppKey = properties.getProperty("KAKAO_DEBUG_APPKEY") ?: ""
     val googleWebClientId = properties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
-    val googleWebClientIdDebug = properties.getProperty("GOOGLE_WEB_CLIENT_ID_DEBUG") ?: ""
-    val googleWebClientIdRelease = properties.getProperty("GOOGLE_WEB_CLIENT_ID_RELEASE") ?: ""
     val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
     val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
     val mixpanelToken = properties.getProperty("MIXPANEL_PROJECT_TOKEN") ?: ""
 
     println("🔑💛 KAKAO_DEBUG_APPKEY: $kakaoDebugAppKey")
-    println("🔑💚 GOOGLE_WEB_CLIENT_ID_DEBUG: $googleWebClientIdDebug")
-    println("🔑💚 GOOGLE_WEB_CLIENT_ID_RELEASE: $googleWebClientIdRelease")
+    println("🔑🤍 GOOGLE_WEB_CLIENT_ID: ${if (googleWebClientId.isNotEmpty()) "${googleWebClientId.take(20)}..." else "❌ 미설정 (local.properties 확인)"}")
     println("🔑🤍 ADMOB_APP_ID: $admobAppId")
     println("🔑🤍 ADMOB_REWARDED_AD_UNIT_ID: $admobRewardedAdUnitId")
 
