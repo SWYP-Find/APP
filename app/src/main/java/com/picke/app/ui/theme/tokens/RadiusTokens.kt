@@ -5,7 +5,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 object RadiusTokens {
-    val none: Dp = 0.dp
     val default: Dp = 2.dp
-    val full: Dp = 999.dp
+    val max: Dp = 999.dp
 }

@@ -6,8 +6,8 @@ import androidx.compose.ui.unit.dp
 
 object SpacingTokens {
     val s0: Dp = 0.dp
-    val s2: Dp = 2.dp
     val s4: Dp = 4.dp
+    val s2: Dp = 2.dp
     val s8: Dp = 8.dp
     val s16: Dp = 16.dp
     val s24: Dp = 24.dp
@@ -17,4 +17,7 @@ object SpacingTokens {
     val s64: Dp = 64.dp
     val s80: Dp = 80.dp
     val s96: Dp = 96.dp
+    val s6: Dp = 6.dp
+    val s12: Dp = 12.dp
+    val s20: Dp = 20.dp
 }
