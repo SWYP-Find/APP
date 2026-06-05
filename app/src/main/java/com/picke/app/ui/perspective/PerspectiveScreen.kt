@@ -69,6 +69,7 @@ import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.component.SortFilterChip
 import com.picke.app.ui.theme.Beige100
 import com.picke.app.ui.theme.Beige200
+import com.picke.app.ui.theme.Beige500
 import com.picke.app.ui.theme.Beige600
 import com.picke.app.ui.theme.Beige800
 import com.picke.app.ui.theme.Gray100
@@ -482,7 +483,6 @@ fun PerspectiveScreen(
     }
 }
 
-// ... 아래의 하위 컴포넌트들(PerspectiveItemCard 등)은 기존과 완벽하게 100% 동일합니다 ...
 @Composable
 fun PerspectiveItemCard(
     item: PerspectiveUiModel,
@@ -548,18 +548,17 @@ fun PerspectiveItemCard(
                                 )
                             }
                         }
-                        // 2. 일반 상태일 때 (찬성/반대 뱃지만 노출)
+                        // 2. 일반 상태일 때 (입장별 뱃지 노출)
                         else {
-
                             val isPro = item.stance == "A"
                             Surface(
-                                color = if (isPro) Beige600 else SwypTheme.colors.primary,
+                                color = if (isPro) Color(0xFFA64D47) else SwypTheme.colors.primary,
                                 shape = RoundedCornerShape(2.dp)
                             ) {
                                 Text(
                                     text = item.stance,
                                     style = SwypTheme.typography.b5Medium,
-                                    color = if (isPro) SwypTheme.colors.primary else Beige600,
+                                    color = White,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -746,9 +745,9 @@ fun PerspectiveInputField(
     inputText: String,
     onTextChanged: (String) -> Unit,
     onSubmit: () -> Unit,
+    modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
     hintText: String = "제도화가 무서운 건...",
-    modifier: Modifier = Modifier,
 ) {
     Surface(
         color = SwypTheme.colors.surface,
@@ -872,15 +871,9 @@ fun PerspectiveHeader(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(64.dp)
             ) {
-                SubcomposeAsyncImage(
+                ProfileImage(
                     model = leftOption?.imageUrl,
-                    contentDescription = leftOption?.title,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Beige200),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-                    loading = { Box(Modifier.fillMaxSize().background(Beige200)) }
+                    modifier = Modifier.size(40.dp)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
@@ -893,7 +886,7 @@ fun PerspectiveHeader(
                 Text(
                     text = "${proRatio.toInt()}%",
                     style = SwypTheme.typography.label,
-                    color = Color(0xFFA64D47)
+                    color = Gray600
                 )
             }
 
@@ -927,15 +920,9 @@ fun PerspectiveHeader(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.width(64.dp)
             ) {
-                SubcomposeAsyncImage(
+                ProfileImage(
                     model = rightOption?.imageUrl,
-                    contentDescription = rightOption?.title,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Beige200),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-                    loading = { Box(Modifier.fillMaxSize().background(Beige200)) }
+                    modifier = Modifier.size(40.dp)
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
