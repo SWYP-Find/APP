@@ -34,7 +34,7 @@ class PerspectiveRepositoryImpl @Inject constructor(
                     Log.d(TAG, "[API_RES] 관점 목록 조회 성공 - 총 ${domainData.items.size}개 수신")
                     domainData.items.forEachIndexed { index, item ->
                         val shortContent = item.content.take(15).replace("\n", " ")
-                        Log.d(TAG, "   └ [$index] ID: ${item.commentId} | 입장(Stance): ${item.stance} | 닉네임: ${item.nickname} | 내용: $shortContent...")
+                        Log.d(TAG, "   └ [$index] ID: ${item.commentId} | 입장(Option): ${item.optionTitle} | 닉네임: ${item.nickname} | 내용: $shortContent...")
                     }
                     domainData
                 }

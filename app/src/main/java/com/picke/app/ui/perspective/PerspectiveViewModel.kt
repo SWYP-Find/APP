@@ -30,7 +30,8 @@ data class PerspectiveUiModel(
     val commentId: String,
     val profileImageUrl: String,
     val nickname: String,
-    val stance: String,
+    val optionTitle: String,
+    val optionId: Long,
     val content: String,
     val timeAgo: String,
     val replyCount: Int,
@@ -221,6 +222,8 @@ class PerspectiveViewModel @Inject constructor(
                 characterImageUrl = "",
                 nickname = "나",
                 optionLabel = tempLabel,
+                optionTitle = "",
+                optionId = 0L,
                 status = "PUBLISHED",
                 createdAt = "방금 전",
                 likeCount = 0,
@@ -364,23 +367,16 @@ class PerspectiveViewModel @Inject constructor(
 }
 
 // 도메인 모델 -> UI 모델 매핑 확장 함수
-private fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
-    val displayStance = when (this.stance.uppercase()) {
-        "A", "AGREE", "찬성" -> "A"
-        "B", "DISAGREE", "반대" -> "B"
-        else -> this.stance
-    }
-
-    return PerspectiveUiModel(
-        commentId = this.commentId,
-        profileImageUrl = this.characterImageUrl,
-        nickname = this.nickname,
-        stance = displayStance,
-        content = this.content,
-        timeAgo = this.createdAt.take(10),
-        replyCount = this.replyCount,
-        likeCount = this.likeCount,
-        isLiked = this.isLiked,
-        isMine = this.isMine
-    )
-}
+private fun PerspectiveBoard.toUiModel() = PerspectiveUiModel(
+    commentId = this.commentId,
+    profileImageUrl = this.characterImageUrl,
+    nickname = this.nickname,
+    optionTitle = this.optionTitle,
+    optionId = this.optionId,
+    content = this.content,
+    timeAgo = this.createdAt.take(10),
+    replyCount = this.replyCount,
+    likeCount = this.likeCount,
+    isLiked = this.isLiked,
+    isMine = this.isMine
+)

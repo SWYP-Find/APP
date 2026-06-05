@@ -69,6 +69,7 @@ import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.component.SortFilterChip
 import com.picke.app.ui.theme.Beige100
 import com.picke.app.ui.theme.Beige200
+import com.picke.app.ui.theme.Beige50
 import com.picke.app.ui.theme.Beige500
 import com.picke.app.ui.theme.Beige600
 import com.picke.app.ui.theme.Beige800
@@ -324,15 +325,13 @@ fun PerspectiveScreen(
                                 uiState.myPerspective?.let { myView ->
                                     if (myView.status != "PUBLISHED") {
                                         item {
-                                            val myLabel = if (myView.optionLabel == "A" || myView.optionLabel == "AGREE") "A" else "B"
-
-                                            // 검수중 일때 내 관점
                                             PerspectiveItemCard(
                                                 item = PerspectiveUiModel(
-                                                    commentId = myView.perspectiveId?.toString() ?: "-1",
+                                                    commentId = myView.perspectiveId.toString(),
                                                     profileImageUrl = myView.characterImageUrl,
                                                     nickname = "나",
-                                                    stance = myLabel,
+                                                    optionTitle = myView.optionTitle,
+                                                    optionId = myView.optionId,
                                                     content = myView.content,
                                                     timeAgo = "방금 전",
                                                     replyCount = 0,
@@ -340,6 +339,7 @@ fun PerspectiveScreen(
                                                     isLiked = false,
                                                     isMine = true
                                                 ),
+                                                firstOptionId = uiState.voteOptions.firstOrNull()?.optionId ?: 0L,
                                                 status = myView.status,
                                                 clickable = false,
                                                 onEditClick = { content ->
@@ -384,6 +384,7 @@ fun PerspectiveScreen(
                                     ) { index, item ->
                                         PerspectiveItemCard(
                                             item = item,
+                                            firstOptionId = uiState.voteOptions.firstOrNull()?.optionId ?: 0L,
                                             onMoreClick = { onMoreClick(item.commentId) },
                                             onEditClick = { content ->
                                                 inputText = content
@@ -486,9 +487,10 @@ fun PerspectiveScreen(
 @Composable
 fun PerspectiveItemCard(
     item: PerspectiveUiModel,
+    modifier: Modifier = Modifier,
+    firstOptionId: Long = 0L,
     status: String? = null,
     isDetail: Boolean = false,
-    modifier: Modifier = Modifier,
     onMoreClick: () -> Unit = {},
     clickable: Boolean = true,
     onEditClick: (String) -> Unit = {},
@@ -550,15 +552,17 @@ fun PerspectiveItemCard(
                         }
                         // 2. 일반 상태일 때 (입장별 뱃지 노출)
                         else {
-                            val isPro = item.stance == "A"
+                            val isPro = firstOptionId != 0L && item.optionId == firstOptionId
                             Surface(
-                                color = if (isPro) Color(0xFFA64D47) else SwypTheme.colors.primary,
+                                color = if (isPro) Beige600 else SwypTheme.colors.primary,
                                 shape = RoundedCornerShape(2.dp)
                             ) {
                                 Text(
-                                    text = item.stance,
+                                    text = item.optionTitle.ifEmpty { if (isPro) "A" else "B" },
                                     style = SwypTheme.typography.b5Medium,
-                                    color = White,
+                                    color = if (isPro) SwypTheme.colors.primary else Beige50,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -825,16 +829,44 @@ fun PerspectiveHeader(
     val proRatio = leftOption?.ratio ?: 50f
     val conRatio = rightOption?.ratio ?: 50f
 
-    Column(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
-        // 1. 생각이 바뀌었어요 버튼
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
+        // 왼쪽 옵션 (이미지 + 타이틀 + 비율)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.width(64.dp)
         ) {
+            ProfileImage(
+                model = leftOption?.imageUrl,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = leftOption?.title ?: "A",
+                style = SwypTheme.typography.labelXSmall,
+                color = Gray700,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "${proRatio.toInt()}%",
+                style = SwypTheme.typography.label,
+                color = Gray600
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // 가운데: 생각이 바뀌었어요 버튼 + 프로그래스 바
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1f)
+        ) {
+            // 1. 생각이 바뀌었어요 버튼
             Surface(
                 color = Primary50,
                 shape = RoundedCornerShape(4.dp)
@@ -857,45 +889,13 @@ fun PerspectiveHeader(
                     )
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // 2. 옵션 이미지 + 비율 바
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // 왼쪽 옵션 (이미지 + 타이틀 + 비율)
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(64.dp)
-            ) {
-                ProfileImage(
-                    model = leftOption?.imageUrl,
-                    modifier = Modifier.size(40.dp)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = leftOption?.title ?: "A",
-                    style = SwypTheme.typography.labelXSmall,
-                    color = Gray700,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "${proRatio.toInt()}%",
-                    style = SwypTheme.typography.label,
-                    color = Gray600
-                )
-            }
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // 비율에 따라 채워지는 프로그레스 바
+            // 2. 비율에 따라 채워지는 프로그래스 바
             Row(
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .height(6.dp)
                     .clip(CircleShape)
             ) {
@@ -912,32 +912,32 @@ fun PerspectiveHeader(
                         .background(Gray100)
                 )
             }
+        }
 
-            Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
-            // 오른쪽 옵션 (비율 + 타이틀 + 이미지)
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(64.dp)
-            ) {
-                ProfileImage(
-                    model = rightOption?.imageUrl,
-                    modifier = Modifier.size(40.dp)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = rightOption?.title ?: "B",
-                    style = SwypTheme.typography.labelXSmall,
-                    color = Gray700,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "${conRatio.toInt()}%",
-                    style = SwypTheme.typography.label,
-                    color = Gray600
-                )
-            }
+        // 오른쪽 옵션 (비율 + 타이틀 + 이미지)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.width(64.dp)
+        ) {
+            ProfileImage(
+                model = rightOption?.imageUrl,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = rightOption?.title ?: "B",
+                style = SwypTheme.typography.labelXSmall,
+                color = Gray700,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = "${conRatio.toInt()}%",
+                style = SwypTheme.typography.label,
+                color = Gray600
+            )
         }
     }
 }
