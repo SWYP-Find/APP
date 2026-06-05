@@ -10,6 +10,7 @@ data class VoteStatsOptionBoard(
     val optionId: Long,
     val label: String,
     val title: String,
+    val imageUrl: String,
     val isCorrect: Boolean,
     val voteCount: Int,
     val ratio: Float,

@@ -13,7 +13,7 @@ interface PerspectiveRepository {
         battleId: Long,
         cursor: String? = null,
         size: Int = 10,
-        optionLabel: String? = null,
+        optionId: Long? = null,
         sort: String = "latest"
     ): Result<PerspectivePage>
 

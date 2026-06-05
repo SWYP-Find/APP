@@ -59,7 +59,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.SubcomposeAsyncImage
 import com.picke.app.R
+import com.picke.app.domain.model.VoteStatsOptionBoard
 import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
@@ -100,15 +102,13 @@ fun PerspectiveScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // ✨ [수정됨] SSE 관련 로직(realTimeStats, LaunchedEffect) 싹 다 날렸습니다!
-    // 이제 무겁게 실시간 통신을 열어두지 않고, 처음에 불러온 투표 통계(proRatio, conRatio)만 씁니다.
-    val currentProRatio = uiState.proRatio
-    val currentConRatio = uiState.conRatio
-
     val context = androidx.compose.ui.platform.LocalContext.current
     val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
 
-    val tabList = listOf("전체", "A", "B")
+    val voteOptions = uiState.voteOptions
+    val tabList = remember(voteOptions) {
+        listOf("전체") + voteOptions.map { it.title }
+    }
     var inputText by remember { mutableStateOf("") }
     val pagerState = rememberPagerState(pageCount = { tabList.size })
     val coroutineScope = rememberCoroutineScope()
@@ -186,7 +186,6 @@ fun PerspectiveScreen(
                 // 힌트 문구
                 val inputHint = when {
                     isEditing -> "수정할 내용을 입력해주세요..."
-                    myView?.status == "PENDING" -> "지금 관점 검수중입니다. \n검수가 됐는지 새로고침하여 확인하세요."
                     myView?.status == "REJECTED" -> "거절된 관점이 있습니다. \n더보기 메뉴에서 수정을 눌러주세요."
                     myView != null -> "이미 내 관점을 등록했습니다."
                     else -> "본인의 관점을 적어주세요. \n관점은 하나만 작성할 수 있습니다."
@@ -195,7 +194,6 @@ fun PerspectiveScreen(
                 PerspectiveInputField(
                     inputText = inputText,
                     onTextChanged = { inputText = it },
-                    status = myView?.status,
                     onSubmit = {
                         viewModel.submitPerspective(inputText) {
                             inputText = ""
@@ -216,23 +214,27 @@ fun PerspectiveScreen(
         ) {
             // 1. 투표 통계
             PerspectiveHeader(
-                proPercentage = currentProRatio,
-                conPercentage = currentConRatio,
+                voteOptions = uiState.voteOptions,
                 opinionChanged = uiState.opinionChanged
             )
 
-            // 2. 전체/찬성/반대 탭
+            // 2. 전체/옵션별 탭
             CustomTabBar(
                 tabs = tabList,
                 selectedTab = tabList[pagerState.currentPage],
-                isScrollable = false,
+                isScrollable = tabList.size > 3,
                 onTabSelected = { selected ->
                     val targetIndex = tabList.indexOf(selected)
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(targetIndex)
-                    }
+                    coroutineScope.launch { pagerState.animateScrollToPage(targetIndex) }
+                    val optionId = if (targetIndex == 0) null else voteOptions.getOrNull(targetIndex - 1)?.optionId
+                    viewModel.selectOption(optionId)
                 }
             )
+
+            LaunchedEffect(pagerState.currentPage) {
+                val optionId = if (pagerState.currentPage == 0) null else voteOptions.getOrNull(pagerState.currentPage - 1)?.optionId
+                viewModel.selectOption(optionId)
+            }
 
             // 3. 인기순/최신순 칩과 관점들
             HorizontalPager(
@@ -240,18 +242,15 @@ fun PerspectiveScreen(
                 modifier = Modifier.weight(1f),
                 verticalAlignment = Alignment.Top
             ) { pageIndex ->
-                val listState = remember(uiState.sort, pageIndex) { LazyListState() }
+                val listState = remember(uiState.sort, uiState.selectedOptionId, pageIndex) { LazyListState() }
                 LaunchedEffect(scrollToTopTrigger) {
                     if (scrollToTopTrigger > 0) {
                         kotlinx.coroutines.delay(50)
                         listState.scrollToItem(0)
                     }
                 }
-                val filteredList = when (pageIndex) {
-                    1 -> uiState.perspectives.filter { it.stance == "A" }
-                    2 -> uiState.perspectives.filter { it.stance == "B" }
-                    else -> uiState.perspectives
-                }
+                // 서버 사이드 필터링: 각 탭 선택 시 optionId로 API 호출 → 별도 클라이언트 필터 불필요
+                val filteredList = uiState.perspectives
 
                 Column(modifier = Modifier.fillMaxSize()) {
                     Row(
@@ -364,10 +363,10 @@ fun PerspectiveScreen(
                                 // 관점 목록이 아무것도 없을때
                                 if (filteredList.isEmpty() && !uiState.isLoading && !isShowingMyPendingOrRejected) {
                                     item {
-                                        val emptyMsg = when (pageIndex) {
-                                            1 -> "아직 작성된 A 관점이 없습니다"
-                                            2 -> "아직 작성된 B 관점이 없습니다"
-                                            else -> "아직 작성된 관점이 없습니다"
+                                        val emptyMsg = if (pageIndex == 0) {
+                                            "아직 작성된 관점이 없습니다"
+                                        } else {
+                                            "아직 작성된 ${tabList.getOrElse(pageIndex) { "" }} 관점이 없습니다"
                                         }
 
                                         PerspectiveEmptyState(
@@ -745,7 +744,6 @@ fun PerspectiveMenuItem(
 @Composable
 fun PerspectiveInputField(
     inputText: String,
-    status: String? = null,
     onTextChanged: (String) -> Unit,
     onSubmit: () -> Unit,
     isEnabled: Boolean = true,
@@ -808,7 +806,7 @@ fun PerspectiveInputField(
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
-                    painter = if(status=="PENDING") painterResource(R.drawable.ic_loading) else painterResource(id = android.R.drawable.ic_menu_send),
+                    painter = painterResource(id = android.R.drawable.ic_menu_send),
                     contentDescription = "등록",
                     tint = SwypTheme.colors.primary
                 )
@@ -819,11 +817,15 @@ fun PerspectiveInputField(
 
 @Composable
 fun PerspectiveHeader(
-    proPercentage: Float = 59.5f,
-    conPercentage: Float = 40.5f,
+    voteOptions: List<VoteStatsOptionBoard>,
     opinionChanged: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val leftOption = voteOptions.getOrNull(0)
+    val rightOption = voteOptions.getOrNull(1)
+    val proRatio = leftOption?.ratio ?: 50f
+    val conRatio = rightOption?.ratio ?: 50f
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -860,18 +862,42 @@ fun PerspectiveHeader(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 2. 찬/반 비율 바
+        // 2. 옵션 이미지 + 비율 바
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "A ${proPercentage}%",
-                style = SwypTheme.typography.label,
-                color = Gray600
-            )
+            // 왼쪽 옵션 (이미지 + 타이틀 + 비율)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(64.dp)
+            ) {
+                SubcomposeAsyncImage(
+                    model = leftOption?.imageUrl,
+                    contentDescription = leftOption?.title,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Beige200),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                    loading = { Box(Modifier.fillMaxSize().background(Beige200)) }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = leftOption?.title ?: "A",
+                    style = SwypTheme.typography.labelXSmall,
+                    color = Gray700,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${proRatio.toInt()}%",
+                    style = SwypTheme.typography.label,
+                    color = Color(0xFFA64D47)
+                )
+            }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
             // 비율에 따라 채워지는 프로그레스 바
             Row(
@@ -880,29 +906,51 @@ fun PerspectiveHeader(
                     .height(6.dp)
                     .clip(CircleShape)
             ) {
-                // 찬성 비율 (진한 붉은색)
                 Box(
                     modifier = Modifier
-                        .weight(if (proPercentage > 0) proPercentage else 0.1f)
+                        .weight(if (proRatio > 0) proRatio else 0.1f)
                         .fillMaxHeight()
                         .background(Color(0xFFA64D47))
                 )
-                // 반대 비율 (연한 회색)
                 Box(
                     modifier = Modifier
-                        .weight(if (conPercentage > 0) conPercentage else 0.1f)
+                        .weight(if (conRatio > 0) conRatio else 0.1f)
                         .fillMaxHeight()
                         .background(Gray100)
                 )
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
-            Text(
-                text = "B ${conPercentage}%",
-                style = SwypTheme.typography.label,
-                color = Gray600
-            )
+            // 오른쪽 옵션 (비율 + 타이틀 + 이미지)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.width(64.dp)
+            ) {
+                SubcomposeAsyncImage(
+                    model = rightOption?.imageUrl,
+                    contentDescription = rightOption?.title,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Beige200),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                    loading = { Box(Modifier.fillMaxSize().background(Beige200)) }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = rightOption?.title ?: "B",
+                    style = SwypTheme.typography.labelXSmall,
+                    color = Gray700,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${conRatio.toInt()}%",
+                    style = SwypTheme.typography.label,
+                    color = Gray600
+                )
+            }
         }
     }
 }
