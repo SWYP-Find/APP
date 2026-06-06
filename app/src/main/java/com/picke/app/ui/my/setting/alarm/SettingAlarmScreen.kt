@@ -1,5 +1,12 @@
 package com.picke.app.ui.my.setting.alarm
 
+import android.Manifest
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,11 +33,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
+import com.google.firebase.messaging.FirebaseMessaging
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
+import com.picke.app.ui.notification.NotificationPermissionBottomSheet
 import com.picke.app.ui.theme.Beige200
 import com.picke.app.ui.theme.Beige600
 import com.picke.app.ui.theme.Gray300
@@ -45,21 +56,47 @@ import com.picke.app.ui.theme.White
 fun SettingAlarmScreen(
     onBackClick: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     var isNewBattleEnabled by remember { mutableStateOf(false) }
     var isVoteResultEnabled by remember { mutableStateOf(true) }
-
     var isReplyEnabled by remember { mutableStateOf(true) }
     var isNewCommentEnabled by remember { mutableStateOf(false) }
     var isLikeEnabled by remember { mutableStateOf(false) }
-
     var isMarketingEnabled by remember { mutableStateOf(true) }
 
+    var showPermissionSheet by remember { mutableStateOf(false) }
+    // 권한 획득 후 실행할 토글 변경 액션을 임시 보관
+    val pendingToggleAction = remember { mutableStateOf<(() -> Unit)?>(null) }
+
     val scrollState = rememberScrollState()
+
+    // Android 13+ 알림 권한 요청 런처
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            pendingToggleAction.value?.invoke()
+            pendingToggleAction.value = null
+            fetchFcmToken()
+        }
+    }
+
+    // 토글 ON 시 호출: 알림 권한 확인 후 분기
+    val onToggleTurnedOn: (() -> Unit) -> Unit = { applyChange ->
+        val notificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+        if (notificationsEnabled) {
+            applyChange()
+        } else {
+            pendingToggleAction.value = applyChange
+            showPermissionSheet = true
+        }
+    }
 
     Scaffold(
         containerColor = Beige200,
         modifier = Modifier.systemBarsPadding(),
-        topBar={
+        topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_setting_alarm),
                 centerTitle = true,
@@ -69,7 +106,7 @@ fun SettingAlarmScreen(
                 backgroundColor = Beige200
             )
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -82,14 +119,20 @@ fun SettingAlarmScreen(
                 title = stringResource(id = R.string.setting_alarm_new_battle_title),
                 subtitle = stringResource(id = R.string.setting_alarm_new_battle_desc),
                 isChecked = isNewBattleEnabled,
-                onCheckedChange = { isNewBattleEnabled = it }
+                onCheckedChange = { checked ->
+                    if (checked) onToggleTurnedOn { isNewBattleEnabled = true }
+                    else isNewBattleEnabled = false
+                }
             )
             AlarmDivider()
             AlarmSettingItem(
                 title = stringResource(id = R.string.setting_alarm_vote_result_title),
                 subtitle = stringResource(id = R.string.setting_alarm_vote_result_desc),
                 isChecked = isVoteResultEnabled,
-                onCheckedChange = { isVoteResultEnabled = it }
+                onCheckedChange = { checked ->
+                    if (checked) onToggleTurnedOn { isVoteResultEnabled = true }
+                    else isVoteResultEnabled = false
+                }
             )
             AlarmDivider()
 
@@ -99,21 +142,30 @@ fun SettingAlarmScreen(
                 title = stringResource(id = R.string.setting_alarm_reply_title),
                 subtitle = stringResource(id = R.string.setting_alarm_reply_desc),
                 isChecked = isReplyEnabled,
-                onCheckedChange = { isReplyEnabled = it }
+                onCheckedChange = { checked ->
+                    if (checked) onToggleTurnedOn { isReplyEnabled = true }
+                    else isReplyEnabled = false
+                }
             )
             AlarmDivider()
             AlarmSettingItem(
                 title = stringResource(id = R.string.setting_alarm_new_comment_title),
                 subtitle = stringResource(id = R.string.setting_alarm_new_comment_desc),
                 isChecked = isNewCommentEnabled,
-                onCheckedChange = { isNewCommentEnabled = it }
+                onCheckedChange = { checked ->
+                    if (checked) onToggleTurnedOn { isNewCommentEnabled = true }
+                    else isNewCommentEnabled = false
+                }
             )
             AlarmDivider()
             AlarmSettingItem(
                 title = stringResource(id = R.string.setting_alarm_like_title),
                 subtitle = stringResource(id = R.string.setting_alarm_like_desc),
                 isChecked = isLikeEnabled,
-                onCheckedChange = { isLikeEnabled = it }
+                onCheckedChange = { checked ->
+                    if (checked) onToggleTurnedOn { isLikeEnabled = true }
+                    else isLikeEnabled = false
+                }
             )
             AlarmDivider()
 
@@ -123,11 +175,53 @@ fun SettingAlarmScreen(
                 title = stringResource(id = R.string.setting_alarm_marketing_title),
                 subtitle = stringResource(id = R.string.setting_alarm_marketing_desc),
                 isChecked = isMarketingEnabled,
-                onCheckedChange = { isMarketingEnabled = it }
+                onCheckedChange = { checked ->
+                    if (checked) onToggleTurnedOn { isMarketingEnabled = true }
+                    else isMarketingEnabled = false
+                }
             )
             AlarmDivider()
 
             Spacer(modifier = Modifier.height(40.dp))
+        }
+    }
+
+    if (showPermissionSheet) {
+        NotificationPermissionBottomSheet(
+            onDismiss = {
+                showPermissionSheet = false
+                pendingToggleAction.value = null
+            },
+            onAgree = {
+                showPermissionSheet = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    // Android 13+: 런타임 권한 요청
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    // Android 12 이하: 시스템 알림 설정으로 이동
+                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                    }
+                    context.startActivity(intent)
+                    pendingToggleAction.value = null
+                }
+            },
+            onDisagree = {
+                showPermissionSheet = false
+                pendingToggleAction.value = null
+            }
+        )
+    }
+}
+
+private fun fetchFcmToken() {
+    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val token = task.result
+            Log.d("FCM", "토큰 발급 완료: $token")
+            // TODO: 서버 FCM 토큰 등록 API 연동
+        } else {
+            Log.w("FCM", "토큰 발급 실패", task.exception)
         }
     }
 }
@@ -172,7 +266,6 @@ fun AlarmSettingItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        // 커스텀 스위치
         Switch(
             modifier = Modifier.scale(0.8f),
             checked = isChecked,
