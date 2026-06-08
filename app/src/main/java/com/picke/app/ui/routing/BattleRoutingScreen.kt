@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.domain.repository.BattleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -43,6 +43,7 @@ import com.picke.app.ui.recommend.RecommendScreen
 import com.picke.app.ui.routing.BattleRoutingScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
+import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.TodayBattleScreen
 import com.picke.app.ui.vote.VoteRoute
 import com.picke.app.ui.vote.VoteType
