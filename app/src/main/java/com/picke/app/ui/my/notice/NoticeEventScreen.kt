@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.notice
+﻿package com.picke.app.ui.my.notice
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -44,17 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.app.domain.model.NoticeEventItem
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import kotlinx.coroutines.launch
 import com.picke.app.R
 
@@ -77,7 +67,7 @@ fun NoticeEventScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 title = tabs[pagerState.currentPage],
@@ -91,7 +81,7 @@ fun NoticeEventScreen(
                         onBackClick()
                     }
                 },
-                backgroundColor = Beige200
+                backgroundColor = SwypTheme.colors.backgroundBrand
             )
         }
     ) { innerPadding ->
@@ -122,7 +112,7 @@ fun NoticeEventScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
                 HorizontalPager(
@@ -208,13 +198,13 @@ fun NoticeEventDetailContent(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Beige600)
+                    .background(SwypTheme.colors.borderDefault)
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = item.type,
                     style = SwypTheme.typography.b5Medium,
-                    color = Primary500
+                    color = SwypTheme.colors.primary
                 )
             }
 
@@ -224,7 +214,7 @@ fun NoticeEventDetailContent(
             Text(
                 text = item.title,
                 style = SwypTheme.typography.labelMedium,
-                color = Gray500
+                color = SwypTheme.colors.textTertiary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -233,7 +223,7 @@ fun NoticeEventDetailContent(
             Text(
                 text = item.date,
                 style = SwypTheme.typography.b5Medium,
-                color = Gray300
+                color = SwypTheme.colors.textMuted
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -242,7 +232,7 @@ fun NoticeEventDetailContent(
             Text(
                 text = item.content,
                 style = SwypTheme.typography.b4Regular,
-                color = Gray400
+                color = SwypTheme.colors.neutral400
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -255,7 +245,7 @@ fun NoticeEventDetailContent(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(2.dp))
-                        .background(Primary500)
+                        .background(SwypTheme.colors.primary)
                         .clickable { onGoToList() }
                         .padding(horizontal = 32.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
@@ -263,7 +253,7 @@ fun NoticeEventDetailContent(
                     Text(
                         text = "목록",
                         style = SwypTheme.typography.b3SemiBold,
-                        color = White
+                        color = Color.White
                     )
                 }
             }
@@ -287,12 +277,12 @@ fun NoticeEventList(
                 painter = painterResource(id = R.drawable.ic_logo),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = Beige600
+                tint = SwypTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
                 style = SwypTheme.typography.b3Regular,
-                color = Beige800
+                color = SwypTheme.colors.beige800
             )
         }
     } else {
@@ -316,13 +306,13 @@ fun NoticeEventCard(
     item: NoticeEventItem,
     onClick: () -> Unit
 ) {
-    //val borderColor =  if (!item.isRead) Primary300 else Beige400
+    //val borderColor =  if (!item.isRead) SwypTheme.colors.primaryDisabled else SwypTheme.colors.surfaceTertiary
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige400, RoundedCornerShape(2.dp))
+            .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -336,13 +326,13 @@ fun NoticeEventCard(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Beige600)
+                    .background(SwypTheme.colors.borderDefault)
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = item.type,
                     style = SwypTheme.typography.b5Medium,
-                    color = Primary500
+                    color = SwypTheme.colors.primary
                 )
             }
 
@@ -351,7 +341,7 @@ fun NoticeEventCard(
                 Box(
                     modifier = Modifier
                         .size(4.dp)
-                        .background(Primary500, CircleShape)
+                        .background(SwypTheme.colors.primary, CircleShape)
                 )
             }*/
         }
@@ -362,7 +352,7 @@ fun NoticeEventCard(
         Text(
             text = item.title,
             style = SwypTheme.typography.labelMedium,
-            color = Gray500,
+            color = SwypTheme.colors.textTertiary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -373,7 +363,7 @@ fun NoticeEventCard(
         Text(
             text = item.date,
             style = SwypTheme.typography.b5Medium,
-            color = Gray300
+            color = SwypTheme.colors.textMuted
         )
     }
 }

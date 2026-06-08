@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.picke.app.ui.theme.Primary50
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -21,8 +20,8 @@ fun SortFilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) SwypTheme.colors.primary else Primary50
-    val contentColor = if (isSelected) Primary50 else SwypTheme.colors.primary
+    val backgroundColor = if (isSelected) SwypTheme.colors.primary else SwypTheme.colors.primaryLight
+    val contentColor = if (isSelected) SwypTheme.colors.primaryLight else SwypTheme.colors.primary
     val borderColor = SwypTheme.colors.primary
 
     Box(

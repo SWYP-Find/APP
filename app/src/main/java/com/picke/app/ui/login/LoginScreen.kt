@@ -1,4 +1,4 @@
-package com.picke.app.ui.login
+﻿package com.picke.app.ui.login
 
 import android.app.Activity
 import android.content.Context
@@ -39,13 +39,9 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary300
 import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.White
 import androidx.activity.compose.BackHandler
 import com.kakao.sdk.auth.model.Prompt
 
@@ -118,7 +114,7 @@ fun LoginScreen(
             // 1. 텍스트
             Text(
                 style = SwypTheme.typography.h4SemiBold,
-                color = Primary300,
+                color = SwypTheme.colors.primaryDisabled,
                 text = stringResource(R.string.login_your_think)
             )
             // 2. 로고
@@ -142,7 +138,7 @@ fun LoginScreen(
         ) {
             // [로딩중]
             if (uiState is LoginUiState.Loading) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 Spacer(modifier = Modifier.height(16.dp))
             }
             // [로딩중 X]
@@ -157,7 +153,7 @@ fun LoginScreen(
                         }
                     },
                     backgroundColor = Color(0xFFFEE500),
-                    textColor = Gray900,
+                    textColor = SwypTheme.colors.textPrimary,
                     iconResId = R.drawable.ic_kakao
                 )
 
@@ -183,8 +179,8 @@ fun LoginScreen(
                             googleSignInLauncher.launch(googleSignInClient.signInIntent)
                         }
                     },
-                    backgroundColor = White,
-                    textColor = Gray900,
+                    backgroundColor = Color.White,
+                    textColor = SwypTheme.colors.textPrimary,
                     iconResId = R.drawable.ic_google
                 )
             }

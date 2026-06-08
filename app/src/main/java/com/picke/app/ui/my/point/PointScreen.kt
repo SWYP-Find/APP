@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.point
+﻿package com.picke.app.ui.my.point
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,18 +52,7 @@ import com.picke.app.R
 import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.component.CustomReverseConfirmDialog
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary800
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 
 data class PointHistoryUiModel(
     val title: String,
@@ -85,7 +74,7 @@ fun PointScreen(
     val pullToRefreshState = rememberPullToRefreshState()
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar={
             CustomTopAppBar(
@@ -94,7 +83,7 @@ fun PointScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = Beige200,
+                backgroundColor = SwypTheme.colors.backgroundBrand,
                 actions = {
                     IconButton(
                         onClick = {
@@ -103,7 +92,7 @@ fun PointScreen(
                         Icon(
                             painterResource(R.drawable.ic_point),
                             contentDescription = stringResource(R.string.setting),
-                            tint = Primary500
+                            tint = SwypTheme.colors.primary
                         )
                     }
                 }
@@ -123,8 +112,8 @@ fun PointScreen(
                 PullToRefreshDefaults.Indicator(
                     state = pullToRefreshState,
                     isRefreshing = uiState.isLoading,
-                    containerColor = White,
-                    color = Primary500,
+                    containerColor = Color.White,
+                    color = SwypTheme.colors.primary,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
@@ -135,7 +124,7 @@ fun PointScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             }
             // 2. 빈 내역
@@ -151,12 +140,12 @@ fun PointScreen(
                         painter = painterResource(id = R.drawable.ic_logo),
                         contentDescription = "빈 화면 로고",
                         modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                        tint = Beige600
+                        tint = SwypTheme.colors.borderDefault
                     )
                     Text(
                         text = "아직 포인트 내역이 없습니다",
                         style = SwypTheme.typography.b3Regular,
-                        color = Beige800
+                        color = SwypTheme.colors.beige800
                     )
                 }
             }
@@ -186,7 +175,7 @@ fun PointScreen(
                                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(color = Primary900)
+                                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                             }
                         }
                     }
@@ -220,15 +209,15 @@ fun PointHistoryItem(
     item: PointHistoryUiModel
 ) {
     val isEarned = item.point > 0
-    val pointColor = if (isEarned) Primary500 else Gray500
+    val pointColor = if (isEarned) SwypTheme.colors.primary else SwypTheme.colors.textTertiary
     val pointText = if (isEarned) "+ ${item.point}P" else "${item.point}P"
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
-            .background(White)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .background(Color.White)
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Row(
@@ -240,13 +229,13 @@ fun PointHistoryItem(
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
                     text = item.title,
-                    color = Gray900,
+                    color = SwypTheme.colors.textPrimary,
                     style = SwypTheme.typography.b3SemiBold
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = item.date,
-                    color = Gray300,
+                    color = SwypTheme.colors.textMuted,
                     style = SwypTheme.typography.caption2Medium
                 )
             }
@@ -261,7 +250,7 @@ fun PointHistoryItem(
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = item.type,
-                    color = Gray300,
+                    color = SwypTheme.colors.textMuted,
                     style = SwypTheme.typography.caption2Medium
                 )
             }

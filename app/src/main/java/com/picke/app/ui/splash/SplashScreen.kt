@@ -1,4 +1,4 @@
-package com.picke.app.ui.splash
+﻿package com.picke.app.ui.splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.app.R
-import com.picke.app.ui.theme.Primary500
 import kotlinx.coroutines.launch
 
 /*
@@ -75,7 +74,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Primary500),
+            .background(SwypTheme.colors.primary),
         contentAlignment = Alignment.Center
     ){
         Image(

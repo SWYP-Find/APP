@@ -1,4 +1,4 @@
-import android.os.Build
+﻿import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,15 +41,7 @@ import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.scenario.ScenarioViewModel
 import com.picke.app.ui.scenario.model.ScenarioOptionUiModel
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige700
-import com.picke.app.ui.theme.Gray200
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -91,13 +83,13 @@ fun ScenarioScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
                     title = uiState.title,
                     showBackButton = false,
-                    backgroundColor = Beige200,
+                    backgroundColor = SwypTheme.colors.backgroundBrand,
                 )
             }
         },
@@ -212,14 +204,14 @@ fun InteractiveOptionsUI(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
+            HorizontalDivider(modifier = Modifier.weight(1f), color = SwypTheme.colors.neutral200)
             Text(
                 text = if (selectedNodeId == null) "이제 당신의 입장을 선택해주세요" else "아래가 당신의 선택입니다.",
                 style = SwypTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
-                color = Gray500,
+                color = SwypTheme.colors.textTertiary,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-            HorizontalDivider(modifier = Modifier.weight(1f), color = Gray200)
+            HorizontalDivider(modifier = Modifier.weight(1f), color = SwypTheme.colors.neutral200)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -260,8 +252,8 @@ fun OptionSelectionCard(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) Secondary500 else Beige700
-    val bgColor = if (isSelected) Beige400 else Beige400
+    val borderColor = if (isSelected) SwypTheme.colors.secondary else SwypTheme.colors.borderSubtle
+    val bgColor = if (isSelected) SwypTheme.colors.surfaceTertiary else SwypTheme.colors.surfaceTertiary
 
     Box(
         modifier = Modifier
@@ -276,7 +268,7 @@ fun OptionSelectionCard(
         Text(
             text = text,
             style = SwypTheme.typography.b5Medium,
-            color = if (isSelected) Gray900 else Gray500,
+            color = if (isSelected) SwypTheme.colors.textPrimary else SwypTheme.colors.textTertiary,
             textAlign = TextAlign.Center
         )
     }
@@ -289,8 +281,8 @@ fun OptionConfirmButton(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isEnabled) Secondary500 else Gray200
-    val textColor = if (isEnabled) White else White
+    val bgColor = if (isEnabled) SwypTheme.colors.secondary else SwypTheme.colors.neutral200
+    val textColor = if (isEnabled) Color.White else Color.White
 
     Box(
         modifier = Modifier

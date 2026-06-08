@@ -1,4 +1,4 @@
-package com.picke.app.ui.my
+﻿package com.picke.app.ui.my
 
 import android.app.Activity
 import android.widget.Toast
@@ -45,18 +45,6 @@ import com.picke.app.R
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige50
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary800
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.Secondary300
-import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.di.AdMobManager
 
@@ -90,10 +78,10 @@ fun MyScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
-                backgroundColor = Beige200,
+                backgroundColor = SwypTheme.colors.backgroundBrand,
                 centerTitle = false,
                 actions = {
                     /*IconButton(
@@ -106,7 +94,7 @@ fun MyScreen(
                             Icon(
                                 painterResource(R.drawable.ic_alarm),
                                 contentDescription = stringResource(R.string.alarm),
-                                tint = Gray900
+                                tint = SwypTheme.colors.textPrimary
                             )
 
                             if (uiState.hasNewNotice) {
@@ -127,7 +115,7 @@ fun MyScreen(
                         Icon(
                             painterResource(R.drawable.ic_setting),
                             contentDescription =  stringResource(R.string.setting),
-                            tint = Gray900
+                            tint = SwypTheme.colors.textPrimary
                         )
                     }
                 }
@@ -141,7 +129,7 @@ fun MyScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
         else {
@@ -237,7 +225,7 @@ fun ProfileSection(
         Column {
             Text(text = nickname, style = SwypTheme.typography.h4SemiBold)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = userHandle, style = SwypTheme.typography.b4Regular, color = Gray500)
+            Text(text = userHandle, style = SwypTheme.typography.b4Regular, color = SwypTheme.colors.textTertiary)
         }
     }
 }
@@ -256,8 +244,8 @@ fun PhilosopherTypeCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(Beige400)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .background(SwypTheme.colors.surfaceTertiary)
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -275,19 +263,19 @@ fun PhilosopherTypeCard(
             Text(
                 text = stringResource(R.string.my_menu_philosopher),
                 style = SwypTheme.typography.caption2Medium,
-                color = Gray500
+                color = SwypTheme.colors.textTertiary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (isLocked) displayName else "$displayName ",
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray700
+                color = SwypTheme.colors.textSecondary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (isLocked) displayName else "$displayDesc",
                 style = SwypTheme.typography.labelXSmall,
-                color = Gray300
+                color = SwypTheme.colors.textMuted
             )
         }
 
@@ -296,7 +284,7 @@ fun PhilosopherTypeCard(
             painter = painterResource(id = R.drawable.ic_arrow_right_a),
             contentDescription = null,
             modifier = Modifier.size(12.dp),
-            tint = Gray900
+            tint = SwypTheme.colors.textPrimary
         )
     }
 }
@@ -311,7 +299,7 @@ fun CreditCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(Primary800)
+            .background(SwypTheme.colors.primaryDark)
             .clickable{ onClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -326,13 +314,13 @@ fun CreditCard(
             Box(
                 modifier = Modifier
                     .size(24.dp)
-                    .background(color = Secondary300, shape = CircleShape),
+                    .background(color = SwypTheme.colors.secondary300, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "P",
                     style = SwypTheme.typography.b5Medium,
-                    color = Gray700
+                    color = SwypTheme.colors.textSecondary
                 )
             }
 
@@ -341,12 +329,12 @@ fun CreditCard(
                 Text(
                     text = stringResource(R.string.my_point),
                     style = SwypTheme.typography.b3Regular,
-                    color = Beige50
+                    color = SwypTheme.colors.surfaceDefault
                 )
                 Text(
                     text = credit.toString(),
                     style = SwypTheme.typography.b3Regular,
-                    color = Secondary700
+                    color = SwypTheme.colors.secondary700
                 )
             }
         }
@@ -355,7 +343,7 @@ fun CreditCard(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
-                .background(Secondary300)
+                .background(SwypTheme.colors.secondary300)
                 .clickable { onChargeClick() }
                 .padding(horizontal = 6.dp, vertical = 4.dp),
             contentAlignment = Alignment.Center
@@ -363,7 +351,7 @@ fun CreditCard(
             Text(
                 text = stringResource(R.string.my_charge_free),
                 style = SwypTheme.typography.label,
-                color = Gray900
+                color = SwypTheme.colors.textPrimary
             )
         }
     }
@@ -387,15 +375,15 @@ fun MyPageMenuItem(
             Text(
                 text = title,
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray700
+                color = SwypTheme.colors.textSecondary
             )
             Icon(
                 painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
-                tint = Gray900
+                tint = SwypTheme.colors.textPrimary
             )
         }
-        HorizontalDivider(color = Beige600, thickness = 1.dp)
+        HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 1.dp)
     }
 }

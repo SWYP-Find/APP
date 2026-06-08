@@ -1,4 +1,4 @@
-package com.picke.app.ui.onboarding
+﻿package com.picke.app.ui.onboarding
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -43,22 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
-import com.picke.app.ui.theme.Beige100
-import com.picke.app.ui.theme.Beige300
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige500
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige700
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray600
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.theme.Pretendard
-import com.picke.app.ui.theme.Primary50
-import com.picke.app.ui.theme.White
 
 @Composable
 fun OnboardingScreen(
@@ -70,7 +56,7 @@ fun OnboardingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Beige300)
+            .background(SwypTheme.colors.surfaceSubtle)
             .systemBarsPadding(),
     ){
         // 상단: 텍스트 및 중앙
@@ -112,8 +98,8 @@ fun OnboardingScreen(
             CustomButton(
                 text = stringResource(R.string.onboarding_start),
                 onClick = onNavigateToLogin,
-                backgroundColor = Primary500,
-                textColor = White
+                backgroundColor = SwypTheme.colors.primary,
+                textColor = Color.White
             )
         }
     }
@@ -152,7 +138,7 @@ fun OnboardingPageContent(page: Int) {
                 letterSpacing = (-0.6).sp
             ),
             text = title,
-            color = Gray900,
+            color = SwypTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -161,7 +147,7 @@ fun OnboardingPageContent(page: Int) {
         Text(
             text = subTitle,
             style = SwypTheme.typography.b2Medium,
-            color = Gray300,
+            color = SwypTheme.colors.textMuted,
             textAlign = TextAlign.Center
         )
 
@@ -192,7 +178,7 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(White)
+            .background(Color.White)
     ) {
         // 채팅 리스트 영역
         Column(
@@ -232,8 +218,8 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            White.copy(alpha = 0f),
-                            Beige300
+                            Color.White.copy(alpha = 0f),
+                            SwypTheme.colors.surfaceSubtle
                         )
                     )
                 )
@@ -248,8 +234,8 @@ private fun FirstOnboardingChatBubble(
     message: String,
     isLeft: Boolean
 ) {
-    val bubbleBgColor = if (isLeft) White else Beige500
-    val bubbleBorderColor = if (isLeft) Beige500 else Beige700
+    val bubbleBgColor = if (isLeft) Color.White else SwypTheme.colors.borderDisabled
+    val bubbleBorderColor = if (isLeft) SwypTheme.colors.borderDisabled else SwypTheme.colors.borderSubtle
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -280,7 +266,7 @@ private fun FirstOnboardingChatBubble(
             Text(
                 text = name,
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray400,
+                color = SwypTheme.colors.neutral400,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 6.dp),
@@ -297,7 +283,7 @@ private fun FirstOnboardingChatBubble(
                 Text(
                     text = message,
                     style = SwypTheme.typography.b5Medium,
-                    color = Gray700,
+                    color = SwypTheme.colors.textSecondary,
                     textAlign = TextAlign.Start
                 )
             }
@@ -328,7 +314,7 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(White)
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier
@@ -369,8 +355,8 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            White.copy(alpha = 0f),
-                            Beige300
+                            Color.White.copy(alpha = 0f),
+                            SwypTheme.colors.surfaceSubtle
                         )
                     )
                 )
@@ -387,14 +373,14 @@ private fun SecondOnboardingHeader() {
     ) {
         // 생각이 바뀌었어요 버튼 (고정 UI)
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Surface(color = Primary50, shape = RoundedCornerShape(4.dp)) {
+            Surface(color = SwypTheme.colors.primaryLight, shape = RoundedCornerShape(4.dp)) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_think), contentDescription = null, tint = Primary500, modifier = Modifier.size(16.dp))
+                    Icon(painter = painterResource(id = R.drawable.ic_think), contentDescription = null, tint = SwypTheme.colors.primary, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text(text = "생각이 바뀌었어요", style = SwypTheme.typography.caption2SemiBold, color = Primary500)
+                    Text(text = "생각이 바뀌었어요", style = SwypTheme.typography.caption2SemiBold, color = SwypTheme.colors.primary)
                 }
             }
         }
@@ -406,7 +392,7 @@ private fun SecondOnboardingHeader() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "A 78.0%", style = SwypTheme.typography.label, color = Gray600)
+            Text(text = "A 78.0%", style = SwypTheme.typography.label, color = SwypTheme.colors.neutral600)
             Spacer(modifier = Modifier.width(12.dp))
             Row(
                 modifier = Modifier
@@ -418,7 +404,7 @@ private fun SecondOnboardingHeader() {
                 Box(modifier = Modifier.weight(0.22f).fillMaxHeight().background(Color(0xFFEBEBEB)))
             }
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = "B 22.0%", style = SwypTheme.typography.label, color = Gray600)
+            Text(text = "B 22.0%", style = SwypTheme.typography.label, color = SwypTheme.colors.neutral600)
         }
     }
 }
@@ -432,10 +418,10 @@ private fun SecondOnboardingItemCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = White),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(width = 1.dp, color = Beige600)
+        border = BorderStroke(width = 1.dp, color = SwypTheme.colors.borderDefault)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             // 프로필 영역
@@ -450,7 +436,7 @@ private fun SecondOnboardingItemCard(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = nickname, style = SwypTheme.typography.labelMedium, color = Gray700)
+                        Text(text = nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
                         Spacer(modifier = Modifier.width(6.dp))
                         Surface(
                             color = SwypTheme.colors.primary.copy(alpha = 0.1f),
@@ -468,7 +454,7 @@ private fun SecondOnboardingItemCard(
                 }
 
                 // 더보기 아이콘 (클릭 안 됨)
-                Icon(painterResource(id = R.drawable.ic_more), null, tint = Gray300, modifier = Modifier.size(16.dp))
+                Icon(painterResource(id = R.drawable.ic_more), null, tint = SwypTheme.colors.textMuted, modifier = Modifier.size(16.dp))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -477,7 +463,7 @@ private fun SecondOnboardingItemCard(
             Text(
                 text = "제도화가 무서운 건, 사회적 압력이 '선택'을 '의무'로 바꿀 수 있다는 거예요. 네덜란드 사례를 보면 우려가 현실이 되고 있죠.",
                 style = SwypTheme.typography.b4Regular,
-                color = Gray600,
+                color = SwypTheme.colors.neutral600,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
@@ -489,18 +475,18 @@ private fun SecondOnboardingItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "더보기", style = SwypTheme.typography.b5Medium, color = Gray300)
+                Text(text = "더보기", style = SwypTheme.typography.b5Medium, color = SwypTheme.colors.textMuted)
                 Spacer(modifier = Modifier.weight(1f))
 
-                Icon(painterResource(id = R.drawable.ic_message), null, Modifier.size(12.dp), tint = Gray300)
+                Icon(painterResource(id = R.drawable.ic_message), null, Modifier.size(12.dp), tint = SwypTheme.colors.textMuted)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = replyCount, style = SwypTheme.typography.b5Medium, color = Gray300)
+                Text(text = replyCount, style = SwypTheme.typography.b5Medium, color = SwypTheme.colors.textMuted)
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                Icon(painterResource(id = R.drawable.ic_heart_plus), null, Modifier.size(12.dp), tint = Gray300)
+                Icon(painterResource(id = R.drawable.ic_heart_plus), null, Modifier.size(12.dp), tint = SwypTheme.colors.textMuted)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = likeCount, style = SwypTheme.typography.b5Medium, color = Gray300)
+                Text(text = likeCount, style = SwypTheme.typography.b5Medium, color = SwypTheme.colors.textMuted)
             }
         }
     }
@@ -513,7 +499,7 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(White)
+            .background(Color.White)
     ) {
         Column(
             modifier = Modifier
@@ -524,8 +510,8 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(White)
-                    .border(1.dp, Beige700, RoundedCornerShape(2.dp))
+                    .background(Color.White)
+                    .border(1.dp, SwypTheme.colors.borderSubtle, RoundedCornerShape(2.dp))
                     .padding(16.dp)
             ) {
                 // 상단: 태그 및 참여자 수
@@ -534,15 +520,15 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(color = Beige400, shape = RoundedCornerShape(2.dp)) {
+                    Surface(color = SwypTheme.colors.surfaceTertiary, shape = RoundedCornerShape(2.dp)) {
                         Text(
                             text = "#투표",
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             style = SwypTheme.typography.b4Regular,
-                            color = Primary500
+                            color = SwypTheme.colors.primary
                         )
                     }
-                    Text(text = "985명 참여", style = SwypTheme.typography.label, color = Gray400)
+                    Text(text = "985명 참여", style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -559,19 +545,19 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
                         Text(
                             text = "가상국가를 만든다면 대통령은 ",
                             style = SwypTheme.typography.b3SemiBold,
-                            color = Gray900
+                            color = SwypTheme.colors.textPrimary
                         )
                         Box(
                             modifier = Modifier
                                 .width(40.dp)
                                 .height(20.dp)
-                                .border(1.dp, Beige600, RoundedCornerShape(2.dp))
-                                .background(Beige300)
+                                .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
+                                .background(SwypTheme.colors.surfaceSubtle)
                         )
                         Text(
                             text = "이다",
                             style = SwypTheme.typography.b3SemiBold,
-                            color = Gray900
+                            color = SwypTheme.colors.textPrimary
                         )
                     }
 
@@ -580,7 +566,7 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
                     Text(
                         text = "빈칸에 들어갈 가장 적절한 답을 골라주세요",
                         style = SwypTheme.typography.label,
-                        color = Gray300,
+                        color = SwypTheme.colors.textMuted,
                         textAlign = TextAlign.Center
                     )
 
@@ -616,8 +602,8 @@ fun ThirdOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            White.copy(alpha = 0f),
-                            Beige300
+                            Color.White.copy(alpha = 0f),
+                            SwypTheme.colors.surfaceSubtle
                         )
                     )
                 )
@@ -630,14 +616,14 @@ private fun ThirdOnboardingButton(modifier: Modifier, index: String, text: Strin
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
-            .background(Beige300)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .background(SwypTheme.colors.surfaceSubtle)
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .padding(vertical = 14.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "$index. ", style = SwypTheme.typography.labelXSmall, color = Color(0xFFCBA572)) // 옅은 금색 번호
-        Text(text = text, style = SwypTheme.typography.label, color = Gray900)
+        Text(text = text, style = SwypTheme.typography.label, color = SwypTheme.colors.textPrimary)
     }
 }
 
@@ -647,20 +633,20 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(2.dp))
-            .background(White)
+            .background(Color.White)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 16.dp)
-                .border(1.dp, Beige400, RoundedCornerShape(2.dp))
+                .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(2.dp))
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
-                        .background(Primary500)
+                        .background(SwypTheme.colors.primary)
                 )
 
                 // 내부 컨텐츠 영역
@@ -673,7 +659,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                     Text(
                         text = "나의 철학자 유형",
                         style = SwypTheme.typography.labelMedium,
-                        color = Primary500
+                        color = SwypTheme.colors.primary
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -681,7 +667,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                     Text(
                         text = "칸트형",
                         style = SwypTheme.typography.h3SemiBold,
-                        color = Gray600
+                        color = SwypTheme.colors.neutral600
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -692,7 +678,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(Beige100)
+                            .background(SwypTheme.colors.beige100)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -700,7 +686,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                     Text(
                         text = "결과보다 과정을 중시하고, 보편적 도덕 법칙을 따르는 원칙주의자. 어떤 상황에서도 흔들리지 않는 기준을 가진 사람입니다.",
                         style = SwypTheme.typography.b5Medium,
-                        color = Gray600,
+                        color = SwypTheme.colors.neutral600,
                         textAlign = TextAlign.Center
                     )
 
@@ -715,7 +701,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                         tags.forEach { tag ->
                             Box(
                                 modifier = Modifier
-                                    .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+                                    .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                             ) {
                                 Text(
@@ -738,8 +724,8 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            White.copy(alpha = 0f),
-                            Beige300
+                            Color.White.copy(alpha = 0f),
+                            SwypTheme.colors.surfaceSubtle
                         )
                     )
                 )

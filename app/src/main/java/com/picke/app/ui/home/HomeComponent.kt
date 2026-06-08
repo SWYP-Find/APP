@@ -1,4 +1,4 @@
-package com.picke.app.ui.home
+﻿package com.picke.app.ui.home
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -55,11 +55,11 @@ fun HomeSectionHeader(
                 append(title)
             }
         }
-        Text(text = annotatedTitle, style = SwypTheme.typography.h3SemiBold, color = Gray900)
+        Text(text = annotatedTitle, style = SwypTheme.typography.h3SemiBold, color = SwypTheme.colors.textPrimary)
         /*Text(
             text = stringResource(R.string.more),
             style = SwypTheme.typography.b4Medium,
-            color = Gray500,
+            color = SwypTheme.colors.textTertiary,
             modifier = Modifier.clickable { onMoreClick() }
         )*/
     }
@@ -93,17 +93,17 @@ fun EditorPickSection(
                 Text(
                     text = "EDITOR PICK",
                     style = SwypTheme.typography.caption2SemiBold,
-                    color = Secondary200,
+                    color = SwypTheme.colors.secondaryLight,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
-            Surface(color = Gray500.copy(alpha = 0.8f), shape = RoundedCornerShape(12.dp)) {
+            Surface(color = SwypTheme.colors.textTertiary.copy(alpha = 0.8f), shape = RoundedCornerShape(12.dp)) {
                 Text(
                     text = buildAnnotatedString {
                         withStyle(style = SpanStyle(color = Color.White, fontWeight = FontWeight.Bold)) {
                             append((pagerState.currentPage + 1).toString())
                         }
-                        withStyle(style = SpanStyle(color = Beige50.copy(alpha = 0.6f))) {
+                        withStyle(style = SpanStyle(color = SwypTheme.colors.surfaceDefault.copy(alpha = 0.6f))) {
                             append("/${items.size}")
                         }
                     },
@@ -175,7 +175,7 @@ fun EditorPickSection(
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = pagerItem.summary,
                         style = SwypTheme.typography.label,
-                        color = Gray400,
+                        color = SwypTheme.colors.neutral400,
                         minLines = 2,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
@@ -190,12 +190,12 @@ fun EditorPickSection(
                         Text(
                             text = pagerItem.tags.joinToString(" ") { "#$it" },
                             style = SwypTheme.typography.label,
-                            color = Gray300
+                            color = SwypTheme.colors.textMuted
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(painterResource(id = R.drawable.ic_eye), null, Modifier.size(16.dp), tint = Gray400)
+                            Icon(painterResource(id = R.drawable.ic_eye), null, Modifier.size(16.dp), tint = SwypTheme.colors.neutral400)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = pagerItem.viewCountText, style = SwypTheme.typography.label, color = Gray300)
+                            Text(text = pagerItem.viewCountText, style = SwypTheme.typography.label, color = SwypTheme.colors.textMuted)
                         }
                     }
                 }
@@ -210,20 +210,20 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .width(220.dp)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
             .clickable { onClick() }
             .padding(12.dp)
     ) {
         Surface(modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.2f), shape = RoundedCornerShape(4.dp), border = BorderStroke(4.dp, Beige700)) {
+            .aspectRatio(1.2f), shape = RoundedCornerShape(4.dp), border = BorderStroke(4.dp, SwypTheme.colors.borderSubtle)) {
             SubcomposeAsyncImage(
                 model = item.thumbnailUrl,
                 contentDescription = null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(2.dp))
-                    .background(Beige200),
+                    .background(SwypTheme.colors.backgroundBrand),
                 contentScale = ContentScale.Crop,
                 loading = {
                     Box(
@@ -231,7 +231,7 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator(
-                            color = Primary900,
+                            color = SwypTheme.colors.primaryDarkest,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -239,20 +239,20 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
-        Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
+        Surface(color = SwypTheme.colors.borderDefault, shape = RoundedCornerShape(2.dp)) {
             Text(modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), text = "#${item.tags.firstOrNull() ?: "이슈"}", style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.primary)
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = SwypTheme.colors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(modifier = Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(id = R.drawable.ic_clock), null, Modifier.size(12.dp), tint = Gray400)
+            Icon(painterResource(id = R.drawable.ic_clock), null, Modifier.size(12.dp), tint = SwypTheme.colors.neutral400)
             Spacer(modifier = Modifier.width(2.dp))
-            Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = Gray400)
+            Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(painterResource(id = R.drawable.ic_eye), null, Modifier.size(12.dp), tint = Gray400)
+            Icon(painterResource(id = R.drawable.ic_eye), null, Modifier.size(12.dp), tint = SwypTheme.colors.neutral400)
             Spacer(modifier = Modifier.width(2.dp))
-            Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray400)
+            Text(text = item.viewCountText, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
         }
     }
 }
@@ -266,34 +266,34 @@ fun BestBattleRankItem(item: HomeContentUiModel, rank: Int, modifier: Modifier =
         Row(modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 16.dp, horizontal = 16.dp), verticalAlignment = Alignment.Top) {
-            val rankColor = if (rank == 1) SwypTheme.colors.primary else if(rank ==2) Secondary500 else Beige700
+            val rankColor = if (rank == 1) SwypTheme.colors.primary else if(rank ==2) SwypTheme.colors.secondary else SwypTheme.colors.borderSubtle
             Text(text = rank.toString(), style = SwypTheme.typography.h1SemiBold, color = rankColor, modifier = Modifier
                 .fillMaxHeight()
                 .width(24.dp)
                 .align(Alignment.CenterVertically), textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
+                Surface(color = SwypTheme.colors.borderDefault, shape = RoundedCornerShape(2.dp)) {
                     Text(text = "${item.leftProfileName ?: "A"} VS ${item.rightProfileName ?: "B"}", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.primary)
                 }
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = SwypTheme.colors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = item.tags.joinToString(" ") { "#$it" }, style = SwypTheme.typography.label, color = Gray300)
+                    Text(text = item.tags.joinToString(" ") { "#$it" }, style = SwypTheme.typography.label, color = SwypTheme.colors.textMuted)
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(14.dp), tint = Gray300)
+                        Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(14.dp), tint = SwypTheme.colors.textMuted)
                         Spacer(modifier = Modifier.width(2.dp))
-                        Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = Gray400)
+                        Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
                         Spacer(modifier = Modifier.width(6.dp))
-                        Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(14.dp), tint = Gray300)
+                        Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(14.dp), tint = SwypTheme.colors.textMuted)
                         Spacer(modifier = Modifier.width(2.dp))
-                        Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray400)
+                        Text(text = item.viewCountText, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
                     }
                 }
             }
         }
-        HorizontalDivider(color = Beige400, thickness = 1.dp)
+        HorizontalDivider(color = SwypTheme.colors.surfaceTertiary, thickness = 1.dp)
     }
 }
 
@@ -308,30 +308,30 @@ fun NewBattleCard(
         .fillMaxWidth()
         .clip(RoundedCornerShape(2.dp))
         .background(SwypTheme.colors.surface)
-        .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+        .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
         .clickable { onClick() }
         .padding(12.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
+            Surface(color = SwypTheme.colors.borderDefault, shape = RoundedCornerShape(2.dp)) {
                 Text(text = "#${item.tags.firstOrNull() ?: "이슈"}", modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp), style = SwypTheme.typography.label, color = SwypTheme.colors.primary)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(12.dp), tint = Gray400)
+                Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(12.dp), tint = SwypTheme.colors.neutral400)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = Gray400)
+                Text(text = item.timeInfoText, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(12.dp), tint = Gray400)
+                Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(12.dp), tint = SwypTheme.colors.neutral400)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = item.viewCountText, style = SwypTheme.typography.label, color = Gray400)
+                Text(text = item.viewCountText, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
             }
         }
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.summary,
             style = SwypTheme.typography.label,
-            color = Gray400,
+            color = SwypTheme.colors.neutral400,
             maxLines = 2,
             minLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -348,8 +348,8 @@ fun NewBattleCard(
             )
             Surface(modifier = Modifier
                 .size(40.dp)
-                .padding(6.dp), shape = CircleShape, color = Secondary200) {
-                Box(contentAlignment = Alignment.Center) { Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = Gray900) }
+                .padding(6.dp), shape = CircleShape, color = SwypTheme.colors.secondaryLight) {
+                Box(contentAlignment = Alignment.Center) { Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.textPrimary) }
             }
             BattleOpinionBox(
                 modifier = Modifier.weight(1f),
@@ -371,8 +371,8 @@ fun BattleOpinionBox(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, Beige500, RoundedCornerShape(2.dp))
-            .background(Beige300)
+            .border(1.dp, SwypTheme.colors.borderDisabled, RoundedCornerShape(2.dp))
+            .background(SwypTheme.colors.surfaceSubtle)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -384,7 +384,7 @@ fun BattleOpinionBox(
             Text(
                 text = opinion ?: "의견",
                 style = SwypTheme.typography.label,
-                color = Gray700,
+                color = SwypTheme.colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -392,7 +392,7 @@ fun BattleOpinionBox(
             Text(
                 text = name ?: "이름",
                 style = SwypTheme.typography.labelXSmall,
-                color = Gray300,
+                color = SwypTheme.colors.textMuted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -408,8 +408,8 @@ fun TodayPickeCard(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = when (item) {
-        is TodayPickUiModel.VotePick -> Beige50
-        is TodayPickUiModel.QuizPick -> Beige400
+        is TodayPickUiModel.VotePick -> SwypTheme.colors.surfaceDefault
+        is TodayPickUiModel.QuizPick -> SwypTheme.colors.surfaceTertiary
     }
 
     Column(
@@ -417,7 +417,7 @@ fun TodayPickeCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(backgroundColor)
-            .border(1.dp, Beige700, RoundedCornerShape(1.dp))
+            .border(1.dp, SwypTheme.colors.borderSubtle, RoundedCornerShape(1.dp))
             .padding(16.dp)
     ) {
         // [상단] 뱃지 및 참여자 수
@@ -427,7 +427,7 @@ fun TodayPickeCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             val typeName = if (item is TodayPickUiModel.VotePick) "투표" else "퀴즈"
-            Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
+            Surface(color = SwypTheme.colors.borderDefault, shape = RoundedCornerShape(2.dp)) {
                 Text(
                     text = "#$typeName",
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
@@ -438,7 +438,7 @@ fun TodayPickeCard(
             Text(
                 text = "${item.participantsCount}명 참여",
                 style = SwypTheme.typography.label,
-                color = Gray400
+                color = SwypTheme.colors.neutral400
             )
         }
 
@@ -471,7 +471,7 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
             Text(
                 text = item.titlePrefix,
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray900,
+                color = SwypTheme.colors.textPrimary,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
 
@@ -483,17 +483,17 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
                     .height(28.dp)
                     .border(
                         width = 1.dp,
-                        color = Beige700,
+                        color = SwypTheme.colors.borderSubtle,
                         shape = RoundedCornerShape(2.dp)
                     )
-                    .background(Beige200)
+                    .background(SwypTheme.colors.backgroundBrand)
                     .align(Alignment.CenterVertically),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (isVoted) selectedOptionText else "",
                     style = SwypTheme.typography.b3SemiBold,
-                    color = Primary500,
+                    color = SwypTheme.colors.primary,
                     textAlign = TextAlign.Center
                 )
             }
@@ -501,13 +501,13 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
             Text(
                 text = item.titleSuffix,
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray900,
+                color = SwypTheme.colors.textPrimary,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = item.summary, style = SwypTheme.typography.label, color = Gray200, textAlign = TextAlign.Center)
+        Text(text = item.summary, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral200, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(20.dp))
 
         // 2. 2x2 그리드 선택지 버튼 (기존과 동일)
@@ -551,20 +551,20 @@ private fun VotePickeContent(item: TodayPickUiModel.VotePick, onVoteClick: (Long
 
 @Composable
 private fun PickeGridButton(modifier: Modifier, index: String, text: String, isVoted: Boolean, isSelected: Boolean, onClick: () -> Unit) {
-    val borderColor = if (isSelected) Secondary500 else Beige600
+    val borderColor = if (isSelected) SwypTheme.colors.secondary else SwypTheme.colors.borderDefault
 
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
-            .background(Beige300)
+            .background(SwypTheme.colors.surfaceSubtle)
             .border(1.dp, borderColor, RoundedCornerShape(1.dp))
             .clickable(enabled = !isVoted) { onClick() }
             .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "$index. ", style = SwypTheme.typography.label, color = Beige900)
-        Text(text = text, style = SwypTheme.typography.chipSmall, color = Gray900)
+        Text(text = "$index. ", style = SwypTheme.typography.label, color = SwypTheme.colors.beige900)
+        Text(text = text, style = SwypTheme.typography.chipSmall, color = SwypTheme.colors.textPrimary)
     }
 }
 
@@ -575,27 +575,27 @@ private fun PollStatBar(modifier: Modifier, option: PollQuizOptionStatUiModel) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = option.title, style = SwypTheme.typography.labelXSmall, color = Gray400, modifier = Modifier.width(44.dp))
+        Text(text = option.title, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.neutral400, modifier = Modifier.width(44.dp))
 
         Box(
             modifier = Modifier
                 .weight(1f)
                 .height(4.dp)
                 .padding(horizontal = 4.dp)
-                .background(Secondary100, CircleShape)
+                .background(SwypTheme.colors.secondary100, CircleShape)
         ){
             Box(
                 modifier = Modifier
                     .fillMaxWidth(option.ratio / 100f)
                     .height(4.dp)
-                    .background(Secondary500, CircleShape)
+                    .background(SwypTheme.colors.secondary, CircleShape)
             )
         }
 
         Text(
             text = "${option.ratio.toInt()}%",
             style = SwypTheme.typography.caption2SemiBold,
-            color = Gray900,
+            color = SwypTheme.colors.textPrimary,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.End,
             modifier = Modifier.width(36.dp)
@@ -611,9 +611,9 @@ private fun QuizPickeContent(item: TodayPickUiModel.QuizPick, onVoteClick: (Long
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         // 1. 퀴즈 제목 및 설명
-        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, textAlign = TextAlign.Center)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = SwypTheme.colors.textPrimary, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = item.summary, style = SwypTheme.typography.label, color = Gray200, textAlign = TextAlign.Center)
+        Text(text = item.summary, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral200, textAlign = TextAlign.Center)
         Spacer(modifier = Modifier.height(20.dp))
 
         // 2. 퀴즈 선택지
@@ -637,16 +637,16 @@ private fun QuizPickeContent(item: TodayPickUiModel.QuizPick, onVoteClick: (Long
 
 @Composable
 private fun QuizOptionCard(modifier: Modifier, option: PollQuizOptionStatUiModel, selectedOptionId: Long?, isVoted: Boolean, onClick: () -> Unit) {
-    //al borderColor = if (option.isCorrect) Secondary500 else Beige500
+    //al borderColor = if (option.isCorrect) SwypTheme.colors.secondary else SwypTheme.colors.borderDisabled
     val isMySelection = isVoted && option.optionId == selectedOptionId
 
     val borderColor = when {
         // 1. 투표 전: 기본 베이지색
-        !isVoted -> Beige500
+        !isVoted -> SwypTheme.colors.borderDisabled
         // 2. 투표 후, 내가 선택한 카드일 때
-        isMySelection -> if (option.isCorrect) Secondary500 else Primary500 // 정답이면 초록, 오답이면 빨강
+        isMySelection -> if (option.isCorrect) SwypTheme.colors.secondary else SwypTheme.colors.primary // 정답이면 초록, 오답이면 빨강
         // 3. 투표 후, 내가 선택하지 않은 카드일 때 (정답/오답 상관없이 연하게 처리하거나 기본색)
-        else -> Beige500
+        else -> SwypTheme.colors.borderDisabled
     }
     Column(
         modifier = modifier
@@ -659,22 +659,22 @@ private fun QuizOptionCard(modifier: Modifier, option: PollQuizOptionStatUiModel
         verticalArrangement = Arrangement.Center
     ) {
         if (isVoted) { // 참여 후 상태: 본문 + 정답 유무
-            val resultColor = if (option.isCorrect) Secondary500 else Primary500
+            val resultColor = if (option.isCorrect) SwypTheme.colors.secondary else SwypTheme.colors.primary
             val resultText = if (option.isCorrect) "O 정답" else "X 오답"
 
             Text(text = resultText, style = SwypTheme.typography.label, color = resultColor)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = option.title, style = SwypTheme.typography.chipSmall, color = Gray900, textAlign = TextAlign.Center)
+            Text(text = option.title, style = SwypTheme.typography.chipSmall, color = SwypTheme.colors.textPrimary, textAlign = TextAlign.Center)
             Spacer(modifier = Modifier.height(4.dp))
         } else {
             // 참여 전 상태: 본문 + 설명
-            Text(text = option.title, style = SwypTheme.typography.chipSmall, color = Gray900, textAlign = TextAlign.Center)
+            Text(text = option.title, style = SwypTheme.typography.chipSmall, color = SwypTheme.colors.textPrimary, textAlign = TextAlign.Center)
             if (option.stance.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = option.stance,
                     style = SwypTheme.typography.labelXSmall, // 기존 description 스타일 재활용
-                    color = Gray400,
+                    color = SwypTheme.colors.neutral400,
                     textAlign = TextAlign.Center
                 )
             }

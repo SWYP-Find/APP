@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import com.picke.app.R
 import androidx.compose.foundation.background
@@ -14,9 +14,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +45,7 @@ fun AudioPlayerBar(
             colors = SliderDefaults.colors(
                 thumbColor = SwypTheme.colors.primary,
                 activeTrackColor = SwypTheme.colors.primary,
-                inactiveTrackColor = Gray300
+                inactiveTrackColor = SwypTheme.colors.textMuted
             ),
             thumb = {
                 Box(
@@ -80,12 +77,12 @@ fun AudioPlayerBar(
             Text(
                 text = formatTime(currentPositionMs),
                 style = SwypTheme.typography.labelXSmall,
-                color = Gray500
+                color = SwypTheme.colors.textTertiary
             )
             Text(
                 text = formatTime(totalDurationMs),
                 style = SwypTheme.typography.labelXSmall,
-                color = Gray500
+                color = SwypTheme.colors.textTertiary
             )
         }
 
@@ -116,7 +113,7 @@ fun AudioPlayerBar(
                         if (isPlaying) R.drawable.ic_stop else R.drawable.ic_play
                     ),
                     contentDescription = null,
-                    tint = Primary900,
+                    tint = SwypTheme.colors.primaryDarkest,
                     modifier = Modifier.size(36.dp) // 아이콘 자체 크기 키움
                 )
             }
@@ -146,14 +143,14 @@ private fun ControlSkipButton(iconResId: Int, label: String, onClick: () -> Unit
         Icon(
             painter = painterResource(iconResId),
             contentDescription = label,
-            tint = Primary900,
+            tint = SwypTheme.colors.primaryDarkest,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
             style = SwypTheme.typography.labelXSmall,
-            color = Gray500
+            color = SwypTheme.colors.textTertiary
         )
     }
 }

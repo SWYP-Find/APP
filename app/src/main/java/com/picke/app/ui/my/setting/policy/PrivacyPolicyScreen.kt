@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.setting.policy
+﻿package com.picke.app.ui.my.setting.policy
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,11 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray600
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import com.picke.app.util.PolicyStrings
 
 @Composable
@@ -34,17 +30,17 @@ fun PrivacyPolicyScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = onBackClick,
-                    backgroundColor = Beige200
+                    backgroundColor = SwypTheme.colors.backgroundBrand
                 )
             }
         },
-        containerColor = Beige200
+        containerColor = SwypTheme.colors.backgroundBrand
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
-                .background(White)
+                .background(Color.White)
                 .padding(horizontal = 20.dp)
                 .verticalScroll(scrollState)
         ) {
@@ -54,7 +50,7 @@ fun PrivacyPolicyScreen(
             Text(
                 text = "시행일자: ${PolicyStrings.EFFECTIVE_DATE}",
                 style = SwypTheme.typography.b5Medium,
-                color = Gray300,
+                color = SwypTheme.colors.textMuted,
                 modifier = Modifier.align(Alignment.End)
             )
 
@@ -63,7 +59,7 @@ fun PrivacyPolicyScreen(
             Text(
                 text = PolicyStrings.PRIVACY_POLICY,
                 style = SwypTheme.typography.b4Medium,
-                color = Gray600,
+                color = SwypTheme.colors.neutral600,
                 lineHeight = SwypTheme.typography.b4Medium.fontSize * 1.5
             )
 

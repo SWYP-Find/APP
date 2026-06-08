@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.makebattle
+﻿package com.picke.app.ui.my.makebattle
 
 import android.os.Build
 import android.widget.Toast
@@ -42,19 +42,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.CustomSingleActionDialog
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray200
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary300
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary800
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -95,7 +84,7 @@ fun MakeBattleScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar={
             CustomTopAppBar(
@@ -104,13 +93,13 @@ fun MakeBattleScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = Beige200,
+                backgroundColor = SwypTheme.colors.backgroundBrand,
             )
         },
         bottomBar = {
             Box(
                 modifier = Modifier
-                    .background(Beige200)
+                    .background(SwypTheme.colors.backgroundBrand)
                     //.navigationBarsPadding()
                     .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
@@ -128,8 +117,8 @@ fun MakeBattleScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth().height(54.dp),
-                    backgroundColor = if (isFormValid) Primary500 else Primary300,
-                    textColor = White
+                    backgroundColor = if (isFormValid) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
+                    textColor = Color.White
                 )
             }
         }
@@ -139,7 +128,7 @@ fun MakeBattleScreen(
                 modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         } else {
             Column(
@@ -155,7 +144,7 @@ fun MakeBattleScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth()
-                        .background(White)
+                        .background(Color.White)
                 ) {
                     categories.forEach { category ->
                         CategoryTab(
@@ -185,7 +174,7 @@ fun MakeBattleScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 StanceInputField(
                     label = "A",
-                    labelColor = Primary500,
+                    labelColor = SwypTheme.colors.primary,
                     value = stanceA,
                     onValueChange = { stanceA = it },
                     placeholder = "첫 번째 입장을 입력하세요",
@@ -193,7 +182,7 @@ fun MakeBattleScreen(
                 )
                 StanceInputField(
                     label = "B",
-                    labelColor = Gray900,
+                    labelColor = SwypTheme.colors.textPrimary,
                     value = stanceB,
                     onValueChange = { stanceB = it },
                     placeholder = "두 번째 입장을 입력하세요",
@@ -260,7 +249,7 @@ fun SectionTitle(title: String, isRequired: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = title,
-            color = Gray400,
+            color = SwypTheme.colors.neutral400,
             style = SwypTheme.typography.labelMedium
         )
     }
@@ -273,8 +262,8 @@ fun CategoryTab(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isSelected) Primary500 else White
-    val textColor = if (isSelected) White else Gray300
+    val bgColor = if (isSelected) SwypTheme.colors.primary else Color.White
+    val textColor = if (isSelected) Color.White else SwypTheme.colors.textMuted
 
     Box(
         modifier = modifier
@@ -304,8 +293,8 @@ fun CustomFormTextField(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(White)
-            .border(1.dp, Beige600)
+            .background(Color.White)
+            .border(1.dp, SwypTheme.colors.borderDefault)
             .padding(16.dp)
     ) {
         Row(
@@ -325,7 +314,7 @@ fun CustomFormTextField(
                     modifier = Modifier.fillMaxWidth()
                 ) { innerTextField ->
                     if (value.isEmpty()) {
-                        Text(text = placeholder, color = Gray200, style = SwypTheme.typography.b4Medium)
+                        Text(text = placeholder, color = SwypTheme.colors.neutral200, style = SwypTheme.typography.b4Medium)
                     }
                     innerTextField()
                 }
@@ -335,7 +324,7 @@ fun CustomFormTextField(
         if (bottomRightText != null) {
             Text(
                 text = bottomRightText,
-                color = Gray400,
+                color = SwypTheme.colors.neutral400,
                 style = SwypTheme.typography.labelXSmall,
                 modifier = Modifier.align(Alignment.BottomEnd)
             )
