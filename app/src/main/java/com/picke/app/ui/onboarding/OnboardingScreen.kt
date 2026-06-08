@@ -42,7 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.picke.app.R
+import androidx.compose.ui.tooling.preview.Preview
 import com.picke.app.ui.component.CustomButton
+import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.theme.Pretendard
 
@@ -104,6 +106,9 @@ fun OnboardingScreen(
         }
     }
 }
+
+
+
 
 @Composable
 fun OnboardingPageContent(page: Int) {
@@ -730,5 +735,45 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                     )
                 )
         )
+    }
+}
+
+@Preview(showSystemUi = true, name = "Onboarding - 전체화면")
+@Composable
+private fun OnboardingScreenPreview() {
+    SwypAppTheme {
+        OnboardingScreen(onNavigateToLogin = {})
+    }
+}
+
+@Preview(showBackground = true, name = "Onboarding - 1페이지: AI 배틀")
+@Composable
+private fun OnboardingPage1Preview() {
+    SwypAppTheme {
+        OnboardingPageContent(page = 0)
+    }
+}
+
+@Preview(showBackground = true, name = "Onboarding - 2페이지: 포인트")
+@Composable
+private fun OnboardingPage2Preview() {
+    SwypAppTheme {
+        OnboardingPageContent(page = 1)
+    }
+}
+
+@Preview(showBackground = true, name = "Onboarding - 3페이지: 투표")
+@Composable
+private fun OnboardingPage3Preview() {
+    SwypAppTheme {
+        OnboardingPageContent(page = 2)
+    }
+}
+
+@Preview(showBackground = true, name = "Onboarding - 4페이지: 철학자 유형")
+@Composable
+private fun OnboardingPage4Preview() {
+    SwypAppTheme {
+        OnboardingPageContent(page = 3)
     }
 }

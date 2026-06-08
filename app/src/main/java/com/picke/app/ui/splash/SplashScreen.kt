@@ -20,10 +20,31 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.R
 import kotlinx.coroutines.launch
+
+@Preview(showSystemUi = true, name = "Splash")
+@Composable
+private fun SplashScreenPreview() {
+    SwypAppTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SwypTheme.colors.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.splash_logo),
+                contentDescription = "Picke Logo",
+                modifier = Modifier.size(200.dp)
+            )
+        }
+    }
+}
 
 /*
 @Composable
