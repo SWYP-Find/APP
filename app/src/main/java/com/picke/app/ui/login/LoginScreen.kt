@@ -1,9 +1,9 @@
-﻿package com.picke.app.ui.login
+package com.picke.app.ui.login
 
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.Toast // ✨ 추가
+import android.widget.Toast 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -138,7 +138,7 @@ private fun LoginScreenContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SwypTheme.colors.primary),
+            .background(SwypTheme.colors.backgroundSubtle),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -147,7 +147,7 @@ private fun LoginScreenContent(
         ) {
             Text(
                 style = SwypTheme.typography.h4SemiBold,
-                color = SwypTheme.colors.primaryDisabled,
+                color = SwypTheme.colors.neutral200,
                 text = stringResource(R.string.login_your_think)
             )
             Image(

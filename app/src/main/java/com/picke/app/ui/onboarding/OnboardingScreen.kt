@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.onboarding
+package com.picke.app.ui.onboarding
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -58,7 +58,7 @@ fun OnboardingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(SwypTheme.colors.surfaceSubtle)
+            .background(SwypTheme.colors.backgroundSubtle)
             .systemBarsPadding(),
     ){
         // 상단: 텍스트 및 중앙
@@ -738,42 +738,72 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showSystemUi = true, name = "Onboarding - 전체화면")
 @Composable
-private fun OnboardingScreenPreview() {
-    SwypAppTheme {
-        OnboardingScreen(onNavigateToLogin = {})
+private fun OnboardingFullPagePreview(page: Int) {
+    val pageCount = 4
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SwypTheme.colors.backgroundSubtle)
+            .systemBarsPadding(),
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            OnboardingPageContent(page = page)
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.padding(bottom = 32.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(pageCount) { iteration ->
+                    val color = if (page == iteration) Color(0xFF1F1F1F) else Color(0xFFD9D9D9)
+                    val width = if (page == iteration) 24.dp else 8.dp
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .height(8.dp)
+                            .width(width)
+                    )
+                }
+            }
+            CustomButton(
+                text = stringResource(R.string.onboarding_start),
+                onClick = {},
+                backgroundColor = SwypTheme.colors.primary,
+                textColor = Color.White
+            )
+        }
     }
 }
 
-@Preview(showBackground = true, name = "Onboarding - 1페이지: AI 배틀")
+@Preview(showSystemUi = true, name = "Onboarding - 1페이지: AI 배틀")
 @Composable
 private fun OnboardingPage1Preview() {
-    SwypAppTheme {
-        OnboardingPageContent(page = 0)
-    }
+    SwypAppTheme { OnboardingFullPagePreview(page = 0) }
 }
 
-@Preview(showBackground = true, name = "Onboarding - 2페이지: 포인트")
+@Preview(showSystemUi = true, name = "Onboarding - 2페이지: 포인트")
 @Composable
 private fun OnboardingPage2Preview() {
-    SwypAppTheme {
-        OnboardingPageContent(page = 1)
-    }
+    SwypAppTheme { OnboardingFullPagePreview(page = 1) }
 }
 
-@Preview(showBackground = true, name = "Onboarding - 3페이지: 투표")
+@Preview(showSystemUi = true, name = "Onboarding - 3페이지: 투표")
 @Composable
 private fun OnboardingPage3Preview() {
-    SwypAppTheme {
-        OnboardingPageContent(page = 2)
-    }
+    SwypAppTheme { OnboardingFullPagePreview(page = 2) }
 }
 
-@Preview(showBackground = true, name = "Onboarding - 4페이지: 철학자 유형")
+@Preview(showSystemUi = true, name = "Onboarding - 4페이지: 철학자 유형")
 @Composable
 private fun OnboardingPage4Preview() {
-    SwypAppTheme {
-        OnboardingPageContent(page = 3)
-    }
+    SwypAppTheme { OnboardingFullPagePreview(page = 3) }
 }
