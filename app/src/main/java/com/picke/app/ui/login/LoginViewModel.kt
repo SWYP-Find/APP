@@ -47,8 +47,6 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
-            Log.d(TAG, "[FLOW] $provider 인가 코드 획득 완료. AuthCode: ${authCode.take(8)}...")
-
             val result = loginUseCase(provider = provider, authCode = authCode)
 
             result.onSuccess { authToken ->

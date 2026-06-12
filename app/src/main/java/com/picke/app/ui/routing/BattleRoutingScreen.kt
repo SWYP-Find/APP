@@ -1,4 +1,4 @@
-package com.picke.app.ui.routing
+﻿package com.picke.app.ui.routing
 
 import android.util.Log
 import androidx.compose.foundation.layout.Box
@@ -13,8 +13,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.domain.repository.BattleRepository
-import com.picke.app.ui.theme.Primary900
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -88,6 +88,6 @@ fun BattleRoutingScreen(
 
     // API 결과를 기다리는 아주 짧은 시간 동안 보여줄 로딩 화면
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(color = Primary900)
+        CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
     }
 }

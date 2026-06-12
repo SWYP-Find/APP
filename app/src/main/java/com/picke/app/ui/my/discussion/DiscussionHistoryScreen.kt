@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.discussion
+﻿package com.picke.app.ui.my.discussion
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -40,13 +40,6 @@ import com.picke.app.R
 import com.picke.app.domain.model.MyBattleRecordItem
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray200
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 import kotlinx.coroutines.launch
 
@@ -65,7 +58,7 @@ fun DiscussionHistoryScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_discussion),
@@ -73,7 +66,7 @@ fun DiscussionHistoryScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},
-                backgroundColor = Beige200
+                backgroundColor = SwypTheme.colors.backgroundBrand
             )
         }
     ){ innerPadding ->
@@ -99,7 +92,7 @@ fun DiscussionHistoryScreen(
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
                 HorizontalPager(
@@ -146,12 +139,12 @@ fun DiscussionHistoryList(
                 painter = painterResource(id = R.drawable.ic_logo),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = Beige600
+                tint = SwypTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
                 style = SwypTheme.typography.b3Regular,
-                color = Beige800
+                color = SwypTheme.colors.beige800
             )
         }
     } else {
@@ -185,7 +178,7 @@ fun DiscussionHistoryCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -195,7 +188,7 @@ fun DiscussionHistoryCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Surface(
-                color = Beige600,
+                color = SwypTheme.colors.borderDefault,
                 shape = RoundedCornerShape(2.dp)
             ) {
                 Text(
@@ -208,7 +201,7 @@ fun DiscussionHistoryCard(
             Text(
                 text = item.title,
                 style = SwypTheme.typography.labelMedium,
-                color = Gray500,
+                color = SwypTheme.colors.textTertiary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -220,7 +213,7 @@ fun DiscussionHistoryCard(
         Text(
             text = item.summary,
             style = SwypTheme.typography.b4Regular,
-            color = Gray400,
+            color = SwypTheme.colors.neutral400,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -231,7 +224,7 @@ fun DiscussionHistoryCard(
         Text(
             text = item.createdAt,
             style = SwypTheme.typography.label,
-            color = Gray200
+            color = SwypTheme.colors.neutral200
         )
     }
 }

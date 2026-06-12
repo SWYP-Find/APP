@@ -1,4 +1,4 @@
-package com.picke.app.ui.perspective
+﻿package com.picke.app.ui.perspective
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
@@ -65,23 +65,7 @@ import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.component.SortFilterChip
-import com.picke.app.ui.theme.Beige100
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray100
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray600
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary50
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary600
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.Secondary50
-import com.picke.app.ui.theme.Secondary500
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -148,7 +132,7 @@ fun PerspectiveScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
@@ -158,13 +142,13 @@ fun PerspectiveScreen(
                     showLogo = false,
                     showBackButton = false,
                     onBackClick = onBackClick,
-                    backgroundColor = Beige200,
+                    backgroundColor = SwypTheme.colors.backgroundBrand,
                     actions = {
                         IconButton(onClick = { onNextClick(uiState.battleId) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_arrow_right),
                                 contentDescription = "null",
-                                tint = Gray900,
+                                tint = SwypTheme.colors.textPrimary,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -290,7 +274,7 @@ fun PerspectiveScreen(
                                 .weight(1f),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = Primary900)
+                            CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                         }
                     }
                     // 로딩 됐을때 화면
@@ -308,8 +292,8 @@ fun PerspectiveScreen(
                                 PullToRefreshDefaults.Indicator(
                                     state = pullToRefreshState,
                                     isRefreshing = isRefreshing,
-                                    containerColor = White,
-                                    color = Primary500,
+                                    containerColor = Color.White,
+                                    color = SwypTheme.colors.primary,
                                     modifier = Modifier.align(Alignment.TopCenter)
                                 )
                             }
@@ -433,7 +417,7 @@ fun PerspectiveScreen(
                                                     .padding(16.dp),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                CircularProgressIndicator(color = Primary900)
+                                                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                                             }
                                         }
                                     }
@@ -500,13 +484,13 @@ fun PerspectiveItemCard(
     var isMenuExpanded by remember { mutableStateOf(false) }
     val cardBgColor = when(status){
         "REJECTED" -> Color(0xFFFFF9F9)
-        "PENDING" -> Secondary50
-        else -> White
+        "PENDING" -> SwypTheme.colors.secondary50
+        else -> Color.White
     }
     val borderBadgeColor = when (status) {
         "REJECTED" -> Color(0xFFA64D47)
-        "PENDING" -> Secondary500
-        else -> Beige600
+        "PENDING" -> SwypTheme.colors.secondary
+        else -> SwypTheme.colors.borderDefault
     }
 
     Card(
@@ -531,7 +515,7 @@ fun PerspectiveItemCard(
                         Text(
                             text = if (item.isMine) "나" else item.nickname,
                             style = SwypTheme.typography.labelMedium,
-                            color = Gray700
+                            color = SwypTheme.colors.textSecondary
                         )
                         Spacer(modifier = Modifier.width(6.dp))
 
@@ -544,7 +528,7 @@ fun PerspectiveItemCard(
                                 Text(
                                     text = if (status == "PENDING") "검수중" else "거절됨",
                                     style = SwypTheme.typography.b5Medium,
-                                    color = White,
+                                    color = Color.White,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -554,13 +538,13 @@ fun PerspectiveItemCard(
 
                             val isPro = item.stance == "A"
                             Surface(
-                                color = if (isPro) Beige600 else SwypTheme.colors.primary,
+                                color = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary,
                                 shape = RoundedCornerShape(2.dp)
                             ) {
                                 Text(
                                     text = item.stance,
                                     style = SwypTheme.typography.b5Medium,
-                                    color = if (isPro) SwypTheme.colors.primary else Beige600,
+                                    color = if (isPro) SwypTheme.colors.primary else SwypTheme.colors.borderDefault,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
@@ -579,12 +563,12 @@ fun PerspectiveItemCard(
                             onClick = { isMenuExpanded = true },
                             modifier = Modifier.size(16.dp)
                         ) {
-                            Icon(painterResource(id = R.drawable.ic_more), "더보기", tint = Gray300)
+                            Icon(painterResource(id = R.drawable.ic_more), "더보기", tint = SwypTheme.colors.textMuted)
                         }
                         DropdownMenu(
                             expanded = isMenuExpanded,
                             onDismissRequest = { isMenuExpanded = false },
-                            modifier = Modifier.background(Primary600).clip(RoundedCornerShape(8.dp))
+                            modifier = Modifier.background(SwypTheme.colors.primaryPressed).clip(RoundedCornerShape(8.dp))
                         ) {
                             if (item.isMine) {
                                 if (status != "REJECTED") {
@@ -614,7 +598,7 @@ fun PerspectiveItemCard(
             Text(
                 text = item.content,
                 style = SwypTheme.typography.b4Regular,
-                color = Gray600,
+                color = SwypTheme.colors.neutral600,
                 maxLines = if (isDetail) Int.MAX_VALUE else 3,
                 overflow = TextOverflow.Ellipsis
             )
@@ -631,7 +615,7 @@ fun PerspectiveItemCard(
                         Text(
                             text = "더보기",
                             style = SwypTheme.typography.b5Medium,
-                            color = Gray300,
+                            color = SwypTheme.colors.textMuted,
                             modifier = Modifier.clickable(
                                 interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                                 indication = null
@@ -664,14 +648,14 @@ fun PerspectiveItemCard(
                                     painter = painterResource(id = R.drawable.ic_message),
                                     contentDescription = "댓글",
                                     modifier = Modifier.size(12.dp),
-                                    tint = Gray300
+                                    tint = SwypTheme.colors.textMuted
                                 )
                             }
                             Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = "${item.replyCount}",
                                 style = SwypTheme.typography.b5Medium,
-                                color = Gray300
+                                color = SwypTheme.colors.textMuted
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -697,13 +681,13 @@ fun PerspectiveItemCard(
                                 painter = painterResource(id = R.drawable.ic_heart_plus),
                                 contentDescription = "좋아요",
                                 modifier = Modifier.size(12.dp),
-                                tint = if (item.isLiked) SwypTheme.colors.primary else Gray300
+                                tint = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted
                             )
                         }
                         Text(
                             text = "${item.likeCount}",
                             style = SwypTheme.typography.b5Medium,
-                            color = if (item.isLiked) SwypTheme.colors.primary else Gray300,
+                            color = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted,
                             modifier = Modifier.padding(start = 2.dp)
                         )
                     }
@@ -729,14 +713,14 @@ fun PerspectiveMenuItem(
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = text,
-            tint = White,
+            tint = Color.White,
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
             style = SwypTheme.typography.labelMedium,
-            color = White
+            color = Color.White
         )
     }
 }
@@ -767,7 +751,7 @@ fun PerspectiveInputField(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(if (isEnabled) Beige200 else Beige100, RoundedCornerShape(8.dp))
+                    .background(if (isEnabled) SwypTheme.colors.backgroundBrand else SwypTheme.colors.beige100, RoundedCornerShape(8.dp))
                     .padding(12.dp)
             ) {
                 // Hint
@@ -784,7 +768,7 @@ fun PerspectiveInputField(
                     value = inputText,
                     onValueChange = { if (it.length <= 200) onTextChanged(it) },
                     enabled = isEnabled,
-                    textStyle = SwypTheme.typography.b3Regular.copy(color = Gray900, lineHeight = 20.sp),
+                    textStyle = SwypTheme.typography.b3Regular.copy(color = SwypTheme.colors.textPrimary, lineHeight = 20.sp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 20.dp)
@@ -835,7 +819,7 @@ fun PerspectiveHeader(
             contentAlignment = Alignment.Center
         ) {
             Surface(
-                color = Primary50,
+                color = SwypTheme.colors.primaryLight,
                 shape = RoundedCornerShape(4.dp)
             ) {
                 Row(
@@ -845,14 +829,14 @@ fun PerspectiveHeader(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_think),
                         contentDescription = "생각 변경",
-                        tint = Primary500,
+                        tint = SwypTheme.colors.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = if (opinionChanged) "생각이 바뀌었어요" else "생각이 동일해요",
                         style = SwypTheme.typography.caption2SemiBold,
-                        color = Primary500
+                        color = SwypTheme.colors.primary
                     )
                 }
             }
@@ -868,7 +852,7 @@ fun PerspectiveHeader(
             Text(
                 text = "A ${proPercentage}%",
                 style = SwypTheme.typography.label,
-                color = Gray600
+                color = SwypTheme.colors.neutral600
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -892,7 +876,7 @@ fun PerspectiveHeader(
                     modifier = Modifier
                         .weight(if (conPercentage > 0) conPercentage else 0.1f)
                         .fillMaxHeight()
-                        .background(Gray100)
+                        .background(SwypTheme.colors.backgroundTertiary)
                 )
             }
 
@@ -901,7 +885,7 @@ fun PerspectiveHeader(
             Text(
                 text = "B ${conPercentage}%",
                 style = SwypTheme.typography.label,
-                color = Gray600
+                color = SwypTheme.colors.neutral600
             )
         }
     }
@@ -923,12 +907,12 @@ fun PerspectiveEmptyState(
             painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = "빈 화면 로고",
             modifier = Modifier.size(width=160.dp, height=120.dp),
-            tint = Beige600
+            tint = SwypTheme.colors.borderDefault
         )
         Text(
             text = message,
             style = SwypTheme.typography.b3Regular,
-            color = Beige800
+            color = SwypTheme.colors.beige800
         )
     }
 }

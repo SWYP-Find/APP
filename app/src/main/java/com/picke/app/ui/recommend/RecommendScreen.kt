@@ -1,4 +1,4 @@
-package com.picke.app.ui.recommend
+﻿package com.picke.app.ui.recommend
 
 import com.picke.app.R
 import androidx.compose.foundation.background
@@ -26,11 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.Secondary200
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.home.BattleOpinionBox
 
@@ -59,7 +54,7 @@ fun RecommendScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_x),
                                 contentDescription = "닫기",
-                                tint = Gray900
+                                tint = SwypTheme.colors.textPrimary
                             )
                         }
                     }
@@ -69,7 +64,7 @@ fun RecommendScreen(
     ) { innerPadding ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         } else {
             LazyColumn(
@@ -104,7 +99,7 @@ fun RecommendItemCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(12.dp)
     ) {
@@ -114,7 +109,7 @@ fun RecommendItemCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(color = Beige600, shape = RoundedCornerShape(2.dp)) {
+            Surface(color = SwypTheme.colors.borderDefault, shape = RoundedCornerShape(2.dp)) {
                 Text(
                     text = "#${item.tags.firstOrNull() ?: "이슈"}",
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
@@ -123,27 +118,27 @@ fun RecommendItemCard(
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(12.dp), tint = Gray400)
+                Icon(painterResource(R.drawable.ic_clock), null, Modifier.size(12.dp), tint = SwypTheme.colors.neutral400)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "${item.audioDuration}분", style = SwypTheme.typography.label, color = Gray400)
+                Text(text = "${item.audioDuration}분", style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(12.dp), tint = Gray400)
+                Icon(painterResource(R.drawable.ic_eye), null, Modifier.size(12.dp), tint = SwypTheme.colors.neutral400)
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "${item.viewCount}", style = SwypTheme.typography.label, color = Gray400)
+                Text(text = "${item.viewCount}", style = SwypTheme.typography.label, color = SwypTheme.colors.neutral400)
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // 2. 제목 및 요약
-        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = Gray900, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(text = item.title, style = SwypTheme.typography.b3SemiBold, color = SwypTheme.colors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.summary,
             style = SwypTheme.typography.label,
-            color = Gray400,
+            color = SwypTheme.colors.neutral400,
             maxLines = 2,
             minLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -166,10 +161,10 @@ fun RecommendItemCard(
             Surface(
                 modifier = Modifier.size(40.dp).padding(6.dp),
                 shape = CircleShape,
-                color = Secondary200
+                color = SwypTheme.colors.secondaryLight
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = Gray900)
+                    Text(text = "VS", style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.textPrimary)
                 }
             }
             BattleOpinionBox(

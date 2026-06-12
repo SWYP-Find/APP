@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.picke.app.R
-import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.SwypTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,7 +30,7 @@ fun CustomTopAppBar(
     showLogo: Boolean = false,
     showBackButton: Boolean = false,
     backgroundColor: Color,
-    backIconColor: Color = Gray900,
+    backIconColor: Color = SwypTheme.colors.textPrimary,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     val startPadding = if (showBackButton) 4.dp else 20.dp
@@ -74,7 +73,7 @@ fun CustomTopAppBar(
                 Text(
                     text = title,
                     style = SwypTheme.typography.h4SemiBold,
-                    color = Gray900
+                    color = SwypTheme.colors.textPrimary
                 )
             }
         }
@@ -83,7 +82,7 @@ fun CustomTopAppBar(
             Text(
                 text = title,
                 style = SwypTheme.typography.h4SemiBold,
-                color = Gray900,
+                color = SwypTheme.colors.textPrimary,
                 modifier = Modifier.align(Alignment.Center)
             )
         }

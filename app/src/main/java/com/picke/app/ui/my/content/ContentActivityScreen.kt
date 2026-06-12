@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.content
+﻿package com.picke.app.ui.my.content
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,14 +41,6 @@ import com.picke.app.domain.model.MyContentActivityItem
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Gray600
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 import kotlinx.coroutines.launch
 
@@ -66,7 +58,7 @@ fun ContentActivityScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_content),
@@ -74,7 +66,7 @@ fun ContentActivityScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},
-                backgroundColor = Beige200
+                backgroundColor = SwypTheme.colors.backgroundBrand
             )
         }
     ){ innerPadding ->
@@ -101,7 +93,7 @@ fun ContentActivityScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
                 // 페이지 내용
@@ -149,12 +141,12 @@ fun ContentActivityList(
                 painter = painterResource(id = R.drawable.ic_logo),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width=160.dp, height=120.dp),
-                tint = Beige600
+                tint = SwypTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
                 style = SwypTheme.typography.b3Regular,
-                color = Beige800
+                color = SwypTheme.colors.beige800
             )
         }
     } else {
@@ -187,7 +179,7 @@ fun ContentActivityCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -208,13 +200,13 @@ fun ContentActivityCard(
                     Text(
                         text = item.author.nickname,
                         style = SwypTheme.typography.labelMedium,
-                        color = Gray500
+                        color = SwypTheme.colors.textTertiary
                     )
                     Spacer(modifier = Modifier.width(6.dp))
 
                     val isAgree = item.voteSide == "PRO"
                     val displayStance = if (isAgree) "A" else "B"
-                    val badgeBgColor = if (isAgree) Beige400 else SwypTheme.colors.primary
+                    val badgeBgColor = if (isAgree) SwypTheme.colors.surfaceTertiary else SwypTheme.colors.primary
                     val badgeTextColor = if (isAgree) SwypTheme.colors.primary else SwypTheme.colors.surface
 
                     Box(
@@ -234,7 +226,7 @@ fun ContentActivityCard(
                 Text(
                     text = item.createdAt,
                     style = SwypTheme.typography.b4Regular,
-                    color = Gray300
+                    color = SwypTheme.colors.textMuted
                 )
             }
         }
@@ -245,7 +237,7 @@ fun ContentActivityCard(
         Text(
             text = item.content,
             style = SwypTheme.typography.b3Regular,
-            color = Gray600,
+            color = SwypTheme.colors.neutral600,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -262,13 +254,13 @@ fun ContentActivityCard(
                 painter = painterResource(id = R.drawable.ic_heart_plus),
                 contentDescription = "좋아요",
                 modifier = Modifier.size(16.dp),
-                tint = Gray300
+                tint = SwypTheme.colors.textMuted
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = item.likeCount.toString(),
                 style = SwypTheme.typography.labelMedium,
-                color = Gray300
+                color = SwypTheme.colors.textMuted
             )
         }
     }

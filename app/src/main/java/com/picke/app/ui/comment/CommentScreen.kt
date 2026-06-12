@@ -1,4 +1,4 @@
-package com.picke.app.ui.comment
+﻿package com.picke.app.ui.comment
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -54,18 +54,7 @@ import com.picke.app.R
 import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
-import com.picke.app.ui.theme.Beige100
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray600
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary600
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -106,7 +95,7 @@ fun CommentScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
@@ -115,7 +104,7 @@ fun CommentScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = onBackClick,
-                    backgroundColor = Beige200,
+                    backgroundColor = SwypTheme.colors.backgroundBrand,
 
                 )
             }
@@ -149,7 +138,7 @@ fun CommentScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
                 // 2. 상단 고정 영역 (스크롤 되지 않음)
@@ -188,8 +177,8 @@ fun CommentScreen(
                         PullToRefreshDefaults.Indicator(
                             state = pullToRefreshState,
                             isRefreshing = isRefreshing,
-                            containerColor = White,
-                            color = Primary500,
+                            containerColor = Color.White,
+                            color = SwypTheme.colors.primary,
                             modifier = Modifier.align(Alignment.TopCenter)
                         )
                     }
@@ -228,7 +217,7 @@ fun CommentScreen(
                             )
                             HorizontalDivider(
                                 thickness = 1.dp,
-                                color = Beige600,
+                                color = SwypTheme.colors.borderDefault,
                             )
                         }
                     }
@@ -281,7 +270,7 @@ fun CommentHeader(count: Int) {
         Text(
             text = "답글 ${count}개",
             style = SwypTheme.typography.b4Regular.copy(fontWeight = FontWeight.SemiBold),
-            color = Gray600
+            color = SwypTheme.colors.neutral600
         )
     }
 }
@@ -301,7 +290,7 @@ fun CommentItemCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(White)
+            .background(Color.White)
             .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -313,12 +302,12 @@ fun CommentItemCard(
 
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = Gray700)
+                    Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
                     Spacer(modifier = Modifier.width(6.dp))
 
                     val isPro = item.stance == "A"
-                    val badgeBgColor = if (isPro) Beige600 else SwypTheme.colors.primary
-                    val badgeTextColor = if (isPro) SwypTheme.colors.primary else Beige600
+                    val badgeBgColor = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary
+                    val badgeTextColor = if (isPro) SwypTheme.colors.primary else SwypTheme.colors.borderDefault
 
                     Box(
                         modifier = Modifier
@@ -335,12 +324,12 @@ fun CommentItemCard(
             if (!isMainContent) {
                 Box {
                     IconButton(onClick = { isMenuExpanded = true }, modifier = Modifier.size(16.dp)) {
-                        Icon(painterResource(id = R.drawable.ic_more), "더보기", tint = Gray300)
+                        Icon(painterResource(id = R.drawable.ic_more), "더보기", tint = SwypTheme.colors.textMuted)
                     }
                     DropdownMenu(
                         expanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false },
-                        modifier = Modifier.background(Primary600).clip(RoundedCornerShape(8.dp))
+                        modifier = Modifier.background(SwypTheme.colors.primaryPressed).clip(RoundedCornerShape(8.dp))
                     ) {
                         if (item.isMine) {
                             CommentMenuItem(iconRes = R.drawable.ic_trash, text = "삭제") {
@@ -364,7 +353,7 @@ fun CommentItemCard(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(text = item.content, style = SwypTheme.typography.b4Regular, color = Gray600)
+        Text(text = item.content, style = SwypTheme.typography.b4Regular, color = SwypTheme.colors.neutral600)
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -393,14 +382,14 @@ fun CommentItemCard(
                         painter = painterResource(id = R.drawable.ic_heart_plus),
                         contentDescription = "좋아요",
                         modifier = Modifier.size(16.dp),
-                        tint = if (item.isLiked) SwypTheme.colors.primary else Gray300
+                        tint = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted
                     )
                 }
 
                 Text(
                     text = "${item.likeCount}",
                     style = SwypTheme.typography.b5Medium,
-                    color = if (item.isLiked) SwypTheme.colors.primary else Gray300,
+                    color = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted,
                     modifier = Modifier.padding(start = 2.dp)
                 )
             }
@@ -424,11 +413,11 @@ fun CommentMenuItem(
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = text,
-            tint = White,
+            tint = Color.White,
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, style = SwypTheme.typography.labelMedium, color = White)
+        Text(text = text, style = SwypTheme.typography.labelMedium, color = Color.White)
     }
 }
 
@@ -455,7 +444,7 @@ fun CommentInputField(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(if (isEnabled) Beige200 else Beige100, RoundedCornerShape(8.dp))
+                    .background(if (isEnabled) SwypTheme.colors.backgroundBrand else SwypTheme.colors.beige100, RoundedCornerShape(8.dp))
                     .padding(12.dp)
             ) {
                 if (inputText.isEmpty()) {
@@ -471,7 +460,7 @@ fun CommentInputField(
                     value = inputText,
                     onValueChange = { if (it.length <= 200) onTextChanged(it) },
                     enabled = isEnabled,
-                    textStyle = SwypTheme.typography.b3Regular.copy(color = Gray900, lineHeight = 20.sp),
+                    textStyle = SwypTheme.typography.b3Regular.copy(color = SwypTheme.colors.textPrimary, lineHeight = 20.sp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 20.dp)

@@ -1,4 +1,4 @@
-package com.picke.app
+﻿package com.picke.app
 
 import ScenarioScreen
 import android.os.Build
@@ -43,8 +43,7 @@ import com.picke.app.ui.recommend.RecommendScreen
 import com.picke.app.ui.routing.BattleRoutingScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Primary500
+import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.TodayBattleScreen
 import com.picke.app.ui.vote.VoteRoute
 import com.picke.app.ui.vote.VoteType
@@ -84,7 +83,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Beige200
+        color = SwypTheme.colors.backgroundBrand
     ) {
         LaunchedEffect(Unit) {
             DeepLinkManager.deepLinkEvent.collect { event ->
@@ -114,7 +113,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             composable("blank_start") {
                 val isDeepLink = DeepLinkManager.pendingReportId != null || DeepLinkManager.pendingBattleId != null
                 Box(
-                    modifier = Modifier.fillMaxSize().background(Primary500),
+                    modifier = Modifier.fillMaxSize().background(SwypTheme.colors.primary),
                     contentAlignment = Alignment.Center
                 ) { }
             }

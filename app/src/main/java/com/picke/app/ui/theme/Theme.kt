@@ -1,4 +1,4 @@
-package com.picke.app.ui.theme
+﻿package com.picke.app.ui.theme
 
 import android.app.Activity
 import androidx.compose.material3.MaterialTheme
@@ -10,10 +10,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.picke.app.ui.theme.tokens.BrandColorTokens
+import com.picke.app.ui.theme.tokens.SemanticColorTokens
 
 private val LightColorScheme = lightColorScheme(
-    primary = Primary500,
-    background = Beige50,
+    primary = BrandColorTokens.primary500,
+    background = SemanticColorTokens.surfaceDefault,
     surface = Color.White,
 )
 
@@ -43,6 +45,7 @@ fun SwypAppTheme(
 
     CompositionLocalProvider(
         LocalSwypTypography provides swypTypography,
+        LocalSwypColors provides SwypColors(),
     ) {
         MaterialTheme(
             colorScheme = LightColorScheme,
@@ -53,9 +56,9 @@ fun SwypAppTheme(
 
 
 object SwypTheme {
-    val colors
+    val colors: SwypColors
         @Composable
-        get() = MaterialTheme.colorScheme
+        get() = LocalSwypColors.current
 
     val typography: SwypTypography
         @Composable

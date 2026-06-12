@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,15 +13,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.picke.app.ui.theme.SwypTheme
 import coil.compose.SubcomposeAsyncImage
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Primary900
 
 @Composable
 fun ProfileImage(
     model: Any?,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = Beige600
+    backgroundColor: Color = SwypTheme.colors.borderDefault
 ) {
     Box(
         modifier = modifier
@@ -40,7 +39,7 @@ fun ProfileImage(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        color = Primary900,
+                        color = SwypTheme.colors.primaryDarkest,
                         modifier = Modifier.size(12.dp),
                         strokeWidth = 2.dp
                     )

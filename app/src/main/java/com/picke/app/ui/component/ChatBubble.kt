@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import com.picke.app.R
 import androidx.compose.foundation.background
@@ -37,7 +37,7 @@ fun ChatBubble(
         ) {
             Text(
                 text = formattedText,
-                color = if (isActive) Gray700 else Gray300,
+                color = if (isActive) SwypTheme.colors.textSecondary else SwypTheme.colors.textMuted,
                 style = SwypTheme.typography.label.copy(
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 ),
@@ -49,8 +49,8 @@ fun ChatBubble(
     }
 
     val isLeft = script.speakerType == SpeakerType.A
-    val bubbleBgColor = if (isLeft) Color.White else Beige500
-    val bubbleBorderColor = if (isLeft) Beige500 else Beige700
+    val bubbleBgColor = if (isLeft) Color.White else SwypTheme.colors.borderDisabled
+    val bubbleBorderColor = if (isLeft) SwypTheme.colors.borderDisabled else SwypTheme.colors.borderSubtle
     val imageModel = script.profileImageUrl ?: R.drawable.ic_profile_mengzi
 
     // 구조: [왼쪽 슬롯(36dp)] + [말풍선 영역(남은공간 전부)] + [오른쪽 슬롯(36dp)]
@@ -87,7 +87,7 @@ fun ChatBubble(
                 Text(
                     text = script.speakerName,
                     style = SwypTheme.typography.b3SemiBold,
-                    color = Gray400,
+                    color = SwypTheme.colors.neutral400,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 6.dp),
@@ -107,7 +107,7 @@ fun ChatBubble(
                 Text(
                     text = script.displayText,
                     style = SwypTheme.typography.b5Medium,
-                    color = if(isActive) Gray700 else Gray300,
+                    color = if(isActive) SwypTheme.colors.textSecondary else SwypTheme.colors.textMuted,
                     textAlign = TextAlign.Start
                 )
             }

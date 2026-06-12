@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,10 +27,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.picke.app.R
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige900
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -46,8 +42,8 @@ fun ShareDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Beige600, RoundedCornerShape(4.dp))
-                .border(1.dp, Beige900, RoundedCornerShape(4.dp))
+                .background(SwypTheme.colors.borderDefault, RoundedCornerShape(4.dp))
+                .border(1.dp, SwypTheme.colors.beige900, RoundedCornerShape(4.dp))
         ) {
             // [상단 헤더 영역]
             Box(
@@ -60,7 +56,7 @@ fun ShareDialog(
                 Text(
                     text = "공유하기",
                     style = SwypTheme.typography.h4SemiBold,
-                    color = Gray900,
+                    color = SwypTheme.colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
 
@@ -68,7 +64,7 @@ fun ShareDialog(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_x),
                     contentDescription = "닫기",
-                    tint = Gray900,
+                    tint = SwypTheme.colors.textPrimary,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .size(12.dp)
@@ -77,7 +73,7 @@ fun ShareDialog(
             }
 
             // 구분선
-            HorizontalDivider(color = Gray900, thickness = 1.dp)
+            HorizontalDivider(color = SwypTheme.colors.textPrimary, thickness = 1.dp)
 
             // [하단 SNS 버튼 영역]
             Row(
@@ -115,7 +111,7 @@ fun ShareItem(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = title,
-            color = Primary500,
+            color = SwypTheme.colors.primary,
             style = SwypTheme.typography.b5Medium
         )
     }

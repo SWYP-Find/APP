@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.philosopher
+﻿package com.picke.app.ui.my.philosopher
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -54,13 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige100
-import com.picke.app.ui.theme.Beige300
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Gray600
-import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.ui.theme.tokens.BrandColorTokens
 import kotlin.math.cos
 import kotlin.math.sin
 import androidx.compose.ui.graphics.Path
@@ -79,11 +74,6 @@ import com.picke.app.domain.model.RecapScores
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.component.ShareDialog
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Primary100
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.White
 import com.picke.app.util.shareCapturedImageToKakao
 import com.picke.app.util.shareToInstagramStory
 import kotlinx.coroutines.launch
@@ -156,7 +146,7 @@ fun PhilosopherTypeScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             if(isMyReport) {
                 CustomTopAppBar(
@@ -165,14 +155,14 @@ fun PhilosopherTypeScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = onBackClick,
-                    backgroundColor = Beige200,
+                    backgroundColor = SwypTheme.colors.backgroundBrand,
                     actions = {
                         if (recapBoard != null) {
                             IconButton(onClick = { showShareDialog = true }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_share),
                                     contentDescription = "공유",
-                                    tint = Gray900,
+                                    tint = SwypTheme.colors.textPrimary,
                                     modifier = modifier.size(16.dp)
                                 )
                             }
@@ -187,7 +177,7 @@ fun PhilosopherTypeScreen(
                         showLogo = false,
                         showBackButton = true,
                         onBackClick = onBackClick,
-                        backgroundColor = Beige200
+                        backgroundColor = SwypTheme.colors.backgroundBrand
                     )
                 }
             }
@@ -200,7 +190,7 @@ fun PhilosopherTypeScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
         else {
@@ -239,7 +229,7 @@ fun PhilosopherTypeScreen(
                             onClick = { showShareDialog = true },
                             modifier = Modifier.padding(bottom = 24.dp),
                             backgroundColor = SwypTheme.colors.primary,
-                            textColor = White,
+                            textColor = Color.White,
                         )
                     } else {
                         CustomButton(
@@ -247,7 +237,7 @@ fun PhilosopherTypeScreen(
                             onClick = { onGoToSplashClick() },
                             modifier = Modifier.padding(bottom = 24.dp),
                             backgroundColor = SwypTheme.colors.primary,
-                            textColor = White
+                            textColor = Color.White
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -298,10 +288,10 @@ fun LockedPhilosopherHeaderSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White, cardShape)
-            .border(1.dp, Beige400, cardShape)
+            .background(Color.White, cardShape)
+            .border(1.dp, SwypTheme.colors.surfaceTertiary, cardShape)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(Primary500))
+        Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(SwypTheme.colors.primary))
 
         Column(
             modifier = Modifier
@@ -312,7 +302,7 @@ fun LockedPhilosopherHeaderSection() {
             Text(text = "나의 철학자 유형", style = SwypTheme.typography.labelMedium, color = Color(0xFF8C3E26))
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(text = "??형", style = SwypTheme.typography.h2SemiBold, color = Gray900)
+            Text(text = "??형", style = SwypTheme.typography.h2SemiBold, color = SwypTheme.colors.textPrimary)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -335,7 +325,7 @@ fun LockedPhilosopherHeaderSection() {
             Text(
                 text = "아직 분석할 기록이 부족해요.\n배틀에 참여하면 성향을 확인할 수 있어요!",
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray500,
+                color = SwypTheme.colors.textTertiary,
                 textAlign = TextAlign.Center,
             )
 
@@ -347,15 +337,15 @@ fun LockedPhilosopherHeaderSection() {
 @Composable
 fun LockedTraitAnalysisSection() {
     Column {
-        Text(text = "성향 분석", style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Text(text = "성향 분석", style = SwypTheme.typography.h4SemiBold, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(12.dp))
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(240.dp)
-                .background(White, RoundedCornerShape(4.dp))
-                .border(1.dp, Beige400, RoundedCornerShape(4.dp)),
+                .background(Color.White, RoundedCornerShape(4.dp))
+                .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
             // 흐릿한 레이더 차트 배경
@@ -369,7 +359,7 @@ fun LockedTraitAnalysisSection() {
             Text(
                 text = "배틀 5개에 참여하시면\n잠금을 풀 수 있어요!",
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray900,
+                color = SwypTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp
             )
@@ -392,14 +382,14 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(White, cardShape)
-            .border(1.dp, Beige400, cardShape)
+            .background(Color.White, cardShape)
+            .border(1.dp, SwypTheme.colors.surfaceTertiary, cardShape)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(4.dp)
-                .background(Primary500)
+                .background(SwypTheme.colors.primary)
         )
 
         Column(
@@ -415,7 +405,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "${philosopher.philosopherLabel}형", style = SwypTheme.typography.h2SemiBold, color = Gray900)
+                Text(text = "${philosopher.philosopherLabel}형", style = SwypTheme.typography.h2SemiBold, color = SwypTheme.colors.textPrimary)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -431,7 +421,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
             Text(
                 text = philosopher.description,
                 style = SwypTheme.typography.b3Regular,
-                color = Gray600,
+                color = SwypTheme.colors.neutral600,
                 textAlign = TextAlign.Center
             )
 
@@ -447,7 +437,7 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
                     philosopher.keywordTags.forEach { tag ->
                         Box(
                             modifier = Modifier
-                                .border(1.dp, Primary100, RoundedCornerShape(2.dp))
+                                .border(1.dp, BrandColorTokens.primary100, RoundedCornerShape(2.dp))
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
@@ -467,14 +457,14 @@ fun PhilosopherHeaderSection(philosopher: MyPhilosopher) {
 @Composable
 fun TraitAnalysisSection(analysis: RecapScores) {
     Column {
-        Text(text = "성향 분석", style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Text(text = "성향 분석", style = SwypTheme.typography.h4SemiBold, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(12.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(White, RoundedCornerShape(4.dp))
-                .border(1.dp, Beige400, RoundedCornerShape(4.dp))
+                .background(Color.White, RoundedCornerShape(4.dp))
+                .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
                 .padding(vertical = 24.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -519,25 +509,25 @@ fun TraitAnalysisSection(analysis: RecapScores) {
 fun ScoreBar(modifier: Modifier = Modifier, label: String, score: Int) {
     Row(
         modifier = modifier
-            .background(Beige100, RoundedCornerShape(4.dp))
+            .background(SwypTheme.colors.beige100, RoundedCornerShape(4.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = label, style = SwypTheme.typography.label, color = Gray600)
+        Text(text = label, style = SwypTheme.typography.label, color = SwypTheme.colors.neutral600)
         Spacer(modifier = Modifier.width(8.dp))
 
         // 막대 바
-        Box(modifier = Modifier.weight(1f).height(4.dp).background(Beige300, CircleShape)) {
+        Box(modifier = Modifier.weight(1f).height(4.dp).background(SwypTheme.colors.surfaceSubtle, CircleShape)) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(score / 100f)
                     .height(4.dp)
-                    .background(Primary500, CircleShape)
+                    .background(SwypTheme.colors.primary, CircleShape)
             )
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = score.toString(), style = SwypTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = Gray900)
+        Text(text = score.toString(), style = SwypTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold), color = SwypTheme.colors.textPrimary)
     }
 }
 
@@ -545,14 +535,14 @@ fun ScoreBar(modifier: Modifier = Modifier, label: String, score: Int) {
 @Composable
 fun TasteReportSection(report: PreferenceReport) {
     Column {
-        Text(text = "내 취향 리포트", style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Text(text = "내 취향 리포트", style = SwypTheme.typography.h4SemiBold, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(12.dp))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(White, RoundedCornerShape(4.dp))
-                .border(1.dp, Beige400, RoundedCornerShape(4.dp))
+                .background(Color.White, RoundedCornerShape(4.dp))
+                .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
         ) {
             // 상단 3개 요약 수치
             Row(
@@ -560,13 +550,13 @@ fun TasteReportSection(report: PreferenceReport) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ReportStatItem(report.totalParticipation.toString(), "총 참여")
-                Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Beige400)
+                Divider(modifier = Modifier.height(40.dp).width(1.dp), color = SwypTheme.colors.surfaceTertiary)
                 ReportStatItem(report.opinionChanges.toString(), "의견 전환")
-                Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Beige400)
+                Divider(modifier = Modifier.height(40.dp).width(1.dp), color = SwypTheme.colors.surfaceTertiary)
                 ReportStatItem("${report.battleWinRate}%", "배틀 승률")
             }
 
-            HorizontalDivider(color = Beige400)
+            HorizontalDivider(color = SwypTheme.colors.surfaceTertiary)
 
             // 하단 리스트
             report.favoriteTopics.forEachIndexed { index, item ->
@@ -577,11 +567,11 @@ fun TasteReportSection(report: PreferenceReport) {
                     Row {
                         Text(text = "0${index + 1}", style = SwypTheme.typography.labelMedium, color = Color(0xFFCBA572))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "#${item.tagName}", style = SwypTheme.typography.labelMedium, color = Gray900)
+                        Text(text = "#${item.tagName}", style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textPrimary)
                     }
-                    Text(text = "${item.participationCount}회", style = SwypTheme.typography.label, color = Gray500)
+                    Text(text = "${item.participationCount}회", style = SwypTheme.typography.label, color = SwypTheme.colors.textTertiary)
                 }
-                if (index < report.favoriteTopics.size - 1) HorizontalDivider(color = Beige100)
+                if (index < report.favoriteTopics.size - 1) HorizontalDivider(color = SwypTheme.colors.beige100)
             }
         }
     }
@@ -590,16 +580,16 @@ fun TasteReportSection(report: PreferenceReport) {
 @Composable
 fun ReportStatItem(value: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = value, style = SwypTheme.typography.h2SemiBold, color = Gray900)
+        Text(text = value, style = SwypTheme.typography.h2SemiBold, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = label, style = SwypTheme.typography.labelXSmall, color = Gray500)
+        Text(text = label, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.textTertiary)
     }
 }
 
 @Composable
 fun ChemistrySection(best: MyPhilosopher, worst: MyPhilosopher) {
     Column {
-        Text(text = "궁합 유형", style = SwypTheme.typography.h4SemiBold, color = Gray900)
+        Text(text = "궁합 유형", style = SwypTheme.typography.h4SemiBold, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(
@@ -636,14 +626,14 @@ fun ChemistryCard(
     desc: String,
     imageUrl: Any?
 ) {
-    val titleColor = if (isBest) Color(0xFFCBA572) else Gray600
+    val titleColor = if (isBest) Color(0xFFCBA572) else SwypTheme.colors.neutral600
     val titleText = if (isBest) stringResource(R.string.my_best) else stringResource(R.string.my_worst)
     val iconResId = if (isBest) R.drawable.ic_best else R.drawable.ic_worst
 
     Column(
         modifier = modifier
-            .background(White, RoundedCornerShape(4.dp))
-            .border(1.dp, Beige400, RoundedCornerShape(4.dp))
+            .background(Color.White, RoundedCornerShape(4.dp))
+            .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -672,9 +662,9 @@ fun ChemistryCard(
             modifier = Modifier.size(56.dp),
         )
         Spacer(modifier = Modifier.height(12.dp))
-        Text(text = "${name}형", style = SwypTheme.typography.b2Medium, color = Gray900)
+        Text(text = "${name}형", style = SwypTheme.typography.b2Medium, color = SwypTheme.colors.textPrimary)
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = desc, style = SwypTheme.typography.labelXSmall, color = Gray500, textAlign = TextAlign.Center)
+        Text(text = desc, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.textTertiary, textAlign = TextAlign.Center)
     }
 }
 

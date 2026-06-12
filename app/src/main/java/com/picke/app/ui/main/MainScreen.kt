@@ -1,4 +1,4 @@
-package com.picke.app.ui.main
+﻿package com.picke.app.ui.main
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -30,7 +30,6 @@ import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.my.setting.SettingScreen
 import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.Beige200
 
 @Composable
 fun MainScreen(
@@ -42,7 +41,7 @@ fun MainScreen(
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         bottomBar = {
             CustomBottomNavigationBar(
                 mainNavController = mainNavController,

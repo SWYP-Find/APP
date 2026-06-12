@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.setting.alarm
+﻿package com.picke.app.ui.my.setting.alarm
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,14 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 
 @Composable
 fun SettingAlarmScreen(
@@ -55,7 +48,7 @@ fun SettingAlarmScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -64,7 +57,7 @@ fun SettingAlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = Beige200
+                backgroundColor = SwypTheme.colors.backgroundBrand
             )
         }
     ){ innerPadding ->
@@ -135,7 +128,7 @@ fun AlarmCategoryHeader(title: String) {
     Text(
         text = title,
         style = SwypTheme.typography.b5Medium,
-        color = Gray700,
+        color = SwypTheme.colors.textSecondary,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)
     )
 }
@@ -158,13 +151,13 @@ fun AlarmSettingItem(
             Text(
                 text = title,
                 style = SwypTheme.typography.b4Medium,
-                color = Gray900
+                color = SwypTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = subtitle,
                 style = SwypTheme.typography.caption2Medium,
-                color = Gray400
+                color = SwypTheme.colors.neutral400
             )
         }
 
@@ -176,10 +169,10 @@ fun AlarmSettingItem(
             checked = isChecked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = White,
+                checkedThumbColor = Color.White,
                 checkedTrackColor = SwypTheme.colors.primary,
-                uncheckedThumbColor = White,
-                uncheckedTrackColor = Gray300,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = SwypTheme.colors.textMuted,
                 uncheckedBorderColor = Color.Transparent
             )
         )
@@ -191,6 +184,6 @@ fun AlarmDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 16.dp),
         thickness = 1.dp,
-        color = Beige600
+        color = SwypTheme.colors.borderDefault
     )
 }

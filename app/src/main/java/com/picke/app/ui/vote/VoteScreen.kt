@@ -1,4 +1,4 @@
-package com.picke.app.ui.vote
+﻿package com.picke.app.ui.vote
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -57,7 +57,7 @@ fun VoteRoute(
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Primary900)
+            CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
         }
     } else {
         uiState.battleDetail?.let { detail ->
@@ -86,8 +86,8 @@ fun VoteScreen(
     val battleInfo = battleDetail.battleInfo
 
     val bgColor = if (isPreVote) SwypTheme.colors.surface else Color.Black
-    val titleColor = if (isPreVote) Gray900 else SwypTheme.colors.surface
-    val descColor = if (isPreVote) Gray700 else Gray400
+    val titleColor = if (isPreVote) SwypTheme.colors.textPrimary else SwypTheme.colors.surface
+    val descColor = if (isPreVote) SwypTheme.colors.textSecondary else SwypTheme.colors.neutral400
 
     var selectedOptionId by remember { mutableStateOf<String?>(null) }
     val isButtonEnabled = selectedOptionId != null
@@ -171,7 +171,7 @@ fun VoteScreen(
                         centerTitle = false,
                         showBackButton = true,
                         onBackClick = onBackClick,
-                        backIconColor = White,
+                        backIconColor = Color.White,
                         backgroundColor = Color.Transparent,
                         actions = {
                             Icon(
@@ -179,7 +179,7 @@ fun VoteScreen(
                                     .clickable { showShareDialog = true },
                                 painter = painterResource(id = R.drawable.ic_share),
                                 contentDescription = "공유",
-                                tint = White
+                                tint = Color.White
                             )
                         }
                     )
@@ -212,8 +212,8 @@ fun VoteScreen(
                             }
                         },
                         modifier = Modifier.padding(20.dp),
-                        backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
-                        textColor = Beige50
+                        backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
+                        textColor = SwypTheme.colors.surfaceDefault
                     )
                 }
             }
@@ -283,7 +283,7 @@ fun VoteScreen(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             battleInfo.tags.forEach { tag ->
                                 Surface(
-                                    color = White.copy(alpha = 0.8f),
+                                    color = Color.White.copy(alpha = 0.8f),
                                     shape = RoundedCornerShape(2.dp)
                                 ) {
                                     Text(
@@ -293,7 +293,7 @@ fun VoteScreen(
                                             vertical = 2.dp
                                         ),
                                         style = SwypTheme.typography.label,
-                                        color = Primary500
+                                        color = SwypTheme.colors.primary
                                     )
                                 }
                             }
@@ -349,7 +349,7 @@ fun VoteScreen(
                         color = Color(0xFFF2E3C6)
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text("VS", style = SwypTheme.typography.labelMedium, color = Gray900)
+                            Text("VS", style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textPrimary)
                         }
                     }
                 }
@@ -407,7 +407,7 @@ fun VoteScreen(
                     .pointerInput(Unit) {},
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
 
@@ -448,7 +448,7 @@ fun VoteOptionCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) Secondary500 else Beige500
+    val borderColor = if (isSelected) SwypTheme.colors.secondary else SwypTheme.colors.borderDisabled
     val contentAlpha = if (isSelected) 1f else 0.8f
 
     Column(
@@ -456,7 +456,7 @@ fun VoteOptionCard(
             .alpha(contentAlpha)
             .clip(RoundedCornerShape(2.dp))
             .border(1.dp, borderColor, RoundedCornerShape(2.dp))
-            .background(Beige300)
+            .background(SwypTheme.colors.surfaceSubtle)
             .clickable { onClick() }
             .padding(vertical = 24.dp, horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -467,8 +467,8 @@ fun VoteOptionCard(
             modifier = Modifier.size(40.dp),
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = option.title, style = SwypTheme.typography.h4SemiBold, color = Gray900, textAlign = TextAlign.Center )
+        Text(text = option.title, style = SwypTheme.typography.h4SemiBold, color = SwypTheme.colors.textPrimary, textAlign = TextAlign.Center )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = option.representative, style = SwypTheme.typography.labelXSmall, color = Gray500)
+        Text(text = option.representative, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.textTertiary)
     }
 }
