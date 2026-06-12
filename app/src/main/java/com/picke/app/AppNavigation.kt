@@ -97,6 +97,8 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 when (event) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
+                    is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
+                    is DeepLinkEvent.GoToComment -> rootNavController.navigate(AppRoute.Comment.createRoute(event.commentId))
                 }
             }
         }

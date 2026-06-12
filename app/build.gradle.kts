@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.google.services)
     kotlin("kapt")
 }
 
@@ -129,6 +130,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.dynamic.links)
+    implementation(libs.firebase.messaging)
 
     // [Paging3] 무한 스크롤 및 대용량 리스트 페이징 처리
     implementation(libs.androidx.paging.runtime)

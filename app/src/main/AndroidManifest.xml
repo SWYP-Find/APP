@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <queries>
         <package android:name="com.instagram.android" />
         <package android:name="com.kakao.talk" />
@@ -54,6 +55,21 @@
                     android:pathPrefix="/battle/"/>
             </intent-filter>
         </activity>
+        <!-- FCM 알림 서비스 -->
+        <service
+            android:name=".notification.FCMService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <!-- 기본 알림 아이콘 및 색상 -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_bell" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="picke_default" />
         <!-- AdMob 키 등록 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
