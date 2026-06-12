@@ -10,7 +10,7 @@ interface PerspectiveApi {
         @Path("battleId") battleId: Long,
         @Query("cursor") cursor: String? = null,
         @Query("size") size: Int = 10,
-        @Query("optionLabel") optionLabel: String? = null,
+        @Query("optionId") optionId: Long? = null,
         @Query("sort") sort: String = "latest"
     ): BaseResponse<PerspectivePageDto>
 

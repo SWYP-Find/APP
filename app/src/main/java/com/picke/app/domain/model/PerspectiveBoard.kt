@@ -19,7 +19,8 @@ data class PerspectiveBoard(
     val content: String,
     val isMine: Boolean,
     val createdAt: String,
-    val stance: String,
+    val optionTitle: String,
+    val optionId: Long,
     val replyCount: Int,
     val likeCount: Int,
     val isLiked: Boolean
@@ -32,6 +33,8 @@ data class PerspectiveDetailBoard(
     val nickname: String,
     val characterImageUrl: String,
     val optionLabel: String,
+    val optionTitle: String,
+    val optionId: Long,
     val content: String,
     val likeCount: Int,
     val commentCount: Int,

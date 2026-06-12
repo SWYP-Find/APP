@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.my.setting.alarm
+package com.picke.app.ui.my.setting.alarm
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,9 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
+import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -186,4 +188,14 @@ fun AlarmDivider() {
         thickness = 1.dp,
         color = SwypTheme.colors.borderDefault
     )
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "알림 설정 화면")
+@Composable
+private fun SettingAlarmScreenPreview() {
+    SwypAppTheme {
+        SettingAlarmScreen(
+            onBackClick = {}
+        )
+    }
 }

@@ -23,18 +23,18 @@ class PerspectiveRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getPerspectives(
-        battleId: Long, cursor: String?, size: Int, optionLabel: String?, sort: String
+        battleId: Long, cursor: String?, size: Int, optionId: Long?, sort: String
     ): Result<PerspectivePage> {
         return try {
-            Log.d(TAG, "[API_REQ] 관점 목록 조회 시도 - battleId: $battleId, sort: $sort")
-            perspectiveApi.getPerspectives(battleId, cursor, size, optionLabel, sort)
+            Log.d(TAG, "[API_REQ] 관점 목록 조회 시도 - battleId: $battleId, optionId: $optionId, sort: $sort")
+            perspectiveApi.getPerspectives(battleId, cursor, size, optionId, sort)
                 .toResult("관점 목록을 불러오지 못했습니다.")
                 .map { dto ->
                     val domainData = dto.toDomainModel()
                     Log.d(TAG, "[API_RES] 관점 목록 조회 성공 - 총 ${domainData.items.size}개 수신")
                     domainData.items.forEachIndexed { index, item ->
                         val shortContent = item.content.take(15).replace("\n", " ")
-                        Log.d(TAG, "   └ [$index] ID: ${item.commentId} | 입장(Stance): ${item.stance} | 닉네임: ${item.nickname} | 내용: $shortContent...")
+                        Log.d(TAG, "   └ [$index] ID: ${item.commentId} | 입장(Option): ${item.optionTitle} | 닉네임: ${item.nickname} | 내용: $shortContent...")
                     }
                     domainData
                 }

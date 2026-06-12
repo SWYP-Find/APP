@@ -68,12 +68,12 @@ fun SettingScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                /*SettingMenuItem(
+                SettingMenuItem(
                     title = stringResource(R.string.my_setting_alarm),
                     onClick = {
                         onNavigateToSettingAlarm()
                     }
-                )*/
+                )
                 SettingMenuItem(
                     title = stringResource(R.string.setting_footer_privacy),
                     onClick = onNavigateToPrivacyPolicy
