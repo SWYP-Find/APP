@@ -2,6 +2,7 @@ package com.picke.app.di
 
 import com.picke.app.data.repository.AlarmRepositoryImpl
 import com.picke.app.data.repository.AuthRepositoryImpl
+import com.picke.app.data.repository.DeviceRepositoryImpl
 import com.picke.app.data.repository.BattleRepositoryImpl
 import com.picke.app.data.repository.CommentRepositoryImpl
 import com.picke.app.data.repository.ExploreRepositoryImpl
@@ -18,6 +19,7 @@ import com.picke.app.data.repository.VoteRepositoryImpl
 import com.picke.app.data.repository.VoteStreamRepositoryImpl
 import com.picke.app.domain.repository.AlarmRepository
 import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.domain.repository.DeviceRepository
 import com.picke.app.domain.repository.BattleRepository
 import com.picke.app.domain.repository.CommentRepository
 import com.picke.app.domain.repository.ExploreRepository
@@ -136,4 +138,10 @@ abstract class RepositoryModule {
     abstract fun bindProposalRepository(
         proposalRepositoryImpl: ProposalRepositoryImpl
     ): ProposalRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDeviceRepository(
+        deviceRepositoryImpl: DeviceRepositoryImpl
+    ): DeviceRepository
 }
