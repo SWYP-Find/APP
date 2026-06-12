@@ -1,6 +1,6 @@
 package com.picke.app.data.repository
 
-import com.picke.app.data.model.AlarmDetailBoard
+import com.picke.app.domain.model.AlarmDetailBoard
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.model.toResult
 import com.picke.app.data.remote.AlarmApi

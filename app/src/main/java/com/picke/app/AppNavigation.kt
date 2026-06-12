@@ -230,7 +230,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             }
 
             composable(AppRoute.Alarm.route) {
-                AlarmScreen(onBackClick = { rootNavController.popBackStack() })
+                AlarmScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
+                    },
+                    onNavigateToPerspective = { perspectiveId ->
+                        rootNavController.navigate(AppRoute.Perspective.createRoute(perspectiveId))
+                    }
+                )
             }
 
             composable(AppRoute.SettingAlarm.route) {
