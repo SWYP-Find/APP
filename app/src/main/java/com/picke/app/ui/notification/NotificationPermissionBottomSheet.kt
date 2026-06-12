@@ -21,18 +21,25 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picke.app.R
+import androidx.compose.ui.tooling.preview.Preview
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.theme.Gray100
 import com.picke.app.ui.theme.Gray300
 import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.Primary300
 import com.picke.app.ui.theme.Primary700
+import com.picke.app.ui.theme.SwypAppTheme
+import com.picke.app.ui.theme.SwypColors
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.theme.White
+import com.picke.app.ui.theme.tokens.BrandColorTokens.neutral50
+import com.picke.app.ui.theme.tokens.BrandColorTokens.primary600
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,14 +81,20 @@ fun NotificationPermissionBottomSheet(
         ) {
             Box(
                 modifier = Modifier
-                    .border(1.dp, Gray100, RoundedCornerShape(50))
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .border(1.dp, neutral50, RoundedCornerShape(50))
+                    .background(
+                        color = SwypTheme.colors.backgroundBrand,
+                        shape = RoundedCornerShape(50)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_logo),
                     contentDescription = "Picke Logo",
-                    modifier = Modifier.size(width = 63.dp, height = 40.dp)
+                    modifier = Modifier
+                        .size(width = 58.dp, height = 58.dp),
+                    colorFilter = ColorFilter.tint(primary600)
                 )
             }
 
@@ -120,17 +133,29 @@ fun NotificationPermissionBottomSheet(
                     text = "동의하지 않음",
                     onClick = onDisagree,
                     modifier = Modifier.weight(1f),
-                    backgroundColor = Primary300,
+                    backgroundColor = SwypTheme.colors.buttonPrimaryBackgroundDisabled,
                     textColor = White
                 )
                 CustomButton(
                     text = "동의함",
                     onClick = onAgree,
                     modifier = Modifier.weight(1f),
-                    backgroundColor = Primary700,
+                    backgroundColor = SwypTheme.colors.buttonPrimaryBackgroundPressed,
                     textColor = White
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true, name = "알림 권한 바텀시트")
+@Composable
+private fun NotificationPermissionBottomSheetPreview() {
+    SwypAppTheme {
+        NotificationPermissionBottomSheet(
+            onDismiss = {},
+            onAgree = {},
+            onDisagree = {}
+        )
     }
 }

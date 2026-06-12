@@ -1,7 +1,12 @@
 ﻿package com.picke.app
 
 import ScenarioScreen
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -12,20 +17,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.core.content.ContextCompat
 import com.picke.app.R
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.picke.app.ui.notification.NotificationPermissionBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
 import com.picke.app.ui.comment.CommentScreen
 import com.picke.app.ui.login.LoginScreen
@@ -57,6 +68,27 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()
     val uiState by splashViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    var showNotificationSheet by remember { mutableStateOf(false) }
+
+    val requestNotificationPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* FCM 토큰 발급은 추후 연동 */ }
+
+    fun checkAndShowNotificationSheet() {
+        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("notification_permission_asked", false)) return
+        val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else true
+        if (!hasPermission) showNotificationSheet = true
+    }
+
+    fun markNotificationPermissionAsked() {
+        context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            .edit().putBoolean("notification_permission_asked", true).apply()
+    }
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
@@ -68,14 +100,17 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             }
             is SplashUiState.NavigateToMain -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
+                checkAndShowNotificationSheet()
             }
             is SplashUiState.NavigateToOtherPhilosopher -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                 rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(state.reportId))
+                checkAndShowNotificationSheet()
             }
             is SplashUiState.NavigateToBattle -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                 rootNavController.navigate(AppRoute.BattleRouting.createRoute(state.battleId))
+                checkAndShowNotificationSheet()
             }
             is SplashUiState.Loading -> { /* 가만히 스플래시 유지 */ }
         }
@@ -142,6 +177,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Login.route) { inclusive = true }
                         }
+                        checkAndShowNotificationSheet()
 
                         if (pendingReport != null || pendingBattle != null) {
                             coroutineScope.launch {
@@ -338,5 +374,26 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
         }
+    }
+
+    if (showNotificationSheet) {
+        NotificationPermissionBottomSheet(
+            onDismiss = {
+                showNotificationSheet = false
+                markNotificationPermissionAsked()
+            },
+            onAgree = {
+                showNotificationSheet = false
+                markNotificationPermissionAsked()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                // TODO: FCM 토큰 발급 API 연동
+            },
+            onDisagree = {
+                showNotificationSheet = false
+                markNotificationPermissionAsked()
+            }
+        )
     }
 }

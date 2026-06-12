@@ -1,27 +1,18 @@
 package com.picke.app
 
-import android.Manifest
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.picke.app.notification.FCMService
-import com.picke.app.ui.notification.NotificationPermissionBottomSheet
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
 import com.picke.app.ui.theme.SwypAppTheme
@@ -33,12 +24,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val splashViewModel: SplashViewModel by viewModels()
-
-    private val requestNotificationPermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        Log.d("MainActivity", "알림 권한 결과: $isGranted")
-    }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,42 +41,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SwypAppTheme {
-                val uiState by splashViewModel.uiState.collectAsState()
-                var showNotificationSheet by remember { mutableStateOf(false) }
-
-                // 스플래시 로딩이 끝나면 알림 권한 체크 (최초 1회)
-                if (uiState !is SplashUiState.Loading) {
-                    val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-                    val alreadyAsked = prefs.getBoolean("notification_permission_asked", false)
-                    if (!alreadyAsked && !showNotificationSheet) {
-                        val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            ContextCompat.checkSelfPermission(
-                                this, Manifest.permission.POST_NOTIFICATIONS
-                            ) == PackageManager.PERMISSION_GRANTED
-                        } else true
-
-                        if (!hasPermission) showNotificationSheet = true
-                    }
-                }
-
                 AppNavigation(splashViewModel)
-
-                if (showNotificationSheet) {
-                    NotificationPermissionBottomSheet(
-                        onDismiss = { showNotificationSheet = false },
-                        onAgree = {
-                            showNotificationSheet = false
-                            markNotificationPermissionAsked()
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            }
-                        },
-                        onDisagree = {
-                            showNotificationSheet = false
-                            markNotificationPermissionAsked()
-                        }
-                    )
-                }
             }
         }
     }
@@ -149,10 +99,4 @@ class MainActivity : ComponentActivity() {
         intent.data = null
     }
 
-    private fun markNotificationPermissionAsked() {
-        getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean("notification_permission_asked", true)
-            .apply()
-    }
 }
