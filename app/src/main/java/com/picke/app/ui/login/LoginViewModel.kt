@@ -62,13 +62,15 @@ class LoginViewModel @Inject constructor(
 
                 FirebaseMessaging.getInstance().token
                     .addOnSuccessListener { fcmToken ->
+                        Log.d(TAG, "[FCM] 토큰 발급 완료: ${fcmToken.take(20)}...")
                         tokenManager.saveFcmToken(fcmToken)
                         viewModelScope.launch {
                             deviceRepository.registerDevice(fcmToken)
-                                .onFailure { Log.w(TAG, "FCM 토큰 서버 등록 실패", it) }
+                                .onSuccess { Log.d(TAG, "[FCM] 서버 등록 완료") }
+                                .onFailure { Log.w(TAG, "[FCM] 서버 등록 실패", it) }
                         }
                     }
-                    .addOnFailureListener { Log.w(TAG, "FCM 토큰 발급 실패", it) }
+                    .addOnFailureListener { Log.w(TAG, "[FCM] 토큰 발급 실패", it) }
             }.onFailure { error ->
                 Log.w(TAG, "[FLOW] ${provider} 로그인 실패: ${error.message}")
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")
