@@ -1,5 +1,6 @@
 package com.picke.app.data.model
 
+import com.picke.app.domain.model.AlarmDetailBoard
 import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.domain.model.AlarmPageBoard
 
@@ -10,6 +11,7 @@ data class AlarmItemDto(
     val title: String?,
     val body: String?,
     val referenceId: Long?,
+    val perspectiveId: Long?,
     val isRead: Boolean?,
     val createdAt: String?
 )
@@ -21,6 +23,7 @@ data class AlarmPageDto(
 
 data class AlarmDetailDto(
     val notificationId: Long?,
+    val perspectiveId: Long?,
     val category: String?,
     val detailCode: String?,
     val title: String?,
@@ -31,18 +34,6 @@ data class AlarmDetailDto(
     val readAt: String?
 )
 
-data class AlarmDetailBoard(
-    val notificationId: Long,
-    val category: String,
-    val detailCode: String,
-    val title: String,
-    val body: String,
-    val referenceId: Long,
-    val isRead: Boolean,
-    val createdAt: String,
-    val readAt: String
-)
-
 // DTO -> Domain Mapper
 fun AlarmDetailDto.toDomainModel() = AlarmDetailBoard(
     notificationId = this.notificationId ?: 0L,
@@ -51,6 +42,7 @@ fun AlarmDetailDto.toDomainModel() = AlarmDetailBoard(
     title = this.title ?: "",
     body = this.body ?: "",
     referenceId = this.referenceId ?: 0L,
+    perspectiveId = this.perspectiveId ?: 0L,
     isRead = this.isRead ?: false,
     createdAt = this.createdAt?.take(10) ?: "",
     readAt = this.readAt?.take(10) ?: ""
@@ -63,6 +55,7 @@ fun AlarmItemDto.toDomainModel() = AlarmItemBoard(
     title = this.title ?: "",
     body = this.body ?: "",
     referenceId = this.referenceId ?: 0L,
+    perspectiveId = this.perspectiveId ?: 0L,
     isRead = this.isRead ?: false,
     createdAt = this.createdAt?.take(10) ?: ""
 )
