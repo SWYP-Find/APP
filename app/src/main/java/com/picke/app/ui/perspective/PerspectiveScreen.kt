@@ -554,7 +554,7 @@ fun PerspectiveItemCard(
                                 shape = RoundedCornerShape(2.dp)
                             ) {
                                 Text(
-                                    text = item.optionTitle.ifEmpty { if (isPro) "A" else "B" },
+                                    text = item.optionTitle,
                                     style = SwypTheme.typography.b5Medium,
                                     color = if (isPro) SwypTheme.colors.primary else Color.White,
                                     maxLines = 1,
@@ -842,7 +842,7 @@ fun PerspectiveHeader(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = leftOption?.title ?: "A",
+                text = leftOption?.title ?: "",
                 style = SwypTheme.typography.labelXSmall,
                 color = SwypTheme.colors.textSecondary,
                 maxLines = 1,
@@ -923,7 +923,7 @@ fun PerspectiveHeader(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = rightOption?.title ?: "B",
+                text = rightOption?.title ?: "",
                 style = SwypTheme.typography.labelXSmall,
                 color = SwypTheme.colors.textSecondary,
                 maxLines = 1,

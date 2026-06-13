@@ -86,15 +86,13 @@ class CommentViewModel @Inject constructor(
                 .onSuccess { perspective ->
                     Log.i(TAG, "[STATE] 메인 관점(perspectiveId: ${perspective.perspectiveId}) 조회 성공")
 
-                    val displayStance = if (perspective.optionLabel == "A" || perspective.optionLabel == "AGREE") "A" else "B"
-
                     _uiState.update { state ->
                         state.copy(
                             mainPerspective = CommentUiModel(
                                 commentId = perspective.perspectiveId.toString(),
                                 profileImageUrl = perspective.characterImageUrl,
                                 nickname = perspective.nickname,
-                                stance = displayStance,
+                                stance = perspective.optionTitle,
                                 content = perspective.content,
                                 timeAgo = perspective.createdAt.take(10),
                                 likeCount = perspective.likeCount,
@@ -292,22 +290,14 @@ class CommentViewModel @Inject constructor(
     }
 }
 
-private fun CommentBoard.toUiModel(): CommentUiModel {
-    val displayStance = when (this.stance){
-        "A", "AGREE", "찬성" -> "A"
-        "B", "DISAGREE", "반대" -> "B"
-        else -> this.stance
-    }
-
-    return CommentUiModel(
+private fun CommentBoard.toUiModel() = CommentUiModel(
         commentId = this.commentId.toString(),
         profileImageUrl = this.user.characterImageUrl,
         nickname = this.user.nickname,
-        stance = displayStance,
+        stance = this.stance,
         content = this.content,
         timeAgo = this.createdAt.take(10),
         likeCount = this.likeCount,
         isLiked = this.isLiked,
         isMine = this.isMine
     )
-}

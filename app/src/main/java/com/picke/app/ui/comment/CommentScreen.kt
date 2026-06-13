@@ -143,10 +143,13 @@ fun CommentScreen(
             } else {
                 // 2. 상단 고정 영역 (스크롤 되지 않음)
                 // 1) 메인 관점 카드
+                val mainStance = uiState.mainPerspective?.stance ?: ""
+
                 uiState.mainPerspective?.let { mainContent ->
                     CommentItemCard(
                         item = mainContent,
                         isMainContent = true,
+                        mainStance = mainStance,
                         onLikeClick = {
                             if (mainContent.isMine) {
                                 android.widget.Toast.makeText(
@@ -190,6 +193,7 @@ fun CommentScreen(
                         items(uiState.comments) { comment ->
                             CommentItemCard(
                                 item = comment,
+                                mainStance = mainStance,
                                 onEditClick = { content ->
                                     inputText = content
                                     viewModel.setEditMode(comment.commentId.toLongOrNull())
@@ -280,6 +284,7 @@ fun CommentItemCard(
     item: CommentUiModel,
     modifier: Modifier = Modifier,
     isMainContent: Boolean = false,
+    mainStance: String = "",
     onEditClick: (String) -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onLikeClick: () -> Unit = {},
@@ -305,16 +310,17 @@ fun CommentItemCard(
                     Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isPro = item.stance == "A"
-                    val badgeBgColor = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary
-                    val badgeTextColor = if (isPro) SwypTheme.colors.primary else SwypTheme.colors.borderDefault
-
-                    Box(
-                        modifier = Modifier
-                            .background(badgeBgColor, RoundedCornerShape(2.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    val isPro = mainStance.isNotEmpty() && item.stance == mainStance
+                    Surface(
+                        color = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary,
+                        shape = RoundedCornerShape(2.dp)
                     ) {
-                        Text(text = item.stance, style = SwypTheme.typography.b5Medium, color = badgeTextColor)
+                        Text(
+                            text = item.stance,
+                            style = SwypTheme.typography.b5Medium,
+                            color = if (isPro) SwypTheme.colors.primary else Color.White,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
                     }
                 }
                 Text(text = item.timeAgo, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.outline)

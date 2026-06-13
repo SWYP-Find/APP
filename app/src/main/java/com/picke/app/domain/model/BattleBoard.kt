@@ -39,7 +39,6 @@ data class BattleInfoBoard(
 
 data class BattleOptionBoard(
     val optionId: String,
-    val label: String,
     val title: String,
     val stance: String,
     val representative: String,

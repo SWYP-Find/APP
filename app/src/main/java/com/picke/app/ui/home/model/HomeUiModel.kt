@@ -38,7 +38,6 @@ data class HomeContentUiModel(
 // 추가된 옵션 상태 UI 모델
 data class PollQuizOptionStatUiModel(
     val optionId: Long,
-    val label: String,
     val title: String,
     val isCorrect: Boolean,
     val stance: String,
@@ -117,7 +116,6 @@ fun HomeContent.toUiModel(): HomeContentUiModel {
 
 fun PollQuizOptionStatBoard.toUiModel() = PollQuizOptionStatUiModel(
     optionId = this.optionId,
-    label = this.label,
     title = this.title,
     isCorrect = this.isCorrect,
     voteCount = this.voteCount,

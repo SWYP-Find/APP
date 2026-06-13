@@ -8,7 +8,6 @@ data class VoteStatsBoard(
 
 data class VoteStatsOptionBoard(
     val optionId: Long,
-    val label: String,
     val title: String,
     val imageUrl: String,
     val isCorrect: Boolean,
@@ -27,6 +26,5 @@ data class MyVoteBoard(
 
 data class VotedOptionBoard(
     val optionId: Long,
-    val label: String,
     val title: String
 )

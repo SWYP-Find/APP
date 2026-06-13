@@ -66,7 +66,7 @@ class PerspectiveRepositoryImpl @Inject constructor(
                 .toResult("내 관점이 없습니다.")
                 .map { dto ->
                     val domainData = dto.toDomainModel()
-                    Log.d(TAG, "[API_RES] 내 관점 조회 성공 - ID: ${domainData.perspectiveId} | 내 입장(Label): ${domainData.optionLabel} | 상태: ${domainData.status}")
+                    Log.d(TAG, "[API_RES] 내 관점 조회 성공 - ID: ${domainData.perspectiveId} | 내 입장: ${domainData.optionTitle} | 상태: ${domainData.status}")
                     domainData
                 }
         } catch (e: Exception) {
@@ -82,7 +82,7 @@ class PerspectiveRepositoryImpl @Inject constructor(
                 .toResult("상세 정보가 없습니다.")
                 .map { dto ->
                     val domainData = dto.toDomainModel()
-                    Log.d(TAG, "[API_RES] 관점 상세 조회 성공 - 입장(Label): ${domainData.optionLabel} | 작성자: ${domainData.nickname}")
+                    Log.d(TAG, "[API_RES] 관점 상세 조회 성공 - 입장: ${domainData.optionTitle} | 작성자: ${domainData.nickname}")
                     domainData
                 }
         } catch (e: Exception) {
