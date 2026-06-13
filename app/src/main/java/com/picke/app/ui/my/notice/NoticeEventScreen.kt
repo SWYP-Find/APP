@@ -357,7 +357,18 @@ fun NoticeEventCard(
             overflow = TextOverflow.Ellipsis
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // [중단] 내용 미리보기
+        Text(
+            text = item.content,
+            style = SwypTheme.typography.label,
+            color = SwypTheme.colors.textMuted,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         // [하단] 날짜
         Text(
