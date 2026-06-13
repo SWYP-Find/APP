@@ -6,7 +6,7 @@ sealed class DeepLinkEvent {
     data class GoToBattle(val battleId: String) : DeepLinkEvent()
     data class GoToReport(val reportId: String) : DeepLinkEvent()
     data object GoToAlarm : DeepLinkEvent()
-    data class GoToComment(val commentId: String) : DeepLinkEvent()
+    data class GoToPerspective(val perspectiveId: String, val commentId: String?) : DeepLinkEvent()
 }
 
 object DeepLinkManager {

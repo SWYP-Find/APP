@@ -1,4 +1,4 @@
-﻿package com.picke.app
+package com.picke.app
 
 import ScenarioScreen
 import android.Manifest
@@ -133,7 +133,14 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
                     is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
-                    is DeepLinkEvent.GoToComment -> rootNavController.navigate(AppRoute.Comment.createRoute(event.commentId))
+                    is DeepLinkEvent.GoToPerspective -> {
+                        val route = if (event.commentId != null) {
+                            AppRoute.Perspective.createRoute(event.perspectiveId, event.commentId)
+                        } else {
+                            AppRoute.Perspective.createRoute(event.perspectiveId)
+                        }
+                        rootNavController.navigate(route)
+                    }
                 }
             }
         }
@@ -306,10 +313,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
             composable(
                 route = AppRoute.Perspective.route,
-                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType },
+                    navArgument("commentId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
             ) { backStackEntry ->
                 val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+                val commentId = backStackEntry.arguments?.getString("commentId")
                 PerspectiveScreen(
+                    scrollToCommentId = commentId,
                     onBackClick = {
                         val prevRoute = rootNavController.previousBackStackEntry?.destination?.route
                         if (prevRoute == null || prevRoute == AppRoute.Splash.route || prevRoute == AppRoute.Login.route) {

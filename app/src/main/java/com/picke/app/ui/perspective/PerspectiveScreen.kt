@@ -77,6 +77,7 @@ fun PerspectiveScreen(
     onBackClick: ()->Unit,
     onNextClick: (String)->Unit,
     onMoreClick: (String)->Unit,
+    scrollToCommentId: String? = null,
     modifier: Modifier = Modifier,
     viewModel: PerspectiveViewModel = hiltViewModel()
 ) {
@@ -105,6 +106,7 @@ fun PerspectiveScreen(
     var perspectiveToDelete by remember { mutableStateOf<Long?>(null) }
     var perspectiveToReport by remember { mutableStateOf<Long?>(null) }
     var scrollToTopTrigger by remember { mutableStateOf(0) }
+    var hasScrolledToComment by remember { mutableStateOf(false) }
     val isShowingMyPendingOrRejected = uiState.myPerspective?.let { it.status != "PUBLISHED" } ?: false
 
     LaunchedEffect(Unit) {
@@ -231,6 +233,18 @@ fun PerspectiveScreen(
                     if (scrollToTopTrigger > 0) {
                         kotlinx.coroutines.delay(50)
                         listState.scrollToItem(0)
+                    }
+                }
+                if (pageIndex == 0 && scrollToCommentId != null) {
+                    LaunchedEffect(uiState.perspectives) {
+                        if (!hasScrolledToComment && uiState.perspectives.isNotEmpty() && !uiState.isLoading) {
+                            val targetIndex = uiState.perspectives.indexOfFirst { it.commentId == scrollToCommentId }
+                            if (targetIndex >= 0) {
+                                val offset = if (isShowingMyPendingOrRejected) 1 else 0
+                                listState.animateScrollToItem(targetIndex + offset)
+                                hasScrolledToComment = true
+                            }
+                        }
                     }
                 }
                 // 서버 사이드 필터링: 각 탭 선택 시 optionId로 API 호출 → 별도 클라이언트 필터 불필요

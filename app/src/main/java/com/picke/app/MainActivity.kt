@@ -55,17 +55,18 @@ class MainActivity : ComponentActivity() {
     private fun handleFcmIntent(intent: Intent?) {
         val type = intent?.getStringExtra(FCMService.EXTRA_FCM_TYPE) ?: return
         val battleId = intent.getStringExtra(FCMService.EXTRA_FCM_BATTLE_ID)
+        val perspectiveId = intent.getStringExtra(FCMService.EXTRA_FCM_PERSPECTIVE_ID)
         val commentId = intent.getStringExtra(FCMService.EXTRA_FCM_COMMENT_ID)
 
-        Log.d("MainActivity", "FCM 알림 탭 - type: $type, battleId: $battleId, commentId: $commentId")
+        Log.d("MainActivity", "FCM 알림 탭 - type: $type, battleId: $battleId, perspectiveId: $perspectiveId, commentId: $commentId")
 
         when (type) {
             FCMService.TYPE_BATTLE -> battleId?.let {
                 DeepLinkManager.pendingBattleId = it
                 DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToBattle(it))
             }
-            FCMService.TYPE_COMMENT -> commentId?.let {
-                DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToComment(it))
+            FCMService.TYPE_COMMENT -> perspectiveId?.let {
+                DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToPerspective(it, commentId))
             }
             FCMService.TYPE_ALARM -> {
                 DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToAlarm)
