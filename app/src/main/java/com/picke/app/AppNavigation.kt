@@ -131,6 +131,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 kotlinx.coroutines.delay(100)
                 when (event) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
+                    is DeepLinkEvent.GoToTodayBattle -> rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
                     is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
                     is DeepLinkEvent.GoToPerspective -> {
@@ -227,11 +228,18 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
 
-            composable(BottomNavItem.TodayBattle.route) {
+            composable(
+                route = AppRoute.TodayBattle.route,
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
+            ) { backStackEntry ->
+                val battleId = backStackEntry.arguments?.getString("battleId")
                 TodayBattleScreen(
+                    initialBattleId = battleId,
                     onBackClick = { rootNavController.popBackStack() },
-                    onEnterBattle = { battleId ->
-                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
+                    onEnterBattle = { id ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(id))
                     }
                 )
             }
@@ -241,6 +249,9 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     onBackClick = { rootNavController.popBackStack() },
                     onNavigateToBattle = { battleId ->
                         rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
+                    },
+                    onNavigateToTodayBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.TodayBattle.createRoute(battleId))
                     },
                     onNavigateToPerspective = { perspectiveId ->
                         rootNavController.navigate(AppRoute.Perspective.createRoute(perspectiveId))

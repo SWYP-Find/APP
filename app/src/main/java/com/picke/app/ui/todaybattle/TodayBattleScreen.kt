@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +72,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TodayBattleScreen(
     viewModel: TodayBattleViewModel = hiltViewModel(),
+    initialBattleId: String? = null,
     onBackClick: () -> Unit,
     onEnterBattle: (String) -> Unit
 ){
@@ -81,6 +83,13 @@ fun TodayBattleScreen(
     var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     val isButtonEnabled = selectedOptionId != null
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(battleList, initialBattleId) {
+        if (initialBattleId != null && battleList.isNotEmpty()) {
+            val targetPage = battleList.indexOfFirst { it.battleId == initialBattleId }
+            if (targetPage >= 0) pagerState.animateScrollToPage(targetPage)
+        }
+    }
     val graphicsLayer = rememberGraphicsLayer()
 
     val context = LocalContext.current

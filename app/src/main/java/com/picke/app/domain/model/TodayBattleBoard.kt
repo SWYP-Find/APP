@@ -20,7 +20,6 @@ data class TodayBattleItem(
 
 data class TodayBattleOption(
     val optionId: String,
-    val label: String,
     val title: String,
     val representative: String,
     val stance: String,

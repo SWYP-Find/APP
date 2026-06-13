@@ -59,4 +59,8 @@ sealed class AppRoute(val route: String){
     object Withdraw : AppRoute("withdraw_screen")
     object Point : AppRoute("point_screen")
     object MakeBattle : AppRoute("makebattle_screen")
+
+    object TodayBattle : AppRoute("tab_battle?battleId={battleId}") {
+        fun createRoute(battleId: String) = "tab_battle?battleId=$battleId"
+    }
 }

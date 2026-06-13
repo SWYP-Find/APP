@@ -62,8 +62,7 @@ class MainActivity : ComponentActivity() {
 
         when (type) {
             FCMService.TYPE_BATTLE -> battleId?.let {
-                DeepLinkManager.pendingBattleId = it
-                DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToBattle(it))
+                DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToTodayBattle(it))
             }
             FCMService.TYPE_COMMENT -> perspectiveId?.let {
                 DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToPerspective(it, commentId))

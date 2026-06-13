@@ -51,6 +51,7 @@ import java.util.TimeZone
 fun AlarmScreen(
     onBackClick: () -> Unit,
     onNavigateToBattle: (battleId: String) -> Unit,
+    onNavigateToTodayBattle: (battleId: String) -> Unit,
     onNavigateToPerspective: (perspectiveId: String) -> Unit,
     viewModel: AlarmViewModel = hiltViewModel()
 ) {
@@ -165,7 +166,7 @@ fun AlarmScreen(
 
                                     when (item.detailCode) {
                                         "NEW_BATTLE" ->
-                                            onNavigateToBattle(item.referenceId.toString())
+                                            onNavigateToTodayBattle(item.referenceId.toString())
                                         "COMMENT_LIKE", "NEW_COMMENT" ->
                                             if (item.perspectiveId != 0L)
                                                 onNavigateToPerspective(item.perspectiveId.toString())

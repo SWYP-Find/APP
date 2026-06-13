@@ -29,7 +29,6 @@ data class TodayBattleTagDto(
 
 data class TodayBattleOptionDto(
     val optionId: Long,
-    val label: String,
     val title: String,
     val representative: String,
     val stance: String,
@@ -62,7 +61,6 @@ fun TodayBattleItemDto.toDomainModel(): TodayBattleItem {
 fun TodayBattleOptionDto.toDomainModel(): TodayBattleOption {
     return TodayBattleOption(
         optionId = this.optionId.toString(),
-        label = this.label,
         title = this.title,
         representative = this.representative ?: "",
         stance = this.stance,
