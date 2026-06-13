@@ -76,7 +76,7 @@ import kotlinx.coroutines.launch
 fun PerspectiveScreen(
     onBackClick: ()->Unit,
     onNextClick: (String)->Unit,
-    onMoreClick: (String)->Unit,
+    onMoreClick: (String, Long)->Unit,
     scrollToCommentId: String? = null,
     modifier: Modifier = Modifier,
     viewModel: PerspectiveViewModel = hiltViewModel()
@@ -381,7 +381,7 @@ fun PerspectiveScreen(
                                         PerspectiveItemCard(
                                             item = item,
                                             firstOptionId = uiState.voteOptions.firstOrNull()?.optionId ?: 0L,
-                                            onMoreClick = { onMoreClick(item.commentId) },
+                                            onMoreClick = { onMoreClick(item.commentId, uiState.voteOptions.firstOrNull()?.optionId ?: 0L) },
                                             onEditClick = { content ->
                                                 inputText = content
                                                 viewModel.setEditMode(

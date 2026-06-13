@@ -342,13 +342,16 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         }
                     },
                     onNextClick = { itemId -> rootNavController.navigate(AppRoute.Recommend.createRoute(itemId)) },
-                    onMoreClick = { itemId -> rootNavController.navigate(AppRoute.Comment.createRoute(itemId)) }
+                    onMoreClick = { itemId, firstOptionId -> rootNavController.navigate(AppRoute.Comment.createRoute(itemId, firstOptionId)) }
                 )
             }
 
             composable(
                 route = AppRoute.Comment.route,
-                arguments = listOf(navArgument("itemId") { type = NavType.StringType })
+                arguments = listOf(
+                    navArgument("itemId") { type = NavType.StringType },
+                    navArgument("firstOptionId") { type = NavType.LongType; defaultValue = 0L }
+                )
             ) {
                 CommentScreen(onBackClick = { rootNavController.popBackStack() })
             }

@@ -144,12 +144,14 @@ fun CommentScreen(
                 // 2. 상단 고정 영역 (스크롤 되지 않음)
                 // 1) 메인 관점 카드
                 val mainStance = uiState.mainPerspective?.stance ?: ""
+                val firstOptionId = uiState.firstOptionId
+                val mainIsPro = firstOptionId != 0L && (uiState.mainPerspective?.optionId ?: 0L) == firstOptionId
 
                 uiState.mainPerspective?.let { mainContent ->
                     CommentItemCard(
                         item = mainContent,
                         isMainContent = true,
-                        mainStance = mainStance,
+                        isPro = mainIsPro,
                         onLikeClick = {
                             if (mainContent.isMine) {
                                 android.widget.Toast.makeText(
@@ -193,7 +195,11 @@ fun CommentScreen(
                         items(uiState.comments) { comment ->
                             CommentItemCard(
                                 item = comment,
-                                mainStance = mainStance,
+                                isPro = if (firstOptionId != 0L) {
+                                    (comment.stance == mainStance) == mainIsPro
+                                } else {
+                                    mainStance.isNotEmpty() && comment.stance == mainStance
+                                },
                                 onEditClick = { content ->
                                     inputText = content
                                     viewModel.setEditMode(comment.commentId.toLongOrNull())
@@ -284,7 +290,7 @@ fun CommentItemCard(
     item: CommentUiModel,
     modifier: Modifier = Modifier,
     isMainContent: Boolean = false,
-    mainStance: String = "",
+    isPro: Boolean = false,
     onEditClick: (String) -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onLikeClick: () -> Unit = {},
@@ -310,7 +316,6 @@ fun CommentItemCard(
                     Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isPro = mainStance.isNotEmpty() && item.stance == mainStance
                     Surface(
                         color = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary,
                         shape = RoundedCornerShape(2.dp)

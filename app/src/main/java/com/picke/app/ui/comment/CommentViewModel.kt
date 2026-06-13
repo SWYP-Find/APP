@@ -27,6 +27,7 @@ data class CommentUiModel(
     val profileImageUrl: String,
     val nickname: String,
     val stance: String,
+    val optionId: Long = 0L,
     val content: String,
     val timeAgo: String,
     val likeCount: Int,
@@ -37,6 +38,7 @@ data class CommentUiModel(
 
 data class CommentUiState(
     val targetId: String = "",
+    val firstOptionId: Long = 0L,
     val mainPerspective: CommentUiModel? = null,
     val comments: List<CommentUiModel> = emptyList(),
     val nextCursor: String? = null,
@@ -60,9 +62,11 @@ class CommentViewModel @Inject constructor(
     val uiEvent: SharedFlow<CommentUiEvent> = _uiEvent.asSharedFlow()
 
     private val receivedTargetId: String = checkNotNull(savedStateHandle["itemId"])
+    private val receivedFirstOptionId: Long = savedStateHandle["firstOptionId"] ?: 0L
     private val _uiState = MutableStateFlow(
         CommentUiState(
             targetId = receivedTargetId,
+            firstOptionId = receivedFirstOptionId,
             comments = emptyList(),
             hasNext = true
         )
@@ -93,6 +97,7 @@ class CommentViewModel @Inject constructor(
                                 profileImageUrl = perspective.characterImageUrl,
                                 nickname = perspective.nickname,
                                 stance = perspective.optionTitle,
+                                optionId = perspective.optionId,
                                 content = perspective.content,
                                 timeAgo = perspective.createdAt.take(10),
                                 likeCount = perspective.likeCount,

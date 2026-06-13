@@ -43,9 +43,12 @@ sealed class AppRoute(val route: String){
             return "perspective_screen/$battleId?commentId=$commentId"
         }
     }
-    object Comment : AppRoute("comment_screen/{itemId}"){
+    object Comment : AppRoute("comment_screen/{itemId}?firstOptionId={firstOptionId}"){
         fun createRoute(itemId: String): String {
             return "comment_screen/$itemId"
+        }
+        fun createRoute(itemId: String, firstOptionId: Long): String {
+            return "comment_screen/$itemId?firstOptionId=$firstOptionId"
         }
     }
 
