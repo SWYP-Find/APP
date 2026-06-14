@@ -256,8 +256,8 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     onNavigateToTodayBattle = { battleId ->
                         rootNavController.navigate(AppRoute.TodayBattle.createRoute(battleId))
                     },
-                    onNavigateToPerspective = { perspectiveId ->
-                        rootNavController.navigate(AppRoute.Perspective.createRoute(perspectiveId))
+                    onNavigateToPerspective = { battleId, commentId ->
+                        rootNavController.navigate(AppRoute.Perspective.createRoute(battleId, commentId))
                     },
                     onNavigateToPoint = {
                         rootNavController.navigate(AppRoute.Point.route)
