@@ -13,5 +13,5 @@ sealed class DeepLinkEvent {
 object DeepLinkManager {
     var pendingReportId: String? = null
     var pendingBattleId: String? = null
-    val deepLinkEvent = MutableSharedFlow<DeepLinkEvent>(extraBufferCapacity = 1)
+    val deepLinkEvent = MutableSharedFlow<DeepLinkEvent>(replay = 1, extraBufferCapacity = 1)
 }

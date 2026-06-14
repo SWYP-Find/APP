@@ -12,6 +12,8 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.picke.app.BuildConfig
+import com.picke.app.data.local.TokenManager
 import com.picke.app.notification.FCMService
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
@@ -19,11 +21,18 @@ import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.util.DeepLinkEvent
 import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject lateinit var tokenManager: TokenManager
+
     private val splashViewModel: SplashViewModel by viewModels()
+
+    companion object {
+        private const val TAG = "MainActivity_Picke"
+    }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +42,8 @@ class MainActivity : ComponentActivity() {
         splashScreen.setKeepOnScreenCondition {
             splashViewModel.uiState.value is SplashUiState.Loading
         }
+
+        if (BuildConfig.DEBUG) Log.d(TAG, "저장된 FCM 토큰: ${tokenManager.getFcmToken()}")
 
         handleFcmIntent(intent)
         handleDeepLink(intent)
@@ -53,10 +64,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleFcmIntent(intent: Intent?) {
-        val type = intent?.getStringExtra(FCMService.EXTRA_FCM_TYPE) ?: return
+        if (intent == null) return
+        val type = intent.getStringExtra(FCMService.EXTRA_FCM_TYPE)
+            ?: intent.getStringExtra("type") ?: return
         val battleId = intent.getStringExtra(FCMService.EXTRA_FCM_BATTLE_ID)
+            ?: intent.getStringExtra("battleId")
         val perspectiveId = intent.getStringExtra(FCMService.EXTRA_FCM_PERSPECTIVE_ID)
+            ?: intent.getStringExtra("perspectiveId")
         val commentId = intent.getStringExtra(FCMService.EXTRA_FCM_COMMENT_ID)
+            ?: intent.getStringExtra("commentId")
 
         Log.d("MainActivity", "FCM 알림 탭 - type: $type, battleId: $battleId, perspectiveId: $perspectiveId, commentId: $commentId")
 

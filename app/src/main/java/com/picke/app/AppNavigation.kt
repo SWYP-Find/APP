@@ -63,6 +63,7 @@ import com.picke.app.ui.vote.VoteRoute
 import com.picke.app.ui.vote.VoteType
 import com.picke.app.util.DeepLinkEvent
 import com.picke.app.util.DeepLinkManager
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -125,6 +126,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     ) {
         LaunchedEffect(Unit) {
             DeepLinkManager.deepLinkEvent.collect { event ->
+                // 스플래시 로딩이 끝날 때까지 대기 (NavigateToMain이 popUpTo(0)으로 백스택을 지우기 전에
+                // DeepLink 화면으로 이동하면 스플래시 완료 시 덮어씌워지므로, 로딩 완료 후 이동)
+                splashViewModel.uiState.first { it !is SplashUiState.Loading }
+                kotlinx.coroutines.delay(150)
+
                 rootNavController.navigate(AppRoute.Main.route) {
                     popUpTo(AppRoute.Main.route) {
                         inclusive = false
@@ -138,12 +144,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
                     is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
                     is DeepLinkEvent.GoToPerspective -> {
-                        val route = if (event.commentId != null) {
-                            AppRoute.Perspective.createRoute(event.perspectiveId, event.commentId)
+                        if (event.commentId != null) {
+                            rootNavController.navigate(AppRoute.Comment.createRoute(event.perspectiveId, event.commentId))
                         } else {
-                            AppRoute.Perspective.createRoute(event.perspectiveId)
+                            rootNavController.navigate(AppRoute.Perspective.createRoute(event.perspectiveId))
                         }
-                        rootNavController.navigate(route)
                     }
                 }
             }
