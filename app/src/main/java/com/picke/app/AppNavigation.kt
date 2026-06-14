@@ -256,8 +256,8 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     onNavigateToTodayBattle = { battleId ->
                         rootNavController.navigate(AppRoute.TodayBattle.createRoute(battleId))
                     },
-                    onNavigateToPerspective = { battleId, commentId ->
-                        rootNavController.navigate(AppRoute.Perspective.createRoute(battleId, commentId))
+                    onNavigateToComment = { perspectiveId, commentId ->
+                        rootNavController.navigate(AppRoute.Comment.createRoute(perspectiveId, commentId))
                     },
                     onNavigateToPoint = {
                         rootNavController.navigate(AppRoute.Point.route)
@@ -385,10 +385,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 route = AppRoute.Comment.route,
                 arguments = listOf(
                     navArgument("itemId") { type = NavType.StringType },
-                    navArgument("firstOptionId") { type = NavType.LongType; defaultValue = 0L }
+                    navArgument("firstOptionId") { type = NavType.LongType; defaultValue = 0L },
+                    navArgument("commentId") { type = NavType.StringType; nullable = true; defaultValue = null }
                 )
-            ) {
-                CommentScreen(onBackClick = { rootNavController.popBackStack() })
+            ) { backStackEntry ->
+                val commentId = backStackEntry.arguments?.getString("commentId")
+                CommentScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    scrollToCommentId = commentId
+                )
             }
 
             composable(

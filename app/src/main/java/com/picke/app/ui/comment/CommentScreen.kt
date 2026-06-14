@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -61,6 +62,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun CommentScreen(
     onBackClick: () -> Unit,
+    scrollToCommentId: String? = null,
     modifier: Modifier = Modifier,
     viewModel: CommentViewModel = hiltViewModel()
 ) {
@@ -71,8 +73,16 @@ fun CommentScreen(
     var commentToDelete by remember { mutableStateOf<Long?>(null) }
     var commentToReport by remember { mutableStateOf<Long?>(null) }
 
+    val listState = rememberLazyListState()
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(scrollToCommentId, uiState.comments) {
+        if (scrollToCommentId != null && uiState.comments.isNotEmpty()) {
+            val targetIndex = uiState.comments.indexOfFirst { it.commentId == scrollToCommentId }
+            if (targetIndex >= 0) listState.animateScrollToItem(targetIndex)
+        }
+    }
 
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) {
@@ -189,6 +199,7 @@ fun CommentScreen(
                     }
                 ) {
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier.fillMaxSize()
                     ) {
                         // 3) 실제 댓글 리스트

@@ -52,7 +52,7 @@ fun AlarmScreen(
     onBackClick: () -> Unit,
     onNavigateToBattle: (battleId: String) -> Unit,
     onNavigateToTodayBattle: (battleId: String) -> Unit,
-    onNavigateToPerspective: (battleId: String, commentId: String) -> Unit,
+    onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
     onNavigateToPoint: () -> Unit,
     onNavigateToNotice: (Long) -> Unit,
     viewModel: AlarmViewModel = hiltViewModel()
@@ -171,7 +171,7 @@ fun AlarmScreen(
                                             onNavigateToTodayBattle(item.referenceId.toString())
                                         "COMMENT_LIKE", "NEW_COMMENT" ->
                                             if (item.perspectiveId != 0L)
-                                                onNavigateToPerspective(item.perspectiveId.toString(), item.referenceId.toString())
+                                                onNavigateToComment(item.perspectiveId.toString(), item.referenceId.toString())
                                         "CREDIT_EARNED" ->
                                             onNavigateToPoint()
                                         "POLICY_CHANGE" ->

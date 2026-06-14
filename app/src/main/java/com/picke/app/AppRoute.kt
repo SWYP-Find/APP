@@ -46,13 +46,10 @@ sealed class AppRoute(val route: String){
             return "perspective_screen/$battleId?commentId=$commentId"
         }
     }
-    object Comment : AppRoute("comment_screen/{itemId}?firstOptionId={firstOptionId}"){
-        fun createRoute(itemId: String): String {
-            return "comment_screen/$itemId"
-        }
-        fun createRoute(itemId: String, firstOptionId: Long): String {
-            return "comment_screen/$itemId?firstOptionId=$firstOptionId"
-        }
+    object Comment : AppRoute("comment_screen/{itemId}?firstOptionId={firstOptionId}&commentId={commentId}"){
+        fun createRoute(itemId: String): String = "comment_screen/$itemId"
+        fun createRoute(itemId: String, firstOptionId: Long): String = "comment_screen/$itemId?firstOptionId=$firstOptionId"
+        fun createRoute(itemId: String, commentId: String): String = "comment_screen/$itemId?commentId=$commentId"
     }
 
     object Recommend : AppRoute("recommend_screen/{battleId}"){
