@@ -16,6 +16,7 @@ import javax.inject.Inject
 data class PointUiState(
     val pointList: List<PointHistoryUiModel> = emptyList(),
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val nextOffset: Int? = null,
     val hasNext: Boolean = true
 )
@@ -33,20 +34,24 @@ class PointViewModel @Inject constructor(
     val uiState: StateFlow<PointUiState> = _uiState.asStateFlow()
 
     init {
-        loadPointHistory(isRefresh = true)
+        loadPointHistory()
     }
 
     fun loadPointHistory(isRefresh: Boolean = false) {
         val currentState = _uiState.value
 
-        if (currentState.isLoading || (!isRefresh && !currentState.hasNext)) return
+        if (currentState.isLoading || currentState.isRefreshing || (!isRefresh && !currentState.hasNext)) return
 
-        _uiState.update { it.copy(isLoading = true) }
+        if (isRefresh) {
+            _uiState.update { it.copy(isRefreshing = true) }
+        } else {
+            _uiState.update { it.copy(isLoading = true) }
+        }
 
         viewModelScope.launch {
             val offset = if (isRefresh) null else currentState.nextOffset
 
-            Log.d(TAG, "포인트 내역 요청 시작 - offset: $offset")
+            Log.d(TAG, "포인트 내역 요청 시작 - offset: $offset, isRefresh: $isRefresh")
 
             myPageRepository.getCreditHistory(offset = offset, size = 15)
                 .onSuccess { page ->
@@ -56,17 +61,17 @@ class PointViewModel @Inject constructor(
 
                     _uiState.update { state ->
                         state.copy(
-                            // 새로고침이면 덮어쓰고, 아니면 기존 리스트에 추가
                             pointList = if (isRefresh) newUiItems else state.pointList + newUiItems,
                             nextOffset = page.nextOffset,
                             hasNext = page.hasNext,
-                            isLoading = false
+                            isLoading = false,
+                            isRefreshing = false
                         )
                     }
                 }
                 .onFailure { error ->
                     Log.e(TAG, "포인트 내역 실패: ${error.message}", error)
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update { it.copy(isLoading = false, isRefreshing = false) }
                 }
         }
     }

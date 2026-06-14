@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.my.point
+package com.picke.app.ui.my.point
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -100,7 +100,7 @@ fun PointScreen(
         }
     ){ innerPadding ->
         PullToRefreshBox(
-            isRefreshing = uiState.isLoading,
+            isRefreshing = uiState.isRefreshing,
             state = pullToRefreshState,
             onRefresh = {
                 viewModel.loadPointHistory(isRefresh = true)
@@ -111,15 +111,15 @@ fun PointScreen(
             indicator = {
                 PullToRefreshDefaults.Indicator(
                     state = pullToRefreshState,
-                    isRefreshing = uiState.isLoading,
+                    isRefreshing = uiState.isRefreshing,
                     containerColor = Color.White,
                     color = SwypTheme.colors.primary,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
         ) {
-            // 1. 로딩 상태 처리
-            if (uiState.isLoading && uiState.pointList.isEmpty()) {
+            // 1. 초기 로딩 상태 처리 (새로고침 중에는 표시 안 함)
+            if (uiState.isLoading && uiState.pointList.isEmpty() && !uiState.isRefreshing) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
