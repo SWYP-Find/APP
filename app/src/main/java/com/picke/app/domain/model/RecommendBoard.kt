@@ -7,7 +7,6 @@ data class RecommendTagBoard(
 
 data class RecommendOptionBoard(
     val optionId: Long,
-    val label: String,
     val title: String,
     val stance: String,
     val representative: String,

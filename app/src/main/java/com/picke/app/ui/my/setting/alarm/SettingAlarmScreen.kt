@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -38,8 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.messaging.FirebaseMessaging
 import com.picke.app.R
+import com.picke.app.domain.model.NotificationSettingsBoard
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.notification.NotificationPermissionBottomSheet
 import com.picke.app.ui.theme.SwypAppTheme
@@ -48,23 +53,30 @@ import com.picke.app.ui.theme.SwypTheme
 @Composable
 fun SettingAlarmScreen(
     onBackClick: () -> Unit,
+    viewModel: SettingAlarmViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    SettingAlarmContent(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onUpdateSetting = viewModel::updateSetting
+    )
+}
+
+@Composable
+private fun SettingAlarmContent(
+    uiState: SettingAlarmUiState,
+    onBackClick: () -> Unit,
+    onUpdateSetting: (NotificationSettingsBoard) -> Unit
 ) {
     val context = LocalContext.current
-
-    var isNewBattleEnabled by remember { mutableStateOf(false) }
-    var isVoteResultEnabled by remember { mutableStateOf(true) }
-    var isReplyEnabled by remember { mutableStateOf(true) }
-    var isNewCommentEnabled by remember { mutableStateOf(false) }
-    var isLikeEnabled by remember { mutableStateOf(false) }
-    var isMarketingEnabled by remember { mutableStateOf(true) }
+    val settings = uiState.settings
 
     var showPermissionSheet by remember { mutableStateOf(false) }
-    // 권한 획득 후 실행할 토글 변경 액션을 임시 보관
     val pendingToggleAction = remember { mutableStateOf<(() -> Unit)?>(null) }
 
     val scrollState = rememberScrollState()
 
-    // Android 13+ 알림 권한 요청 런처
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -75,7 +87,6 @@ fun SettingAlarmScreen(
         }
     }
 
-    // 토글 ON 시 호출: 알림 권한 확인 후 분기
     val onToggleTurnedOn: (() -> Unit) -> Unit = { applyChange ->
         val notificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
         if (notificationsEnabled) {
@@ -100,82 +111,99 @@ fun SettingAlarmScreen(
             )
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(scrollState)
-        ) {
-            // 1. 기능별 알림 설정
-            AlarmCategoryHeader(title = stringResource(id = R.string.setting_alarm_category_function))
-            AlarmSettingItem(
-                title = stringResource(id = R.string.setting_alarm_new_battle_title),
-                subtitle = stringResource(id = R.string.setting_alarm_new_battle_desc),
-                isChecked = isNewBattleEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) onToggleTurnedOn { isNewBattleEnabled = true }
-                    else isNewBattleEnabled = false
-                }
-            )
-            AlarmDivider()
-            AlarmSettingItem(
-                title = stringResource(id = R.string.setting_alarm_vote_result_title),
-                subtitle = stringResource(id = R.string.setting_alarm_vote_result_desc),
-                isChecked = isVoteResultEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) onToggleTurnedOn { isVoteResultEnabled = true }
-                    else isVoteResultEnabled = false
-                }
-            )
-            AlarmDivider()
+        if (uiState.isLoading && settings == null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = SwypTheme.colors.primary)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .verticalScroll(scrollState)
+            ) {
+                // 1. 기능별 알림 설정
+                AlarmCategoryHeader(title = stringResource(id = R.string.setting_alarm_category_function))
+                AlarmSettingItem(
+                    title = stringResource(id = R.string.setting_alarm_new_battle_title),
+                    subtitle = stringResource(id = R.string.setting_alarm_new_battle_desc),
+                    isChecked = settings?.newBattleEnabled ?: false,
+                    onCheckedChange = { checked ->
+                        if (checked) onToggleTurnedOn {
+                            settings?.let { onUpdateSetting(it.copy(newBattleEnabled = true)) }
+                        } else settings?.let { onUpdateSetting(it.copy(newBattleEnabled = false)) }
+                    }
+                )
+                AlarmDivider()
+                AlarmSettingItem(
+                    title = stringResource(id = R.string.setting_alarm_vote_result_title),
+                    subtitle = stringResource(id = R.string.setting_alarm_vote_result_desc),
+                    isChecked = settings?.battleResultEnabled ?: false,
+                    onCheckedChange = { checked ->
+                        if (checked) onToggleTurnedOn {
+                            settings?.let { onUpdateSetting(it.copy(battleResultEnabled = true)) }
+                        } else settings?.let { onUpdateSetting(it.copy(battleResultEnabled = false)) }
+                    }
+                )
+                AlarmDivider()
 
-            // 2. 소셜 알림 설정
-            AlarmCategoryHeader(title = stringResource(id = R.string.setting_alarm_category_social))
-            AlarmSettingItem(
-                title = stringResource(id = R.string.setting_alarm_reply_title),
-                subtitle = stringResource(id = R.string.setting_alarm_reply_desc),
-                isChecked = isReplyEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) onToggleTurnedOn { isReplyEnabled = true }
-                    else isReplyEnabled = false
-                }
-            )
-            AlarmDivider()
-            AlarmSettingItem(
-                title = stringResource(id = R.string.setting_alarm_new_comment_title),
-                subtitle = stringResource(id = R.string.setting_alarm_new_comment_desc),
-                isChecked = isNewCommentEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) onToggleTurnedOn { isNewCommentEnabled = true }
-                    else isNewCommentEnabled = false
-                }
-            )
-            AlarmDivider()
-            AlarmSettingItem(
-                title = stringResource(id = R.string.setting_alarm_like_title),
-                subtitle = stringResource(id = R.string.setting_alarm_like_desc),
-                isChecked = isLikeEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) onToggleTurnedOn { isLikeEnabled = true }
-                    else isLikeEnabled = false
-                }
-            )
-            AlarmDivider()
+                // 2. 소셜 알림 설정
+                AlarmCategoryHeader(title = stringResource(id = R.string.setting_alarm_category_social))
+                AlarmSettingItem(
+                    title = stringResource(id = R.string.setting_alarm_reply_title),
+                    subtitle = stringResource(id = R.string.setting_alarm_reply_desc),
+                    isChecked = settings?.commentReplyEnabled ?: false,
+                    onCheckedChange = { checked ->
+                        if (checked) onToggleTurnedOn {
+                            settings?.let { onUpdateSetting(it.copy(commentReplyEnabled = true)) }
+                        } else settings?.let { onUpdateSetting(it.copy(commentReplyEnabled = false)) }
+                    }
+                )
+                AlarmDivider()
+                AlarmSettingItem(
+                    title = stringResource(id = R.string.setting_alarm_new_comment_title),
+                    subtitle = stringResource(id = R.string.setting_alarm_new_comment_desc),
+                    isChecked = settings?.newCommentEnabled ?: false,
+                    onCheckedChange = { checked ->
+                        if (checked) onToggleTurnedOn {
+                            settings?.let { onUpdateSetting(it.copy(newCommentEnabled = true)) }
+                        } else settings?.let { onUpdateSetting(it.copy(newCommentEnabled = false)) }
+                    }
+                )
+                AlarmDivider()
+                AlarmSettingItem(
+                    title = stringResource(id = R.string.setting_alarm_like_title),
+                    subtitle = stringResource(id = R.string.setting_alarm_like_desc),
+                    isChecked = settings?.contentLikeEnabled ?: false,
+                    onCheckedChange = { checked ->
+                        if (checked) onToggleTurnedOn {
+                            settings?.let { onUpdateSetting(it.copy(contentLikeEnabled = true)) }
+                        } else settings?.let { onUpdateSetting(it.copy(contentLikeEnabled = false)) }
+                    }
+                )
+                AlarmDivider()
 
-            // 3. 마케팅 알림 설정
-            AlarmCategoryHeader(title = stringResource(id = R.string.setting_alarm_category_marketing))
-            AlarmSettingItem(
-                title = stringResource(id = R.string.setting_alarm_marketing_title),
-                subtitle = stringResource(id = R.string.setting_alarm_marketing_desc),
-                isChecked = isMarketingEnabled,
-                onCheckedChange = { checked ->
-                    if (checked) onToggleTurnedOn { isMarketingEnabled = true }
-                    else isMarketingEnabled = false
-                }
-            )
-            AlarmDivider()
+                // 3. 마케팅 알림 설정
+                AlarmCategoryHeader(title = stringResource(id = R.string.setting_alarm_category_marketing))
+                AlarmSettingItem(
+                    title = stringResource(id = R.string.setting_alarm_marketing_title),
+                    subtitle = stringResource(id = R.string.setting_alarm_marketing_desc),
+                    isChecked = settings?.marketingEventEnabled ?: false,
+                    onCheckedChange = { checked ->
+                        if (checked) onToggleTurnedOn {
+                            settings?.let { onUpdateSetting(it.copy(marketingEventEnabled = true)) }
+                        } else settings?.let { onUpdateSetting(it.copy(marketingEventEnabled = false)) }
+                    }
+                )
+                AlarmDivider()
 
-            Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(40.dp))
+            }
         }
     }
 
@@ -188,10 +216,8 @@ fun SettingAlarmScreen(
             onAgree = {
                 showPermissionSheet = false
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    // Android 13+: 런타임 권한 요청
                     permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 } else {
-                    // Android 12 이하: 시스템 알림 설정으로 이동
                     val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                         putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                     }
@@ -287,8 +313,19 @@ fun AlarmDivider() {
 @Composable
 private fun SettingAlarmScreenPreview() {
     SwypAppTheme {
-        SettingAlarmScreen(
-            onBackClick = {}
+        SettingAlarmContent(
+            uiState = SettingAlarmUiState(
+                settings = NotificationSettingsBoard(
+                    newBattleEnabled = true,
+                    battleResultEnabled = true,
+                    commentReplyEnabled = true,
+                    newCommentEnabled = false,
+                    contentLikeEnabled = false,
+                    marketingEventEnabled = true
+                )
+            ),
+            onBackClick = {},
+            onUpdateSetting = {}
         )
     }
 }

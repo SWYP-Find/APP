@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -61,6 +62,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun CommentScreen(
     onBackClick: () -> Unit,
+    scrollToCommentId: String? = null,
     modifier: Modifier = Modifier,
     viewModel: CommentViewModel = hiltViewModel()
 ) {
@@ -71,8 +73,16 @@ fun CommentScreen(
     var commentToDelete by remember { mutableStateOf<Long?>(null) }
     var commentToReport by remember { mutableStateOf<Long?>(null) }
 
+    val listState = rememberLazyListState()
     val pullToRefreshState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(scrollToCommentId, uiState.comments) {
+        if (scrollToCommentId != null && uiState.comments.isNotEmpty()) {
+            val targetIndex = uiState.comments.indexOfFirst { it.commentId == scrollToCommentId }
+            if (targetIndex >= 0) listState.animateScrollToItem(targetIndex)
+        }
+    }
 
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) {
@@ -143,10 +153,20 @@ fun CommentScreen(
             } else {
                 // 2. 상단 고정 영역 (스크롤 되지 않음)
                 // 1) 메인 관점 카드
+                val mainStance = uiState.mainPerspective?.stance ?: ""
+                val firstOptionId = uiState.firstOptionId
+                val mainIsPro = if (firstOptionId != 0L) {
+                    (uiState.mainPerspective?.optionId ?: 0L) == firstOptionId
+                } else {
+                    // firstOptionId 없이 진입한 경우(FCM 등) 메인 관점 stance를 Pro 기준으로 삼아 댓글과 색깔 일치
+                    mainStance.isNotEmpty()
+                }
+
                 uiState.mainPerspective?.let { mainContent ->
                     CommentItemCard(
                         item = mainContent,
                         isMainContent = true,
+                        isPro = mainIsPro,
                         onLikeClick = {
                             if (mainContent.isMine) {
                                 android.widget.Toast.makeText(
@@ -184,12 +204,18 @@ fun CommentScreen(
                     }
                 ) {
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier.fillMaxSize()
                     ) {
                         // 3) 실제 댓글 리스트
                         items(uiState.comments) { comment ->
                             CommentItemCard(
                                 item = comment,
+                                isPro = if (firstOptionId != 0L) {
+                                    (comment.stance == mainStance) == mainIsPro
+                                } else {
+                                    mainStance.isNotEmpty() && comment.stance == mainStance
+                                },
                                 onEditClick = { content ->
                                     inputText = content
                                     viewModel.setEditMode(comment.commentId.toLongOrNull())
@@ -280,6 +306,7 @@ fun CommentItemCard(
     item: CommentUiModel,
     modifier: Modifier = Modifier,
     isMainContent: Boolean = false,
+    isPro: Boolean = false,
     onEditClick: (String) -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onLikeClick: () -> Unit = {},
@@ -305,16 +332,16 @@ fun CommentItemCard(
                     Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isPro = item.stance == "A"
-                    val badgeBgColor = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary
-                    val badgeTextColor = if (isPro) SwypTheme.colors.primary else SwypTheme.colors.borderDefault
-
-                    Box(
-                        modifier = Modifier
-                            .background(badgeBgColor, RoundedCornerShape(2.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    Surface(
+                        color = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary,
+                        shape = RoundedCornerShape(2.dp)
                     ) {
-                        Text(text = item.stance, style = SwypTheme.typography.b5Medium, color = badgeTextColor)
+                        Text(
+                            text = item.stance,
+                            style = SwypTheme.typography.b5Medium,
+                            color = if (isPro) SwypTheme.colors.primary else Color.White,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
                     }
                 }
                 Text(text = item.timeAgo, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.outline)

@@ -16,7 +16,6 @@ data class PollQuizVoteResponseDto(
 
 data class PollQuizOptionStatDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?,
     val stance: String?,
     val isCorrect: Boolean?,
@@ -33,7 +32,6 @@ fun PollQuizVoteResponseDto.toDomainModel() = PollQuizVoteBoard(
 
 fun PollQuizOptionStatDto.toDomainModel() = PollQuizOptionStatBoard(
     optionId = this.optionId ?: 0L,
-    label = this.label ?: "",
     title = this.title ?: "",
     isCorrect = this.isCorrect ?: false,
     stance = this.stance ?: "",

@@ -75,7 +75,6 @@ data class TodayVoteDto(
 )
 
 data class OptionDto(
-    val label: String?,
     val title: String?
 )
 
@@ -105,8 +104,8 @@ fun EditorPickDto.toDomainModel() = HomeContent(
     audioDuration = 0,
     tags = this.tags?.mapNotNull { it.name } ?: emptyList(),
     options = listOf(
-        ContentOption(label = "A", text = this.optionATitle ?: "", philosopherName = null, imageUrl = null),
-        ContentOption(label = "B", text = this.optionBTitle ?: "", philosopherName = null, imageUrl = null)
+        ContentOption(text = this.optionATitle ?: "", philosopherName = null, imageUrl = null),
+        ContentOption(text = this.optionBTitle ?: "", philosopherName = null, imageUrl = null)
     )
 )
 
@@ -133,13 +132,11 @@ fun NewBattleDto.toDomainModel() = HomeContent(
     tags = this.tags?.mapNotNull { it.name } ?: emptyList(),
     options = listOf(
         ContentOption(
-            label = "A",
             text = this.optionATitle ?: "",
             philosopherName = this.philosopherA ?: "",
             imageUrl = this.philosopherAImageUrl
         ),
         ContentOption(
-            label = "B",
             text = this.optionBTitle ?: "",
             philosopherName = this.philosopherB ?: "",
             imageUrl = this.philosopherBImageUrl
@@ -156,7 +153,6 @@ fun TodayQuizDto.toTodayPickDomainModel() = TodayPick.QuizPick(
     options = listOf(
         PollQuizOptionStatBoard(
             optionId = 1L,
-            label = "A",
             title = this.itemA ?: "",
             isCorrect = this.isCorrectA ?: false,
             voteCount = 0,
@@ -165,7 +161,6 @@ fun TodayQuizDto.toTodayPickDomainModel() = TodayPick.QuizPick(
         ),
         PollQuizOptionStatBoard(
             optionId = 2L,
-            label = "B",
             title = this.itemB ?: "",
             isCorrect = this.isCorrectB ?: false,
             voteCount = 0,
@@ -187,7 +182,6 @@ fun TodayVoteDto.toTodayPickDomainModel() = TodayPick.VotePick(
     options = this.options?.mapIndexed { index, option ->
         PollQuizOptionStatBoard(
             optionId = (index + 1).toLong(),
-            label = option.label ?: if (index == 0) "A" else "B",
             title = option.title ?: "",
             isCorrect = false,
             voteCount = 0,
@@ -207,7 +201,7 @@ fun BestBattleDto.toDomainModel() = HomeContent(
     audioDuration = this.audioDuration ?: 0,
     tags = this.tags?.mapNotNull { it.name } ?: emptyList(),
     options = listOf(
-        ContentOption(label = "A", text = "", philosopherName = this.philosopherA ?: "", imageUrl = null),
-        ContentOption(label = "B", text = "", philosopherName = this.philosopherB ?: "", imageUrl = null)
+        ContentOption(text = "", philosopherName = this.philosopherA ?: "", imageUrl = null),
+        ContentOption(text = "", philosopherName = this.philosopherB ?: "", imageUrl = null)
     )
 )

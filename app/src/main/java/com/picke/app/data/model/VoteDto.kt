@@ -17,7 +17,6 @@ data class VoteStatsDto(
 
 data class VoteStatsOptionDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?,
     val imageUrl: String?,
     val isCorrect: Boolean?,
@@ -37,7 +36,6 @@ data class MyVoteResponseDto(
 
 data class VotedOptionDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?
 )
 
@@ -45,7 +43,6 @@ data class VotedOptionDto(
 
 fun VoteStatsOptionDto.toDomainModel() = VoteStatsOptionBoard(
     optionId = this.optionId ?: 0L,
-    label = this.label ?: "",
     title = this.title ?: "",
     imageUrl = this.imageUrl ?: "",
     isCorrect = this.isCorrect ?: false,
@@ -62,7 +59,6 @@ fun VoteStatsDto.toDomainModel() = VoteStatsBoard(
 
 fun VotedOptionDto.toDomainModel() = VotedOptionBoard(
     optionId = this.optionId ?: 0L,
-    label = this.label ?: "",
     title = this.title ?: ""
 )
 

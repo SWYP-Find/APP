@@ -76,7 +76,8 @@ import kotlinx.coroutines.launch
 fun PerspectiveScreen(
     onBackClick: ()->Unit,
     onNextClick: (String)->Unit,
-    onMoreClick: (String)->Unit,
+    onMoreClick: (String, Long)->Unit,
+    scrollToCommentId: String? = null,
     modifier: Modifier = Modifier,
     viewModel: PerspectiveViewModel = hiltViewModel()
 ) {
@@ -105,6 +106,7 @@ fun PerspectiveScreen(
     var perspectiveToDelete by remember { mutableStateOf<Long?>(null) }
     var perspectiveToReport by remember { mutableStateOf<Long?>(null) }
     var scrollToTopTrigger by remember { mutableStateOf(0) }
+    var hasScrolledToComment by remember { mutableStateOf(false) }
     val isShowingMyPendingOrRejected = uiState.myPerspective?.let { it.status != "PUBLISHED" } ?: false
 
     LaunchedEffect(Unit) {
@@ -233,6 +235,18 @@ fun PerspectiveScreen(
                         listState.scrollToItem(0)
                     }
                 }
+                if (pageIndex == 0 && scrollToCommentId != null) {
+                    LaunchedEffect(uiState.perspectives) {
+                        if (!hasScrolledToComment && uiState.perspectives.isNotEmpty() && !uiState.isLoading) {
+                            val targetIndex = uiState.perspectives.indexOfFirst { it.commentId == scrollToCommentId }
+                            if (targetIndex >= 0) {
+                                val offset = if (isShowingMyPendingOrRejected) 1 else 0
+                                listState.animateScrollToItem(targetIndex + offset)
+                                hasScrolledToComment = true
+                            }
+                        }
+                    }
+                }
                 // 서버 사이드 필터링: 각 탭 선택 시 optionId로 API 호출 → 별도 클라이언트 필터 불필요
                 val filteredList = uiState.perspectives
 
@@ -349,7 +363,7 @@ fun PerspectiveScreen(
                                         val emptyMsg = if (pageIndex == 0) {
                                             "아직 작성된 관점이 없습니다"
                                         } else {
-                                            "아직 작성된 ${tabList.getOrElse(pageIndex) { "" }} 관점이 없습니다"
+                                            "아직 작성된 \"${tabList.getOrElse(pageIndex) { "" }}\" 관점이 없습니다"
                                         }
 
                                         PerspectiveEmptyState(
@@ -367,7 +381,7 @@ fun PerspectiveScreen(
                                         PerspectiveItemCard(
                                             item = item,
                                             firstOptionId = uiState.voteOptions.firstOrNull()?.optionId ?: 0L,
-                                            onMoreClick = { onMoreClick(item.commentId) },
+                                            onMoreClick = { onMoreClick(item.commentId, uiState.voteOptions.firstOrNull()?.optionId ?: 0L) },
                                             onEditClick = { content ->
                                                 inputText = content
                                                 viewModel.setEditMode(
@@ -540,7 +554,7 @@ fun PerspectiveItemCard(
                                 shape = RoundedCornerShape(2.dp)
                             ) {
                                 Text(
-                                    text = item.optionTitle.ifEmpty { if (isPro) "A" else "B" },
+                                    text = item.optionTitle,
                                     style = SwypTheme.typography.b5Medium,
                                     color = if (isPro) SwypTheme.colors.primary else Color.White,
                                     maxLines = 1,
@@ -828,7 +842,7 @@ fun PerspectiveHeader(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = leftOption?.title ?: "A",
+                text = leftOption?.title ?: "",
                 style = SwypTheme.typography.labelXSmall,
                 color = SwypTheme.colors.textSecondary,
                 maxLines = 1,
@@ -909,7 +923,7 @@ fun PerspectiveHeader(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = rightOption?.title ?: "B",
+                text = rightOption?.title ?: "",
                 style = SwypTheme.typography.labelXSmall,
                 color = SwypTheme.colors.textSecondary,
                 maxLines = 1,

@@ -180,7 +180,33 @@ class TokenManager @Inject constructor(
     }
     // endregion
 
-    // region 5. 로컬 데이터 삭제
+    // region 5. FCM 토큰 관리
+    /**
+     * FCM 토큰 저장 (서버에 마지막으로 등록한 토큰 추적용)
+     *
+     * @param token Firebase에서 발급받은 FCM 토큰
+     */
+    fun saveFcmToken(token: String) {
+        prefs?.edit()?.putString("fcm_token", token)?.apply()
+        if (BuildConfig.DEBUG) Log.d(TAG, "[LOCAL] FCM 토큰 저장 완료: ${token.take(8)}...")
+    }
+
+    /**
+     * 저장된 FCM 토큰 반환
+     *
+     * @return 토큰 문자열 (없으면 null)
+     */
+    fun getFcmToken(): String? {
+        return try {
+            prefs?.getString("fcm_token", null)
+        } catch (e: Exception) {
+            Log.e(TAG, "[LOCAL] FCM 토큰 로드 중 에러 발생", e)
+            null
+        }
+    }
+    // endregion
+
+    // region 6. 로컬 데이터 삭제
     /**
      * 모든 로컬 데이터 삭제 (로그아웃 / 회원 탈퇴 시 호출)
      */
@@ -190,6 +216,7 @@ class TokenManager @Inject constructor(
             ?.remove("refresh_token")
             ?.remove("user_status")
             ?.remove("user_tag")
+            ?.remove("fcm_token")
             ?.apply()
     }
     // endregion

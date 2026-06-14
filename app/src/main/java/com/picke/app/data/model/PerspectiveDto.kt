@@ -16,7 +16,6 @@ data class PerspectiveUserDto(
 
 data class PerspectiveOptionDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?,
     val stance: String?
 )
@@ -117,7 +116,6 @@ fun PerspectiveDetailResponseDto.toDomainModel() = PerspectiveDetailBoard(
     userTag = this.user?.userTag ?: "",
     nickname = this.user?.nickname ?: "알 수 없음",
     characterImageUrl = this.user?.characterImageUrl ?: "",
-    optionLabel = this.option?.label ?: "",
     optionTitle = this.option?.title ?: "",
     optionId = this.option?.optionId ?: 0L,
     content = this.content ?: "",

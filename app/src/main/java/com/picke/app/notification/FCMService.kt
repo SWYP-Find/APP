@@ -9,26 +9,58 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.picke.app.MainActivity
 import com.picke.app.R
+import com.picke.app.data.local.TokenManager
+import com.picke.app.domain.repository.DeviceRepository
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FCMService : FirebaseMessagingService() {
+
+    @Inject lateinit var deviceRepository: DeviceRepository
+    @Inject lateinit var tokenManager: TokenManager
+
+    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
+    }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d(TAG, "FCM 토큰 갱신: $token")
-        // TODO: 서버 FCM 토큰 등록 API 연동
+
+        tokenManager.saveFcmToken(token)
+
+        // 로그인 상태일 때만 서버에 등록 (비로그인 시 로그인 이후 등록)
+        if (tokenManager.getAccessToken() != null) {
+            serviceScope.launch {
+                deviceRepository.registerDevice(token)
+                    .onFailure { Log.e(TAG, "FCM 토큰 서버 등록 실패", it) }
+            }
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         Log.d(TAG, "FCM 메시지 수신 - from: ${message.from}, data: ${message.data}")
 
-        val title = message.notification?.title ?: message.data["title"] ?: "픽케"
-        val body = message.notification?.body ?: message.data["body"] ?: ""
-        val type = message.data["type"] ?: TYPE_ALARM
-        val battleId = message.data["battleId"]
-        val commentId = message.data["commentId"]
+        // 서버는 data-only 메시지로 전송 (notification 블록 없음)
+        val data = message.data
+        val title = data["title"] ?: "픽케"
+        val body = data["body"] ?: ""
+        val type = data["type"] ?: TYPE_ALARM
+        val battleId = data["battleId"]
+        val perspectiveId = data["perspectiveId"]
+        val commentId = data["commentId"]
 
-        showNotification(title, body, type, battleId, commentId)
+        showNotification(title, body, type, battleId, perspectiveId, commentId)
     }
 
     private fun showNotification(
@@ -36,12 +68,14 @@ class FCMService : FirebaseMessagingService() {
         body: String,
         type: String,
         battleId: String?,
+        perspectiveId: String?,
         commentId: String?
     ) {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(EXTRA_FCM_TYPE, type)
             battleId?.let { putExtra(EXTRA_FCM_BATTLE_ID, it) }
+            perspectiveId?.let { putExtra(EXTRA_FCM_PERSPECTIVE_ID, it) }
             commentId?.let { putExtra(EXTRA_FCM_COMMENT_ID, it) }
         }
 
@@ -71,6 +105,7 @@ class FCMService : FirebaseMessagingService() {
         const val CHANNEL_ID = "picke_default"
         const val EXTRA_FCM_TYPE = "fcm_type"
         const val EXTRA_FCM_BATTLE_ID = "fcm_battle_id"
+        const val EXTRA_FCM_PERSPECTIVE_ID = "fcm_perspective_id"
         const val EXTRA_FCM_COMMENT_ID = "fcm_comment_id"
 
         const val TYPE_BATTLE = "BATTLE"

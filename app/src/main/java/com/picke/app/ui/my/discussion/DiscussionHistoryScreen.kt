@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.my.discussion
+package com.picke.app.ui.my.discussion
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -26,7 +24,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +35,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.app.R
 import com.picke.app.domain.model.MyBattleRecordItem
-import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.theme.SwypTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionHistoryScreen(
@@ -51,11 +46,8 @@ fun DiscussionHistoryScreen(
     modifier: Modifier = Modifier,
     viewModel: DiscussionHistoryViewModel = hiltViewModel()
 ) {
-    val tabs = listOf("A", "B")
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val pagerState = rememberPagerState(pageCount = { tabs.size })
-    val coroutineScope = rememberCoroutineScope()
+    val combinedList = uiState.agreeList + uiState.disagreeList
 
     Scaffold(
         containerColor = SwypTheme.colors.backgroundBrand,
@@ -75,18 +67,6 @@ fun DiscussionHistoryScreen(
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
         ){
-            // 탭바
-            CustomTabBar(
-                tabs = tabs,
-                selectedTab = tabs[pagerState.currentPage],
-                isScrollable = false,
-                onTabSelected = { selectedTab ->
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(tabs.indexOf(selectedTab))
-                    }
-                }
-            )
-
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
@@ -95,27 +75,15 @@ fun DiscussionHistoryScreen(
                     CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize()
-                ) { page ->
-                    when (page) {
-                        0 -> DiscussionHistoryList(
-                            list = uiState.agreeList,
-                            voteSide = "PRO",
-                            emptyMessage = "아직 A 의견을 남긴 토론이 없습니다",
-                            onItemClick = onNavigateToDetail,
-                            onLoadMore = { viewModel.loadMore("PRO") }
-                        )
-                        1 -> DiscussionHistoryList(
-                            list = uiState.disagreeList,
-                            voteSide = "CON",
-                            emptyMessage = "아직 B 의견을 남긴 토론이 없습니다",
-                            onItemClick = onNavigateToDetail,
-                            onLoadMore = { viewModel.loadMore("CON") }
-                        )
+                DiscussionHistoryList(
+                    list = combinedList,
+                    emptyMessage = "아직 참여한 배틀이 없습니다",
+                    onItemClick = onNavigateToDetail,
+                    onLoadMore = {
+                        viewModel.loadMore("PRO")
+                        viewModel.loadMore("CON")
                     }
-                }
+                )
             }
         }
     }
@@ -124,7 +92,6 @@ fun DiscussionHistoryScreen(
 @Composable
 fun DiscussionHistoryList(
     list: List<MyBattleRecordItem>,
-    voteSide: String,
     emptyMessage: String,
     onItemClick: (String) -> Unit,
     onLoadMore: () -> Unit

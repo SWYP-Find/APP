@@ -1,4 +1,4 @@
-﻿package com.picke.app
+package com.picke.app
 
 import ScenarioScreen
 import android.Manifest
@@ -38,6 +38,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.picke.app.ui.notification.NotificationPermissionBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
+import com.picke.app.ui.my.makebattle.MakeBattleScreen
+import com.picke.app.ui.my.notice.NoticeEventScreen
+import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.comment.CommentScreen
 import com.picke.app.ui.login.LoginScreen
 import com.picke.app.ui.main.BottomNavItem
@@ -60,6 +63,7 @@ import com.picke.app.ui.vote.VoteRoute
 import com.picke.app.ui.vote.VoteType
 import com.picke.app.util.DeepLinkEvent
 import com.picke.app.util.DeepLinkManager
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -122,6 +126,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     ) {
         LaunchedEffect(Unit) {
             DeepLinkManager.deepLinkEvent.collect { event ->
+                // 스플래시 로딩이 끝날 때까지 대기 (NavigateToMain이 popUpTo(0)으로 백스택을 지우기 전에
+                // DeepLink 화면으로 이동하면 스플래시 완료 시 덮어씌워지므로, 로딩 완료 후 이동)
+                splashViewModel.uiState.first { it !is SplashUiState.Loading }
+                kotlinx.coroutines.delay(150)
+
                 rootNavController.navigate(AppRoute.Main.route) {
                     popUpTo(AppRoute.Main.route) {
                         inclusive = false
@@ -131,9 +140,16 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 kotlinx.coroutines.delay(100)
                 when (event) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
+                    is DeepLinkEvent.GoToTodayBattle -> rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
                     is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
-                    is DeepLinkEvent.GoToComment -> rootNavController.navigate(AppRoute.Comment.createRoute(event.commentId))
+                    is DeepLinkEvent.GoToPerspective -> {
+                        if (event.commentId != null) {
+                            rootNavController.navigate(AppRoute.Comment.createRoute(event.perspectiveId, event.commentId))
+                        } else {
+                            rootNavController.navigate(AppRoute.Perspective.createRoute(event.perspectiveId))
+                        }
+                    }
                 }
             }
         }
@@ -220,17 +236,67 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
 
-            composable(BottomNavItem.TodayBattle.route) {
+            composable(
+                route = AppRoute.TodayBattle.route,
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
+            ) { backStackEntry ->
+                val battleId = backStackEntry.arguments?.getString("battleId")
                 TodayBattleScreen(
+                    initialBattleId = battleId,
                     onBackClick = { rootNavController.popBackStack() },
-                    onEnterBattle = { battleId ->
-                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
+                    onEnterBattle = { id ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(id))
                     }
                 )
             }
 
             composable(AppRoute.Alarm.route) {
-                AlarmScreen(onBackClick = { rootNavController.popBackStack() })
+                AlarmScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
+                    },
+                    onNavigateToTodayBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.TodayBattle.createRoute(battleId))
+                    },
+                    onNavigateToComment = { perspectiveId, commentId ->
+                        rootNavController.navigate(AppRoute.Comment.createRoute(perspectiveId, commentId))
+                    },
+                    onNavigateToPoint = {
+                        rootNavController.navigate(AppRoute.Point.route)
+                    },
+                    onNavigateToNotice = { noticeId ->
+                        rootNavController.navigate(AppRoute.NoticeEvent.createRoute(noticeId))
+                    }
+                )
+            }
+
+            composable(
+                route = AppRoute.NoticeEvent.route,
+                arguments = listOf(navArgument("noticeId") { type = NavType.LongType; defaultValue = -1L })
+            ) { backStackEntry ->
+                val noticeId = backStackEntry.arguments?.getLong("noticeId")?.takeIf { it != -1L }
+                NoticeEventScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    initialNoticeId = noticeId
+                )
+            }
+
+            composable(AppRoute.Point.route) {
+                PointScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToMakeBattle = {
+                        rootNavController.navigate(AppRoute.MakeBattle.route)
+                    }
+                )
+            }
+
+            composable(AppRoute.MakeBattle.route) {
+                MakeBattleScreen(
+                    onBackClick = { rootNavController.popBackStack() }
+                )
             }
 
             composable(AppRoute.SettingAlarm.route) {
@@ -298,10 +364,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
             composable(
                 route = AppRoute.Perspective.route,
-                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType },
+                    navArgument("commentId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
             ) { backStackEntry ->
                 val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+                val commentId = backStackEntry.arguments?.getString("commentId")
                 PerspectiveScreen(
+                    scrollToCommentId = commentId,
                     onBackClick = {
                         val prevRoute = rootNavController.previousBackStackEntry?.destination?.route
                         if (prevRoute == null || prevRoute == AppRoute.Splash.route || prevRoute == AppRoute.Login.route) {
@@ -311,15 +382,23 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         }
                     },
                     onNextClick = { itemId -> rootNavController.navigate(AppRoute.Recommend.createRoute(itemId)) },
-                    onMoreClick = { itemId -> rootNavController.navigate(AppRoute.Comment.createRoute(itemId)) }
+                    onMoreClick = { itemId, firstOptionId -> rootNavController.navigate(AppRoute.Comment.createRoute(itemId, firstOptionId)) }
                 )
             }
 
             composable(
                 route = AppRoute.Comment.route,
-                arguments = listOf(navArgument("itemId") { type = NavType.StringType })
-            ) {
-                CommentScreen(onBackClick = { rootNavController.popBackStack() })
+                arguments = listOf(
+                    navArgument("itemId") { type = NavType.StringType },
+                    navArgument("firstOptionId") { type = NavType.LongType; defaultValue = 0L },
+                    navArgument("commentId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
+            ) { backStackEntry ->
+                val commentId = backStackEntry.arguments?.getString("commentId")
+                CommentScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    scrollToCommentId = commentId
+                )
             }
 
             composable(

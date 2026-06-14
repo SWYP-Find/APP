@@ -114,7 +114,7 @@ class PerspectiveViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 내 관점 데이터 조회 시도")
             perspectiveRepository.getMyPerspective(battleIdLong)
                 .onSuccess { myData ->
-                    Log.i(TAG, "[STATE] 내 관점 존재함 - 상태: ${myData.status}, 입장: ${myData.optionLabel}")
+                    Log.i(TAG, "[STATE] 내 관점 존재함 - 상태: ${myData.status}, 입장: ${myData.optionTitle}")
                     _uiState.update { it.copy(myPerspective = myData) }
                 }
                 .onFailure {
@@ -214,14 +214,11 @@ class PerspectiveViewModel @Inject constructor(
 
         // 1. 낙관적 업데이트
         _uiState.update { state ->
-            val tempLabel = state.myPerspective?.optionLabel ?: ""
-
             val updatedPerspective = (state.myPerspective ?: PerspectiveDetailBoard(
                 perspectiveId = 0L,
                 content = content,
                 characterImageUrl = "",
                 nickname = "나",
-                optionLabel = tempLabel,
                 optionTitle = "",
                 optionId = 0L,
                 status = "PUBLISHED",
@@ -233,8 +230,7 @@ class PerspectiveViewModel @Inject constructor(
                 userTag = "",
             )).copy(
                 status = "PUBLISHED",
-                content = content,
-                optionLabel = tempLabel
+                content = content
             )
 
             state.copy(editingPerspectiveId = null, myPerspective = updatedPerspective)
@@ -273,7 +269,7 @@ class PerspectiveViewModel @Inject constructor(
     }
 
     fun deletePerspective(perspectiveId: Long) {
-        Log.d(TAG, "[FLOW] 관점 삭제 로직 시작 - 대상 ID: $perspectiveId")
+        Log.d(TAG, "[FLOW] 관점 삭제 로직 시작 - perspectiveId: $perspectiveId, battleId: $receivedBattleId")
 
         // 낙관적 업데이트 (UI에서 즉시 삭제)
         _uiState.update { state ->
@@ -284,7 +280,7 @@ class PerspectiveViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            Log.d(TAG, "[API_REQ] 관점 삭제 요청 전송")
+            Log.d(TAG, "[API_REQ] 관점 삭제 요청 전송 - perspectiveId: $perspectiveId, battleId: $receivedBattleId")
             perspectiveRepository.deletePerspective(perspectiveId)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 관점 삭제 완료")

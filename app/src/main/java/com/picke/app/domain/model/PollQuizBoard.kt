@@ -9,7 +9,6 @@ data class PollQuizVoteBoard(
 
 data class PollQuizOptionStatBoard(
     val optionId: Long,
-    val label: String,
     val title: String,
     val stance: String,
     val isCorrect: Boolean,

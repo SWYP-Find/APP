@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.alarm
+package com.picke.app.ui.alarm
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -49,7 +49,12 @@ import java.util.TimeZone
 
 @Composable
 fun AlarmScreen(
-    onBackClick:()->Unit,
+    onBackClick: () -> Unit,
+    onNavigateToBattle: (battleId: String) -> Unit,
+    onNavigateToTodayBattle: (battleId: String) -> Unit,
+    onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
+    onNavigateToPoint: () -> Unit,
+    onNavigateToNotice: (Long) -> Unit,
     viewModel: AlarmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -161,7 +166,18 @@ fun AlarmScreen(
                                 onClick = {
                                     if (!item.isRead) viewModel.readAlarm(item.notificationId)
 
-                                    // TODO: 알림 클릭 시 화면 이동 (item.referenceId 또는 item.detailCode 활용)
+                                    when (item.detailCode) {
+                                        "NEW_BATTLE" ->
+                                            onNavigateToTodayBattle(item.referenceId.toString())
+                                        "COMMENT_LIKE", "NEW_COMMENT" ->
+                                            if (item.perspectiveId != 0L)
+                                                onNavigateToComment(item.perspectiveId.toString(), item.referenceId.toString())
+                                        "CREDIT_EARNED" ->
+                                            onNavigateToPoint()
+                                        "POLICY_CHANGE" ->
+                                            onNavigateToNotice(item.referenceId)
+                                        // PROMOTION, VOTE_RESULT: 이동 없음
+                                    }
                                 }
                             )
                         }
@@ -180,9 +196,10 @@ fun AlarmCard(
     val iconRes = when (item.category) {
         "CONTENT" -> {
             when (item.detailCode) {
+                "NEW_BATTLE" -> R.drawable.ic_alarm_battle
+                "COMMENT_LIKE", "NEW_COMMENT" -> R.drawable.ic_alarm_vote // TODO: 댓글 전용 아이콘으로 교체
                 "CREDIT_EARNED" -> R.drawable.ic_alarm_point
                 "VOTE_RESULT" -> R.drawable.ic_alarm_vote
-                "NEW_BATTLE" -> R.drawable.ic_alarm_battle
                 else -> R.drawable.ic_alarm_vote
             }
         }
@@ -197,7 +214,7 @@ fun AlarmCard(
             .clip(RoundedCornerShape(2.dp))
             .background(Color.White)
             .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(4.dp))
-            // .clickable { onClick() }
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

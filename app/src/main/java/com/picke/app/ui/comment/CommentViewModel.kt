@@ -27,6 +27,7 @@ data class CommentUiModel(
     val profileImageUrl: String,
     val nickname: String,
     val stance: String,
+    val optionId: Long = 0L,
     val content: String,
     val timeAgo: String,
     val likeCount: Int,
@@ -37,6 +38,7 @@ data class CommentUiModel(
 
 data class CommentUiState(
     val targetId: String = "",
+    val firstOptionId: Long = 0L,
     val mainPerspective: CommentUiModel? = null,
     val comments: List<CommentUiModel> = emptyList(),
     val nextCursor: String? = null,
@@ -60,9 +62,11 @@ class CommentViewModel @Inject constructor(
     val uiEvent: SharedFlow<CommentUiEvent> = _uiEvent.asSharedFlow()
 
     private val receivedTargetId: String = checkNotNull(savedStateHandle["itemId"])
+    private val receivedFirstOptionId: Long = savedStateHandle["firstOptionId"] ?: 0L
     private val _uiState = MutableStateFlow(
         CommentUiState(
             targetId = receivedTargetId,
+            firstOptionId = receivedFirstOptionId,
             comments = emptyList(),
             hasNext = true
         )
@@ -86,15 +90,14 @@ class CommentViewModel @Inject constructor(
                 .onSuccess { perspective ->
                     Log.i(TAG, "[STATE] 메인 관점(perspectiveId: ${perspective.perspectiveId}) 조회 성공")
 
-                    val displayStance = if (perspective.optionLabel == "A" || perspective.optionLabel == "AGREE") "A" else "B"
-
                     _uiState.update { state ->
                         state.copy(
                             mainPerspective = CommentUiModel(
                                 commentId = perspective.perspectiveId.toString(),
                                 profileImageUrl = perspective.characterImageUrl,
                                 nickname = perspective.nickname,
-                                stance = displayStance,
+                                stance = perspective.optionTitle,
+                                optionId = perspective.optionId,
                                 content = perspective.content,
                                 timeAgo = perspective.createdAt.take(10),
                                 likeCount = perspective.likeCount,
@@ -292,22 +295,14 @@ class CommentViewModel @Inject constructor(
     }
 }
 
-private fun CommentBoard.toUiModel(): CommentUiModel {
-    val displayStance = when (this.stance){
-        "A", "AGREE", "찬성" -> "A"
-        "B", "DISAGREE", "반대" -> "B"
-        else -> this.stance
-    }
-
-    return CommentUiModel(
+private fun CommentBoard.toUiModel() = CommentUiModel(
         commentId = this.commentId.toString(),
         profileImageUrl = this.user.characterImageUrl,
         nickname = this.user.nickname,
-        stance = displayStance,
+        stance = this.stance,
         content = this.content,
         timeAgo = this.createdAt.take(10),
         likeCount = this.likeCount,
         isLiked = this.isLiked,
         isMine = this.isMine
     )
-}

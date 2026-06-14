@@ -30,7 +30,6 @@ data class BattleInfoDto(
 
 data class BattleOptionDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?,
     val stance: String?,
     val representative: String?,
@@ -70,7 +69,6 @@ fun BattleInfoDto.toDomainModel() = BattleInfoBoard(
 
 fun BattleOptionDto.toDomainModel() = BattleOptionBoard(
     optionId = this.optionId.toString() ?: "1",
-    label = this.label ?: "",
     title = this.title ?: "",
     stance = this.stance ?: "",
     representative = this.representative ?: "",

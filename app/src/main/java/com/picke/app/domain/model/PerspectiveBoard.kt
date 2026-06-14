@@ -1,10 +1,5 @@
 package com.picke.app.domain.model
 
-enum class PerspectiveStance(val label: String) {
-    AGREE("찬성"),
-    DISAGREE("반대")
-}
-
 data class PerspectivePage(
     val items: List<PerspectiveBoard>,
     val nextCursor: String?,
@@ -32,7 +27,6 @@ data class PerspectiveDetailBoard(
     val userTag: String,
     val nickname: String,
     val characterImageUrl: String,
-    val optionLabel: String,
     val optionTitle: String,
     val optionId: Long,
     val content: String,

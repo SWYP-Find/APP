@@ -2,6 +2,7 @@
 # [Build & Setup]
 agp = "9.0.1"
 kotlin = "2.0.21"
+ksp = "2.0.21-1.0.28"
 
 # [AndroidX Core & Lifecycle]
 activityCompose = "1.9.3"
@@ -15,7 +16,7 @@ composeBom = "2024.10.01"
 composeLayout = "1.7.4"
 
 # [Navigation & DI]
-hilt = "2.55"
+hilt = "2.59.2"
 hiltNavigationCompose = "1.2.0"
 navigation = "2.8.5"
 
@@ -122,3 +123,4 @@ hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

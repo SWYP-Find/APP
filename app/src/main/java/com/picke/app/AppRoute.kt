@@ -20,7 +20,10 @@ sealed class AppRoute(val route: String){
         }
     }
     object ContentActivity : AppRoute("content_activity_screen")     // 마이-내 콘텐츠 활동
-    object NoticeEvent : AppRoute("notice_event_screen")             // 마이-공지방 · 이벤트
+    object NoticeEvent : AppRoute("notice_event_screen?noticeId={noticeId}") {  // 마이-공지방 · 이벤트
+        fun createRoute() = "notice_event_screen"
+        fun createRoute(noticeId: Long) = "notice_event_screen?noticeId=$noticeId"
+    }
     object SettingProfile : AppRoute("setting_profile_screen")       // 설정-프로필 편집
     object SettingAlarm : AppRoute("setting_alarm_screen")         // 설정-알림 설정
 
@@ -35,15 +38,18 @@ sealed class AppRoute(val route: String){
     object PostVote : AppRoute("post_vote_screen/{battleId}") {
         fun createRoute(battleId: String) = "post_vote_screen/$battleId"
     }
-    object Perspective : AppRoute("perspective_screen/{battleId}"){
+    object Perspective : AppRoute("perspective_screen/{battleId}?commentId={commentId}"){
         fun createRoute(battleId: String): String {
             return "perspective_screen/$battleId"
         }
-    }
-    object Comment : AppRoute("comment_screen/{itemId}"){
-        fun createRoute(itemId: String): String {
-            return "comment_screen/$itemId"
+        fun createRoute(battleId: String, commentId: String): String {
+            return "perspective_screen/$battleId?commentId=$commentId"
         }
+    }
+    object Comment : AppRoute("comment_screen/{itemId}?firstOptionId={firstOptionId}&commentId={commentId}"){
+        fun createRoute(itemId: String): String = "comment_screen/$itemId"
+        fun createRoute(itemId: String, firstOptionId: Long): String = "comment_screen/$itemId?firstOptionId=$firstOptionId"
+        fun createRoute(itemId: String, commentId: String): String = "comment_screen/$itemId?commentId=$commentId"
     }
 
     object Recommend : AppRoute("recommend_screen/{battleId}"){
@@ -56,4 +62,8 @@ sealed class AppRoute(val route: String){
     object Withdraw : AppRoute("withdraw_screen")
     object Point : AppRoute("point_screen")
     object MakeBattle : AppRoute("makebattle_screen")
+
+    object TodayBattle : AppRoute("tab_battle?battleId={battleId}") {
+        fun createRoute(battleId: String) = "tab_battle?battleId=$battleId"
+    }
 }
