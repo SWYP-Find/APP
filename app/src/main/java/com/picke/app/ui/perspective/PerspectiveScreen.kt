@@ -363,7 +363,7 @@ fun PerspectiveScreen(
                                         val emptyMsg = if (pageIndex == 0) {
                                             "아직 작성된 관점이 없습니다"
                                         } else {
-                                            "아직 작성된 ${tabList.getOrElse(pageIndex) { "" }} 관점이 없습니다"
+                                            "아직 작성된 \"${tabList.getOrElse(pageIndex) { "" }}\" 관점이 없습니다"
                                         }
 
                                         PerspectiveEmptyState(

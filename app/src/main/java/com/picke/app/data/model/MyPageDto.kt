@@ -200,7 +200,7 @@ fun MyContentActivityItemDto.toDomainModel() = MyContentActivityItem(
         characterType = this.author?.characterType ?: "UNKNOWN",
         characterImageUrl = this.author?.characterImageUrl ?: ""
     ),
-    voteSide = this.voteSide ?: "",
+    voteSide = this.voteSide,
     content = this.content ?: "",
     likeCount = this.likeCount ?: 0,
     createdAt = this.createdAt?.take(10) ?: ""

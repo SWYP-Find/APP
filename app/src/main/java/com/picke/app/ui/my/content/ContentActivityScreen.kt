@@ -204,22 +204,24 @@ fun ContentActivityCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val isAgree = item.voteSide == "PRO"
-                    val displayStance = if (isAgree) "A" else "B"
-                    val badgeBgColor = if (isAgree) SwypTheme.colors.surfaceTertiary else SwypTheme.colors.primary
-                    val badgeTextColor = if (isAgree) SwypTheme.colors.primary else SwypTheme.colors.surface
+                    if (item.voteSide != null) {
+                        val isAgree = item.voteSide == "PRO"
+                        val displayStance = if (isAgree) "찬성의견" else "반대의견"
+                        val badgeBgColor = if (isAgree) SwypTheme.colors.surfaceTertiary else SwypTheme.colors.primary
+                        val badgeTextColor = if (isAgree) SwypTheme.colors.primary else SwypTheme.colors.surface
 
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(badgeBgColor)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = displayStance,
-                            style = SwypTheme.typography.b5Medium,
-                            color = badgeTextColor
-                        )
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(badgeBgColor)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = displayStance,
+                                style = SwypTheme.typography.b5Medium,
+                                color = badgeTextColor
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(2.dp))
