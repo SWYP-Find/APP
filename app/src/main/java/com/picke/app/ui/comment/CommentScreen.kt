@@ -155,7 +155,12 @@ fun CommentScreen(
                 // 1) 메인 관점 카드
                 val mainStance = uiState.mainPerspective?.stance ?: ""
                 val firstOptionId = uiState.firstOptionId
-                val mainIsPro = firstOptionId != 0L && (uiState.mainPerspective?.optionId ?: 0L) == firstOptionId
+                val mainIsPro = if (firstOptionId != 0L) {
+                    (uiState.mainPerspective?.optionId ?: 0L) == firstOptionId
+                } else {
+                    // firstOptionId 없이 진입한 경우(FCM 등) 메인 관점 stance를 Pro 기준으로 삼아 댓글과 색깔 일치
+                    mainStance.isNotEmpty()
+                }
 
                 uiState.mainPerspective?.let { mainContent ->
                     CommentItemCard(
