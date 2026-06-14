@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.my.notice
+package com.picke.app.ui.my.notice
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,7 @@ import com.picke.app.R
 @Composable
 fun NoticeEventScreen(
     onBackClick: () -> Unit,
+    initialNoticeId: Long? = null,
     modifier: Modifier = Modifier,
     viewModel: NoticeEventViewModel = hiltViewModel()
 ) {
@@ -61,6 +63,14 @@ fun NoticeEventScreen(
     val coroutineScope = rememberCoroutineScope()
 
     var selectedItem by remember { mutableStateOf<NoticeEventItem?>(null) }
+
+    LaunchedEffect(initialNoticeId) {
+        if (initialNoticeId != null) viewModel.fetchInitialDetail(initialNoticeId)
+    }
+
+    LaunchedEffect(uiState.initialDetailItem) {
+        uiState.initialDetailItem?.let { selectedItem = it }
+    }
 
     BackHandler(enabled = selectedItem != null) {
         selectedItem = null

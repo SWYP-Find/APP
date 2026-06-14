@@ -38,6 +38,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.picke.app.ui.notification.NotificationPermissionBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
+import com.picke.app.ui.my.makebattle.MakeBattleScreen
+import com.picke.app.ui.my.notice.NoticeEventScreen
+import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.comment.CommentScreen
 import com.picke.app.ui.login.LoginScreen
 import com.picke.app.ui.main.BottomNavItem
@@ -255,7 +258,39 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     },
                     onNavigateToPerspective = { perspectiveId ->
                         rootNavController.navigate(AppRoute.Perspective.createRoute(perspectiveId))
+                    },
+                    onNavigateToPoint = {
+                        rootNavController.navigate(AppRoute.Point.route)
+                    },
+                    onNavigateToNotice = { noticeId ->
+                        rootNavController.navigate(AppRoute.NoticeEvent.createRoute(noticeId))
                     }
+                )
+            }
+
+            composable(
+                route = AppRoute.NoticeEvent.route,
+                arguments = listOf(navArgument("noticeId") { type = NavType.LongType; defaultValue = -1L })
+            ) { backStackEntry ->
+                val noticeId = backStackEntry.arguments?.getLong("noticeId")?.takeIf { it != -1L }
+                NoticeEventScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    initialNoticeId = noticeId
+                )
+            }
+
+            composable(AppRoute.Point.route) {
+                PointScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToMakeBattle = {
+                        rootNavController.navigate(AppRoute.MakeBattle.route)
+                    }
+                )
+            }
+
+            composable(AppRoute.MakeBattle.route) {
+                MakeBattleScreen(
+                    onBackClick = { rootNavController.popBackStack() }
                 )
             }
 

@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.alarm
+package com.picke.app.ui.alarm
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -53,6 +53,8 @@ fun AlarmScreen(
     onNavigateToBattle: (battleId: String) -> Unit,
     onNavigateToTodayBattle: (battleId: String) -> Unit,
     onNavigateToPerspective: (perspectiveId: String) -> Unit,
+    onNavigateToPoint: () -> Unit,
+    onNavigateToNotice: (Long) -> Unit,
     viewModel: AlarmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -170,7 +172,11 @@ fun AlarmScreen(
                                         "COMMENT_LIKE", "NEW_COMMENT" ->
                                             if (item.perspectiveId != 0L)
                                                 onNavigateToPerspective(item.perspectiveId.toString())
-                                        // CREDIT_EARNED, POLICY_CHANGE, PROMOTION, VOTE_RESULT: 이동 없음
+                                        "CREDIT_EARNED" ->
+                                            onNavigateToPoint()
+                                        "POLICY_CHANGE" ->
+                                            onNavigateToNotice(item.referenceId)
+                                        // PROMOTION, VOTE_RESULT: 이동 없음
                                     }
                                 }
                             )
