@@ -1,4 +1,4 @@
-package com.picke.app.ui.notification
+package com.picke.app.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,21 +21,16 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.app.R
-import androidx.compose.ui.tooling.preview.Preview
-import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.theme.Gray100
 import com.picke.app.ui.theme.Gray300
 import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary300
-import com.picke.app.ui.theme.Primary700
 import com.picke.app.ui.theme.SwypAppTheme
-import com.picke.app.ui.theme.SwypColors
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.theme.White
 import com.picke.app.ui.theme.tokens.BrandColorTokens.neutral50

@@ -36,7 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.picke.app.ui.notification.NotificationPermissionBottomSheet
+import com.picke.app.ui.component.NotificationPermissionBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
 import com.picke.app.ui.my.makebattle.MakeBattleScreen
 import com.picke.app.ui.my.notice.NoticeEventScreen

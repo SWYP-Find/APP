@@ -46,7 +46,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.picke.app.R
 import com.picke.app.domain.model.NotificationSettingsBoard
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.notification.NotificationPermissionBottomSheet
+import com.picke.app.ui.component.NotificationPermissionBottomSheet
 import com.picke.app.ui.theme.SwypAppTheme
 import com.picke.app.ui.theme.SwypTheme
 
