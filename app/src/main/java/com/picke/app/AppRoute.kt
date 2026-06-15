@@ -68,4 +68,9 @@ sealed class AppRoute(val route: String){
     }
 
     object NewUserOnboarding : AppRoute("new_user_onboarding_screen")
+
+    object PolicyWebView : AppRoute("policy_webview_screen?url={url}&title={title}") {
+        fun createRoute(url: String, title: String) =
+            "policy_webview_screen?url=${android.net.Uri.encode(url)}&title=${android.net.Uri.encode(title)}"
+    }
 }
