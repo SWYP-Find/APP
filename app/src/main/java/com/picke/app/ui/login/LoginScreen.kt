@@ -52,7 +52,7 @@ private const val TAG = "LoginScreen_Picke"
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToMain: ()->Unit,
+    onNavigateToMain: (isNewUser: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -91,7 +91,7 @@ fun LoginScreen(
         when (val state = uiState) {
             is LoginUiState.Success -> {
                 Log.i(TAG, "[NAV] 로그인 성공 -> 목적지(메인 또는 딥링크)로 이동 (신규 유저 여부: ${state.isNewUser})")
-                onNavigateToMain()
+                onNavigateToMain(state.isNewUser)
             }
             is LoginUiState.Error -> {
                 Log.e(TAG, "[ERROR] 로그인 실패: ${state.message}")

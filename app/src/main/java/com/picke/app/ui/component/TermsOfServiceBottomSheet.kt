@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -49,19 +50,21 @@ import com.picke.app.ui.theme.tokens.BrandColorTokens.primary600
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TermsOfServiceBottomSheet(
-    onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     onViewServiceTerms: () -> Unit,
     onViewPrivacyPolicy: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { it != SheetValue.Hidden }
+    )
     var isServiceTermsAgreed by remember { mutableStateOf(false) }
     var isPrivacyPolicyAgreed by remember { mutableStateOf(false) }
 
     val isAllAgreed = isServiceTermsAgreed && isPrivacyPolicyAgreed
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {},
         sheetState = sheetState,
         containerColor = White,
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -220,7 +223,6 @@ private fun TermsItem(
 private fun TermsOfServiceBottomSheetPreview() {
     SwypAppTheme {
         TermsOfServiceBottomSheet(
-            onDismiss = {},
             onConfirm = {},
             onViewServiceTerms = {},
             onViewPrivacyPolicy = {}

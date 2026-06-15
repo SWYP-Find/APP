@@ -3,7 +3,9 @@ package com.picke.app
 import ScenarioScreen
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -37,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.picke.app.ui.component.NotificationPermissionBottomSheet
+import com.picke.app.ui.onboarding.NewUserOnboardingScreen
 import com.picke.app.ui.alarm.AlarmScreen
 import com.picke.app.ui.my.makebattle.MakeBattleScreen
 import com.picke.app.ui.my.notice.NoticeEventScreen
@@ -186,28 +189,55 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 exitTransition = { fadeOut(animationSpec = tween(100)) }
             ) {
                 LoginScreen(
-                    onNavigateToMain = {
-                        val pendingReport = DeepLinkManager.pendingReportId
-                        val pendingBattle = DeepLinkManager.pendingBattleId
+                    onNavigateToMain = { isNewUser ->
+                        if (isNewUser) {
+                            rootNavController.navigate(AppRoute.NewUserOnboarding.route) {
+                                popUpTo(AppRoute.Login.route) { inclusive = true }
+                            }
+                        } else {
+                            val pendingReport = DeepLinkManager.pendingReportId
+                            val pendingBattle = DeepLinkManager.pendingBattleId
 
-                        rootNavController.navigate(AppRoute.Main.route) {
-                            popUpTo(AppRoute.Login.route) { inclusive = true }
-                        }
-                        checkAndShowNotificationSheet()
+                            rootNavController.navigate(AppRoute.Main.route) {
+                                popUpTo(AppRoute.Login.route) { inclusive = true }
+                            }
+                            checkAndShowNotificationSheet()
 
-                        if (pendingReport != null || pendingBattle != null) {
-                            coroutineScope.launch {
-                                kotlinx.coroutines.delay(100)
-                                if (pendingReport != null) {
-                                    rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(pendingReport))
-                                    DeepLinkManager.pendingReportId = null
-                                } else if (pendingBattle != null) {
-                                    rootNavController.navigate(AppRoute.BattleRouting.createRoute(pendingBattle))
-                                    DeepLinkManager.pendingBattleId = null
+                            if (pendingReport != null || pendingBattle != null) {
+                                coroutineScope.launch {
+                                    kotlinx.coroutines.delay(100)
+                                    if (pendingReport != null) {
+                                        rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(pendingReport))
+                                        DeepLinkManager.pendingReportId = null
+                                    } else if (pendingBattle != null) {
+                                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(pendingBattle))
+                                        DeepLinkManager.pendingBattleId = null
+                                    }
                                 }
                             }
                         }
                     },
+                )
+            }
+
+            composable(AppRoute.NewUserOnboarding.route) {
+                val context = LocalContext.current
+                NewUserOnboardingScreen(
+                    onComplete = {
+                        rootNavController.navigate(AppRoute.Main.route) {
+                            popUpTo(AppRoute.NewUserOnboarding.route) { inclusive = true }
+                        }
+                    },
+                    onViewServiceTerms = {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.notion.so/3566effee51c8184bdc2e8595bfead27?source=copy_link"))
+                        )
+                    },
+                    onViewPrivacyPolicy = {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.notion.so/3566effee51c81898de5f91d52ab7391?source=copy_link"))
+                        )
+                    }
                 )
             }
 

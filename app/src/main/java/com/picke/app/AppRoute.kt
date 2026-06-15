@@ -66,4 +66,6 @@ sealed class AppRoute(val route: String){
     object TodayBattle : AppRoute("tab_battle?battleId={battleId}") {
         fun createRoute(battleId: String) = "tab_battle?battleId=$battleId"
     }
+
+    object NewUserOnboarding : AppRoute("new_user_onboarding_screen")
 }
