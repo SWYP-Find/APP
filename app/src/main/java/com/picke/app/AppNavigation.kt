@@ -3,7 +3,9 @@ package com.picke.app
 import ScenarioScreen
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,7 +50,6 @@ import com.picke.app.ui.main.BottomNavItem
 import com.picke.app.ui.main.MainScreen
 import com.picke.app.ui.my.philosopher.PhilosopherTypeScreen
 import com.picke.app.ui.my.setting.alarm.SettingAlarmScreen
-import com.picke.app.ui.my.setting.policy.PolicyWebViewScreen
 import com.picke.app.ui.my.setting.policy.PrivacyPolicyScreen
 import com.picke.app.ui.my.setting.policy.TermsOfServiceScreen
 import com.picke.app.ui.my.setting.profile.SettingProfileScreen
@@ -220,6 +221,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             }
 
             composable(AppRoute.NewUserOnboarding.route) {
+                val context = LocalContext.current
                 NewUserOnboardingScreen(
                     onComplete = {
                         rootNavController.navigate(AppRoute.Main.route) {
@@ -227,37 +229,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         }
                     },
                     onViewServiceTerms = {
-                        rootNavController.navigate(
-                            AppRoute.PolicyWebView.createRoute(
-                                url = "https://www.notion.so/3566effee51c8184bdc2e8595bfead27?source=copy_link",
-                                title = "서비스 이용약관"
-                            )
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.notion.so/3566effee51c8184bdc2e8595bfead27?source=copy_link"))
                         )
                     },
                     onViewPrivacyPolicy = {
-                        rootNavController.navigate(
-                            AppRoute.PolicyWebView.createRoute(
-                                url = "https://www.notion.so/3566effee51c81898de5f91d52ab7391?source=copy_link",
-                                title = "개인정보처리방침"
-                            )
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.notion.so/3566effee51c81898de5f91d52ab7391?source=copy_link"))
                         )
                     }
-                )
-            }
-
-            composable(
-                route = AppRoute.PolicyWebView.route,
-                arguments = listOf(
-                    navArgument("url") { type = NavType.StringType },
-                    navArgument("title") { type = NavType.StringType }
-                )
-            ) { backStackEntry ->
-                val url = backStackEntry.arguments?.getString("url") ?: ""
-                val title = backStackEntry.arguments?.getString("title") ?: ""
-                PolicyWebViewScreen(
-                    url = url,
-                    title = title,
-                    onBackClick = { rootNavController.popBackStack() }
                 )
             }
 
