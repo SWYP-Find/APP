@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -41,12 +42,16 @@ import com.picke.app.ui.theme.tokens.BrandColorTokens.primary600
 fun NotificationPermissionBottomSheet(
     onDismiss: () -> Unit,
     onAgree: () -> Unit,
-    onDisagree: () -> Unit
+    onDisagree: () -> Unit,
+    isDismissible: Boolean = true
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = { if (isDismissible) true else it != SheetValue.Hidden }
+    )
 
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (isDismissible) onDismiss() },
         sheetState = sheetState,
         containerColor = White,
         shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
