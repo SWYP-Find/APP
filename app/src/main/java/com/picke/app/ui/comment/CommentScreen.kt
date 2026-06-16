@@ -1,4 +1,4 @@
-﻿package com.picke.app.ui.comment
+package com.picke.app.ui.comment
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -120,21 +120,19 @@ fun CommentScreen(
             }
         },
         bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                val isEditing = uiState.editingCommentId != null
-                val inputHint = if (isEditing) "수정할 내용을 입력해주세요..." else "댓글을 남겨보세요..."
+            val isEditing = uiState.editingCommentId != null
+            val inputHint = if (isEditing) "수정할 내용을 입력해주세요..." else "댓글을 남겨보세요..."
 
-                CommentInputField(
-                    inputText = inputText,
-                    onTextChanged = { inputText = it },
-                    onSubmit = {
-                        viewModel.submitComment(inputText) {
-                            inputText = ""
-                        }
-                    },
-                    hintText = inputHint
-                )
-            }
+            CommentInputField(
+                inputText = inputText,
+                onTextChanged = { inputText = it },
+                onSubmit = {
+                    viewModel.submitComment(inputText) {
+                        inputText = ""
+                    }
+                },
+                hintText = inputHint
+            )
         }
     ) { innerPadding ->
         Column(
@@ -462,6 +460,7 @@ fun CommentInputField(
         shadowElevation = 16.dp,
         modifier = modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .imePadding()
     ) {
         Row(

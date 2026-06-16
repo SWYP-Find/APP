@@ -159,38 +159,36 @@ fun PerspectiveScreen(
             }
         },
         bottomBar = {
-            Box(modifier = Modifier.navigationBarsPadding()) {
-                val myView = uiState.myPerspective
-                val isEditing = uiState.editingPerspectiveId != null
+            val myView = uiState.myPerspective
+            val isEditing = uiState.editingPerspectiveId != null
 
-                val isInputLocked = when {
-                    isEditing -> false
-                    myView != null -> true
-                    else -> false
-                }
-
-                // 힌트 문구
-                val inputHint = when {
-                    isEditing -> "수정할 내용을 입력해주세요..."
-                    myView?.status == "REJECTED" -> "거절된 관점이 있습니다. \n더보기 메뉴에서 수정을 눌러주세요."
-                    myView != null -> "이미 내 관점을 등록했습니다."
-                    else -> "본인의 관점을 적어주세요. \n관점은 하나만 작성할 수 있습니다."
-                }
-
-                PerspectiveInputField(
-                    inputText = inputText,
-                    onTextChanged = { inputText = it },
-                    onSubmit = {
-                        viewModel.submitPerspective(inputText) {
-                            inputText = ""
-                            focusManager.clearFocus()
-                            scrollToTopTrigger++
-                        }
-                    },
-                    isEnabled = !isInputLocked,
-                    hintText = inputHint,
-                )
+            val isInputLocked = when {
+                isEditing -> false
+                myView != null -> true
+                else -> false
             }
+
+            // 힌트 문구
+            val inputHint = when {
+                isEditing -> "수정할 내용을 입력해주세요..."
+                myView?.status == "REJECTED" -> "거절된 관점이 있습니다. \n더보기 메뉴에서 수정을 눌러주세요."
+                myView != null -> "이미 내 관점을 등록했습니다."
+                else -> "본인의 관점을 적어주세요. \n관점은 하나만 작성할 수 있습니다."
+            }
+
+            PerspectiveInputField(
+                inputText = inputText,
+                onTextChanged = { inputText = it },
+                onSubmit = {
+                    viewModel.submitPerspective(inputText) {
+                        inputText = ""
+                        focusManager.clearFocus()
+                        scrollToTopTrigger++
+                    }
+                },
+                isEnabled = !isInputLocked,
+                hintText = inputHint,
+            )
         }
     ){ innerPadding ->
         Column(
@@ -754,6 +752,7 @@ fun PerspectiveInputField(
         shadowElevation = 16.dp,
         modifier = modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .imePadding()
     ) {
         Row(
