@@ -50,7 +50,6 @@ import java.util.TimeZone
 @Composable
 fun AlarmScreen(
     onBackClick: () -> Unit,
-    onNavigateToBattle: (battleId: String) -> Unit,
     onNavigateToTodayBattle: (battleId: String) -> Unit,
     onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
     onNavigateToPoint: () -> Unit,
@@ -197,7 +196,8 @@ fun AlarmCard(
         "CONTENT" -> {
             when (item.detailCode) {
                 "NEW_BATTLE" -> R.drawable.ic_alarm_battle
-                "COMMENT_LIKE", "NEW_COMMENT" -> R.drawable.ic_alarm_vote // TODO: 댓글 전용 아이콘으로 교체
+                "COMMENT_LIKE" -> R.drawable.ic_alarm_like
+                "NEW_COMMENT" -> R.drawable.ic_alarm_comment
                 "CREDIT_EARNED" -> R.drawable.ic_alarm_point
                 "VOTE_RESULT" -> R.drawable.ic_alarm_vote
                 else -> R.drawable.ic_alarm_vote
@@ -282,25 +282,5 @@ fun AlarmCard(
                 overflow = TextOverflow.Ellipsis
             )
         }
-    }
-}
-
-fun formatTimeAgo(isoTimeString: String): String {
-    return try {
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        format.timeZone = TimeZone.getTimeZone("UTC")
-        val past = format.parse(isoTimeString) ?: return ""
-
-        val now = Date()
-        val seconds = (now.time - past.time) / 1000
-
-        when {
-            seconds < 60 -> "방금 전"
-            seconds < 3600 -> "${seconds / 60}분 전"
-            seconds < 86400 -> "${seconds / 3600}시간 전"
-            else -> "${seconds / 86400}일 전"
-        }
-    } catch (e: Exception) {
-        ""
     }
 }
