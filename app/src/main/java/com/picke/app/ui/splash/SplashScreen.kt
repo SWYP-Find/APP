@@ -38,7 +38,7 @@ private fun SplashScreenPreview() {
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.splash_logo),
+                painter = painterResource(id = R.drawable.logo_picke_splash),
                 contentDescription = "Picke Logo",
                 modifier = Modifier.size(200.dp)
             )
@@ -100,7 +100,7 @@ fun SplashScreen(
         contentAlignment = Alignment.Center
     ){
         Image(
-            painter = painterResource(id = R.drawable.splash_logo),
+            painter = painterResource(id = R.drawable.logo_picke_splash),
             contentDescription = "Picke Logo",
             modifier = Modifier.size(200.dp)
                 .scale(scale.value)

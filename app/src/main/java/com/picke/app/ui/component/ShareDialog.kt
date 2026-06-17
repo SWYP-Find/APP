@@ -83,9 +83,9 @@ fun ShareDialog(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ShareItem(iconRes = R.drawable.ic_kakao_share, title = "카카오톡", onClick = onKakaoClick)
-                ShareItem(iconRes = R.drawable.ic_instagram, title = "인스타그램", onClick = onInstaClick)
-                // ShareItem(iconRes = R.drawable.ic_facebook, title = "페이스북", onClick = onFacebookClick)
+                ShareItem(iconRes = R.drawable.logo_share_kakao, title = "카카오톡", onClick = onKakaoClick)
+                ShareItem(iconRes = R.drawable.logo_share_instagram, title = "인스타그램", onClick = onInstaClick)
+                // ShareItem(iconRes = R.drawable.logo_share_facebook, title = "페이스북", onClick = onFacebookClick)
                 ShareItem(iconRes = R.drawable.ic_link, title = "링크 복사", onClick = onCopyLinkClick)
             }
         }

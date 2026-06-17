@@ -122,7 +122,7 @@ fun AudioPlayerBar(
 
             // 15초 앞으로 가기
             ControlSkipButton(
-                iconResId = R.drawable.ic_play_foward,
+                iconResId = R.drawable.ic_play_forward,
                 label = "15초",
                 onClick = onForwardClick
             )

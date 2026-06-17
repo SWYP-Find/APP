@@ -151,7 +151,7 @@ private fun LoginScreenContent(
                 text = stringResource(R.string.login_your_think)
             )
             Image(
-                painter = painterResource(id = R.drawable.ic_login_logo),
+                painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "Picke Logo",
                 modifier = Modifier.size(width = 320.dp, height = 120.dp)
             )
@@ -176,7 +176,7 @@ private fun LoginScreenContent(
                     onClick = onKakaoClick,
                     backgroundColor = Color(0xFFFEE500),
                     textColor = SwypTheme.colors.textPrimary,
-                    iconResId = R.drawable.ic_kakao
+                    iconResId = R.drawable.logo_login_kakao
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomButton(
@@ -184,7 +184,7 @@ private fun LoginScreenContent(
                     onClick = onGoogleClick,
                     backgroundColor = Color.White,
                     textColor = SwypTheme.colors.textPrimary,
-                    iconResId = R.drawable.ic_google
+                    iconResId = R.drawable.logo_login_google
                 )
             }
         }
