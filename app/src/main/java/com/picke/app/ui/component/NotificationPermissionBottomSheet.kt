@@ -90,7 +90,7 @@ fun NotificationPermissionBottomSheet(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_logo),
+                    painter = painterResource(R.drawable.logo_picke),
                     contentDescription = "Picke Logo",
                     modifier = Modifier
                         .size(width = 58.dp, height = 58.dp),

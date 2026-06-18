@@ -28,7 +28,7 @@ val dummyNewBattleList = listOf(
         description = "인간 본성의 선악과 문명의 역할에 관한 철학적 대결!",
         timeAgo = "5분",
         viewCount = "726",
-        leftProfile = BattleProfile(R.drawable.ic_profile_mengzi, "선하다", "맹자"),
+        leftProfile = BattleProfile(R.drawable.illust_mengzi, "선하다", "맹자"),
         rightProfile = BattleProfile(R.drawable.ic_profile_xunzi, "악하다", "순자")
     ),
     NewBattleItem(
@@ -38,7 +38,7 @@ val dummyNewBattleList = listOf(
         description = "인간 본성의 선악과 문명의 역할에 관한 철학적 대결!",
         timeAgo = "5분",
         viewCount = "726",
-        leftProfile = BattleProfile(R.drawable.ic_profile_mengzi, "선하다", "맹자"),
+        leftProfile = BattleProfile(R.drawable.illust_mengzi, "선하다", "맹자"),
         rightProfile = BattleProfile(R.drawable.ic_profile_xunzi, "악하다", "순자")
     ),
     NewBattleItem(
@@ -48,7 +48,7 @@ val dummyNewBattleList = listOf(
         description = "인간 본성의 선악과 문명의 역할에 관한 철학적 대결!",
         timeAgo = "5분",
         viewCount = "726",
-        leftProfile = BattleProfile(R.drawable.ic_profile_mengzi, "선하다", "맹자"),
+        leftProfile = BattleProfile(R.drawable.illust_mengzi, "선하다", "맹자"),
         rightProfile = BattleProfile(R.drawable.ic_profile_xunzi, "악하다", "순자")
     )
 )

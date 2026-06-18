@@ -284,7 +284,7 @@ fun NoticeEventList(
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_logo),
+                painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
                 tint = SwypTheme.colors.borderDefault

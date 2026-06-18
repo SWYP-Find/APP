@@ -193,21 +193,21 @@ fun FirstOnboardingCard(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             FirstOnboardingChatBubble(
-                profileResId = R.drawable.ic_profile_kant,
+                profileResId = R.drawable.illust_kant,
                 name = "칸트",
                 message = "인간은 짐승과 달리 스스로 세운 도덕 법칙에 복종할 수 있는 '이성적 존재'입니다.",
                 isLeft = true
             )
 
             FirstOnboardingChatBubble(
-                profileResId = R.drawable.ic_profile_niche,
+                profileResId = R.drawable.illust_nietzsche,
                 name = "니체",
                 message = "이성이요? 당신은 그 차가운 이성으로 생동감 넘치는 삶의 본능을 죽이고 있습니다.",
                 isLeft = false
             )
 
             FirstOnboardingChatBubble(
-                profileResId = R.drawable.ic_profile_kant,
+                profileResId = R.drawable.illust_kant,
                 name = "칸트",
                 message = "삶의 목적은 '행복'이 아니라 '행복해질 자격'을 갖추는 것입니다. 그것은 도덕적 의무를 완수하는 삶이죠.",
                 isLeft = true
@@ -337,13 +337,13 @@ fun SecondOnboardingCard(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 SecondOnboardingItemCard(
-                    profileResId = R.drawable.ic_profile_racoon,
+                    profileResId = R.drawable.illust_raccoon,
                     nickname = "사유하는 라쿤",
                     replyCount = "23",
                     likeCount = "1,340"
                 )
                 SecondOnboardingItemCard(
-                    profileResId = R.drawable.ic_profile_dochi,
+                    profileResId = R.drawable.illust_dochi,
                     nickname = "사유하는 고슴도치",
                     replyCount = "0",
                     likeCount = "0"
@@ -678,7 +678,7 @@ fun FourthOnboardingCard(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Image(
-                        painter = painterResource(id = R.drawable.ic_profile_kant),
+                        painter = painterResource(id = R.drawable.illust_kant),
                         contentDescription = "칸트 프로필",
                         modifier = Modifier
                             .size(44.dp)

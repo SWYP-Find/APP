@@ -63,7 +63,7 @@ fun CustomTopAppBar(
 
             if (showLogo) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_logo),
+                    painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "Picke 로고",
                     tint = Color.Unspecified,
                 )

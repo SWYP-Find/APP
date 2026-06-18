@@ -51,7 +51,7 @@ fun ChatBubble(
     val isLeft = script.speakerType == SpeakerType.A
     val bubbleBgColor = if (isLeft) Color.White else SwypTheme.colors.borderDisabled
     val bubbleBorderColor = if (isLeft) SwypTheme.colors.borderDisabled else SwypTheme.colors.borderSubtle
-    val imageModel = script.profileImageUrl ?: R.drawable.ic_profile_mengzi
+    val imageModel = script.profileImageUrl ?: R.drawable.illust_mengzi
 
     // 구조: [왼쪽 슬롯(36dp)] + [말풍선 영역(남은공간 전부)] + [오른쪽 슬롯(36dp)]
     Row(

@@ -217,7 +217,7 @@ fun ProfileSection(
     ) {
         // 프로필 이미지
         ProfileImage(
-            model = profileImage ?: R.drawable.ic_profile_mengzi,
+            model = profileImage ?: R.drawable.illust_mengzi,
             modifier = Modifier.size(52.dp),
         )
         Spacer(modifier = Modifier.width(12.dp))
