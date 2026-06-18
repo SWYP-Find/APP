@@ -204,21 +204,19 @@ fun ContentActivityCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    val displayStance = item.voteSide ?: ""
-                    val badgeBgColor = SwypTheme.colors.surfaceTertiary
-                    val badgeTextColor = SwypTheme.colors.primary
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(2.dp))
-                            .background(badgeBgColor)
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                    ) {
-                        Text(
-                            text = displayStance,
-                            style = SwypTheme.typography.b5Medium,
-                            color = badgeTextColor
-                        )
+                    if (item.voteSide != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(2.dp))
+                                .background(SwypTheme.colors.surfaceTertiary)
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = item.voteSide,
+                                style = SwypTheme.typography.b5Medium,
+                                color = SwypTheme.colors.primary
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(2.dp))
