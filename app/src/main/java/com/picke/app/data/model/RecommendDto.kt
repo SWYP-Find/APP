@@ -12,7 +12,6 @@ data class RecommendTagDto(
 
 data class RecommendOptionDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?,
     val stance: String?,
     val representative: String?,
@@ -43,7 +42,6 @@ fun RecommendTagDto.toDomainModel() = RecommendTagBoard(
 
 fun RecommendOptionDto.toDomainModel() = RecommendOptionBoard(
     optionId = this.optionId ?: 0L,
-    label = this.label ?: "",
     title = this.title ?: "",
     stance = this.stance ?: "",
     representative = this.representative ?: "",

@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige600
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -68,7 +66,7 @@ fun CustomTabBar(
                     color = SwypTheme.colors.primary,
                 )
             },
-            divider = { HorizontalDivider(color = Beige400, thickness = 2.dp) }
+            divider = { HorizontalDivider(color = SwypTheme.colors.surfaceTertiary, thickness = 2.dp) }
         ) {
             tabContent()
         }
@@ -83,7 +81,7 @@ fun CustomTabBar(
                     color = SwypTheme.colors.primary,
                 )
             },
-            divider = { HorizontalDivider(color = Beige600, thickness = 2.dp) }
+            divider = { HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 2.dp) }
         ) {
             tabContent()
         }

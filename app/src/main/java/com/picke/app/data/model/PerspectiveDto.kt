@@ -16,7 +16,6 @@ data class PerspectiveUserDto(
 
 data class PerspectiveOptionDto(
     val optionId: Long?,
-    val label: String?,
     val title: String?,
     val stance: String?
 )
@@ -98,7 +97,8 @@ fun PerspectiveDto.toDomainModel() = PerspectiveBoard(
     content = this.content ?: "",
     isMine = this.isMyPerspective ?: false,
     createdAt = this.createdAt ?: "",
-    stance = this.option?.label ?: "A",
+    optionTitle = this.option?.title ?: "",
+    optionId = this.option?.optionId ?: 0L,
     replyCount = this.commentCount ?: 0,
     likeCount = this.likeCount ?: 0,
     isLiked = this.isLiked ?: false
@@ -116,7 +116,8 @@ fun PerspectiveDetailResponseDto.toDomainModel() = PerspectiveDetailBoard(
     userTag = this.user?.userTag ?: "",
     nickname = this.user?.nickname ?: "알 수 없음",
     characterImageUrl = this.user?.characterImageUrl ?: "",
-    optionLabel = this.option?.label ?: "",
+    optionTitle = this.option?.title ?: "",
+    optionId = this.option?.optionId ?: 0L,
     content = this.content ?: "",
     likeCount = this.likeCount ?: 0,
     commentCount = this.commentCount ?: 0,

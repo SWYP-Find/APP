@@ -13,9 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.picke.app.AppRoute
 import com.picke.app.ui.component.CustomBottomNavigationBar
 import com.picke.app.ui.explore.ExploreScreen
@@ -30,7 +32,6 @@ import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.my.setting.SettingScreen
 import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.Beige200
 
 @Composable
 fun MainScreen(
@@ -42,7 +43,7 @@ fun MainScreen(
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         bottomBar = {
             CustomBottomNavigationBar(
                 mainNavController = mainNavController,
@@ -107,7 +108,7 @@ fun MainScreen(
                         mainNavController.navigate(AppRoute.ContentActivity.route)
                     },
                     onNavigateToNotice={
-                        mainNavController.navigate(AppRoute.NoticeEvent.route)
+                        mainNavController.navigate(AppRoute.NoticeEvent.createRoute())
                     },
                     onNavigateToPoint = {
                         mainNavController.navigate(AppRoute.Point.route)
@@ -147,8 +148,15 @@ fun MainScreen(
             composable(AppRoute.PhilosopherType.route) {
                 PhilosopherTypeScreen(onBackClick = { mainNavController.popBackStack() })
             }
-            composable(AppRoute.NoticeEvent.route) {
-                NoticeEventScreen(onBackClick = { mainNavController.popBackStack() })
+            composable(
+                route = AppRoute.NoticeEvent.route,
+                arguments = listOf(navArgument("noticeId") { type = NavType.LongType; defaultValue = -1L })
+            ) { backStackEntry ->
+                val noticeId = backStackEntry.arguments?.getLong("noticeId")?.takeIf { it != -1L }
+                NoticeEventScreen(
+                    onBackClick = { mainNavController.popBackStack() },
+                    initialNoticeId = noticeId
+                )
             }
             composable(AppRoute.Setting.route){
                 SettingScreen(

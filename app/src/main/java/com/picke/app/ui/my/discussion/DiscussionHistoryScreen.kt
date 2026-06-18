@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -26,7 +24,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,17 +35,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.app.R
 import com.picke.app.domain.model.MyBattleRecordItem
-import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray200
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun DiscussionHistoryScreen(
@@ -58,14 +46,11 @@ fun DiscussionHistoryScreen(
     modifier: Modifier = Modifier,
     viewModel: DiscussionHistoryViewModel = hiltViewModel()
 ) {
-    val tabs = listOf("A", "B")
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val pagerState = rememberPagerState(pageCount = { tabs.size })
-    val coroutineScope = rememberCoroutineScope()
+    val combinedList = uiState.agreeList + uiState.disagreeList
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar={
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_discussion),
@@ -73,7 +58,7 @@ fun DiscussionHistoryScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = {onBackClick()},
-                backgroundColor = Beige200
+                backgroundColor = SwypTheme.colors.backgroundBrand
             )
         }
     ){ innerPadding ->
@@ -82,47 +67,23 @@ fun DiscussionHistoryScreen(
                 .padding(top = innerPadding.calculateTopPadding())
                 .fillMaxSize()
         ){
-            // 탭바
-            CustomTabBar(
-                tabs = tabs,
-                selectedTab = tabs[pagerState.currentPage],
-                isScrollable = false,
-                onTabSelected = { selectedTab ->
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(tabs.indexOf(selectedTab))
-                    }
-                }
-            )
-
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize()
-                ) { page ->
-                    when (page) {
-                        0 -> DiscussionHistoryList(
-                            list = uiState.agreeList,
-                            voteSide = "PRO",
-                            emptyMessage = "아직 A 의견을 남긴 토론이 없습니다",
-                            onItemClick = onNavigateToDetail,
-                            onLoadMore = { viewModel.loadMore("PRO") }
-                        )
-                        1 -> DiscussionHistoryList(
-                            list = uiState.disagreeList,
-                            voteSide = "CON",
-                            emptyMessage = "아직 B 의견을 남긴 토론이 없습니다",
-                            onItemClick = onNavigateToDetail,
-                            onLoadMore = { viewModel.loadMore("CON") }
-                        )
+                DiscussionHistoryList(
+                    list = combinedList,
+                    emptyMessage = "아직 참여한 배틀이 없습니다",
+                    onItemClick = onNavigateToDetail,
+                    onLoadMore = {
+                        viewModel.loadMore("PRO")
+                        viewModel.loadMore("CON")
                     }
-                }
+                )
             }
         }
     }
@@ -131,7 +92,6 @@ fun DiscussionHistoryScreen(
 @Composable
 fun DiscussionHistoryList(
     list: List<MyBattleRecordItem>,
-    voteSide: String,
     emptyMessage: String,
     onItemClick: (String) -> Unit,
     onLoadMore: () -> Unit
@@ -143,15 +103,15 @@ fun DiscussionHistoryList(
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_logo),
+                painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = Beige600
+                tint = SwypTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
                 style = SwypTheme.typography.b3Regular,
-                color = Beige800
+                color = SwypTheme.colors.beige800
             )
         }
     } else {
@@ -185,7 +145,7 @@ fun DiscussionHistoryCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(SwypTheme.colors.surface)
-            .border(1.dp, Beige600, RoundedCornerShape(2.dp))
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -195,7 +155,7 @@ fun DiscussionHistoryCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Surface(
-                color = Beige600,
+                color = SwypTheme.colors.borderDefault,
                 shape = RoundedCornerShape(2.dp)
             ) {
                 Text(
@@ -208,7 +168,7 @@ fun DiscussionHistoryCard(
             Text(
                 text = item.title,
                 style = SwypTheme.typography.labelMedium,
-                color = Gray500,
+                color = SwypTheme.colors.textTertiary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -220,7 +180,7 @@ fun DiscussionHistoryCard(
         Text(
             text = item.summary,
             style = SwypTheme.typography.b4Regular,
-            color = Gray400,
+            color = SwypTheme.colors.neutral400,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -231,7 +191,7 @@ fun DiscussionHistoryCard(
         Text(
             text = item.createdAt,
             style = SwypTheme.typography.label,
-            color = Gray200
+            color = SwypTheme.colors.neutral200
         )
     }
 }

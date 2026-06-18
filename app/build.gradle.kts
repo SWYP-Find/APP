@@ -5,7 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
-    kotlin("kapt")
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -87,6 +88,7 @@ android {
     }
 }
 
+
 dependencies {
     // [Android Core & Lifecycle] 안드로이드 기본 뼈대 및 생명주기 관리
     implementation(libs.androidx.core.ktx)
@@ -113,7 +115,7 @@ dependencies {
     // [DI - Hilt] 의존성 주입
     implementation(libs.hilt.android)
     implementation(libs.androidx.foundation)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // [Network - Retrofit] 서버 API 통신
     implementation(libs.retrofit)
@@ -129,6 +131,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.dynamic.links)
+    implementation(libs.firebase.messaging)
 
     // [Paging3] 무한 스크롤 및 대용량 리스트 페이징 처리
     implementation(libs.androidx.paging.runtime)

@@ -41,17 +41,7 @@ import com.picke.app.R
 import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.SortFilterChip
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray200
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,7 +49,11 @@ import java.util.TimeZone
 
 @Composable
 fun AlarmScreen(
-    onBackClick:()->Unit,
+    onBackClick: () -> Unit,
+    onNavigateToTodayBattle: (battleId: String) -> Unit,
+    onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
+    onNavigateToPoint: () -> Unit,
+    onNavigateToNotice: (Long) -> Unit,
     viewModel: AlarmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,7 +66,7 @@ fun AlarmScreen(
     )
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -81,12 +75,12 @@ fun AlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = Beige200,
+                backgroundColor = SwypTheme.colors.backgroundBrand,
                 actions = {
                     Text(
                         text = "모두 읽음",
                         style = SwypTheme.typography.b4Medium,
-                        color = Gray500,
+                        color = SwypTheme.colors.textTertiary,
                         modifier = Modifier
                             .clickable {
                                 val hasUnreadAlarms = uiState.alarmList.any { !it.isRead }
@@ -129,7 +123,7 @@ fun AlarmScreen(
                         .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator(color = Primary900)
+                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 }
             } else {
                 if (uiState.alarmList.isEmpty()) {
@@ -141,16 +135,16 @@ fun AlarmScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_logo),
+                            painter = painterResource(id = R.drawable.logo_picke),
                             contentDescription = "빈 화면 로고",
                             modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                            tint = Beige600
+                            tint = SwypTheme.colors.borderDefault
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "아직 도착한 알림이 없습니다",
                             style = SwypTheme.typography.b3Regular,
-                            color = Beige800
+                            color = SwypTheme.colors.beige800
                         )
                     }
                 } else {
@@ -171,7 +165,18 @@ fun AlarmScreen(
                                 onClick = {
                                     if (!item.isRead) viewModel.readAlarm(item.notificationId)
 
-                                    // TODO: 알림 클릭 시 화면 이동 (item.referenceId 또는 item.detailCode 활용)
+                                    when (item.detailCode) {
+                                        "NEW_BATTLE" ->
+                                            onNavigateToTodayBattle(item.referenceId.toString())
+                                        "COMMENT_LIKE", "NEW_COMMENT" ->
+                                            if (item.perspectiveId != 0L)
+                                                onNavigateToComment(item.perspectiveId.toString(), item.referenceId.toString())
+                                        "CREDIT_EARNED" ->
+                                            onNavigateToPoint()
+                                        "POLICY_CHANGE" ->
+                                            onNavigateToNotice(item.referenceId)
+                                        // PROMOTION, VOTE_RESULT: 이동 없음
+                                    }
                                 }
                             )
                         }
@@ -190,9 +195,11 @@ fun AlarmCard(
     val iconRes = when (item.category) {
         "CONTENT" -> {
             when (item.detailCode) {
+                "NEW_BATTLE" -> R.drawable.ic_alarm_battle
+                "COMMENT_LIKE" -> R.drawable.ic_alarm_like
+                "NEW_COMMENT" -> R.drawable.ic_alarm_comment
                 "CREDIT_EARNED" -> R.drawable.ic_alarm_point
                 "VOTE_RESULT" -> R.drawable.ic_alarm_vote
-                "NEW_BATTLE" -> R.drawable.ic_alarm_battle
                 else -> R.drawable.ic_alarm_vote
             }
         }
@@ -205,9 +212,9 @@ fun AlarmCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(White)
-            .border(1.dp, Beige600, RoundedCornerShape(4.dp))
-            // .clickable { onClick() }
+            .background(Color.White)
+            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(4.dp))
+            .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -235,7 +242,7 @@ fun AlarmCard(
                 Text(
                     text = item.title,
                     style = SwypTheme.typography.caption2Medium,
-                    color = Gray300,
+                    color = SwypTheme.colors.textMuted,
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -250,7 +257,7 @@ fun AlarmCard(
                     Text(
                         text = item.createdAt,
                         style = SwypTheme.typography.caption2Medium,
-                        color = Gray200
+                        color = SwypTheme.colors.neutral200
                     )
 
                     if (!item.isRead) {
@@ -258,7 +265,7 @@ fun AlarmCard(
                         Box(
                             modifier = Modifier
                                 .size(4.dp)
-                                .background(Primary500, CircleShape)
+                                .background(SwypTheme.colors.primary, CircleShape)
                         )
                     }
                 }
@@ -270,30 +277,10 @@ fun AlarmCard(
             Text(
                 text = item.body,
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray900,
+                color = SwypTheme.colors.textPrimary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
         }
-    }
-}
-
-fun formatTimeAgo(isoTimeString: String): String {
-    return try {
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        format.timeZone = TimeZone.getTimeZone("UTC")
-        val past = format.parse(isoTimeString) ?: return ""
-
-        val now = Date()
-        val seconds = (now.time - past.time) / 1000
-
-        when {
-            seconds < 60 -> "방금 전"
-            seconds < 3600 -> "${seconds / 60}분 전"
-            seconds < 86400 -> "${seconds / 3600}시간 전"
-            else -> "${seconds / 86400}일 전"
-        }
-    } catch (e: Exception) {
-        ""
     }
 }

@@ -106,12 +106,12 @@ class HomeViewModel @Inject constructor(
                         when (pick) {
                             is TodayPickUiModel.VotePick -> pick.copy(
                                 selectedOptionId = voteBoard.selectedOptionId,
-                                options = voteBoard.stats.sortedBy { it.label }.map { it.toUiModel() },
+                                options = voteBoard.stats.sortedBy { it.optionId }.map { it.toUiModel() },
                                 participantsCount = voteBoard.totalCount
                             )
                             is TodayPickUiModel.QuizPick -> pick.copy(
                                 selectedOptionId = voteBoard.selectedOptionId,
-                                options = voteBoard.stats.sortedBy { it.label }.map { it.toUiModel() },
+                                options = voteBoard.stats.sortedBy { it.optionId }.map { it.toUiModel() },
                                 participantsCount = voteBoard.totalCount
                             )
                         }
@@ -164,12 +164,12 @@ class HomeViewModel @Inject constructor(
                             when (pick) {
                                 is TodayPickUiModel.VotePick -> pick.copy(
                                     selectedOptionId = voteBoard.selectedOptionId,
-                                    options = voteBoard.stats.sortedBy { it.label }.map { it.toUiModel() },
+                                    options = voteBoard.stats.sortedBy { it.optionId }.map { it.toUiModel() },
                                     participantsCount = pick.participantsCount + 1
                                 )
                                 is TodayPickUiModel.QuizPick -> pick.copy(
                                     selectedOptionId = voteBoard.selectedOptionId,
-                                    options = voteBoard.stats.sortedBy { it.label }.map { it.toUiModel() },
+                                    options = voteBoard.stats.sortedBy { it.optionId }.map { it.toUiModel() },
                                     participantsCount = pick.participantsCount + 1
                                 )
                             }

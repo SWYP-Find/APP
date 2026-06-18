@@ -1,4 +1,4 @@
-package com.picke.app.ui.todaybattle
+﻿package com.picke.app.ui.todaybattle
 
 import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,21 +63,7 @@ import coil.request.ImageRequest
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.ShareDialog
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige400
-import com.picke.app.ui.theme.Beige50
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray800
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary300
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.Secondary200
-import com.picke.app.ui.theme.Secondary500
-import com.picke.app.ui.theme.Secondary700
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.util.shareBattleToInstagramStoryDarkMode
 import com.picke.app.util.shareBattleToKakao
@@ -85,6 +72,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun TodayBattleScreen(
     viewModel: TodayBattleViewModel = hiltViewModel(),
+    initialBattleId: String? = null,
     onBackClick: () -> Unit,
     onEnterBattle: (String) -> Unit
 ){
@@ -95,6 +83,13 @@ fun TodayBattleScreen(
     var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     val isButtonEnabled = selectedOptionId != null
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(battleList, initialBattleId) {
+        if (initialBattleId != null && battleList.isNotEmpty()) {
+            val targetPage = battleList.indexOfFirst { it.battleId == initialBattleId }
+            if (targetPage >= 0) pagerState.animateScrollToPage(targetPage)
+        }
+    }
     val graphicsLayer = rememberGraphicsLayer()
 
     val context = LocalContext.current
@@ -172,13 +167,13 @@ fun TodayBattleScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = White
+                        tint = Color.White
                     )
                 }
             }
             // 정중앙 스피너
             CircularProgressIndicator(
-                color = Beige200,
+                color = SwypTheme.colors.backgroundBrand,
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -200,7 +195,7 @@ fun TodayBattleScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = White
+                        tint = Color.White
                     )
                 }
             }
@@ -212,15 +207,15 @@ fun TodayBattleScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_logo),
+                    painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = Beige600
+                    tint = SwypTheme.colors.borderDefault
                 )
                 Text(
                     text = "아직 빠른 배틀이 선정되지 않았어요\n조금만 기다려주세요!",
                     style = SwypTheme.typography.b3Regular,
-                    color = Beige400,
+                    color = SwypTheme.colors.surfaceTertiary,
                     textAlign = TextAlign.Center
                 )
             }
@@ -249,8 +244,8 @@ fun TodayBattleScreen(
                     },
                     modifier = Modifier.navigationBarsPadding()
                         .padding(20.dp),
-                    backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else Primary300,
-                    textColor = Beige50
+                    backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
+                    textColor = SwypTheme.colors.surfaceDefault
                 )
             }
         ) { innerPadding ->
@@ -305,7 +300,7 @@ fun TodayBattleScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_arrow_left),
                                 contentDescription = "뒤로가기",
-                                tint = White,
+                                tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -316,7 +311,7 @@ fun TodayBattleScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_share),
                                 contentDescription = "공유",
-                                tint = White,
+                                tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -366,7 +361,7 @@ fun TodayBattleScreen(
                     .pointerInput(Unit) {},
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
     }
@@ -432,7 +427,7 @@ fun BattleContent(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item.tags.forEach { tag ->
                         Surface(
-                            color = White,
+                            color = Color.White,
                             shape = RoundedCornerShape(2.dp)
                         ) {
                             Text(
@@ -457,7 +452,7 @@ fun BattleContent(
                 Text(
                     text = item.description,
                     style = SwypTheme.typography.b3Regular,
-                    color = Gray400,
+                    color = SwypTheme.colors.neutral400,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -466,7 +461,7 @@ fun BattleContent(
                 Surface(
                     color = Color.Transparent,
                     shape = RoundedCornerShape(2.dp),
-                    border = BorderStroke(1.dp, Gray700)
+                    border = BorderStroke(1.dp, SwypTheme.colors.textSecondary)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -518,7 +513,7 @@ fun BattleContent(
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = Secondary200
+                color = SwypTheme.colors.secondaryLight
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text("VS", style = SwypTheme.typography.b3SemiBold, color = Color.Black)
@@ -546,7 +541,7 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
                     modifier = Modifier
                         .weight(1f)
                         .height(2.dp)
-                        .background(if (i == currentPage) White else White.copy(alpha = 0.3f))
+                        .background(if (i == currentPage) Color.White else Color.White.copy(alpha = 0.3f))
                 )
             }
         }
@@ -555,7 +550,7 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
         Text(
             text = "${currentPage + 1}/$totalPages",
             style = SwypTheme.typography.labelXSmall,
-            color = White.copy(alpha = 0.3f)
+            color = Color.White.copy(alpha = 0.3f)
         )
     }
 }
@@ -568,8 +563,8 @@ fun OpinionCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) Secondary700 else Color.Transparent
-    val bgColor = if (isSelected) Gray900 else Gray800
+    val borderColor = if (isSelected) SwypTheme.colors.secondary700 else Color.Transparent
+    val bgColor = if (isSelected) SwypTheme.colors.textPrimary else SwypTheme.colors.textPrimary
 
     Column(
         modifier = Modifier
@@ -585,7 +580,7 @@ fun OpinionCard(
         Text(
             text = name,
             style = SwypTheme.typography.labelXSmall,
-            color = Secondary500,
+            color = SwypTheme.colors.secondary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -593,7 +588,7 @@ fun OpinionCard(
         Text(
             text = opinion,
             style = SwypTheme.typography.h3SemiBold,
-            color = White,
+            color = Color.White,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -601,7 +596,7 @@ fun OpinionCard(
         Text(
             text = "\"$quote\"",
             style = SwypTheme.typography.labelXSmall,
-            color = White.copy(0.3f),
+            color = Color.White.copy(0.3f),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )

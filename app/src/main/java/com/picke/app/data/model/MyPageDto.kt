@@ -200,7 +200,7 @@ fun MyContentActivityItemDto.toDomainModel() = MyContentActivityItem(
         characterType = this.author?.characterType ?: "UNKNOWN",
         characterImageUrl = this.author?.characterImageUrl ?: ""
     ),
-    voteSide = this.voteSide ?: "",
+    voteSide = this.voteSide,
     content = this.content ?: "",
     likeCount = this.likeCount ?: 0,
     createdAt = this.createdAt?.take(10) ?: ""
@@ -239,12 +239,12 @@ fun MyPhilosopherDto?.toDomainModel() = MyPhilosopher(
 )
 
 fun NotificationSettingsDto.toDomainModel() = NotificationSettingsBoard(
-    newBattleEnabled = this.newBattleEnabled ?: true,
+    newBattleEnabled = this.newBattleEnabled ?: false,
     battleResultEnabled = this.battleResultEnabled ?: true,
     commentReplyEnabled = this.commentReplyEnabled ?: true,
-    newCommentEnabled = this.newCommentEnabled ?: true,
-    contentLikeEnabled = this.contentLikeEnabled ?: true,
-    marketingEventEnabled = this.marketingEventEnabled ?: false
+    newCommentEnabled = this.newCommentEnabled ?: false,
+    contentLikeEnabled = this.contentLikeEnabled ?: false,
+    marketingEventEnabled = this.marketingEventEnabled ?: true
 )
 
 // Request DTO 변환 (Domain -> DTO)

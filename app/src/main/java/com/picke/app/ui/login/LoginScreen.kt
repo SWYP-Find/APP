@@ -3,7 +3,7 @@ package com.picke.app.ui.login
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.Toast // ✨ 추가
+import android.widget.Toast 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -31,7 +31,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.picke.app.ui.theme.SwypAppTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
@@ -39,13 +41,9 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary300
 import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.White
 import androidx.activity.compose.BackHandler
 import com.kakao.sdk.auth.model.Prompt
 
@@ -54,7 +52,7 @@ private const val TAG = "LoginScreen_Picke"
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToMain: ()->Unit,
+    onNavigateToMain: (isNewUser: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -93,7 +91,7 @@ fun LoginScreen(
         when (val state = uiState) {
             is LoginUiState.Success -> {
                 Log.i(TAG, "[NAV] 로그인 성공 -> 목적지(메인 또는 딥링크)로 이동 (신규 유저 여부: ${state.isNewUser})")
-                onNavigateToMain()
+                onNavigateToMain(state.isNewUser)
             }
             is LoginUiState.Error -> {
                 Log.e(TAG, "[ERROR] 로그인 실패: ${state.message}")
@@ -104,33 +102,62 @@ fun LoginScreen(
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-            .background(Color(0xFF893825)),
-        contentAlignment = Alignment.Center
+    LoginScreenContent(
+        isLoading = uiState is LoginUiState.Loading,
+        onKakaoClick = {
+            loginWithKakaoForAuthCode(context, viewModel) { token ->
+                if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
+                viewModel.handleSocialLoginSuccess("kakao", token)
+            }
+        },
+        onGoogleClick = {
+            Log.d(TAG, "[FLOW] 구글 로그인 버튼 클릭")
+            if (BuildConfig.GOOGLE_WEB_CLIENT_ID.isEmpty()) {
+                Log.e(TAG, "[ERROR] GOOGLE_WEB_CLIENT_ID가 설정되지 않았습니다. local.properties를 확인하세요.")
+                Toast.makeText(context, "로그인 설정 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                    .requestEmail()
+                    .build()
+                val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                googleSignInClient.signOut().addOnCompleteListener {
+                    googleSignInLauncher.launch(googleSignInClient.signInIntent)
+                }
+            }
+        },
+    )
+}
 
-    ){
-        // 중앙: 텍스트 + 로고
+@Composable
+private fun LoginScreenContent(
+    isLoading: Boolean,
+    onKakaoClick: () -> Unit = {},
+    onGoogleClick: () -> Unit = {},
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SwypTheme.colors.backgroundSubtle),
+        contentAlignment = Alignment.Center
+    ) {
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 1. 텍스트
             Text(
                 style = SwypTheme.typography.h4SemiBold,
-                color = Primary300,
+                color = SwypTheme.colors.neutral200,
                 text = stringResource(R.string.login_your_think)
             )
-            // 2. 로고
             Image(
-                painter = painterResource(id = R.drawable.ic_login_logo),
+                painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "Picke Logo",
                 modifier = Modifier.size(width = 320.dp, height = 120.dp)
             )
             Spacer(modifier = Modifier.height(72.dp))
         }
 
-        // 하단: 소셜 로그인 버튼
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -140,55 +167,43 @@ fun LoginScreen(
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // [로딩중]
-            if (uiState is LoginUiState.Loading) {
-                CircularProgressIndicator(color = Primary900)
+            if (isLoading) {
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
                 Spacer(modifier = Modifier.height(16.dp))
-            }
-            // [로딩중 X]
-            else if (uiState is LoginUiState.Idle) {
-                // 1. 카카오 로그인 버튼
+            } else {
                 CustomButton(
                     text = stringResource(R.string.login_with_kakao),
-                    onClick = {
-                        loginWithKakaoForAuthCode(context, viewModel) { token ->
-                            if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
-                            viewModel.handleSocialLoginSuccess("kakao", token)
-                        }
-                    },
+                    onClick = onKakaoClick,
                     backgroundColor = Color(0xFFFEE500),
-                    textColor = Gray900,
-                    iconResId = R.drawable.ic_kakao
+                    textColor = SwypTheme.colors.textPrimary,
+                    iconResId = R.drawable.logo_login_kakao
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
-                // 2. 구글 로그인 버튼
                 CustomButton(
                     text = stringResource(R.string.login_with_google),
-                    onClick = {
-                        Log.d(TAG, "[FLOW] 구글 로그인 버튼 클릭")
-                        if (BuildConfig.GOOGLE_WEB_CLIENT_ID.isEmpty()) {
-                            Log.e(TAG, "[ERROR] GOOGLE_WEB_CLIENT_ID가 설정되지 않았습니다. local.properties를 확인하세요.")
-                            Toast.makeText(context, "로그인 설정 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                            return@CustomButton
-                        }
-
-                        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestServerAuthCode(BuildConfig.GOOGLE_WEB_CLIENT_ID)
-                            .requestEmail()
-                            .build()
-                        val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                        googleSignInClient.signOut().addOnCompleteListener {
-                            googleSignInLauncher.launch(googleSignInClient.signInIntent)
-                        }
-                    },
-                    backgroundColor = White,
-                    textColor = Gray900,
-                    iconResId = R.drawable.ic_google
+                    onClick = onGoogleClick,
+                    backgroundColor = Color.White,
+                    textColor = SwypTheme.colors.textPrimary,
+                    iconResId = R.drawable.logo_login_google
                 )
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true, name = "Login - 기본")
+@Composable
+private fun LoginScreenPreview() {
+    SwypAppTheme {
+        LoginScreenContent(isLoading = false)
+    }
+}
+
+@Preview(showSystemUi = true, name = "Login - 로딩중")
+@Composable
+private fun LoginScreenLoadingPreview() {
+    SwypAppTheme {
+        LoginScreenContent(isLoading = true)
     }
 }
 

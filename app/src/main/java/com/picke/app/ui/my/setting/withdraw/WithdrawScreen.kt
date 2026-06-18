@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.setting.withdraw
+﻿package com.picke.app.ui.my.setting.withdraw
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
@@ -13,10 +13,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Primary500
-import com.picke.app.ui.theme.Primary800
 import com.picke.app.ui.theme.SwypTheme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,10 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.my.setting.SettingViewModel
-import com.picke.app.ui.theme.Gray200
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary900
-import com.picke.app.ui.theme.White
 
 @Composable
 fun WithdrawScreen(
@@ -64,7 +56,7 @@ fun WithdrawScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
                 Row(
@@ -85,11 +77,11 @@ fun WithdrawScreen(
                             .weight(1f)
                             .fillMaxHeight(),
                         shape = RectangleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = Beige200)
+                        colors = ButtonDefaults.buttonColors(containerColor = SwypTheme.colors.backgroundBrand)
                     ) {
                         Text(
                             text = "제출하기",
-                            color = Primary800,
+                            color = SwypTheme.colors.primaryDark,
                             style = SwypTheme.typography.h4SemiBold
                         )
                     }
@@ -100,11 +92,11 @@ fun WithdrawScreen(
                             .weight(1f)
                             .fillMaxHeight(),
                         shape = RectangleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = Primary500)
+                        colors = ButtonDefaults.buttonColors(containerColor = SwypTheme.colors.primary)
                     ) {
                         Text(
                             text = "픽케로 다시 돌아가기",
-                            color = White,
+                            color = Color.White,
                             style = SwypTheme.typography.h4SemiBold
                         )
                     }
@@ -124,7 +116,7 @@ fun WithdrawScreen(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 text = "정말 떠나시나요? 아쉬워요 😢",
                 style = SwypTheme.typography.h3SemiBold,
-                color = Primary800
+                color = SwypTheme.colors.primaryDark
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -133,7 +125,7 @@ fun WithdrawScreen(
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 text = "지금까지 픽케를 이용해주셔서 감사합니다.\n더 나은 서비스를 만들기 위해, 탈퇴 이유를 알려주세요.",
-                color = Gray400,
+                color = SwypTheme.colors.neutral400,
                 style = SwypTheme.typography.labelMedium
             )
 
@@ -195,7 +187,7 @@ fun WithdrawReasonItem(
                 .clip(CircleShape)
                 .border(
                     width = 2.dp,
-                    color = if (isSelected) Primary500 else Gray200,
+                    color = if (isSelected) SwypTheme.colors.primary else SwypTheme.colors.neutral200,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -206,7 +198,7 @@ fun WithdrawReasonItem(
                     modifier = Modifier
                         .size(10.dp)
                         .clip(CircleShape)
-                        .background(Primary500)
+                        .background(SwypTheme.colors.primary)
                 )
             }
         }
@@ -215,7 +207,7 @@ fun WithdrawReasonItem(
 
         Text(
             text = text,
-            color = Gray900,
+            color = SwypTheme.colors.textPrimary,
             style = SwypTheme.typography.b3Regular
         )
     }

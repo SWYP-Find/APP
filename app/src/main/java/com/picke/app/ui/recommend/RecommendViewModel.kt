@@ -61,8 +61,8 @@ class RecommendViewModel @Inject constructor(
                     Log.d("RecommendFlow", "🟢 추천 배틀 목록 조회 성공: ${page.items.size}개")
 
                     page.items.forEachIndexed { index, board ->
-                        val optA = board.options.find { it.label == "A" || it.label == "AGREE" }
-                        val optB = board.options.find { it.label == "B" || it.label == "DISAGREE" }
+                        val optA = board.options.getOrNull(0)
+                        val optB = board.options.getOrNull(1)
 
                         Log.d("RecommendFlow", """
                             --- [추천 배틀 Item $index] ---
@@ -71,16 +71,14 @@ class RecommendViewModel @Inject constructor(
                             summary: ${board.summary}
                             participantsCount: ${board.participantsCount}
                             tags: ${board.tags.map { it.name }}
-                            
+
                             [Option A 데이터]
-                            - label: ${optA?.label}
                             - title: ${optA?.title}
                             - stance: ${optA?.stance}
                             - representative(철학자): ${optA?.representative}
                             - imageUrl: ${optA?.imageUrl}
-                            
+
                             [Option B 데이터]
-                            - label: ${optB?.label}
                             - title: ${optB?.title}
                             - stance: ${optB?.stance}
                             - representative(철학자): ${optB?.representative}
@@ -108,8 +106,8 @@ class RecommendViewModel @Inject constructor(
 
 // Domain Model -> UI Model
 private fun RecommendBoard.toUiModel(): RecommendUiModel {
-    val optA = this.options.find { it.label == "A" || it.label == "AGREE" }
-    val optB = this.options.find { it.label == "B" || it.label == "DISAGREE" }
+    val optA = this.options.getOrNull(0)
+    val optB = this.options.getOrNull(1)
     val durationInMinutes = if (this.audioDuration > 0 && this.audioDuration < 60) {
         1
     } else {

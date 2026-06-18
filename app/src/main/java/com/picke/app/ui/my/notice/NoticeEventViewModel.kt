@@ -3,6 +3,7 @@ package com.picke.app.ui.my.notice
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.domain.model.AlarmDetailBoard
 import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.domain.model.NoticeEventItem
 import com.picke.app.domain.repository.AlarmRepository
@@ -20,7 +21,8 @@ data class NoticeEventUiState(
     val eventList: List<NoticeEventItem> = emptyList(),
     val contentList: List<NoticeEventItem> = emptyList(),
     val isLoading: Boolean = false,
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val initialDetailItem: NoticeEventItem? = null
 )
 
 @HiltViewModel
@@ -104,6 +106,19 @@ class NoticeEventViewModel @Inject constructor(
         }
     }
 
+    fun fetchInitialDetail(noticeId: Long) {
+        viewModelScope.launch {
+            Log.d("NoticeEventFlow", "🚀 [알림 진입] ID($noticeId) 상세 요청 시작")
+            val result = alarmRepository.getAlarmDetail(noticeId)
+            result.onSuccess { detailData ->
+                Log.d("NoticeEventFlow", "✅ [알림 진입 성공] $detailData")
+                _uiState.update { it.copy(initialDetailItem = detailData.toNoticeEventItem()) }
+            }.onFailure { error ->
+                Log.e("NoticeEventFlow", "❌ [알림 진입 실패] ${error.message}")
+            }
+        }
+    }
+
     private fun AlarmItemBoard.toNoticeEventItem(typeName: String): NoticeEventItem {
         val formattedDate = this.createdAt.take(10).replace("-", ".")
 
@@ -114,6 +129,23 @@ class NoticeEventViewModel @Inject constructor(
             date = formattedDate,
             content = this.body,
             isRead = this.isRead
+        )
+    }
+
+    private fun AlarmDetailBoard.toNoticeEventItem(): NoticeEventItem {
+        val typeName = when (this.category) {
+            "NOTICE" -> "공지사항"
+            "EVENT" -> "이벤트"
+            "CONTENT" -> "콘텐츠"
+            else -> "공지사항"
+        }
+        return NoticeEventItem(
+            id = this.notificationId.toString(),
+            type = typeName,
+            title = this.title,
+            date = this.createdAt.take(10).replace("-", "."),
+            content = this.body,
+            isRead = true
         )
     }
 }

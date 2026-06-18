@@ -25,7 +25,6 @@ data class HomeContent(
 )
 
 data class ContentOption(
-    val label: String,
     val text: String,
     val philosopherName: String?,
     val imageUrl: String?

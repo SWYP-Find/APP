@@ -2,6 +2,7 @@ package com.picke.app.di
 
 import com.picke.app.data.remote.AlarmApi
 import com.picke.app.data.remote.AuthApi
+import com.picke.app.data.remote.DeviceApi
 import com.picke.app.data.remote.BattleApi
 import com.picke.app.data.remote.CommentApi
 import com.picke.app.data.remote.ExploreApi
@@ -113,5 +114,11 @@ object ApiModule {
     @Singleton
     fun provideProposalApi(retrofit: Retrofit): ProposalApi {
         return retrofit.create(ProposalApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDeviceApi(retrofit: Retrofit): DeviceApi {
+        return retrofit.create(DeviceApi::class.java)
     }
  }

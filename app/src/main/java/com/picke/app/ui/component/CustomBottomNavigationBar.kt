@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.size
@@ -18,7 +18,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.picke.app.ui.main.BottomNavItem
-import com.picke.app.ui.theme.Gray900
 import com.picke.app.ui.theme.SwypTheme
 
 @SuppressLint("RestrictedApi")
@@ -95,10 +94,10 @@ fun CustomBottomNavigationBar(
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Gray900,
-                    selectedTextColor = Gray900,
-                    unselectedIconColor = Gray900.copy(alpha = 0.4f),
-                    unselectedTextColor = Gray900.copy(alpha = 0.4f),
+                    selectedIconColor = SwypTheme.colors.textPrimary,
+                    selectedTextColor = SwypTheme.colors.textPrimary,
+                    unselectedIconColor = SwypTheme.colors.textPrimary.copy(alpha = 0.4f),
+                    unselectedTextColor = SwypTheme.colors.textPrimary.copy(alpha = 0.4f),
                     indicatorColor = Color.Transparent
                 )
             )

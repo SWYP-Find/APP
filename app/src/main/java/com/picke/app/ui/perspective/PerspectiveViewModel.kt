@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.PerspectiveBoard
 import com.picke.app.domain.model.PerspectiveDetailBoard
 import com.picke.app.domain.model.PollQuizVoteBoard
+import com.picke.app.domain.model.VoteStatsOptionBoard
 import com.picke.app.domain.repository.PerspectiveRepository
 import com.picke.app.domain.repository.VoteRepository
 import com.picke.app.domain.repository.VoteStreamRepository
@@ -29,7 +30,8 @@ data class PerspectiveUiModel(
     val commentId: String,
     val profileImageUrl: String,
     val nickname: String,
-    val stance: String,
+    val optionTitle: String,
+    val optionId: Long,
     val content: String,
     val timeAgo: String,
     val replyCount: Int,
@@ -40,14 +42,14 @@ data class PerspectiveUiModel(
 
 data class PerspectiveUiState(
     val battleId: String = "",
-    val proRatio: Float = 0.5f,
-    val conRatio: Float = 0.5f,
+    val voteOptions: List<VoteStatsOptionBoard> = emptyList(),
     val perspectives: List<PerspectiveUiModel> = emptyList(),
     val myPerspective: PerspectiveDetailBoard? = null,
     val nextCursor: String? = null,
     val hasNext: Boolean = true,
     val isLoading: Boolean = false,
     val sort: String = "latest",
+    val selectedOptionId: Long? = null,
     val opinionChanged: Boolean = false,
     val editingPerspectiveId: Long? = null
 )
@@ -112,7 +114,7 @@ class PerspectiveViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 내 관점 데이터 조회 시도")
             perspectiveRepository.getMyPerspective(battleIdLong)
                 .onSuccess { myData ->
-                    Log.i(TAG, "[STATE] 내 관점 존재함 - 상태: ${myData.status}, 입장: ${myData.optionLabel}")
+                    Log.i(TAG, "[STATE] 내 관점 존재함 - 상태: ${myData.status}, 입장: ${myData.optionTitle}")
                     _uiState.update { it.copy(myPerspective = myData) }
                 }
                 .onFailure {
@@ -122,12 +124,21 @@ class PerspectiveViewModel @Inject constructor(
         }
     }
 
-    // 관점 목록 (페이징) & 정렬 로직
+    // 관점 목록 (페이징) & 정렬 / 옵션 필터 로직
     fun updateSort(newSort: String) {
         if (_uiState.value.sort == newSort) return
         Log.d(TAG, "[FLOW] 정렬 기준 변경: $newSort -> 목록 초기화 후 새로고침")
         _uiState.update {
             it.copy(sort = newSort, nextCursor = null, hasNext = true, perspectives = emptyList())
+        }
+        loadPerspectives(isRefresh = true)
+    }
+
+    fun selectOption(optionId: Long?) {
+        if (_uiState.value.selectedOptionId == optionId) return
+        Log.d(TAG, "[FLOW] 옵션 탭 변경: $optionId -> 목록 초기화 후 새로고침")
+        _uiState.update {
+            it.copy(selectedOptionId = optionId, nextCursor = null, hasNext = true, perspectives = emptyList())
         }
         loadPerspectives(isRefresh = true)
     }
@@ -142,12 +153,13 @@ class PerspectiveViewModel @Inject constructor(
             val cursor = if (isRefresh) null else state.nextCursor
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
 
-            Log.d(TAG, "[FLOW] 관점 목록 조회 시도 - cursor: $cursor, sort: ${state.sort}")
+            Log.d(TAG, "[FLOW] 관점 목록 조회 시도 - cursor: $cursor, optionId: ${state.selectedOptionId}, sort: ${state.sort}")
 
             perspectiveRepository.getPerspectives(
                 battleId = battleIdLong,
                 cursor = cursor,
                 size = 10,
+                optionId = state.selectedOptionId,
                 sort = state.sort
             ).onSuccess { page ->
                 val newItems = page.items.map { it.toUiModel() }
@@ -176,11 +188,8 @@ class PerspectiveViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 투표 통계(비율) 단건 조회 시도")
             voteRepository.getVoteStats(receivedBattleId.toLong())
                 .onSuccess { statsBoard ->
-                    val pro = statsBoard.options.find { it.label == "A" }?.ratio ?: 0.5f
-                    val con = statsBoard.options.find { it.label == "B" }?.ratio ?: 0.5f
-
-                    Log.i(TAG, "[STATE] 투표 통계 조회 성공 - A: $pro, B: $con")
-                    _uiState.update { it.copy(proRatio = pro, conRatio = con) }
+                    Log.i(TAG, "[STATE] 투표 통계 조회 성공 - 옵션 수: ${statsBoard.options.size}")
+                    _uiState.update { it.copy(voteOptions = statsBoard.options) }
                 }
                 .onFailure { error ->
                     Log.w(TAG, "[FLOW] 투표 통계 조회 실패: ${error.message}")
@@ -205,15 +214,14 @@ class PerspectiveViewModel @Inject constructor(
 
         // 1. 낙관적 업데이트
         _uiState.update { state ->
-            val tempLabel = state.myPerspective?.optionLabel ?: ""
-
             val updatedPerspective = (state.myPerspective ?: PerspectiveDetailBoard(
-                perspectiveId = 0L, // 임시 ID
+                perspectiveId = 0L,
                 content = content,
                 characterImageUrl = "",
                 nickname = "나",
-                optionLabel = tempLabel, // 하드코딩 탈피!
-                status = "PENDING",
+                optionTitle = "",
+                optionId = 0L,
+                status = "PUBLISHED",
                 createdAt = "방금 전",
                 likeCount = 0,
                 isLiked = false,
@@ -221,9 +229,8 @@ class PerspectiveViewModel @Inject constructor(
                 commentCount = 0,
                 userTag = "",
             )).copy(
-                status = "PENDING",
-                content = content,
-                optionLabel = tempLabel
+                status = "PUBLISHED",
+                content = content
             )
 
             state.copy(editingPerspectiveId = null, myPerspective = updatedPerspective)
@@ -262,7 +269,7 @@ class PerspectiveViewModel @Inject constructor(
     }
 
     fun deletePerspective(perspectiveId: Long) {
-        Log.d(TAG, "[FLOW] 관점 삭제 로직 시작 - 대상 ID: $perspectiveId")
+        Log.d(TAG, "[FLOW] 관점 삭제 로직 시작 - perspectiveId: $perspectiveId, battleId: $receivedBattleId")
 
         // 낙관적 업데이트 (UI에서 즉시 삭제)
         _uiState.update { state ->
@@ -273,7 +280,7 @@ class PerspectiveViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            Log.d(TAG, "[API_REQ] 관점 삭제 요청 전송")
+            Log.d(TAG, "[API_REQ] 관점 삭제 요청 전송 - perspectiveId: $perspectiveId, battleId: $receivedBattleId")
             perspectiveRepository.deletePerspective(perspectiveId)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 관점 삭제 완료")
@@ -356,23 +363,16 @@ class PerspectiveViewModel @Inject constructor(
 }
 
 // 도메인 모델 -> UI 모델 매핑 확장 함수
-private fun PerspectiveBoard.toUiModel(): PerspectiveUiModel {
-    val displayStance = when (this.stance.uppercase()) {
-        "A", "AGREE", "찬성" -> "A"
-        "B", "DISAGREE", "반대" -> "B"
-        else -> this.stance
-    }
-
-    return PerspectiveUiModel(
-        commentId = this.commentId,
-        profileImageUrl = this.characterImageUrl,
-        nickname = this.nickname,
-        stance = displayStance,
-        content = this.content,
-        timeAgo = this.createdAt.take(10),
-        replyCount = this.replyCount,
-        likeCount = this.likeCount,
-        isLiked = this.isLiked,
-        isMine = this.isMine
-    )
-}
+private fun PerspectiveBoard.toUiModel() = PerspectiveUiModel(
+    commentId = this.commentId,
+    profileImageUrl = this.characterImageUrl,
+    nickname = this.nickname,
+    optionTitle = this.optionTitle,
+    optionId = this.optionId,
+    content = this.content,
+    timeAgo = this.createdAt.take(10),
+    replyCount = this.replyCount,
+    likeCount = this.likeCount,
+    isLiked = this.isLiked,
+    isMine = this.isMine
+)

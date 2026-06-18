@@ -1,4 +1,4 @@
-package com.picke.app.ui.my.setting
+﻿package com.picke.app.ui.my.setting
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,11 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.app.R
 import com.picke.app.ui.component.CustomConfirmDialog
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Gray700
-import com.picke.app.ui.theme.Gray900
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -62,10 +57,10 @@ fun SettingScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = { onBackClick() },
-                    backgroundColor = Beige200
+                    backgroundColor = SwypTheme.colors.backgroundBrand
                 )
             },
-            containerColor = Beige200
+            containerColor = SwypTheme.colors.backgroundBrand
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -73,12 +68,12 @@ fun SettingScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                /*SettingMenuItem(
+                SettingMenuItem(
                     title = stringResource(R.string.my_setting_alarm),
                     onClick = {
                         onNavigateToSettingAlarm()
                     }
-                )*/
+                )
                 SettingMenuItem(
                     title = stringResource(R.string.setting_footer_privacy),
                     onClick = onNavigateToPrivacyPolicy
@@ -141,7 +136,7 @@ fun SettingScreen(
                     .clickable(enabled = false) { /* 클릭 방지 */ },
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
     }
@@ -166,15 +161,15 @@ fun SettingMenuItem(
             Text(
                 text = title,
                 style = SwypTheme.typography.b3SemiBold,
-                color = Gray700
+                color = SwypTheme.colors.textSecondary
             )
             Icon(
                 painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
-                tint = Gray900
+                tint = SwypTheme.colors.textPrimary
             )
         }
-        HorizontalDivider(color = Beige600, thickness = 1.dp)
+        HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 1.dp)
     }
 }

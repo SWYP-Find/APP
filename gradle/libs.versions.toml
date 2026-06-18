@@ -2,6 +2,7 @@
 # [Build & Setup]
 agp = "9.0.1"
 kotlin = "2.0.21"
+ksp = "2.0.21-1.0.28"
 
 # [AndroidX Core & Lifecycle]
 activityCompose = "1.9.3"
@@ -15,7 +16,7 @@ composeBom = "2024.10.01"
 composeLayout = "1.7.4"
 
 # [Navigation & DI]
-hilt = "2.55"
+hilt = "2.59.2"
 hiltNavigationCompose = "1.2.0"
 navigation = "2.8.5"
 
@@ -27,6 +28,7 @@ retrofit = "2.11.0"
 
 # [Firebase & Google Services]
 firebaseBom = "33.5.1"
+googleServices = "4.4.2"
 playServicesAdsApi = "25.1.0"
 playServicesAuth = "21.0.0"
 
@@ -90,6 +92,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database" }
 firebase-dynamic-links = { group = "com.google.firebase", name = "firebase-dynamic-links" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 play-services-ads-api = { group = "com.google.android.gms", name = "play-services-ads-api", version.ref = "playServicesAdsApi" }
 
@@ -119,3 +122,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

@@ -3,7 +3,9 @@ package com.picke.app.ui.my.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.domain.repository.DeviceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +22,9 @@ data class SettingUiState(
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val deviceRepository: DeviceRepository,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingUiState())
@@ -32,6 +36,11 @@ class SettingViewModel @Inject constructor(
         Log.d(TAG, "▶️ [로그아웃] 프로세스 시작")
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            tokenManager.getFcmToken()?.let { fcmToken ->
+                deviceRepository.unregisterDevice(fcmToken)
+                    .onFailure { Log.w(TAG, "FCM 토큰 해제 실패 (무시하고 계속)", it) }
+            }
 
             val result = authRepository.logout()
             Log.d(TAG, "➡️ [로그아웃] 결과 수신: $result")

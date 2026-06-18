@@ -32,7 +32,7 @@ data class MyContentActivityItem(
     val battleId: String,
     val battleTitle: String,
     val author: MyContentActivityAuthor,
-    val voteSide: String,
+    val voteSide: String?,
     val content: String,
     val likeCount: Int,
     val createdAt: String

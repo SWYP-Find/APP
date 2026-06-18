@@ -1,4 +1,4 @@
-package com.picke.app.ui.explore
+﻿package com.picke.app.ui.explore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,15 +53,7 @@ import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.SortFilterChip
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Gray300
-import com.picke.app.ui.theme.Gray400
-import com.picke.app.ui.theme.Gray500
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
-import com.picke.app.ui.theme.White
 import kotlinx.coroutines.launch
 
 @Composable
@@ -88,12 +80,12 @@ fun ExploreScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = Beige200,
+                backgroundColor = SwypTheme.colors.backgroundBrand,
                 /*actions = {
                     IconButton(
                         onClick = {
@@ -139,7 +131,7 @@ fun ExploreScreen(
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize()
-                        .background(White)
+                        .background(Color.White)
                 ) { _ ->
                     ExploreList(
                         pagingItems = pagingItems,
@@ -195,7 +187,7 @@ fun ExploreList(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
         else if (pagingItems.itemCount == 0) {
@@ -205,16 +197,16 @@ fun ExploreList(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_logo),
+                    painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = Beige600
+                    tint = SwypTheme.colors.borderDefault
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "아직 준비된 배틀이 없어요!",
                     style = SwypTheme.typography.b3Regular,
-                    color = Beige800
+                    color = SwypTheme.colors.beige800
                 )
             }
         }
@@ -228,7 +220,7 @@ fun ExploreList(
                     pagingItems[index]?.let { item ->
                         HorizontalDivider(
                             thickness = 1.dp,
-                            color = Beige600,
+                            color = SwypTheme.colors.borderDefault,
                         )
                         ExploreCard(
                             item = item,
@@ -237,7 +229,7 @@ fun ExploreList(
                         if (index == pagingItems.itemCount - 1) {
                             HorizontalDivider(
                                 thickness = 1.dp,
-                                color = Beige600,
+                                color = SwypTheme.colors.borderDefault,
                             )
                         }
                     }
@@ -251,7 +243,7 @@ fun ExploreList(
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = Primary900, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest, modifier = Modifier.size(24.dp))
                         }
                     }
                 }
@@ -288,7 +280,7 @@ fun ExploreCard(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Beige200),
+                        .background(SwypTheme.colors.backgroundBrand),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
@@ -317,7 +309,7 @@ fun ExploreCard(
                             wordBreak = LineBreak.WordBreak.Default
                         )
                     ),
-                    color = Gray500,
+                    color = SwypTheme.colors.textTertiary,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -330,7 +322,7 @@ fun ExploreCard(
             Text(
                 text = item.summary,
                 style = SwypTheme.typography.b4Regular,
-                color = Gray400,
+                color = SwypTheme.colors.neutral400,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -362,13 +354,13 @@ fun ExploreCard(
                         painter = painterResource(id = R.drawable.ic_clock),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = Gray300
+                        tint = SwypTheme.colors.textMuted
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = item.audioDurationText,
                         style = SwypTheme.typography.label,
-                        color = Gray400
+                        color = SwypTheme.colors.neutral400
                     )
 
                     Spacer(modifier = Modifier.width(12.dp))
@@ -377,13 +369,13 @@ fun ExploreCard(
                         painter = painterResource(id = R.drawable.ic_eye),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = Gray300
+                        tint = SwypTheme.colors.textMuted
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = item.viewCountText,
                         style = SwypTheme.typography.label,
-                        color = Gray400
+                        color = SwypTheme.colors.neutral400
                     )
                 }
             }

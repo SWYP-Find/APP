@@ -1,4 +1,4 @@
-package com.picke.app.ui.component
+﻿package com.picke.app.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -25,8 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.picke.app.ui.theme.Beige500
-import com.picke.app.ui.theme.Primary500
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -37,8 +35,8 @@ fun CustomConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val modalBackgroundColor = Beige500
-    val pointColor = Primary500
+    val modalBackgroundColor = SwypTheme.colors.borderDisabled
+    val pointColor = SwypTheme.colors.primary
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -122,8 +120,8 @@ fun CustomReverseConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    val modalBackgroundColor = Beige500
-    val pointColor = Primary500
+    val modalBackgroundColor = SwypTheme.colors.borderDisabled
+    val pointColor = SwypTheme.colors.primary
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -226,8 +224,8 @@ fun CustomSingleActionDialog(
         ) {
             Surface(
                 shape = RoundedCornerShape(2.dp),
-                color = Beige500,
-                border = BorderStroke(1.dp, Primary500),
+                color = SwypTheme.colors.borderDisabled,
+                border = BorderStroke(1.dp, SwypTheme.colors.primary),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = if (imageResId != null) 16.dp else 0.dp)
@@ -243,20 +241,20 @@ fun CustomSingleActionDialog(
                         Text(
                             text = message,
                             style = SwypTheme.typography.h4SemiBold,
-                            color = Primary500,
+                            color = SwypTheme.colors.primary,
                             textAlign = TextAlign.Center,
                             lineHeight = 24.sp
                         )
                     }
 
                     // 가로 구분선
-                    HorizontalDivider(thickness = 1.dp, color = Primary500)
+                    HorizontalDivider(thickness = 1.dp, color = SwypTheme.colors.primary)
 
                     // 버튼 영역
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Primary500)
+                            .background(SwypTheme.colors.primary)
                             .clickable { onConfirm() }
                             .padding(vertical = 16.dp),
                         contentAlignment = Alignment.Center

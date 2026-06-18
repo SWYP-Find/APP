@@ -81,7 +81,7 @@ class VoteRepositoryImpl @Inject constructor(
                     val domainData = dto.toDomainModel()
                     Log.d(TAG, "[API_RES] 투표 통계 조회 성공")
                     domainData.options.forEach { option ->
-                        Log.d(TAG, "   └ 입장: ${option.label} | 비율: ${option.ratio}%")
+                        Log.d(TAG, "   └ 입장: ${option.title} | 비율: ${option.ratio}%")
                     }
                     domainData
                 }

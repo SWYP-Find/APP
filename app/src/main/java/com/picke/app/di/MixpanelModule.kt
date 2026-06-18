@@ -19,6 +19,6 @@ object MixpanelModule {
     fun provideMixpanel(@ApplicationContext context: Context): MixpanelAPI {
         val projectToken = BuildConfig.MIXPANEL_PROJECT_TOKEN
 
-        return MixpanelAPI.getInstance(context, projectToken, true)
+        return MixpanelAPI.getInstance(context, projectToken, false)
     }
 }

@@ -3,8 +3,10 @@ package com.picke.app.ui.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.messaging.FirebaseMessaging
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import com.picke.app.data.local.TokenManager
+import com.picke.app.domain.repository.DeviceRepository
 import com.picke.app.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,7 @@ sealed class LoginUiState {
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val tokenManager: TokenManager,
+    private val deviceRepository: DeviceRepository,
     private val mixpanel: MixpanelAPI
 ) : ViewModel() {
     companion object {
@@ -56,6 +59,18 @@ class LoginViewModel @Inject constructor(
                 val userTag = authToken.userTag ?: "unknown_user"
                 tokenManager.saveUserTag(userTag)
                 mixpanel.identify(userTag)
+
+                FirebaseMessaging.getInstance().token
+                    .addOnSuccessListener { fcmToken ->
+                        Log.d(TAG, "[FCM] 토큰 발급 완료: ${fcmToken.take(20)}...")
+                        tokenManager.saveFcmToken(fcmToken)
+                        viewModelScope.launch {
+                            deviceRepository.registerDevice(fcmToken)
+                                .onSuccess { Log.d(TAG, "[FCM] 서버 등록 완료") }
+                                .onFailure { Log.w(TAG, "[FCM] 서버 등록 실패", it) }
+                        }
+                    }
+                    .addOnFailureListener { Log.w(TAG, "[FCM] 토큰 발급 실패", it) }
             }.onFailure { error ->
                 Log.w(TAG, "[FLOW] ${provider} 로그인 실패: ${error.message}")
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")

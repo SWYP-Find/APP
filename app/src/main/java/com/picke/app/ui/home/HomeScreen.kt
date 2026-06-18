@@ -1,4 +1,4 @@
-package com.picke.app.ui.home
+﻿package com.picke.app.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,10 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Beige600
-import com.picke.app.ui.theme.Beige800
-import com.picke.app.ui.theme.Primary900
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -68,12 +64,12 @@ fun HomeScreen(
     }
 
     Scaffold(
-        containerColor = Beige200,
+        containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = Beige200,
+                backgroundColor = SwypTheme.colors.backgroundBrand,
                 actions = {
                     IconButton(onClick = {
                         viewModel.clearNewNotice()
@@ -108,7 +104,7 @@ fun HomeScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary900)
+                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
             }
         }
         // 2. 데이터가 없을떄
@@ -121,16 +117,16 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_logo),
+                    painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = Beige600
+                    tint = SwypTheme.colors.borderDefault
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "아직 준비된 배틀이 없어요!",
                     style = SwypTheme.typography.b3Regular,
-                    color = Beige800
+                    color = SwypTheme.colors.beige800
                 )
             }
         }

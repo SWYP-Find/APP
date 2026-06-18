@@ -1,6 +1,6 @@
 package com.picke.app.domain.repository
 
-import com.picke.app.data.model.AlarmDetailBoard
+import com.picke.app.domain.model.AlarmDetailBoard
 import com.picke.app.domain.model.AlarmPageBoard
 
 interface AlarmRepository {

@@ -1,7 +1,12 @@
 package com.picke.app
 
 import ScenarioScreen
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresExtension
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
@@ -12,21 +17,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.core.content.ContextCompat
 import com.picke.app.R
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.picke.app.ui.component.NotificationPermissionBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
+import com.picke.app.ui.my.makebattle.MakeBattleScreen
+import com.picke.app.ui.my.notice.NoticeEventScreen
+import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.comment.CommentScreen
 import com.picke.app.ui.login.LoginScreen
 import com.picke.app.ui.main.BottomNavItem
@@ -43,13 +57,13 @@ import com.picke.app.ui.recommend.RecommendScreen
 import com.picke.app.ui.routing.BattleRoutingScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
-import com.picke.app.ui.theme.Beige200
-import com.picke.app.ui.theme.Primary500
+import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.TodayBattleScreen
 import com.picke.app.ui.vote.VoteRoute
 import com.picke.app.ui.vote.VoteType
 import com.picke.app.util.DeepLinkEvent
 import com.picke.app.util.DeepLinkManager
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -58,6 +72,27 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()
     val uiState by splashViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    var showNotificationSheet by remember { mutableStateOf(false) }
+
+    val requestNotificationPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { /* FCM 토큰 발급은 추후 연동 */ }
+
+    fun checkAndShowNotificationSheet() {
+        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        if (prefs.getBoolean("notification_permission_asked", false)) return
+        val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        } else true
+        if (!hasPermission) showNotificationSheet = true
+    }
+
+    fun markNotificationPermissionAsked() {
+        context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            .edit().putBoolean("notification_permission_asked", true).apply()
+    }
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
@@ -69,14 +104,17 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             }
             is SplashUiState.NavigateToMain -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
+                checkAndShowNotificationSheet()
             }
             is SplashUiState.NavigateToOtherPhilosopher -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                 rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(state.reportId))
+                checkAndShowNotificationSheet()
             }
             is SplashUiState.NavigateToBattle -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                 rootNavController.navigate(AppRoute.BattleRouting.createRoute(state.battleId))
+                checkAndShowNotificationSheet()
             }
             is SplashUiState.Loading -> { /* 가만히 스플래시 유지 */ }
         }
@@ -84,10 +122,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Beige200
+        color = SwypTheme.colors.backgroundBrand
     ) {
         LaunchedEffect(Unit) {
             DeepLinkManager.deepLinkEvent.collect { event ->
+                // 스플래시 로딩이 끝날 때까지 대기 (NavigateToMain이 popUpTo(0)으로 백스택을 지우기 전에
+                // DeepLink 화면으로 이동하면 스플래시 완료 시 덮어씌워지므로, 로딩 완료 후 이동)
+                splashViewModel.uiState.first { it !is SplashUiState.Loading }
+                kotlinx.coroutines.delay(150)
+
                 rootNavController.navigate(AppRoute.Main.route) {
                     popUpTo(AppRoute.Main.route) {
                         inclusive = false
@@ -97,7 +140,16 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 kotlinx.coroutines.delay(100)
                 when (event) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
+                    is DeepLinkEvent.GoToTodayBattle -> rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
+                    is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
+                    is DeepLinkEvent.GoToPerspective -> {
+                        if (event.commentId != null) {
+                            rootNavController.navigate(AppRoute.Comment.createRoute(event.perspectiveId, event.commentId))
+                        } else {
+                            rootNavController.navigate(AppRoute.Perspective.createRoute(event.perspectiveId))
+                        }
+                    }
                 }
             }
         }
@@ -114,7 +166,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             composable("blank_start") {
                 val isDeepLink = DeepLinkManager.pendingReportId != null || DeepLinkManager.pendingBattleId != null
                 Box(
-                    modifier = Modifier.fillMaxSize().background(Primary500),
+                    modifier = Modifier.fillMaxSize().background(SwypTheme.colors.primary),
                     contentAlignment = Alignment.Center
                 ) { }
             }
@@ -134,13 +186,14 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 exitTransition = { fadeOut(animationSpec = tween(100)) }
             ) {
                 LoginScreen(
-                    onNavigateToMain = {
+                    onNavigateToMain = { isNewUser ->
                         val pendingReport = DeepLinkManager.pendingReportId
                         val pendingBattle = DeepLinkManager.pendingBattleId
 
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Login.route) { inclusive = true }
                         }
+                        checkAndShowNotificationSheet()
 
                         if (pendingReport != null || pendingBattle != null) {
                             coroutineScope.launch {
@@ -183,17 +236,64 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
 
-            composable(BottomNavItem.TodayBattle.route) {
+            composable(
+                route = AppRoute.TodayBattle.route,
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
+            ) { backStackEntry ->
+                val battleId = backStackEntry.arguments?.getString("battleId")
                 TodayBattleScreen(
+                    initialBattleId = battleId,
                     onBackClick = { rootNavController.popBackStack() },
-                    onEnterBattle = { battleId ->
-                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
+                    onEnterBattle = { id ->
+                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(id))
                     }
                 )
             }
 
             composable(AppRoute.Alarm.route) {
-                AlarmScreen(onBackClick = { rootNavController.popBackStack() })
+                AlarmScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToTodayBattle = { battleId ->
+                        rootNavController.navigate(AppRoute.TodayBattle.createRoute(battleId))
+                    },
+                    onNavigateToComment = { perspectiveId, commentId ->
+                        rootNavController.navigate(AppRoute.Comment.createRoute(perspectiveId, commentId))
+                    },
+                    onNavigateToPoint = {
+                        rootNavController.navigate(AppRoute.Point.route)
+                    },
+                    onNavigateToNotice = { noticeId ->
+                        rootNavController.navigate(AppRoute.NoticeEvent.createRoute(noticeId))
+                    }
+                )
+            }
+
+            composable(
+                route = AppRoute.NoticeEvent.route,
+                arguments = listOf(navArgument("noticeId") { type = NavType.LongType; defaultValue = -1L })
+            ) { backStackEntry ->
+                val noticeId = backStackEntry.arguments?.getLong("noticeId")?.takeIf { it != -1L }
+                NoticeEventScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    initialNoticeId = noticeId
+                )
+            }
+
+            composable(AppRoute.Point.route) {
+                PointScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToMakeBattle = {
+                        rootNavController.navigate(AppRoute.MakeBattle.route)
+                    }
+                )
+            }
+
+            composable(AppRoute.MakeBattle.route) {
+                MakeBattleScreen(
+                    onBackClick = { rootNavController.popBackStack() }
+                )
             }
 
             composable(AppRoute.SettingAlarm.route) {
@@ -261,10 +361,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
             composable(
                 route = AppRoute.Perspective.route,
-                arguments = listOf(navArgument("battleId") { type = NavType.StringType })
+                arguments = listOf(
+                    navArgument("battleId") { type = NavType.StringType },
+                    navArgument("commentId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
             ) { backStackEntry ->
                 val battleId = backStackEntry.arguments?.getString("battleId") ?: ""
+                val commentId = backStackEntry.arguments?.getString("commentId")
                 PerspectiveScreen(
+                    scrollToCommentId = commentId,
                     onBackClick = {
                         val prevRoute = rootNavController.previousBackStackEntry?.destination?.route
                         if (prevRoute == null || prevRoute == AppRoute.Splash.route || prevRoute == AppRoute.Login.route) {
@@ -274,15 +379,23 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         }
                     },
                     onNextClick = { itemId -> rootNavController.navigate(AppRoute.Recommend.createRoute(itemId)) },
-                    onMoreClick = { itemId -> rootNavController.navigate(AppRoute.Comment.createRoute(itemId)) }
+                    onMoreClick = { itemId, firstOptionId -> rootNavController.navigate(AppRoute.Comment.createRoute(itemId, firstOptionId)) }
                 )
             }
 
             composable(
                 route = AppRoute.Comment.route,
-                arguments = listOf(navArgument("itemId") { type = NavType.StringType })
-            ) {
-                CommentScreen(onBackClick = { rootNavController.popBackStack() })
+                arguments = listOf(
+                    navArgument("itemId") { type = NavType.StringType },
+                    navArgument("firstOptionId") { type = NavType.LongType; defaultValue = 0L },
+                    navArgument("commentId") { type = NavType.StringType; nullable = true; defaultValue = null }
+                )
+            ) { backStackEntry ->
+                val commentId = backStackEntry.arguments?.getString("commentId")
+                CommentScreen(
+                    onBackClick = { rootNavController.popBackStack() },
+                    scrollToCommentId = commentId
+                )
             }
 
             composable(
@@ -337,5 +450,26 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
         }
+    }
+
+    if (showNotificationSheet) {
+        NotificationPermissionBottomSheet(
+            onDismiss = {
+                showNotificationSheet = false
+                markNotificationPermissionAsked()
+            },
+            onAgree = {
+                showNotificationSheet = false
+                markNotificationPermissionAsked()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                // TODO: FCM 토큰 발급 API 연동
+            },
+            onDisagree = {
+                showNotificationSheet = false
+                markNotificationPermissionAsked()
+            }
+        )
     }
 }
