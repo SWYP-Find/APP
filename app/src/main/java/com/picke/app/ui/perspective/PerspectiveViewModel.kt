@@ -212,33 +212,10 @@ class PerspectiveViewModel @Inject constructor(
 
         Log.d(TAG, "[FLOW] 관점 ${if (isEditMode) "수정" else "작성"} 로직 시작")
 
-        // 1. 낙관적 업데이트
-        _uiState.update { state ->
-            val updatedPerspective = (state.myPerspective ?: PerspectiveDetailBoard(
-                perspectiveId = 0L,
-                content = content,
-                characterImageUrl = "",
-                nickname = "나",
-                optionTitle = "",
-                optionId = 0L,
-                status = "PUBLISHED",
-                createdAt = "방금 전",
-                likeCount = 0,
-                isLiked = false,
-                isMine = true,
-                commentCount = 0,
-                userTag = "",
-            )).copy(
-                status = "PUBLISHED",
-                content = content
-            )
-
-            state.copy(editingPerspectiveId = null, myPerspective = updatedPerspective)
-        }
-
+        _uiState.update { it.copy(editingPerspectiveId = null) }
         onSuccess() // 입력창 닫기 및 키보드 내림
 
-        // 2. 백엔드 통신
+        // 백엔드 통신
         viewModelScope.launch {
             if (isEditMode) {
                 Log.d(TAG, "[API_REQ] 관점 수정 요청 전송")
