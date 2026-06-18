@@ -43,6 +43,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.messaging.FirebaseMessaging
+import com.picke.app.BuildConfig
 import com.picke.app.R
 import com.picke.app.domain.model.NotificationSettingsBoard
 import com.picke.app.ui.component.CustomTopAppBar
@@ -237,7 +238,7 @@ private fun fetchFcmToken() {
     FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
         if (task.isSuccessful) {
             val token = task.result
-            Log.d("FCM", "토큰 발급 완료: $token")
+            if (BuildConfig.DEBUG) Log.d("FCM", "토큰 발급 완료: ${token.take(10)}...")
             // TODO: 서버 FCM 토큰 등록 API 연동
         } else {
             Log.w("FCM", "토큰 발급 실패", task.exception)

@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.picke.app.BuildConfig
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.picke.app.MainActivity
@@ -34,7 +35,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d(TAG, "FCM 토큰 갱신: $token")
+        if (BuildConfig.DEBUG) Log.d(TAG, "FCM 토큰 갱신: ${token.take(10)}...")
 
         tokenManager.saveFcmToken(token)
 

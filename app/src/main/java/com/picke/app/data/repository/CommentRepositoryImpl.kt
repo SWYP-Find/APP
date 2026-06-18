@@ -1,6 +1,7 @@
 package com.picke.app.data.repository
 
 import android.util.Log
+import com.picke.app.BuildConfig
 import com.picke.app.data.model.CommentRequestDto
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.model.toResult
@@ -125,7 +126,7 @@ class CommentRepositoryImpl @Inject constructor(
             val response = commentApi.reportComment(perspectiveId, commentId)
             when (response.statusCode) {
                 200 -> {
-                    Log.d(TAG, "[API_RES] 댓글 신고 성공 - 서버 응답: ${response.data}")
+                    if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 댓글 신고 성공 - 서버 응답: ${response.data}")
                     Result.success(response.data ?: "Success")
                 }
                 409 -> {

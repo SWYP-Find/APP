@@ -1,6 +1,7 @@
 package com.picke.app.data.repository
 
 import android.util.Log
+import com.picke.app.BuildConfig
 import com.picke.app.data.local.TokenManager
 import com.picke.app.data.model.SocialLoginRequest
 import com.picke.app.data.model.WithdrawalRequest
@@ -88,7 +89,7 @@ class AuthRepositoryImpl @Inject constructor(
             val response = api.logout()
 
             if(response.statusCode == 200 && response.data?.loggedOut == true){
-                Log.d(TAG, "[API_RES] 로그아웃 성공: ${response.data}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 로그아웃 성공: ${response.data}")
 
                 tokenManager.clearAll()
                 Result.success(Unit)
@@ -114,7 +115,7 @@ class AuthRepositoryImpl @Inject constructor(
             val response = api.withdraw(request)
 
             if (response.statusCode == 200 && response.data?.withdrawn == true) {
-                Log.d(TAG, "[API_RES] 탈퇴 성공: ${response.data}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 탈퇴 성공: ${response.data}")
 
                 tokenManager.clearAll()
                 Result.success(Unit)

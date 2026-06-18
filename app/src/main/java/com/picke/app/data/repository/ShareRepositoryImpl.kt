@@ -1,6 +1,7 @@
 package com.picke.app.data.repository
 
 import android.util.Log
+import com.picke.app.BuildConfig
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.remote.ShareApi
 import com.picke.app.domain.model.MyRecapBoard
@@ -26,7 +27,7 @@ class ShareRepositoryImpl @Inject constructor(
             val response = shareApi.getReportShareLink(reportId)
 
             if (response.statusCode == 200 && response.data != null) {
-                Log.d(TAG, "[API_RES] 리포트 공유 링크 요청 성공: ${response.data}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 리포트 공유 링크 요청 성공: ${response.data}")
 
                 Result.success(response.data.toDomainModel())
             } else {
@@ -47,7 +48,7 @@ class ShareRepositoryImpl @Inject constructor(
             val response = shareApi.getBattleShareLink(battleId)
 
             if (response.statusCode == 200 && response.data != null) {
-                Log.d(TAG, "[API_RES] 배틀 공유 링크 요청 성공: ${response.data}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 배틀 공유 링크 요청 성공: ${response.data}")
 
                 Result.success(response.data.toDomainModel())
             } else {
@@ -68,7 +69,7 @@ class ShareRepositoryImpl @Inject constructor(
             val response = shareApi.getRecapShareKey()
 
             if (response.statusCode == 200 && response.data != null) {
-                Log.d(TAG, "[API_RES] 리캡 공유 키 발급 성공: ${response.data.shareKey}")
+                if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 리캡 공유 키 발급 성공: ${response.data.shareKey}")
 
                 // DTO -> Domain 모델 변환
                 Result.success(response.data.toDomainModel())
