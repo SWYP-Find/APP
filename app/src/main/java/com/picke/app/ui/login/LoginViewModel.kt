@@ -18,7 +18,7 @@ import javax.inject.Inject
 sealed class LoginUiState {
     object Idle : LoginUiState()
     object Loading : LoginUiState() // 로딩중
-    data class Success(val isNewUser: Boolean) : LoginUiState() // 로그인 성공
+    data class Success(val isNewUser: Boolean, val needsTermsAgreement: Boolean) : LoginUiState() // 로그인 성공
     data class Error(val message: String) : LoginUiState() // 에러 발생
 }
 
@@ -40,6 +40,10 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Idle
     }
 
+    fun markTermsAgreed() {
+        tokenManager.saveTermsAgreed()
+    }
+
     fun handleSocialLoginSuccess(provider: String, authCode: String) {
         // API 중복 요청 방지
         if (_uiState.value is LoginUiState.Loading) {
@@ -53,8 +57,12 @@ class LoginViewModel @Inject constructor(
             val result = loginUseCase(provider = provider, authCode = authCode)
 
             result.onSuccess { authToken ->
-                Log.i(TAG, "[NAV] ${provider} 로그인 성공 (신규 유저 여부: ${authToken.isNewUser})")
-                _uiState.value = LoginUiState.Success(isNewUser = authToken.isNewUser)
+                val needsTermsAgreement = authToken.isNewUser || !tokenManager.isTermsAgreed()
+                Log.i(TAG, "[NAV] ${provider} 로그인 성공 (신규 유저: ${authToken.isNewUser}, 약관 동의 필요: $needsTermsAgreement)")
+                _uiState.value = LoginUiState.Success(
+                    isNewUser = authToken.isNewUser,
+                    needsTermsAgreement = needsTermsAgreement
+                )
 
                 val userTag = authToken.userTag ?: "unknown_user"
                 tokenManager.saveUserTag(userTag)

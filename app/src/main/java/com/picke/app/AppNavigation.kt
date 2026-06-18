@@ -186,7 +186,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 exitTransition = { fadeOut(animationSpec = tween(100)) }
             ) {
                 LoginScreen(
-                    onNavigateToMain = { isNewUser ->
+                    onNavigateToMain = {
                         val pendingReport = DeepLinkManager.pendingReportId
                         val pendingBattle = DeepLinkManager.pendingBattleId
 
@@ -208,6 +208,8 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                             }
                         }
                     },
+                    onViewServiceTerms = { rootNavController.navigate(AppRoute.TermsOfService.route) },
+                    onViewPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
                 )
             }
 

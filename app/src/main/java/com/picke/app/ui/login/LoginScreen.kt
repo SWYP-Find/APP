@@ -24,6 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,10 +44,12 @@ import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
+import com.picke.app.ui.component.TermsOfServiceBottomSheet
 import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
 import androidx.activity.compose.BackHandler
+import androidx.compose.ui.graphics.fromColorLong
 import com.kakao.sdk.auth.model.Prompt
 
 private const val TAG = "LoginScreen_Picke"
@@ -52,10 +57,13 @@ private const val TAG = "LoginScreen_Picke"
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToMain: (isNewUser: Boolean) -> Unit,
+    onNavigateToMain: () -> Unit,
+    onViewServiceTerms: () -> Unit,
+    onViewPrivacyPolicy: () -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    var showTermsSheet by rememberSaveable { mutableStateOf(false) }
 
     // 뒤로가기 -> 앱 종료
     BackHandler {
@@ -90,8 +98,13 @@ fun LoginScreen(
     LaunchedEffect(uiState){
         when (val state = uiState) {
             is LoginUiState.Success -> {
-                Log.i(TAG, "[NAV] 로그인 성공 -> 목적지(메인 또는 딥링크)로 이동 (신규 유저 여부: ${state.isNewUser})")
-                onNavigateToMain(state.isNewUser)
+                if (state.needsTermsAgreement) {
+                    Log.i(TAG, "[NAV] 로그인 성공 -> 약관 동의 필요, 바텀시트 표시")
+                    showTermsSheet = true
+                } else {
+                    Log.i(TAG, "[NAV] 로그인 성공 -> 메인으로 이동 (신규 유저: ${state.isNewUser})")
+                    onNavigateToMain()
+                }
             }
             is LoginUiState.Error -> {
                 Log.e(TAG, "[ERROR] 로그인 실패: ${state.message}")
@@ -100,6 +113,19 @@ fun LoginScreen(
             }
             else -> { }
         }
+    }
+
+    if (showTermsSheet) {
+        TermsOfServiceBottomSheet(
+            onConfirm = {
+                viewModel.markTermsAgreed()
+                showTermsSheet = false
+                Log.i(TAG, "[NAV] 약관 동의 완료 -> 메인으로 이동")
+                onNavigateToMain()
+            },
+            onViewServiceTerms = onViewServiceTerms,
+            onViewPrivacyPolicy = onViewPrivacyPolicy
+        )
     }
 
     LoginScreenContent(
@@ -153,7 +179,7 @@ private fun LoginScreenContent(
             Image(
                 painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "Picke Logo",
-                modifier = Modifier.size(width = 320.dp, height = 120.dp)
+                modifier = Modifier.size(width = 240.dp, height = 100.dp)
             )
             Spacer(modifier = Modifier.height(72.dp))
         }

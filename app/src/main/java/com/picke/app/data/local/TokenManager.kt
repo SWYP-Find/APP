@@ -206,9 +206,25 @@ class TokenManager @Inject constructor(
     }
     // endregion
 
-    // region 6. 로컬 데이터 삭제
+    // region 6. 약관 동의 여부 관리
+    fun saveTermsAgreed() {
+        prefs?.edit()?.putBoolean("terms_agreed", true)?.apply()
+    }
+
+    fun isTermsAgreed(): Boolean {
+        return try {
+            prefs?.getBoolean("terms_agreed", false) ?: false
+        } catch (e: Exception) {
+            Log.e(TAG, "[LOCAL] terms_agreed 로드 중 에러 발생", e)
+            false
+        }
+    }
+    // endregion
+
+    // region 7. 로컬 데이터 삭제
     /**
      * 모든 로컬 데이터 삭제 (로그아웃 / 회원 탈퇴 시 호출)
+     * terms_agreed는 한 번 동의하면 영구 보존 - 여기서 삭제하지 않음
      */
     fun clearAll() {
         prefs?.edit()
