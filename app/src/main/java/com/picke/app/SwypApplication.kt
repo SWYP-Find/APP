@@ -6,15 +6,21 @@ import android.app.NotificationManager
 import android.os.Build
 import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.KakaoSdk
+import com.picke.app.di.AdMobManager
 import com.picke.app.notification.FCMService
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class SwypApplication : Application() {
+
+    @Inject
+    lateinit var adMobManager: AdMobManager
+
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.KAKAO_DEBUG_APPKEY)
-        MobileAds.initialize(this) {}
+        MobileAds.initialize(this) { adMobManager.onMobileAdsInitialized() }
         createNotificationChannel()
     }
 

@@ -110,7 +110,7 @@ fun AudioPlayerBar(
             ) {
                 Icon(
                     painter = painterResource(
-                        if (isPlaying) R.drawable.ic_stop else R.drawable.ic_play
+                        if (isPlaying) R.drawable.ic_play_stop else R.drawable.ic_play
                     ),
                     contentDescription = null,
                     tint = SwypTheme.colors.primaryDarkest,

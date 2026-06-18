@@ -143,7 +143,7 @@ dependencies {
     implementation(libs.kakao.share) // 카카오톡 공유하기
     implementation(libs.google.play.services.auth) // 구글 로그인
     implementation(libs.androidx.security.crypto) // 보안 공유 환경설정(EncryptedSharedPreferences) 등 암호화
-    implementation(libs.play.services.ads.api) // 구글 AdMob 광고
+    implementation(libs.play.services.ads) // 구글 AdMob 광고
 
     // [SSE] 실시간 통신
     implementation(libs.okhttp.sse)

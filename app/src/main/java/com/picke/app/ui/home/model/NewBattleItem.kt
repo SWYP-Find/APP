@@ -29,7 +29,7 @@ val dummyNewBattleList = listOf(
         timeAgo = "5분",
         viewCount = "726",
         leftProfile = BattleProfile(R.drawable.illust_mengzi, "선하다", "맹자"),
-        rightProfile = BattleProfile(R.drawable.ic_profile_xunzi, "악하다", "순자")
+        rightProfile = BattleProfile(R.drawable.illust_mengzi, "악하다", "순자")
     ),
     NewBattleItem(
         id = 1,
@@ -39,7 +39,7 @@ val dummyNewBattleList = listOf(
         timeAgo = "5분",
         viewCount = "726",
         leftProfile = BattleProfile(R.drawable.illust_mengzi, "선하다", "맹자"),
-        rightProfile = BattleProfile(R.drawable.ic_profile_xunzi, "악하다", "순자")
+        rightProfile = BattleProfile(R.drawable.illust_mengzi, "악하다", "순자")
     ),
     NewBattleItem(
         id = 1,
@@ -49,6 +49,6 @@ val dummyNewBattleList = listOf(
         timeAgo = "5분",
         viewCount = "726",
         leftProfile = BattleProfile(R.drawable.illust_mengzi, "선하다", "맹자"),
-        rightProfile = BattleProfile(R.drawable.ic_profile_xunzi, "악하다", "순자")
+        rightProfile = BattleProfile(R.drawable.illust_mengzi, "악하다", "순자")
     )
 )

@@ -3,6 +3,7 @@ package com.picke.app.ui.my
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.MyProfile
@@ -27,11 +28,16 @@ data class MyUiState(
 @HiltViewModel
 class MyViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
+    private val tokenManager: TokenManager,
     val adMobManager: AdMobManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MyUiState(isLoading = true))
     val uiState: StateFlow<MyUiState> = _uiState.asStateFlow()
+
+    init {
+        tokenManager.getUserTag()?.let { adMobManager.loadAd(it) }
+    }
 
     fun fetchMyInfo() {
         viewModelScope.launch {

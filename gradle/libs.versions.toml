@@ -29,7 +29,7 @@ retrofit = "2.11.0"
 # [Firebase & Google Services]
 firebaseBom = "33.5.1"
 googleServices = "4.4.2"
-playServicesAdsApi = "25.1.0"
+playServicesAds = "23.6.0"
 playServicesAuth = "21.0.0"
 
 # [Social & Security]
@@ -94,7 +94,7 @@ firebase-database = { group = "com.google.firebase", name = "firebase-database" 
 firebase-dynamic-links = { group = "com.google.firebase", name = "firebase-dynamic-links" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
-play-services-ads-api = { group = "com.google.android.gms", name = "play-services-ads-api", version.ref = "playServicesAdsApi" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 
 # [Social & Security]
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }

@@ -22,8 +22,22 @@ class AdMobManager @Inject constructor(
 
     private var rewardedAd: RewardedAd? = null
     private val adUnitId = BuildConfig.ADMOB_REWARDED_AD_UNIT_ID
+    private var isSdkInitialized = false
+    private var pendingUserId: String? = null
+
+    fun onMobileAdsInitialized() {
+        isSdkInitialized = true
+        Log.d("AdMobManagerFlow", "✅ [SDK 초기화 완료]")
+        pendingUserId?.let { loadAd(it) }
+    }
 
     fun loadAd(userId: String) {
+        if (!isSdkInitialized) {
+            Log.d("AdMobManagerFlow", "⏳ [SDK 미초기화] userId 큐에 저장: $userId")
+            pendingUserId = userId
+            return
+        }
+        pendingUserId = null
         Log.d("AdMobManagerFlow", "1. [광고 로드 요청] userId: $userId 로드 시작")
         val adRequest = AdRequest.Builder().build()
 
