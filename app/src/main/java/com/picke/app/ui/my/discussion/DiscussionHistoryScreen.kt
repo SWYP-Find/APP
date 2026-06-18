@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +48,6 @@ fun DiscussionHistoryScreen(
     viewModel: DiscussionHistoryViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val combinedList = uiState.agreeList + uiState.disagreeList
 
     Scaffold(
         containerColor = SwypTheme.colors.backgroundBrand,
@@ -76,13 +76,10 @@ fun DiscussionHistoryScreen(
                 }
             } else {
                 DiscussionHistoryList(
-                    list = combinedList,
+                    list = uiState.items,
                     emptyMessage = "아직 참여한 배틀이 없습니다",
                     onItemClick = onNavigateToDetail,
-                    onLoadMore = {
-                        viewModel.loadMore("PRO")
-                        viewModel.loadMore("CON")
-                    }
+                    onLoadMore = { viewModel.loadMore() }
                 )
             }
         }
@@ -121,9 +118,9 @@ fun DiscussionHistoryList(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             itemsIndexed(list) { index, item ->
-                // 리스트 끝에서 2번째 아이템에 도달하면 다음 페이지 데이터 호출
-                if (index >= list.size - 2) {
-                    onLoadMore()
+                val shouldLoadMore = index >= list.size - 2
+                LaunchedEffect(index) {
+                    if (shouldLoadMore) onLoadMore()
                 }
 
                 DiscussionHistoryCard(
