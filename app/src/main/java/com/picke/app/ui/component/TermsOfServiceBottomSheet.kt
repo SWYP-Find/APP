@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,13 +48,15 @@ import com.picke.app.ui.theme.White
 import com.picke.app.ui.theme.tokens.BrandColorTokens.neutral50
 import com.picke.app.ui.theme.tokens.BrandColorTokens.primary600
 
+private const val URL_SERVICE_TERMS = "https://www.notion.so/3566effee51c8184bdc2e8595bfead27"
+private const val URL_PRIVACY_POLICY = "https://www.notion.so/3566effee51c81898de5f91d52ab7391"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TermsOfServiceBottomSheet(
     onConfirm: () -> Unit,
-    onViewServiceTerms: () -> Unit,
-    onViewPrivacyPolicy: () -> Unit
 ) {
+    val uriHandler = LocalUriHandler.current
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = { it != SheetValue.Hidden }
@@ -139,13 +142,13 @@ fun TermsOfServiceBottomSheet(
                     text = "(필수) 서비스 이용약관",
                     isAgreed = isServiceTermsAgreed,
                     onToggle = { isServiceTermsAgreed = !isServiceTermsAgreed },
-                    onViewDetail = onViewServiceTerms
+                    onViewDetail = { uriHandler.openUri(URL_SERVICE_TERMS) }
                 )
                 TermsItem(
                     text = "(필수) 개인정보처리방침",
                     isAgreed = isPrivacyPolicyAgreed,
                     onToggle = { isPrivacyPolicyAgreed = !isPrivacyPolicyAgreed },
-                    onViewDetail = onViewPrivacyPolicy
+                    onViewDetail = { uriHandler.openUri(URL_PRIVACY_POLICY) }
                 )
             }
 
@@ -223,9 +226,7 @@ private fun TermsItem(
 private fun TermsOfServiceBottomSheetPreview() {
     SwypAppTheme {
         TermsOfServiceBottomSheet(
-            onConfirm = {},
-            onViewServiceTerms = {},
-            onViewPrivacyPolicy = {}
+            onConfirm = {}
         )
     }
 }

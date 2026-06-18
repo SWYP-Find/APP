@@ -2,8 +2,6 @@ package com.picke.app
 
 import ScenarioScreen
 import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,7 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.core.content.ContextCompat
+import androidx.core.app.NotificationManagerCompat
 import com.picke.app.R
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -37,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.picke.app.ui.component.NotificationPermissionBottomSheet
+import com.picke.app.ui.component.TermsOfServiceBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
 import com.picke.app.ui.my.makebattle.MakeBattleScreen
 import com.picke.app.ui.my.notice.NoticeEventScreen
@@ -75,23 +74,20 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     val context = LocalContext.current
 
     var showNotificationSheet by remember { mutableStateOf(false) }
+    var showTermsSheet by remember { mutableStateOf(false) }
 
     val requestNotificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { /* FCM 토큰 발급은 추후 연동 */ }
 
-    fun checkAndShowNotificationSheet() {
-        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        if (prefs.getBoolean("notification_permission_asked", false)) return
-        val hasPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        } else true
-        if (!hasPermission) showNotificationSheet = true
+    fun checkAndShowNotificationSheet(isNewUser: Boolean) {
+        if (!isNewUser) return
+        if (splashViewModel.isNotificationPermissionAsked()) return
+        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) showNotificationSheet = true
     }
 
     fun markNotificationPermissionAsked() {
-        context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-            .edit().putBoolean("notification_permission_asked", true).apply()
+        splashViewModel.markNotificationPermissionAsked()
     }
 
     LaunchedEffect(uiState) {
@@ -104,17 +100,17 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             }
             is SplashUiState.NavigateToMain -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
-                checkAndShowNotificationSheet()
+                if (state.needsTermsAgreement) showTermsSheet = true
             }
             is SplashUiState.NavigateToOtherPhilosopher -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                 rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(state.reportId))
-                checkAndShowNotificationSheet()
+                if (state.needsTermsAgreement) showTermsSheet = true
             }
             is SplashUiState.NavigateToBattle -> {
                 rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                 rootNavController.navigate(AppRoute.BattleRouting.createRoute(state.battleId))
-                checkAndShowNotificationSheet()
+                if (state.needsTermsAgreement) showTermsSheet = true
             }
             is SplashUiState.Loading -> { /* 가만히 스플래시 유지 */ }
         }
@@ -186,14 +182,14 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 exitTransition = { fadeOut(animationSpec = tween(100)) }
             ) {
                 LoginScreen(
-                    onNavigateToMain = {
+                    onNavigateToMain = { isNewUser ->
                         val pendingReport = DeepLinkManager.pendingReportId
                         val pendingBattle = DeepLinkManager.pendingBattleId
 
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Login.route) { inclusive = true }
                         }
-                        checkAndShowNotificationSheet()
+                        checkAndShowNotificationSheet(isNewUser)
 
                         if (pendingReport != null || pendingBattle != null) {
                             coroutineScope.launch {
@@ -208,8 +204,6 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                             }
                         }
                     },
-                    onViewServiceTerms = { rootNavController.navigate(AppRoute.TermsOfService.route) },
-                    onViewPrivacyPolicy = { rootNavController.navigate(AppRoute.PrivacyPolicy.route) },
                 )
             }
 
@@ -452,6 +446,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 )
             }
         }
+    }
+
+    if (showTermsSheet) {
+        TermsOfServiceBottomSheet(
+            onConfirm = {
+                splashViewModel.markTermsAgreed()
+                showTermsSheet = false
+            }
+        )
     }
 
     if (showNotificationSheet) {

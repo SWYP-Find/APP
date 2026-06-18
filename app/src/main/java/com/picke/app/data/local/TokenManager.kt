@@ -97,7 +97,7 @@ class TokenManager @Inject constructor(
      */
     fun saveAccessToken(token: String) {
         prefs?.edit()?.putString("access_token", token)?.apply()
-        if (BuildConfig.DEBUG) Log.d(TAG, "[LOCAL] AccessToken 저장 완료: ${token.take(8)}...")
+        if (BuildConfig.DEBUG) Log.d(TAG, "[LOCAL] AccessToken 저장 완료: $token")
     }
 
     /**
@@ -221,7 +221,22 @@ class TokenManager @Inject constructor(
     }
     // endregion
 
-    // region 7. 로컬 데이터 삭제
+    // region 7. 알림 권한 요청 여부 관리 (계정 단위 - clearAll에 포함)
+    fun saveNotificationPermissionAsked() {
+        prefs?.edit()?.putBoolean("notification_permission_asked", true)?.apply()
+    }
+
+    fun isNotificationPermissionAsked(): Boolean {
+        return try {
+            prefs?.getBoolean("notification_permission_asked", false) ?: false
+        } catch (e: Exception) {
+            Log.e(TAG, "[LOCAL] notification_permission_asked 로드 중 에러 발생", e)
+            false
+        }
+    }
+    // endregion
+
+    // region 8. 로컬 데이터 삭제
     /**
      * 모든 로컬 데이터 삭제 (로그아웃 / 회원 탈퇴 시 호출)
      * terms_agreed는 한 번 동의하면 영구 보존 - 여기서 삭제하지 않음
@@ -233,6 +248,7 @@ class TokenManager @Inject constructor(
             ?.remove("user_status")
             ?.remove("user_tag")
             ?.remove("fcm_token")
+            ?.remove("notification_permission_asked")
             ?.apply()
     }
     // endregion

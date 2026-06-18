@@ -57,13 +57,12 @@ private const val TAG = "LoginScreen_Picke"
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToMain: () -> Unit,
-    onViewServiceTerms: () -> Unit,
-    onViewPrivacyPolicy: () -> Unit,
+    onNavigateToMain: (isNewUser: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     var showTermsSheet by rememberSaveable { mutableStateOf(false) }
+    var pendingIsNewUser by rememberSaveable { mutableStateOf(false) }
 
     // 뒤로가기 -> 앱 종료
     BackHandler {
@@ -99,11 +98,12 @@ fun LoginScreen(
         when (val state = uiState) {
             is LoginUiState.Success -> {
                 if (state.needsTermsAgreement) {
-                    Log.i(TAG, "[NAV] 로그인 성공 -> 약관 동의 필요, 바텀시트 표시")
+                    Log.i(TAG, "[NAV] 로그인 성공 -> 약관 동의 필요, 바텀시트 표시 (신규 유저: ${state.isNewUser})")
+                    pendingIsNewUser = state.isNewUser
                     showTermsSheet = true
                 } else {
                     Log.i(TAG, "[NAV] 로그인 성공 -> 메인으로 이동 (신규 유저: ${state.isNewUser})")
-                    onNavigateToMain()
+                    onNavigateToMain(state.isNewUser)
                 }
             }
             is LoginUiState.Error -> {
@@ -120,11 +120,9 @@ fun LoginScreen(
             onConfirm = {
                 viewModel.markTermsAgreed()
                 showTermsSheet = false
-                Log.i(TAG, "[NAV] 약관 동의 완료 -> 메인으로 이동")
-                onNavigateToMain()
-            },
-            onViewServiceTerms = onViewServiceTerms,
-            onViewPrivacyPolicy = onViewPrivacyPolicy
+                Log.i(TAG, "[NAV] 약관 동의 완료 -> 메인으로 이동 (신규 유저: $pendingIsNewUser)")
+                onNavigateToMain(pendingIsNewUser)
+            }
         )
     }
 

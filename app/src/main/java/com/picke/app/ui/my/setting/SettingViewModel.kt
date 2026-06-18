@@ -47,6 +47,7 @@ class SettingViewModel @Inject constructor(
 
             result.onSuccess {
                 Log.i(TAG, "✅ [로그아웃] 성공! 로컬 토큰 삭제 및 로그인 화면으로 이동합니다.")
+                tokenManager.clearAll()
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -88,6 +89,7 @@ class SettingViewModel @Inject constructor(
 
             result.onSuccess {
                 Log.i(TAG, "✅ [회원탈퇴] 성공! 서버 연동 해제 및 데이터 파기 완료.")
+                tokenManager.clearAll()
                 _uiState.update {
                     it.copy(
                         isLoading = false,

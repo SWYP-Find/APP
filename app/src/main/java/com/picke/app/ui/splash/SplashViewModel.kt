@@ -20,9 +20,9 @@ sealed class SplashUiState{
     object Loading : SplashUiState() // 로딩중
     object NavigateToLogin : SplashUiState() // 소셜로그인
     object NavigateToOnboarding : SplashUiState() // 온보딩
-    object NavigateToMain : SplashUiState() // 메인화면
-    data class NavigateToOtherPhilosopher(val reportId: String) : SplashUiState()
-    data class NavigateToBattle(val battleId: String) : SplashUiState()
+    data class NavigateToMain(val needsTermsAgreement: Boolean = false) : SplashUiState() // 메인화면
+    data class NavigateToOtherPhilosopher(val reportId: String, val needsTermsAgreement: Boolean = false) : SplashUiState()
+    data class NavigateToBattle(val battleId: String, val needsTermsAgreement: Boolean = false) : SplashUiState()
 }
 
 @HiltViewModel
@@ -41,6 +41,16 @@ class SplashViewModel @Inject constructor(
 
     init {
         checkAutoLogin()
+    }
+
+    fun markTermsAgreed() {
+        tokenManager.saveTermsAgreed()
+    }
+
+    fun isNotificationPermissionAsked(): Boolean = tokenManager.isNotificationPermissionAsked()
+
+    fun markNotificationPermissionAsked() {
+        tokenManager.saveNotificationPermissionAsked()
     }
 
     private fun checkAutoLogin() {
@@ -72,21 +82,22 @@ class SplashViewModel @Inject constructor(
                         Log.d(TAG, "[AdMob] 광고 프리패치 시작")
                     }
 
+                    val needsTermsAgreement = !tokenManager.isTermsAgreed()
                     val pendingReport = DeepLinkManager.pendingReportId
                     val pendingBattle = DeepLinkManager.pendingBattleId
 
                     when {
                         pendingReport != null -> {
                             Log.i(TAG, "[NAV] 딥링크 감지 -> 상대방 철학자 리포트 화면으로 이동")
-                            _uiState.value = SplashUiState.NavigateToOtherPhilosopher(pendingReport)
+                            _uiState.value = SplashUiState.NavigateToOtherPhilosopher(pendingReport, needsTermsAgreement)
                         }
                         pendingBattle != null -> {
                             Log.i(TAG, "[NAV] 딥링크 감지 -> 배틀 화면으로 이동")
-                            _uiState.value = SplashUiState.NavigateToBattle(pendingBattle)
+                            _uiState.value = SplashUiState.NavigateToBattle(pendingBattle, needsTermsAgreement)
                         }
                         else -> {
-                            Log.i(TAG, "[NAV] 일반 접속 -> 메인 화면으로 이동")
-                            _uiState.value = SplashUiState.NavigateToMain
+                            Log.i(TAG, "[NAV] 일반 접속 -> 메인 화면으로 이동 (약관 동의 필요: $needsTermsAgreement)")
+                            _uiState.value = SplashUiState.NavigateToMain(needsTermsAgreement)
                         }
                     }
                 }.onFailure { error ->
