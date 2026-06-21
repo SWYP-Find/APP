@@ -65,6 +65,7 @@ data class MyContentActivityItemDto(
     val battleTitle: String?,
     val author: MyContentActivityAuthorDto?,
     val voteSide: String?,
+    val optionTitle: String?,
     val content: String?,
     val likeCount: Int?,
     val createdAt: String?
@@ -201,6 +202,7 @@ fun MyContentActivityItemDto.toDomainModel() = MyContentActivityItem(
         characterImageUrl = this.author?.characterImageUrl ?: ""
     ),
     voteSide = this.voteSide,
+    optionTitle = this.optionTitle,
     content = this.content ?: "",
     likeCount = this.likeCount ?: 0,
     createdAt = this.createdAt?.take(10) ?: ""

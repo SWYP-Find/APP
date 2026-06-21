@@ -204,7 +204,7 @@ fun ContentActivityCard(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
 
-                    if (item.voteSide != null) {
+                    if (item.optionTitle != null) {
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(2.dp))
@@ -212,7 +212,7 @@ fun ContentActivityCard(
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = item.voteSide,
+                                text = item.optionTitle,
                                 style = SwypTheme.typography.b5Medium,
                                 color = SwypTheme.colors.primary
                             )
