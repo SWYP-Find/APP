@@ -1,0 +1,164 @@
+workflows:
+
+  # ────────────────────────────────────────────────
+  # 1. 개발/스테이징 빌드: dev·release-stg-* 브랜치 push → 디버그 APK
+  # ────────────────────────────────────────────────
+  android-stg:
+    name: Stage → Debug APK
+    max_build_duration: 45
+    instance_type: linux_x2
+    environment:
+      java: 17
+      groups:
+        - picke   # iOS와 동일한 그룹 (DISCORD_WEBHOOK 공유)
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: dev
+          include: true
+        - pattern: 'release-stg-*'
+          include: true
+    scripts:
+      - name: Discord 빌드 시작 알림
+        script: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          msg = f"🛠️ **Picke Android** Debug APK 빌드 시작 · #{os.environ.get('BUILD_NUMBER','')}\n{os.environ.get('CM_BUILD_URL','')}"
+          wh = os.environ.get('DISCORD_WEBHOOK','')
+          if wh:
+              req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
+                                           headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
+              try: urllib.request.urlopen(req); print("discord ok")
+              except Exception as e: print("discord skip:", e)
+          PY
+      - name: google-services.json 복원
+        script: |
+          echo $GOOGLE_SERVICES_JSON | base64 --decode > $CM_BUILD_DIR/app/google-services.json
+      - name: local.properties 생성
+        script: |
+          cat > "$CM_BUILD_DIR/local.properties" <<EOF
+          sdk.dir=$ANDROID_SDK_ROOT
+          KAKAO_DEBUG_APPKEY=$KAKAO_DEBUG_APPKEY
+          GOOGLE_WEB_CLIENT_ID=$GOOGLE_WEB_CLIENT_ID
+          ADMOB_APP_ID=$ADMOB_APP_ID
+          ADMOB_REWARDED_AD_UNIT_ID=$ADMOB_REWARDED_AD_UNIT_ID
+          MIXPANEL_PROJECT_TOKEN=$MIXPANEL_PROJECT_TOKEN
+          EOF
+      - name: 디버그 APK 빌드
+        script: ./gradlew assembleDebug
+      - name: Discord 성공 알림
+        script: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          msg = f"✅ **Picke Android** Debug APK 빌드 완료 · #{os.environ.get('BUILD_NUMBER','')}\n{os.environ.get('CM_BUILD_URL','')}"
+          wh = os.environ.get('DISCORD_WEBHOOK','')
+          if wh:
+              req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
+                                           headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
+              try: urllib.request.urlopen(req); print("discord ok")
+              except Exception as e: print("discord skip:", e)
+          PY
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+
+  # ────────────────────────────────────────────────
+  # 2. PR 유닛 테스트 (iOS의 test 워크플로와 대칭)
+  # ────────────────────────────────────────────────
+  android-test:
+    name: PR 유닛 테스트
+    max_build_duration: 30
+    instance_type: linux_x2
+    environment:
+      java: 17
+      groups:
+        - picke
+    triggering:
+      events:
+        - pull_request
+    scripts:
+      - name: google-services.json 복원
+        script: |
+          echo $GOOGLE_SERVICES_JSON | base64 --decode > $CM_BUILD_DIR/app/google-services.json
+      - name: local.properties 생성
+        script: |
+          cat > "$CM_BUILD_DIR/local.properties" <<EOF
+          sdk.dir=$ANDROID_SDK_ROOT
+          KAKAO_DEBUG_APPKEY=$KAKAO_DEBUG_APPKEY
+          GOOGLE_WEB_CLIENT_ID=$GOOGLE_WEB_CLIENT_ID
+          ADMOB_APP_ID=$ADMOB_APP_ID
+          ADMOB_REWARDED_AD_UNIT_ID=$ADMOB_REWARDED_AD_UNIT_ID
+          MIXPANEL_PROJECT_TOKEN=$MIXPANEL_PROJECT_TOKEN
+          EOF
+      - name: 유닛 테스트 실행
+        script: ./gradlew test
+
+  # ────────────────────────────────────────────────
+  # 3. 프로덕션 빌드: v* 태그 push → 서명된 AAB → Google Play Internal
+  # ────────────────────────────────────────────────
+  android-prod:
+    name: Prod → Google Play
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      java: 17
+      android_signing:
+        - picke_keystore   # Codemagic UI > Code signing에 등록한 키스토어 이름
+      groups:
+        - picke
+    triggering:
+      events:
+        - tag
+      tag_patterns:
+        - pattern: 'v*'
+          include: true
+    scripts:
+      - name: Discord 빌드 시작 알림
+        script: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          msg = f"🚀 **Picke Android** Google Play(Prod) 빌드 시작 · {os.environ.get('CM_TAG','')} · #{os.environ.get('BUILD_NUMBER','')}\n{os.environ.get('CM_BUILD_URL','')}"
+          wh = os.environ.get('DISCORD_WEBHOOK','')
+          if wh:
+              req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
+                                           headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
+              try: urllib.request.urlopen(req); print("discord ok")
+              except Exception as e: print("discord skip:", e)
+          PY
+      - name: google-services.json 복원
+        script: |
+          echo $GOOGLE_SERVICES_JSON | base64 --decode > $CM_BUILD_DIR/app/google-services.json
+      - name: local.properties 생성
+        script: |
+          cat > "$CM_BUILD_DIR/local.properties" <<EOF
+          sdk.dir=$ANDROID_SDK_ROOT
+          KAKAO_DEBUG_APPKEY=$KAKAO_DEBUG_APPKEY
+          GOOGLE_WEB_CLIENT_ID=$GOOGLE_WEB_CLIENT_ID
+          ADMOB_APP_ID=$ADMOB_APP_ID
+          ADMOB_REWARDED_AD_UNIT_ID=$ADMOB_REWARDED_AD_UNIT_ID
+          MIXPANEL_PROJECT_TOKEN=$MIXPANEL_PROJECT_TOKEN
+          EOF
+      - name: 릴리즈 AAB 빌드
+        script: ./gradlew bundleRelease
+      - name: Discord 성공 알림
+        script: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          msg = "@everyone\n"
+          msg += f"🚀 **Picke Android** {os.environ.get('CM_TAG','')} Google Play 제출 완료 · #{os.environ.get('BUILD_NUMBER','')}"
+          url = os.environ.get('CM_BUILD_URL','')
+          if url: msg += "\n" + url
+          wh = os.environ.get('DISCORD_WEBHOOK','')
+          if wh:
+              req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
+                                           headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
+              try: urllib.request.urlopen(req); print("discord ok")
+              except Exception as e: print("discord skip:", e)
+          PY
+    artifacts:
+      - app/build/outputs/bundle/release/*.aab
+      - app/build/outputs/mapping/release/mapping.txt
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
