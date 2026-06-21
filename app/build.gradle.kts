@@ -49,9 +49,20 @@ android {
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoDebugAppKey
     }
 
+    signingConfigs {
+        create("release") {
+            val storeFilePath = properties.getProperty("storeFile")
+            if (storeFilePath != null) storeFile = file(storeFilePath)
+            storePassword = properties.getProperty("storePassword") ?: ""
+            keyAlias = properties.getProperty("keyAlias") ?: ""
+            keyPassword = properties.getProperty("keyPassword") ?: ""
+        }
+    }
+
     buildTypes {
         // [5. 배포용 빌드 설정]
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
 
