@@ -5,7 +5,7 @@ workflows:
     max_build_duration: 90
     environment:
       groups:
-        - Picke   # Codemagic에 KEYSTORE_KEY(base64), STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD, GOOGLE_PLAY_JSON_KEY, DISCORD_WEBHOOK 등록
+        - Picke   # Codemagic에 GOOGLE_SERVICES_JSON(base64), GOOGLE_PLAY_JSON_KEY, DISCORD_WEBHOOK 등록 / 서명은 Code Signing Identities 사용
     triggering:
       events:
         - push
@@ -20,9 +20,6 @@ workflows:
           # 하나라도 실패하면 즉시 중단
           set -e
 
-          # [키스토어 복원] Codemagic 환경변수(KEYSTORE_KEY)에 저장된 base64 문자열을 디코딩해 keystore.jks 파일로 복원
-          echo "$KEYSTORE_KEY" | base64 --decode > keystore.jks
-
           # [google-services.json 복원]
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
 
@@ -31,12 +28,12 @@ workflows:
           cat > local.properties <<EOF
           sdk.dir=$ANDROID_SDK_ROOT
 
-          # 서명 정보: build.gradle.kts의 signingConfigs가 이 값들을 읽어 AAB에 서명
-          storeFile=$(pwd)/keystore.jks
-          storePassword=$STORE_PASSWORD
-          keyAlias=$KEY_ALIAS
-          keyPassword=$KEY_PASSWORD
-          
+          # 서명 정보: Codemagic Code Signing Identities에서 자동 주입
+          storeFile=$CM_KEYSTORE_PATH
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          keyPassword=$CM_KEY_PASSWORD
+
           # 외부 서비스 API 키
           KAKAO_DEBUG_APPKEY=$KAKAO_DEBUG_APPKEY
           GOOGLE_WEB_CLIENT_ID=$GOOGLE_WEB_CLIENT_ID
@@ -114,9 +111,6 @@ workflows:
           # 하나라도 실패하면 즉시 중단
           set -e
 
-          # [키스토어 복원] Codemagic 환경변수(KEYSTORE_KEY)에 저장된 base64 문자열을 디코딩해 keystore.jks 파일로 복원
-          echo "$KEYSTORE_KEY" | base64 --decode > keystore.jks
-
           # [google-services.json 복원]
           echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
 
@@ -125,11 +119,11 @@ workflows:
           cat > local.properties <<EOF
           sdk.dir=$ANDROID_SDK_ROOT
 
-          # 서명 정보: build.gradle.kts의 signingConfigs가 이 값들을 읽어 AAB에 서명
-          storeFile=$(pwd)/keystore.jks
-          storePassword=$STORE_PASSWORD
-          keyAlias=$KEY_ALIAS
-          keyPassword=$KEY_PASSWORD
+          # 서명 정보: Codemagic Code Signing Identities에서 자동 주입
+          storeFile=$CM_KEYSTORE_PATH
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          keyPassword=$CM_KEY_PASSWORD
 
           # 외부 서비스 API 키
           KAKAO_DEBUG_APPKEY=$KAKAO_DEBUG_APPKEY
