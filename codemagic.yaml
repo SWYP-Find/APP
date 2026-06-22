@@ -71,23 +71,25 @@ workflows:
           set -e
           sed -i '' "s/versionCode = [0-9]*/versionCode = $BUILD_NUMBER/" app/build.gradle.kts
           ./gradlew bundleRelease
-      - name: Discord 성공 알림 + 릴리스 노트
-        script: |
-          python3 - <<'PY'
-          import os, json, urllib.request
-          msg = "\n"
-          msg += f"✅ **Picke** Google Play Store 내부테스트(QA) 배포 완료 · #{os.environ.get('BUILD_NUMBER','')}"
-          notes = os.environ.get('RELEASE_NOTES','').strip()
-          if notes: msg += "\n" + notes
-          url = os.environ.get('CM_BUILD_URL','')
-          if url: msg += "\n" + url
-          wh = os.environ.get('DISCORD_WEBHOOK','')
-          if wh:
-              req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
-                                           headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
-              try: urllib.request.urlopen(req); print("discord ok")
-              except Exception as e: print("discord skip:", e)
-          PY
+      # - name: Discord 성공 알림 + 릴리스 노트
+      #   script: |
+      #     python3 - <<'PY'
+      #     import os, json, urllib.request
+      #     msg = "\n"
+      #     msg += f"✅ **Picke** Google Play Store 내부테스트(QA) 배포 완료 · #{os.environ.get('BUILD_NUMBER','')}"
+      #     notes = os.environ.get('RELEASE_NOTES','').strip()
+      #     if notes: msg += "\n" + notes
+      #     url = os.environ.get('CM_BUILD_URL','')
+      #     if url: msg += "\n" + url
+      #     wh = os.environ.get('DISCORD_WEBHOOK','')
+      #     if wh:
+      #         req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
+      #                                      headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
+      #         try: urllib.request.urlopen(req); print("discord ok")
+      #         except Exception as e: print("discord skip:", e)
+      #     PY
+    artifacts:
+      - app/build/outputs/bundle/release/*.aab
     publishing:
       google_play:
         credentials: $GOOGLE_PLAY_JSON_KEY
@@ -168,22 +170,24 @@ workflows:
           sed -i '' "s/versionCode = [0-9]*/versionCode = $BUILD_NUMBER/" app/build.gradle.kts
           sed -i '' "s/versionName = \"[^\"]*\"/versionName = \"$RELEASE_VERSION\"/" app/build.gradle.kts
           ./gradlew bundleRelease
-      - name: Discord 성공 알림 + 릴리스 노트
-        script: |
-          python3 - <<'PY'
-          import os, json, urllib.request
-          msg = f"\n🚀 **Picke** {os.environ.get('RELEASE_VERSION','')} Google Play Store 출시 완료 · #{os.environ.get('BUILD_NUMBER','')}"
-          notes = os.environ.get('RELEASE_NOTES','').strip()
-          if notes: msg += "\n" + notes
-          url = os.environ.get('CM_BUILD_URL','')
-          if url: msg += "\n" + url
-          wh = os.environ.get('DISCORD_WEBHOOK','')
-          if wh:
-              req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
-                                           headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
-              try: urllib.request.urlopen(req); print("discord ok")
-              except Exception as e: print("discord skip:", e)
-          PY
+      # - name: Discord 성공 알림 + 릴리스 노트
+      #   script: |
+      #     python3 - <<'PY'
+      #     import os, json, urllib.request
+      #     msg = f"\n🚀 **Picke** {os.environ.get('RELEASE_VERSION','')} Google Play Store 출시 완료 · #{os.environ.get('BUILD_NUMBER','')}"
+      #     notes = os.environ.get('RELEASE_NOTES','').strip()
+      #     if notes: msg += "\n" + notes
+      #     url = os.environ.get('CM_BUILD_URL','')
+      #     if url: msg += "\n" + url
+      #     wh = os.environ.get('DISCORD_WEBHOOK','')
+      #     if wh:
+      #         req = urllib.request.Request(wh, data=json.dumps({"content": msg}).encode(),
+      #                                      headers={"Content-Type":"application/json","User-Agent":"Picke-CI/1.0"})
+      #         try: urllib.request.urlopen(req); print("discord ok")
+      #         except Exception as e: print("discord skip:", e)
+      #     PY
+    artifacts:
+      - app/build/outputs/bundle/release/*.aab
     publishing:
       google_play:
         credentials: $GOOGLE_PLAY_JSON_KEY
