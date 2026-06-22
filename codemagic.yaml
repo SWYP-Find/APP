@@ -5,7 +5,7 @@ workflows:
     max_build_duration: 90
     environment:
       groups:
-        - picke   # Codemagic에 KEYSTORE_KEY(base64), STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD, GOOGLE_PLAY_JSON_KEY, DISCORD_WEBHOOK 등록
+        - Picke   # Codemagic에 KEYSTORE_KEY(base64), STORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD, GOOGLE_PLAY_JSON_KEY, DISCORD_WEBHOOK 등록
     triggering:
       events:
         - push
@@ -97,7 +97,7 @@ workflows:
     max_build_duration: 90
     environment:
       groups:
-        - picke
+        - Picke
     triggering:
       # 실제 Google Play Store 제출이라 v* 태그로만 트리거
       events:
