@@ -67,13 +67,13 @@ workflows:
       - name: AAB 빌드 (Release)
         script: |
           set -e
-          sed -i "s/versionCode = [0-9]*/versionCode = $BUILD_NUMBER/" app/build.gradle.kts
+          sed -i '' "s/versionCode = [0-9]*/versionCode = $BUILD_NUMBER/" app/build.gradle.kts
           ./gradlew bundleRelease
       - name: Discord 성공 알림 + 릴리스 노트
         script: |
           python3 - <<'PY'
           import os, json, urllib.request
-          msg = "\n" 
+          msg = "\n"
           msg += f"✅ **Picke** Google Play Store 내부테스트(QA) 배포 완료 · #{os.environ.get('BUILD_NUMBER','')}"
           notes = os.environ.get('RELEASE_NOTES','').strip()
           if notes: msg += "\n" + notes
@@ -161,8 +161,8 @@ workflows:
         script: |
           set -e
           # versionCode는 Codemagic 빌드번호로, versionName은 git 태그로 자동 주입
-          sed -i "s/versionCode = [0-9]*/versionCode = $BUILD_NUMBER/" app/build.gradle.kts
-          sed -i "s/versionName = \"[^\"]*\"/versionName = \"$RELEASE_VERSION\"/" app/build.gradle.kts
+          sed -i '' "s/versionCode = [0-9]*/versionCode = $BUILD_NUMBER/" app/build.gradle.kts
+          sed -i '' "s/versionName = \"[^\"]*\"/versionName = \"$RELEASE_VERSION\"/" app/build.gradle.kts
           ./gradlew bundleRelease
       - name: Discord 성공 알림 + 릴리스 노트
         script: |
