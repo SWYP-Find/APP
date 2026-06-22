@@ -23,11 +23,14 @@ workflows:
           # [키스토어 복원] Codemagic 환경변수(KEYSTORE_KEY)에 저장된 base64 문자열을 디코딩해 keystore.jks 파일로 복원
           echo "$KEYSTORE_KEY" | base64 --decode > keystore.jks
 
+          # [google-services.json 복원]
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
+
           # [local.properties 재생성]
           # local.properties는 .gitignore 대상이라 GitHub에 없음 → Codemagic 환경변수로 직접 작성
           cat > local.properties <<EOF
           sdk.dir=$ANDROID_SDK_ROOT
-          
+
           # 서명 정보: build.gradle.kts의 signingConfigs가 이 값들을 읽어 AAB에 서명
           storeFile=$(pwd)/keystore.jks
           storePassword=$STORE_PASSWORD
@@ -113,6 +116,9 @@ workflows:
 
           # [키스토어 복원] Codemagic 환경변수(KEYSTORE_KEY)에 저장된 base64 문자열을 디코딩해 keystore.jks 파일로 복원
           echo "$KEYSTORE_KEY" | base64 --decode > keystore.jks
+
+          # [google-services.json 복원]
+          echo "$GOOGLE_SERVICES_JSON" | base64 --decode > app/google-services.json
 
           # [local.properties 재생성]
           # local.properties는 .gitignore 대상이라 GitHub에 없음 → Codemagic 환경변수로 직접 작성
