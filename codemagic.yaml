@@ -5,7 +5,9 @@ workflows:
     max_build_duration: 90
     environment:
       groups:
-        - Picke   # Codemagic에 GOOGLE_SERVICES_JSON(base64), GOOGLE_PLAY_JSON_KEY, DISCORD_WEBHOOK 등록 / 서명은 Code Signing Identities 사용
+        - Picke
+      android_signing:
+        - picke_keystore
     triggering:
       events:
         - push
@@ -98,6 +100,8 @@ workflows:
     environment:
       groups:
         - Picke
+      android_signing:
+        - picke_keystore
     triggering:
       # 실제 Google Play Store 제출이라 v* 태그로만 트리거
       events:
