@@ -25,6 +25,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -120,7 +122,9 @@ fun ExploreScreen(
             ) {
                 CustomTabBar(
                     tabs = exploreCategories,
-                    isScrollable = true,
+                    // iOS 탐색탭처럼 카테고리 전체(전체·철학·문학·예술·과학·사회·역사)를
+                    // 스크롤 없이 상단바에 등분 배치해 한 번에 보이도록 한다.
+                    isScrollable = false,
                     selectedTab = selectedCategory,
                     onTabSelected = { clickedCategory ->
                         val targetPage = exploreCategories.indexOf(clickedCategory)
@@ -298,8 +302,24 @@ fun ExploreCard(
                 .weight(1f)
                 .fillMaxHeight()
         ) {
-            // 1. 타입(뱃지) & 제목
+            // 1. 카테고리 뱃지 & 제목 (iOS 탐색탭처럼 제목 앞에 카테고리 뱃지를 인라인 배치)
             Row(verticalAlignment = Alignment.Top) {
+                item.tags.firstOrNull()?.let { category ->
+                    Surface(
+                        color = SwypTheme.colors.borderDefault,
+                        shape = RoundedCornerShape(2.dp)
+                    ) {
+                        Text(
+                            text = "#$category",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            // 피그마 스펙: 뱃지 텍스트 12sp (labelXSmall 기본 10sp에서 크기만 12로 조정)
+                            style = SwypTheme.typography.labelXSmall.copy(fontSize = 12.sp),
+                            color = SwypTheme.colors.primary,
+                            maxLines = 1
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                }
                 Text(
                     text = item.title,
                     style = SwypTheme.typography.b3SemiBold.copy(
@@ -310,7 +330,8 @@ fun ExploreCard(
                         )
                     ),
                     color = SwypTheme.colors.textTertiary,
-                    maxLines = 2,
+                    // 제목이 1줄을 넘어가면 ...으로 말줄임 (iOS 탐색탭과 동일)
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
@@ -329,25 +350,12 @@ fun ExploreCard(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // 3. 태그 내용 & 오디오 시간/조회수
+            // 3. 오디오 시간/조회수 (카테고리는 제목 앞 뱃지로 이동, 하단은 시간/조회수만 우측 정렬)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // [왼쪽 그룹] 해시태그
-                Text(
-                    text = item.tags.joinToString(" ") { "#$it" },
-                    style = SwypTheme.typography.label,
-                    color = SwypTheme.colors.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-
-                // 태그와 아이콘 사이의 최소한의 간격
-                Spacer(modifier = Modifier.width(8.dp))
-
                 // [오른쪽 그룹] 오디오 시간 & 조회수
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(

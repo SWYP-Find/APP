@@ -52,8 +52,10 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { boardData ->
                     Log.d("HomeFlow", "2. 🟢 홈 데이터 통신 성공!")
 
-                    // 1차: 기본 홈 데이터 세팅
-                    val initialTodayPicks = boardData.todayPicks.map { it.toUiModel() }
+                    // 오늘의 Pické(투표/퀴즈) 섹션은 홈에서 제거하기로 하여 데이터를 세팅하지 않는다.
+                    // (백엔드가 내려주더라도 홈에서는 사용하지 않으므로 투표 내역 동기화도 생략)
+                    // 필요 시 아래 initialTodayPicks 세팅과 syncTodayPicksVotes 호출을 복원하면 된다.
+                    // val initialTodayPicks = boardData.todayPicks.map { it.toUiModel() }
 
                     _uiState.update { state ->
                         state.copy(
@@ -63,12 +65,12 @@ class HomeViewModel @Inject constructor(
                             trendingBattles = boardData.trendingBattles.map { it.toUiModel() },
                             bestBattles = boardData.bestBattles.map { it.toUiModel() },
                             newBattles = boardData.newBattles.map { it.toUiModel() },
-                            todayPicks = initialTodayPicks
+                            todayPicks = emptyList()
                         )
                     }
 
-                    // 2차로 투표 내역(GET /me)을 불러와서 덮어씌우기
-                    syncTodayPicksVotes(initialTodayPicks)
+                    // 2차로 투표 내역(GET /me)을 불러와서 덮어씌우기 (오늘의 Pické 제거로 비활성화)
+                    // syncTodayPicksVotes(initialTodayPicks)
                 }
                 .onFailure { error ->
                     Log.e("HomeFlow", "2. 🔴 홈 데이터 통신 실패!", error)

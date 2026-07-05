@@ -65,7 +65,8 @@ fun CustomTopAppBar(
                 Icon(
                     painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "Picke 로고",
-                    tint = Color.Unspecified,
+                    // 상단 Picke 로고를 갈색(원본) 대신 검정색으로 표시 (홈/탐색탭)
+                    tint = Color.Black,
                 )
             }
 

@@ -27,6 +27,9 @@ fun CustomTabBar(
     isScrollable: Boolean = false,
     onTabSelected: (String) -> Unit
 ) {
+    // 등분(비스크롤) 모드에서는 화면을 탭 개수만큼 균등 분할하므로, 탭이 많을 때(예: 탐색탭 7개)
+    // 좌우 패딩이 크면 좁은 화면에서 글자가 줄바꿈된다. 비스크롤일 때는 패딩을 줄여 모두 한 줄에 보이게 한다.
+    val tabHorizontalPadding = if (isScrollable) 16.dp else 4.dp
     val tabContent: @Composable () -> Unit = {
         tabs.forEach { tab ->
             Box(
@@ -41,14 +44,15 @@ fun CustomTabBar(
                         selected = selectedTab == tab,
                         onClick = { onTabSelected(tab) }
                     )
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .padding(horizontal = tabHorizontalPadding, vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = tab,
                     style = SwypTheme.typography.labelMedium,
                     color = if(selectedTab == tab) SwypTheme.colors.primary else SwypTheme.colors.outline,
-                    fontWeight = if(selectedTab == tab) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if(selectedTab == tab) FontWeight.Bold else FontWeight.Normal,
+                    maxLines = 1
                 )
             }
         }

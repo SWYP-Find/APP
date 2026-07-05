@@ -50,10 +50,10 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    // 오늘의 Pické(투표/퀴즈) 섹션은 홈에서 제거하기로 하여 빈 화면 판정에서도 제외한다.
     val isDataEmpty = uiState.editorPicks.isEmpty() &&
             uiState.trendingBattles.isEmpty() &&
             uiState.bestBattles.isEmpty() &&
-            uiState.todayPicks.isEmpty() &&
             uiState.newBattles.isEmpty()
 
     LaunchedEffect(scrollToTopTrigger) {
@@ -194,7 +194,10 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                 }
 
-                // 4. 오늘의 Pické
+                // 4. 오늘의 Pické (투표/퀴즈)
+                //  - 홈에서 오늘의 Pické 섹션을 노출하지 않기로 하여 전체 주석 처리.
+                //  - 백엔드에서 데이터를 내려주더라도 홈에서는 그리지 않는다. 필요 시 아래 블록을 복원하면 된다.
+                /*
                 if (uiState.todayPicks.isNotEmpty()) {
                     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                         HomeSectionHeader(
@@ -218,6 +221,7 @@ fun HomeScreen(
                     }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
+                */
 
                 // 5. 새로운 배틀
                 if (uiState.newBattles.isNotEmpty()) {

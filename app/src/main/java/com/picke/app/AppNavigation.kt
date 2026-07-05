@@ -15,9 +15,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.core.app.NotificationManagerCompat
 import com.picke.app.R
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -71,7 +69,6 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()
     val uiState by splashViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     var showNotificationSheet by remember { mutableStateOf(false) }
     var showTermsSheet by remember { mutableStateOf(false) }
@@ -81,9 +78,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     ) { /* FCM 토큰 발급은 추후 연동 */ }
 
     fun checkAndShowNotificationSheet(isNewUser: Boolean) {
-        if (!isNewUser) return
-        if (splashViewModel.isNotificationPermissionAsked()) return
-        if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) showNotificationSheet = true
+        if (!isNewUser) return                                  // 신규 가입자에게만
+        if (splashViewModel.isNotificationPermissionAsked()) return  // 아직 안 물어본 경우 한 번만
+        // 신규 가입자는 현재 알림 권한이 켜져 있든 아니든 최초 1회는 안내 시트를 띄운다.
+        // (이전엔 areNotificationsEnabled()가 true면 스킵했으나, 이미 허용된 기기에선 안 떠서 조건 제거)
+        showNotificationSheet = true
     }
 
     fun markNotificationPermissionAsked() {

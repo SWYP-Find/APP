@@ -218,28 +218,32 @@ fun PhilosopherTypeScreen(
 
                     TraitAnalysisSection(recapBoard.scores)
                     TasteReportSection(recapBoard.preferenceReport)
-                    ChemistrySection(best = recapBoard.bestMatchCard, worst = recapBoard.worstMatchCard)
+                    // 궁합 카드와 하단 버튼을 한 그룹으로 묶어 그 사이 간격을 24dp로 고정한다.
+                    // (바깥 Column은 spacedBy(32)라 카드-버튼 간격이 과하게 벌어져 있었음)
+                    Column {
+                        ChemistrySection(best = recapBoard.bestMatchCard, worst = recapBoard.worstMatchCard)
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    // 하단: 공유하기 버튼
-                    if (isMyReport) {
-                        CustomButton(
-                            text = stringResource(R.string.my_share),
-                            onClick = { showShareDialog = true },
-                            modifier = Modifier.padding(bottom = 24.dp),
-                            backgroundColor = SwypTheme.colors.primary,
-                            textColor = Color.White,
-                        )
-                    } else {
-                        CustomButton(
-                            text = "나의 철학자 유형 알아보기",
-                            onClick = { onGoToSplashClick() },
-                            modifier = Modifier.padding(bottom = 24.dp),
-                            backgroundColor = SwypTheme.colors.primary,
-                            textColor = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
+                        // 하단: 공유하기 버튼
+                        if (isMyReport) {
+                            CustomButton(
+                                text = stringResource(R.string.my_share),
+                                onClick = { showShareDialog = true },
+                                modifier = Modifier.padding(bottom = 24.dp),
+                                backgroundColor = SwypTheme.colors.primary,
+                                textColor = Color.White,
+                            )
+                        } else {
+                            CustomButton(
+                                text = "나의 철학자 유형 알아보기",
+                                onClick = { onGoToSplashClick() },
+                                modifier = Modifier.padding(bottom = 24.dp),
+                                backgroundColor = SwypTheme.colors.primary,
+                                textColor = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
                     }
                 }
             }

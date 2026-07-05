@@ -281,12 +281,16 @@ fun TodayBattleScreen(
                         .statusBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    TopIndicatorBar(
-                        currentPage = pagerState.currentPage,
-                        totalPages = battleList.size
-                    )
+                    // 빠른 배틀이 여러 개일 때만 상단 인디케이터(1/1 등)를 노출한다.
+                    // 현재는 하루 1개만 노출하므로 사실상 숨겨진다.
+                    if (battleList.size > 1) {
+                        TopIndicatorBar(
+                            currentPage = pagerState.currentPage,
+                            totalPages = battleList.size
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

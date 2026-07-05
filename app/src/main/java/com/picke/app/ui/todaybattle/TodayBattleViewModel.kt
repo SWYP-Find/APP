@@ -60,7 +60,8 @@ class TodayBattleViewModel @Inject constructor(
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
-                            battleList = board.items.map { it.toUiModel() }
+                            // 빠른 배틀은 하루 1개만 노출한다. (백엔드가 여러 개를 내려주더라도 앱에서 첫 번째 1개만 사용)
+                            battleList = board.items.take(1).map { it.toUiModel() }
                         )
                     }
                 }
