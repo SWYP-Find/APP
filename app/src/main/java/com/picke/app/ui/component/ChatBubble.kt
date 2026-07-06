@@ -64,15 +64,15 @@ fun ChatBubble(
 
         // 🔹 [왼쪽 슬롯] : 왼쪽 화자면 아바타, 오른쪽 화자면 애니메이션
         Box(
-            modifier = Modifier.width(36.dp),
+            modifier = Modifier
+                .width(36.dp)
+                .align(if (!isLeft && isActive) Alignment.CenterVertically else Alignment.Top),
             contentAlignment = Alignment.TopCenter
         ) {
             if (isLeft && showAvatarAndName) {
                 ProfileImage(model = imageModel, modifier = Modifier.size(32.dp))
             } else if (!isLeft && isActive) {
-                Box(modifier = Modifier.padding(top = 28.dp)) {
-                    ChattingLoadingAnimation()
-                }
+                ChattingLoadingAnimation()
             }
         }
 
@@ -117,15 +117,15 @@ fun ChatBubble(
 
         // 🔹 [오른쪽 슬롯] : 오른쪽 화자면 아바타, 왼쪽 화자면 애니메이션
         Box(
-            modifier = Modifier.width(36.dp),
+            modifier = Modifier
+                .width(36.dp)
+                .align(if (isLeft && isActive) Alignment.CenterVertically else Alignment.Top),
             contentAlignment = Alignment.TopCenter
         ) {
             if (!isLeft && showAvatarAndName) {
                 ProfileImage(model = imageModel, modifier = Modifier.size(32.dp))
             } else if (isLeft && isActive) {
-                Box(modifier = Modifier.padding(top = 28.dp)) {
-                    ChattingLoadingAnimation()
-                }
+                ChattingLoadingAnimation()
             }
         }
     }

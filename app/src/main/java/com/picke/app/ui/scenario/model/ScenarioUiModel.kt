@@ -36,7 +36,15 @@ data class ScenarioOptionUiModel(
 
 // Domain -> UI Mapper
 fun ScenarioBoard.toUiModel(): ScenarioUiModel {
-    val philosopherImageMap = this.philosophers.associate { it.label to it.imageUrl }
+    // 백엔드 응답에 A/B 매칭 키가 따로 없어서, 배열 순서(0번째=A, 1번째=B)로 매핑한다.
+    val philosopherImageMap = this.philosophers.mapIndexedNotNull { index, philosopher ->
+        val speakerType = when (index) {
+            0 -> SpeakerType.A
+            1 -> SpeakerType.B
+            else -> null
+        } ?: return@mapIndexedNotNull null
+        speakerType.name to philosopher.imageUrl
+    }.toMap()
 
     val nodeMap = this.nodes.associateBy(
         keySelector = { it.nodeId },

@@ -55,6 +55,7 @@ import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.SortFilterChip
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
 import kotlinx.coroutines.launch
 
@@ -279,15 +280,8 @@ fun ExploreCard(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(SwypTheme.colors.backgroundBrand),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        color = SwypTheme.colors.primary,
-                        modifier = Modifier.size(20.dp),
-                        strokeWidth = 2.dp
-                    )
-                }
+                        .shimmer()
+                )
             }
         )
 
