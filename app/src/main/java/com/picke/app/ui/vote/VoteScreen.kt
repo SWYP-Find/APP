@@ -36,6 +36,7 @@ import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.CustomSingleActionDialog
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.*
 import com.picke.app.util.shareBattleToInstagramStoryBrightMode
 import com.picke.app.util.shareBattleToInstagramStoryDarkMode
@@ -56,9 +57,7 @@ fun VoteRoute(
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-        }
+        VoteSkeleton(voteType = voteType, modifier = Modifier.fillMaxSize())
     } else {
         uiState.battleDetail?.let { detail ->
             VoteScreen(
@@ -260,15 +259,14 @@ fun VoteScreen(
                             },
                         contentScale = ContentScale.Crop,
                         loading = {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(
-                                    color = SwypTheme.colors.primary,
-                                    modifier = Modifier.size(44.dp)
-                                )
-                            }
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .shimmer(
+                                        baseColor = if (isPreVote) null else SwypTheme.colors.neutral600,
+                                        highlightColor = if (isPreVote) null else SwypTheme.colors.neutral400
+                                    )
+                            )
                         }
                     )
 

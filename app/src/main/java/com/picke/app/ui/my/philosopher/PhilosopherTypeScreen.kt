@@ -24,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -184,14 +183,11 @@ fun PhilosopherTypeScreen(
         }
     ) { innerPadding ->
         if (uiState.isLoading) {
-            Box(
+            PhilosopherTypeSkeleton(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-            }
+                    .padding(top = innerPadding.calculateTopPadding())
+            )
         }
         else {
             Column(

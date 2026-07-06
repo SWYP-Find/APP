@@ -187,12 +187,7 @@ fun ExploreList(
         }
 
         if (isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-            }
+            ExploreSkeleton(modifier = Modifier.fillMaxSize())
         }
         else if (pagingItems.itemCount == 0) {
             Column(

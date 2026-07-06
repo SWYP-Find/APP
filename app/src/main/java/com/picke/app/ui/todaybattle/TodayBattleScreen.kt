@@ -156,26 +156,24 @@ fun TodayBattleScreen(
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Black)
         ) {
-            // 상단 뒤로가기 버튼
+            TodayBattleSkeleton(modifier = Modifier.fillMaxSize())
+
+            // 상단 뒤로가기 버튼 (실제 로드된 화면과 동일하게 40dp 터치영역 + 20dp 아이콘으로 맞춘다)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                IconButton(onClick = onBackClick, modifier = Modifier.size(40.dp)) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
-            // 정중앙 스피너
-            CircularProgressIndicator(
-                color = SwypTheme.colors.backgroundBrand,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
         return
     }

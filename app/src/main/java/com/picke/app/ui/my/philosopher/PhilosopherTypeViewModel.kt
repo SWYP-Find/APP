@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 data class PhilosopherTypeUiState(
     val recapBoard: MyRecapBoard? = null,
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val isLocked: Boolean = false
 )
 

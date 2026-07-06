@@ -279,14 +279,7 @@ fun PerspectiveScreen(
 
                     // 로딩중 화면
                     if (uiState.isLoading && uiState.perspectives.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-                        }
+                        PerspectiveListSkeleton(modifier = Modifier.weight(1f))
                     }
                     // 로딩 됐을때 화면
                     else {

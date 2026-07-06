@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -98,14 +97,12 @@ fun HomeScreen(
     ){ innerPadding ->
         // 1. 데이터 로딩중
         if (uiState.isLoading) {
-            Box(
+            HomeSkeleton(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-            }
+                    .padding(top = innerPadding.calculateTopPadding())
+                    .verticalScroll(scrollState)
+            )
         }
         // 2. 데이터가 없을떄
         else if (isDataEmpty) {

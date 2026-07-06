@@ -1,5 +1,7 @@
 ﻿package com.picke.app.ui.home
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -8,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,11 +28,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.picke.app.ui.component.ProfileImage
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.home.model.HomeContentUiModel
 import com.picke.app.ui.home.model.PollQuizOptionStatUiModel
 import com.picke.app.ui.home.model.TodayPickUiModel
 import com.picke.app.ui.theme.*
 import com.picke.app.R
+import kotlinx.coroutines.delay
 // 1. 공통 헤더
 @Composable
 fun HomeSectionHeader(
@@ -75,6 +80,19 @@ fun EditorPickSection(
     if (items.isEmpty()) return
 
     val pagerState = rememberPagerState(pageCount = { items.size })
+
+    LaunchedEffect(pagerState, items.size) {
+        if (items.size <= 1) return@LaunchedEffect
+        while (true) {
+            delay(3000)
+            val nextPage = (pagerState.currentPage + 1) % items.size
+            // 기본 스프링 애니메이션은 너무 휙 넘어가는 느낌이라 살짝 느긋한 tween으로 바꿨다.
+            pagerState.animateScrollToPage(
+                page = nextPage,
+                animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
+            )
+        }
+    }
 
     Column(
         modifier = modifier
@@ -136,12 +154,12 @@ fun EditorPickSection(
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
                         loading = {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = Color.White)
-                            }
+                            // 검은 배경 위 배너라 밝은 기본 shimmer 대신 어두운 톤을 쓴다.
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .shimmer(SwypTheme.colors.neutral600, SwypTheme.colors.neutral400)
+                            )
                         }
                     )
                     Box(
@@ -171,7 +189,13 @@ fun EditorPickSection(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text(text = pagerItem.title, style = SwypTheme.typography.h4SemiBold, color = Color.White)
+                    Text(
+                        text = pagerItem.title,
+                        style = SwypTheme.typography.h4SemiBold,
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(text = pagerItem.summary,
                         style = SwypTheme.typography.label,
@@ -226,15 +250,7 @@ fun TrendingBattleCard(item: HomeContentUiModel, onClick: () -> Unit) {
                     .background(SwypTheme.colors.backgroundBrand),
                 contentScale = ContentScale.Crop,
                 loading = {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = SwypTheme.colors.primaryDarkest,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.fillMaxSize().shimmer())
                 }
             )
         }

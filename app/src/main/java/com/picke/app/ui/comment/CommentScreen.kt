@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -142,12 +141,7 @@ fun CommentScreen(
         ) {
             // 로딩중 일때 (본문도 없고 댓글도 없을 때)
             if (uiState.isLoading && uiState.comments.isEmpty() && uiState.mainPerspective == null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-                }
+                CommentSkeleton(modifier = Modifier.fillMaxSize())
             } else {
                 // 2. 상단 고정 영역 (스크롤 되지 않음)
                 // 1) 메인 관점 카드
