@@ -40,9 +40,11 @@ class MyViewModel @Inject constructor(
     }
 
     fun fetchMyInfo() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+        // 화면이 다시 보이는 시점에 즉시(동기적으로) 로딩 상태로 전환해야
+        // 이전에 로드된 UI가 한 프레임이라도 먼저 그려지는 깜빡임을 막을 수 있다.
+        _uiState.update { it.copy(isLoading = true) }
 
+        viewModelScope.launch {
             myPageRepository.getMyPageInfo()
                 .onSuccess { infoBoard ->
                     Log.d("MyPageFlow", "🟢 마이페이지 정보 로드 성공: ${infoBoard}")
