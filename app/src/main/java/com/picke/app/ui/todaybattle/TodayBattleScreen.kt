@@ -63,6 +63,7 @@ import coil.request.ImageRequest
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.ShareDialog
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.util.shareBattleToInstagramStoryDarkMode
@@ -405,14 +406,10 @@ fun BattleContent(
                 contentScale = ContentScale.Crop,
                 loading = {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = SwypTheme.colors.primary, // 테마 색상에 맞게 조절 가능
-                            modifier = Modifier.size(44.dp)
-                        )
-                    }
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shimmer(SwypTheme.colors.neutral600, SwypTheme.colors.neutral400)
+                    )
                 }
             )
 
