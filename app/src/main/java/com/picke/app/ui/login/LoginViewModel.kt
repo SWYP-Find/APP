@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.DeviceRepository
 import com.picke.app.domain.usecase.LoginUseCase
@@ -27,7 +27,7 @@ class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val tokenManager: TokenManager,
     private val deviceRepository: DeviceRepository,
-    private val mixpanel: MixpanelAPI
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
     companion object {
         private const val TAG = "LoginViewModel_Picke"
@@ -66,7 +66,8 @@ class LoginViewModel @Inject constructor(
 
                 val userTag = authToken.userTag ?: "unknown_user"
                 tokenManager.saveUserTag(userTag)
-                mixpanel.identify(userTag)
+                tokenManager.saveLoginProvider(provider)
+                analyticsTracker.onLogin(userTag, provider, authToken.isNewUser)
 
                 FirebaseMessaging.getInstance().token
                     .addOnSuccessListener { fcmToken ->

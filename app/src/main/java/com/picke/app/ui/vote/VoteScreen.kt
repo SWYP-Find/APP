@@ -360,10 +360,12 @@ fun VoteScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
+                    viewModel.trackShare(com.picke.app.analytics.ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
+                    viewModel.trackShare(com.picke.app.analytics.ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -371,6 +373,7 @@ fun VoteScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
+                    viewModel.trackShare(com.picke.app.analytics.ShareChannel.LINK)
                     viewModel.getShareLink(
                         battleId = battleInfo.battleId.toInt(),
                         onSuccess = { url ->
@@ -420,6 +423,7 @@ fun VoteScreen(
                     activity?.let { act ->
                         val isAdReady = viewModel.adMobManager.showAd(
                             activity = act,
+                            placement = "battle_vote",
                             onRewardEarned = {
                                 // 1. 보상 획득 성공!
                                 Toast.makeText(context, "20포인트가 충전되었습니다. 다시 투표를 시도해보세요!", Toast.LENGTH_SHORT).show()

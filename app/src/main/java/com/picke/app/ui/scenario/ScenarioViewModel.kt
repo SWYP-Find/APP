@@ -6,6 +6,8 @@ import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.BuildConfig
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.BattleStepName
 import com.picke.app.domain.repository.ScenarioRepository
 import com.picke.app.ui.scenario.model.*
 import com.picke.app.util.ScenarioAudioKey
@@ -48,7 +50,8 @@ data class ScenarioUiState(
 @HiltViewModel
 class ScenarioViewModel @Inject constructor(
     private val scenarioRepository: ScenarioRepository,
-    private val audioPlayerManager: AudioPlayerManager
+    private val audioPlayerManager: AudioPlayerManager,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScenarioUiState())
@@ -57,6 +60,8 @@ class ScenarioViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var fullScenario: ScenarioUiModel? = null
     private var currentAudioKey: String? = null
+    private var currentBattleId: String = ""
+    private var isAudioEndTracked = false
 
     init {
         audioPlayerManager.onPlaybackEnded = { handleNodeEnd() }
@@ -65,6 +70,7 @@ class ScenarioViewModel @Inject constructor(
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun loadScenario(battleId: String) {
         Log.d("TTSFlow", "▶️ loadScenario() 실행 - 요청된 battleId: $battleId")
+        currentBattleId = battleId
         viewModelScope.launch {
             _uiState.update { it.copy(pastScripts = emptyList(), pastChoices = emptyList(), maxListenedPositionMs = 0L) }
             scenarioRepository.fetchBattleScenario(battleId)
@@ -171,6 +177,10 @@ class ScenarioViewModel @Inject constructor(
             _uiState.update { it.copy(interactiveOptions = currentNode.interactiveOptions) }
         } else {
             Log.d("TTSFlow", "▶️ handleNodeEnd() - 시나리오 최종 완료, 투표 다이얼로그 띄우기")
+            if (!isAudioEndTracked && currentBattleId.isNotEmpty()) {
+                isAudioEndTracked = true
+                analyticsTracker.trackBattleStep(BattleStepName.AUDIO_END, currentBattleId)
+            }
             _uiState.update { it.copy(showFinalVoteDialog = true) }
         }
     }

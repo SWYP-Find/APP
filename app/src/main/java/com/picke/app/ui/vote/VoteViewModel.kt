@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.BattleStepName
+import com.picke.app.analytics.ShareTarget
 import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.BattleDetailBoard
@@ -17,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import javax.inject.Inject
 
 enum class VoteType {
@@ -40,7 +41,7 @@ class VoteViewModel @Inject constructor(
     private val shareRepository: ShareRepository,
     private val tokenManager: TokenManager,
     val adMobManager: AdMobManager,
-    private val mixpanel: MixpanelAPI
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     companion object {
@@ -109,21 +110,24 @@ class VoteViewModel @Inject constructor(
             result.onSuccess {
                 Log.i(TAG, "[NAV] 투표 전송 성공")
 
-                try {
-                    val props = JSONObject().apply {
-                        put("battle_id", battleIdLong)
-                        put("selected_option_id", optionIdLong)
-                    }
-
-                    if (voteType == VoteType.PRE) {
-                        mixpanel.track("pre_vote", props)
-                        Log.d(TAG, "[STATE] pre_vote 믹스패널 이벤트 전송 완료")
-                    } else {
-                        mixpanel.track("post_vote", props)
-                        Log.d(TAG, "[STATE] post_vote 믹스패널 이벤트 전송 완료")
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "[FLOW] 믹스패널 이벤트 전송 실패: ${e.message}")
+                if (voteType == VoteType.PRE) {
+                    analyticsTracker.trackBattleStep(
+                        stepName = BattleStepName.PRE_VOTE,
+                        contentId = battleId,
+                        choice = selectedOptionId
+                    )
+                    Log.d(TAG, "[STATE] battle_step(pre_vote) 믹스패널 이벤트 전송 완료")
+                } else {
+                    // is_changed: 투표 이력 조회로 사전/사후 선택 변경 여부 확인 (실패 시 미첨부)
+                    val isChanged = voteRepository.getMyVoteHistory(battleIdLong)
+                        .getOrNull()?.opinionChanged
+                    analyticsTracker.trackBattleStep(
+                        stepName = BattleStepName.POST_VOTE,
+                        contentId = battleId,
+                        choice = selectedOptionId,
+                        isChanged = isChanged
+                    )
+                    Log.d(TAG, "[STATE] battle_step(post_vote) 믹스패널 이벤트 전송 완료 (is_changed: $isChanged)")
                 }
 
                 // 성공 상태 업데이트 및 콜백
@@ -165,5 +169,10 @@ class VoteViewModel @Inject constructor(
     fun dismissPointDialog() {
         Log.d(TAG, "[STATE] 포인트 부족 다이얼로그 닫기")
         _uiState.update { it.copy(isInsufficientPoints = false) }
+    }
+
+    /** 배틀 공유 시도 시 호출 (share_action target=battle) */
+    fun trackShare(channel: String) {
+        analyticsTracker.trackShareAction(ShareTarget.BATTLE, channel)
     }
 }

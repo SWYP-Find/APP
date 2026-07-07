@@ -3,6 +3,8 @@ package com.picke.app.ui.my.philosopher
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.ShareTarget
 import com.picke.app.domain.model.MyRecapBoard
 import com.picke.app.domain.repository.MyPageRepository
 import com.picke.app.domain.repository.ShareRepository
@@ -23,7 +25,8 @@ data class PhilosopherTypeUiState(
 @HiltViewModel
 class PhilosopherTypeViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
-    private val shareRepository: ShareRepository
+    private val shareRepository: ShareRepository,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel(){
 
     companion object {
@@ -47,6 +50,8 @@ class PhilosopherTypeViewModel @Inject constructor(
             // 3. 통신 결과에 따른 분기 처리
             result.onSuccess { data ->
                 Log.i(TAG, "[STATE] 리포트 데이터 로드 성공: 화면 잠금 해제")
+                analyticsTracker.trackReportView(topIndicator = data.myCard.philosopherLabel)
+                analyticsTracker.setPhilosopherType(data.myCard.philosopherLabel)
                 _uiState.update {
                     it.copy(
                         recapBoard = data,
@@ -78,6 +83,7 @@ class PhilosopherTypeViewModel @Inject constructor(
 
             result.onSuccess { data ->
                 Log.i(TAG, "[STATE] 타인 리포트 데이터 로드 성공")
+                analyticsTracker.trackReportView(topIndicator = data.myCard.philosopherLabel)
                 _uiState.update {
                     it.copy(
                         recapBoard = data,
@@ -96,6 +102,11 @@ class PhilosopherTypeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /** 리캡 공유 시도 시 호출 (share_action target=recap, 모든 공유 이벤트 통일 규약) */
+    fun trackRecapShare(channel: String) {
+        analyticsTracker.trackShareAction(ShareTarget.RECAP, channel)
     }
 
     // 나의 철학자 유형 공유키 발급받기 (기존 getShareLink 교체)

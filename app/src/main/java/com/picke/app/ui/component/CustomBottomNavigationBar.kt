@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.picke.app.analytics.UiActionName
+import com.picke.app.analytics.rememberAnalyticsTracker
 import com.picke.app.ui.main.BottomNavItem
 import com.picke.app.ui.theme.SwypTheme
 
@@ -36,6 +38,7 @@ fun CustomBottomNavigationBar(
     )
 
     val bottomTabRoutes = items.map { it.route }
+    val analyticsTracker = rememberAnalyticsTracker()
 
     NavigationBar(
         containerColor = SwypTheme.colors.surface,
@@ -69,6 +72,14 @@ fun CustomBottomNavigationBar(
                 selected = isSelected,
 
                 onClick = {
+                    val tabAction = when (item.route) {
+                        BottomNavItem.Home.route -> UiActionName.TAB_HOME
+                        BottomNavItem.Explore.route -> UiActionName.TAB_EXPLORE
+                        BottomNavItem.TodayBattle.route -> UiActionName.TAB_QUICK_BATTLE
+                        else -> UiActionName.TAB_MYPAGE
+                    }
+                    analyticsTracker.trackUiAction(tabAction)
+
                     if (item.route == BottomNavItem.TodayBattle.route) {
                         rootNavController.navigate(BottomNavItem.TodayBattle.route)
                     }else {

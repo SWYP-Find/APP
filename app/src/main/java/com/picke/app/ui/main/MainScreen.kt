@@ -19,6 +19,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.picke.app.AppRoute
+import com.picke.app.analytics.ContentActionType
+import com.picke.app.analytics.TrackScreenViews
+import com.picke.app.analytics.rememberAnalyticsTracker
 import com.picke.app.ui.component.CustomBottomNavigationBar
 import com.picke.app.ui.explore.ExploreScreen
 import com.picke.app.ui.home.HomeScreen
@@ -38,6 +41,10 @@ fun MainScreen(
     rootNavController : NavController
 ){
     val mainNavController = rememberNavController()
+    val analyticsTracker = rememberAnalyticsTracker()
+
+    // 탭 NavHost 내부 화면들의 screen_view 자동 전송
+    TrackScreenViews(mainNavController)
 
     var homeScrollTrigger by remember { mutableIntStateOf(0) }
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
@@ -71,6 +78,7 @@ fun MainScreen(
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { contentId->
+                        analyticsTracker.trackContentAction(ContentActionType.BATTLE_CARD_TAP, contentId)
                         rootNavController.navigate(AppRoute.BattleRouting.createRoute(contentId))
                     },
                     onNavigateToTrendingBattle = { },
@@ -86,6 +94,7 @@ fun MainScreen(
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { battleId ->
+                        analyticsTracker.trackContentAction(ContentActionType.BATTLE_CARD_TAP, battleId)
                         rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
                     }
                 )

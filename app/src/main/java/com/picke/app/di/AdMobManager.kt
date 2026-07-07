@@ -11,14 +11,22 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.google.android.gms.ads.rewarded.ServerSideVerificationOptions
 import com.picke.app.BuildConfig
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.PointActionType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AdMobManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val analyticsTracker: AnalyticsTracker
 ) {
+
+    companion object {
+        /** 보상형 광고 1회 시청 시 지급 포인트 */
+        private const val AD_REWARD_POINT = 20
+    }
 
     private var rewardedAd: RewardedAd? = null
     private val adUnitId = BuildConfig.ADMOB_REWARDED_AD_UNIT_ID
@@ -61,7 +69,10 @@ class AdMobManager @Inject constructor(
         })
     }
 
-    fun showAd(activity: Activity, onRewardEarned: () -> Unit): Boolean {
+    /**
+     * @param placement 광고 노출 위치 식별자 (Mixpanel ad_revenue.placement, snake_case)
+     */
+    fun showAd(activity: Activity, placement: String, onRewardEarned: () -> Unit): Boolean {
         if (rewardedAd != null) {
             Log.d("AdMobManagerFlow", "4. [광고 띄우기 요청] 유저가 버튼을 클릭함")
 
@@ -83,6 +94,8 @@ class AdMobManager @Inject constructor(
 
             rewardedAd?.show(activity) { rewardItem ->
                 Log.d("AdMobManagerFlow", "6. 🎉 [보상 조건 달성!!]")
+                analyticsTracker.trackAdRevenue(placement)
+                analyticsTracker.trackPointAction(PointActionType.AD_EARN, AD_REWARD_POINT)
                 onRewardEarned()
             }
             return true

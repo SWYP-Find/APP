@@ -32,6 +32,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.picke.app.analytics.ContentActionType
+import com.picke.app.analytics.OnboardingStep
+import com.picke.app.analytics.TrackScreenViews
+import com.picke.app.analytics.rememberAnalyticsTracker
 import com.picke.app.ui.component.NotificationPermissionBottomSheet
 import com.picke.app.ui.component.TermsOfServiceBottomSheet
 import com.picke.app.ui.alarm.AlarmScreen
@@ -69,9 +73,20 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()
     val uiState by splashViewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
+    val analyticsTracker = rememberAnalyticsTracker()
+
+    // §2 화면 enum에 등재된 화면의 screen_view 자동 전송
+    TrackScreenViews(rootNavController)
 
     var showNotificationSheet by remember { mutableStateOf(false) }
     var showTermsSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showTermsSheet) {
+        if (showTermsSheet) analyticsTracker.trackOnboardingStep(OnboardingStep.TERMS_SHOWN)
+    }
+    LaunchedEffect(showNotificationSheet) {
+        if (showNotificationSheet) analyticsTracker.trackOnboardingStep(OnboardingStep.PERMISSION_ASKED)
+    }
 
     val requestNotificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -185,6 +200,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         val pendingReport = DeepLinkManager.pendingReportId
                         val pendingBattle = DeepLinkManager.pendingBattleId
 
+                        analyticsTracker.trackOnboardingStep(OnboardingStep.HOME_ENTERED)
                         rootNavController.navigate(AppRoute.Main.route) {
                             popUpTo(AppRoute.Login.route) { inclusive = true }
                         }
@@ -398,9 +414,13 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 arguments = listOf(navArgument("battleId") { type = NavType.StringType })
             ) {
                 RecommendScreen(
-                    onCloseClick = { rootNavController.popBackStack(AppRoute.Main.route, inclusive = false) },
+                    onCloseClick = {
+                        analyticsTracker.trackContentAction(ContentActionType.BATTLE_RECOMMEND_CLOSE)
+                        rootNavController.popBackStack(AppRoute.Main.route, inclusive = false)
+                    },
                     onBackClick = { rootNavController.popBackStack() },
                     onItemClick = { clickedBattleId ->
+                        analyticsTracker.trackContentAction(ContentActionType.BATTLE_CARD_TAP, clickedBattleId)
                         rootNavController.navigate(AppRoute.BattleRouting.createRoute(clickedBattleId))
                     }
                 )
@@ -451,6 +471,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
         TermsOfServiceBottomSheet(
             onConfirm = {
                 splashViewModel.markTermsAgreed()
+                analyticsTracker.trackOnboardingStep(OnboardingStep.TERMS_AGREED)
                 showTermsSheet = false
             }
         )

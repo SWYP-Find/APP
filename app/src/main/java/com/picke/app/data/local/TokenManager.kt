@@ -180,6 +180,22 @@ class TokenManager @Inject constructor(
     }
     // endregion
 
+    // region 4-1. 로그인 프로바이더 관리 (Mixpanel login_provider 슈퍼 프로퍼티 갱신용)
+    /**
+     * 로그인 프로바이더 저장 (예: "kakao", "google")
+     */
+    fun saveLoginProvider(provider: String) {
+        prefs?.edit()?.putString("login_provider", provider)?.apply()
+    }
+
+    /**
+     * 로그인 프로바이더 반환
+     */
+    fun getLoginProvider(): String? {
+        return prefs?.getString("login_provider", null)
+    }
+    // endregion
+
     // region 5. FCM 토큰 관리
     /**
      * FCM 토큰 저장 (서버에 마지막으로 등록한 토큰 추적용)
@@ -247,6 +263,7 @@ class TokenManager @Inject constructor(
             ?.remove("refresh_token")
             ?.remove("user_status")
             ?.remove("user_tag")
+            ?.remove("login_provider")
             ?.remove("fcm_token")
             ?.remove("notification_permission_asked")
             ?.apply()

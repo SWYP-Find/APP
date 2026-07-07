@@ -222,6 +222,7 @@ fun MakeBattleScreen(
                     activity?.let { act ->
                         val isAdReady = viewModel.adMobManager.showAd(
                             activity = act,
+                            placement = "make_battle",
                             onRewardEarned = {
                                 // 1. 보상 획득 시 토스트 표시
                                 Toast.makeText(context, "20포인트가 충전되었습니다", Toast.LENGTH_SHORT).show()

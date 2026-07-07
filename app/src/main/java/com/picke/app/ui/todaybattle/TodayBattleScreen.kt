@@ -94,6 +94,7 @@ fun TodayBattleScreen(
     val graphicsLayer = rememberGraphicsLayer()
 
     val context = LocalContext.current
+    val analyticsTracker = com.picke.app.analytics.rememberAnalyticsTracker()
     var showShareDialog by remember { mutableStateOf(false) }
     val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
     val clipboardManager = LocalClipboardManager.current
@@ -328,10 +329,18 @@ fun TodayBattleScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
+                    analyticsTracker.trackShareAction(
+                        com.picke.app.analytics.ShareTarget.BATTLE,
+                        com.picke.app.analytics.ShareChannel.KAKAO
+                    )
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
+                    analyticsTracker.trackShareAction(
+                        com.picke.app.analytics.ShareTarget.BATTLE,
+                        com.picke.app.analytics.ShareChannel.INSTAGRAM
+                    )
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -339,6 +348,10 @@ fun TodayBattleScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
+                    analyticsTracker.trackShareAction(
+                        com.picke.app.analytics.ShareTarget.BATTLE,
+                        com.picke.app.analytics.ShareChannel.LINK
+                    )
 
                     val currentBattleId = battleList[pagerState.currentPage].battleId.toInt()
 

@@ -19,6 +19,7 @@ object MixpanelModule {
     fun provideMixpanel(@ApplicationContext context: Context): MixpanelAPI {
         val projectToken = BuildConfig.MIXPANEL_PROJECT_TOKEN
 
-        return MixpanelAPI.getInstance(context, projectToken, false)
+        // trackAutomaticEvents=true: 세션/설치/업데이트 자동 이벤트 (계약서 §0 - 양 플랫폼 통일)
+        return MixpanelAPI.getInstance(context, projectToken, true)
     }
 }

@@ -154,6 +154,7 @@ fun MyScreen(
                         activity?.let {
                         val isAdReady = viewModel.adMobManager.showAd(
                             activity = it,
+                            placement = "mypage_charge",
                             onRewardEarned = {
                                 viewModel.refreshPointsAfterAd()
                                 uiState.profile?.userTag?.let { tag -> viewModel.adMobManager.loadAd(userId = tag) }

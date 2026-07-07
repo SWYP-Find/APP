@@ -3,7 +3,9 @@ package com.picke.app.ui.splash
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.picke.app.analytics.AnalyticsScreen
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.OnboardingStep
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.repository.AuthRepository
 import com.picke.app.di.AdMobManager
@@ -29,7 +31,7 @@ sealed class SplashUiState{
 class SplashViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val tokenManager: TokenManager,
-    private val mixpanel: MixpanelAPI,
+    private val analyticsTracker: AnalyticsTracker,
     private val adMobManager: AdMobManager
 ) : ViewModel() {
     companion object {
@@ -40,6 +42,8 @@ class SplashViewModel @Inject constructor(
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
     init {
+        analyticsTracker.trackScreenView(AnalyticsScreen.SPLASH)
+        analyticsTracker.trackOnboardingStep(OnboardingStep.SPLASH)
         checkAutoLogin()
     }
 
@@ -73,8 +77,8 @@ class SplashViewModel @Inject constructor(
                     val savedUserTag = tokenManager.getUserTag()
 
                     if (savedUserTag != null) {
-                        // 3. 믹스패널 유저 식별 (DAU 집계)
-                        mixpanel.identify(savedUserTag)
+                        // 3. 믹스패널 유저 식별 + 로그인 슈퍼 프로퍼티 갱신 (DAU 집계)
+                        analyticsTracker.onSessionStart(savedUserTag, tokenManager.getLoginProvider())
                         Log.d(TAG, "[Mixpanel] 유저 식별 완료: $savedUserTag")
 
                         // 4. 광고 미리 로드 (프리패치)

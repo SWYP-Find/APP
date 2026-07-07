@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.domain.model.CommentBoard
 import com.picke.app.domain.repository.CommentRepository
 import com.picke.app.domain.repository.PerspectiveRepository
@@ -52,6 +53,7 @@ class CommentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val commentRepository: CommentRepository,
     private val perspectiveRepository: PerspectiveRepository,
+    private val analyticsTracker: AnalyticsTracker,
 ) : ViewModel() {
 
     companion object {
@@ -170,6 +172,7 @@ class CommentViewModel @Inject constructor(
                 commentRepository.createComment(targetIdLong, content)
                     .onSuccess {
                         Log.i(TAG, "[STATE] 댓글 작성 완료")
+                        analyticsTracker.trackCommunityAction(receivedTargetId, content.length)
                         onSuccess()
                         loadComments(isRefresh = true)
                     }

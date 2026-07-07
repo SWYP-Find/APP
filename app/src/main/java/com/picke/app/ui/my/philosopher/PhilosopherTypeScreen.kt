@@ -250,10 +250,12 @@ fun PhilosopherTypeScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
+                    viewModel.trackRecapShare(com.picke.app.analytics.ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
+                    viewModel.trackRecapShare(com.picke.app.analytics.ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -261,6 +263,7 @@ fun PhilosopherTypeScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
+                    viewModel.trackRecapShare(com.picke.app.analytics.ShareChannel.LINK)
 
                     viewModel.getRecapShareKey(
                         onSuccess = { shareKey ->

@@ -3,6 +3,8 @@ package com.picke.app.ui.alarm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.NotificationActionType
 import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.domain.repository.AlarmRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +25,15 @@ data class AlarmUiState(
 )
 @HiltViewModel
 class AlarmViewModel @Inject constructor(
-    private val alarmRepository: AlarmRepository
+    private val alarmRepository: AlarmRepository,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AlarmUiState())
     val uiState: StateFlow<AlarmUiState> = _uiState.asStateFlow()
+
+    /** notification_action(view_list)은 화면 진입 시 1회만 전송 */
+    private var isViewListTracked = false
 
     init {
         fetchAlarms(isRefresh = true)
@@ -75,6 +81,13 @@ class AlarmViewModel @Inject constructor(
                         isPagingLoading = false
                     )
                 }
+                if (!isViewListTracked) {
+                    isViewListTracked = true
+                    analyticsTracker.trackNotificationAction(
+                        action = NotificationActionType.VIEW_LIST,
+                        unreadCount = data.items.count { !it.isRead }
+                    )
+                }
             }.onFailure { exception ->
                 Log.e("AlarmFlow", "❌ [호출 실패] 에러 발생!", exception)
                 Log.e("AlarmFlow", "실패 메시지: ${exception.message}")
@@ -102,6 +115,7 @@ class AlarmViewModel @Inject constructor(
 
     // 개별 알림 읽음 처리
     fun readAlarm(notificationId: Long) {
+        analyticsTracker.trackNotificationAction(NotificationActionType.ITEM_TAP)
         viewModelScope.launch {
             Log.d("AlarmFlow", "▶️ 개별 알림 읽음 처리 API 호출 시작! (notificationId: $notificationId)")
             val result = alarmRepository.readAlarm(notificationId)
@@ -124,6 +138,10 @@ class AlarmViewModel @Inject constructor(
 
     // 모두 읽음 처리
     fun readAllAlarms() {
+        analyticsTracker.trackNotificationAction(
+            action = NotificationActionType.READ_ALL,
+            unreadCount = _uiState.value.alarmList.count { !it.isRead }
+        )
         viewModelScope.launch {
             Log.d("AlarmFlow", "▶️ 전체 알림 읽음 처리 API 호출 시작!")
             val result = alarmRepository.readAllAlarms()
