@@ -482,7 +482,7 @@ fun TraitAnalysisSection(analysis: RecapScores) {
                         analysis.inner / 100f,
                         analysis.ideal / 100f
                     ),
-                    labels = listOf("원칙", "이성", "개인", "변화", "내면", "직관")
+                    labels = listOf("원칙", "이성", "개인", "변화", "내면", "이상")
                 )
             }
 
