@@ -74,6 +74,21 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}" />
+        <!-- Sentry 에러 모니터링 (DSN은 local.properties의 SENTRY_DSN에서 주입, 비어있으면 SDK 비활성화) -->
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="${sentryDsn}" />
+        <meta-data
+            android:name="io.sentry.environment"
+            android:value="${sentryEnvironment}" />
+        <!-- ANR(앱 응답 없음) 감지 -->
+        <meta-data
+            android:name="io.sentry.anr.enable"
+            android:value="true" />
+        <!-- SDK 자체 로그 (debug 빌드에서만 활성) -->
+        <meta-data
+            android:name="io.sentry.debug"
+            android:value="${sentryDebug}" />
         <!-- 파일 공유자 -->
         <provider
             android:name="androidx.core.content.FileProvider"

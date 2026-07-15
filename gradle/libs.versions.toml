@@ -49,6 +49,9 @@ foundation = "1.10.6"
 # [MixPanel]
 mixpanel = "7.5.0"
 
+# [Sentry]
+sentry = "5.8.0"
+
 
 [libraries]
 # [AndroidX Core & Lifecycle]
@@ -124,3 +127,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+sentry-android = { id = "io.sentry.android.gradle", version.ref = "sentry" }

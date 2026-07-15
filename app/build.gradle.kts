@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.sentry.android)
 }
 
 android {
@@ -25,6 +26,7 @@ android {
     val admobAppId = properties.getProperty("ADMOB_APP_ID") ?: ""
     val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
     val mixpanelToken = properties.getProperty("MIXPANEL_PROJECT_TOKEN") ?: ""
+    val sentryDsn = properties.getProperty("SENTRY_DSN") ?: ""
 
     println("🔑💛 KAKAO_DEBUG_APPKEY: $kakaoDebugAppKey")
     println("🔑🤍 GOOGLE_WEB_CLIENT_ID: ${if (googleWebClientId.isNotEmpty()) "${googleWebClientId.take(20)}..." else "❌ 미설정 (local.properties 확인)"}")
@@ -47,6 +49,7 @@ android {
 
         manifestPlaceholders["admobAppId"] = admobAppId
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoDebugAppKey
+        manifestPlaceholders["sentryDsn"] = sentryDsn
     }
 
     signingConfigs {
@@ -74,6 +77,9 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://picke.store/\"")
             // 배포용 구글 클라이언트 ID 설정
             buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
+            // Sentry 환경 구분 (배포)
+            manifestPlaceholders["sentryEnvironment"] = "production"
+            manifestPlaceholders["sentryDebug"] = "false"
         }
         // [6. 개발용 빌드 설정]
         debug {
@@ -82,6 +88,9 @@ android {
             buildConfigField("String", "BASE_URL", "\"https://dev.picke.store/\"")
             // 개발용 구글 클라이언트 ID 설정
             buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
+            // Sentry 환경 구분 (개발)
+            manifestPlaceholders["sentryEnvironment"] = "debug"
+            manifestPlaceholders["sentryDebug"] = "true"
         }
     }
 
@@ -97,6 +106,20 @@ android {
     kotlinOptions{
         jvmTarget = "17"
     }
+}
+
+// [Sentry] 에러 모니터링 설정 (SDK 의존성은 플러그인이 자동 추가)
+sentry {
+    org.set("picke")
+    projectName.set("picke-android")
+    // 릴리즈 빌드 시 ProGuard 매핑을 업로드해 난독화된 스택트레이스를 복원.
+    // 인증 토큰은 루트의 sentry.properties(gitignore 대상) 또는 SENTRY_AUTH_TOKEN 환경변수에서 읽음.
+    includeProguardMapping.set(true)
+    autoUploadProguardMapping.set(
+        rootProject.file("sentry.properties").exists() || System.getenv("SENTRY_AUTH_TOKEN") != null
+    )
+    // 소스 코드 업로드는 사용하지 않음 (필요 시 활성화)
+    includeSourceContext.set(false)
 }
 
 
