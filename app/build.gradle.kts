@@ -38,8 +38,8 @@ android {
         applicationId = "com.picke.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 17
-        versionName = "1.1.3"
+        versionCode = 18
+        versionName = "1.1.4"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // [4. 코드 및 매니페스트로 값 전달]
