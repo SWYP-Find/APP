@@ -4,7 +4,6 @@ enum class ContentDomainType {
 }
 
 data class HomeBoard(
-    val hasNewNotice: Boolean,
     val editorPicks: List<HomeContent>,
     val trendingBattles: List<HomeContent>,
     val bestBattles: List<HomeContent>,

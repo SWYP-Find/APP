@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
@@ -27,13 +28,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.picke.app.R
 import com.picke.app.ui.component.CustomTopAppBar
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
 
 @Composable
@@ -62,6 +67,11 @@ fun HomeScreen(
         }
     }
 
+    // 최초 진입/탭 복귀/알림함에서 돌아올 때마다 미읽음 알림 여부를 조회해 벨 아이콘 배지를 갱신한다.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        viewModel.fetchUnreadAlarmStatus()
+    }
+
     Scaffold(
         containerColor = SwypTheme.colors.backgroundBrand,
         topBar = {
@@ -70,25 +80,40 @@ fun HomeScreen(
                 centerTitle = false,
                 backgroundColor = SwypTheme.colors.backgroundBrand,
                 actions = {
-                    IconButton(onClick = {
-                        viewModel.clearNewNotice()
-                        onNavigateToAlarm()
-                    }) {
-                        BadgedBox(
-                            badge = {
-                                if (uiState.hasNewNotice) {
-                                    Badge(
-                                        containerColor = SwypTheme.colors.primary,
-                                        modifier = Modifier.offset(x = 4.dp, y = (-4).dp)
-                                    )
-                                }
-                            }
+                    // 벨 배지(미읽음 여부)는 API 응답 후에야 확정되므로,
+                    // 그 전까지는 아이콘 자리도 스켈레톤과 동일하게 shimmer로 보여준다.
+                    if (uiState.isLoading || uiState.isAlarmStatusLoading) {
+                        Box(
+                            modifier = Modifier.size(48.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_alarm),
-                                contentDescription = "알림",
-                                tint = Color.Unspecified
+                            Spacer(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .shimmer()
                             )
+                        }
+                    } else {
+                        // 배지는 서버의 미읽음 여부 응답으로만 갱신한다.
+                        // (여기서 임의로 숨기면 알림함에서 돌아올 때 배지가 다시 나타나는 깜빡임이 생긴다)
+                        IconButton(onClick = onNavigateToAlarm) {
+                            BadgedBox(
+                                badge = {
+                                    if (uiState.hasNewNotice) {
+                                        Badge(
+                                            containerColor = SwypTheme.colors.primary,
+                                            modifier = Modifier.offset(x = 4.dp, y = (-4).dp)
+                                        )
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_alarm),
+                                    contentDescription = "알림",
+                                    tint = Color.Unspecified
+                                )
+                            }
                         }
                     }
                 }

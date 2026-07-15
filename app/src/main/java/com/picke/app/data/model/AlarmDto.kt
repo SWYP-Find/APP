@@ -21,6 +21,10 @@ data class AlarmPageDto(
     val hasNext: Boolean?
 )
 
+data class AlarmUnreadDto(
+    val hasUnread: Boolean?
+)
+
 data class AlarmDetailDto(
     val notificationId: Long?,
     val perspectiveId: Long?,

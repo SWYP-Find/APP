@@ -8,6 +8,7 @@ import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.MyProfile
 import com.picke.app.domain.model.MyTier
+import com.picke.app.domain.repository.AlarmRepository
 import com.picke.app.domain.repository.MyPageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,13 +22,16 @@ data class MyUiState(
     val profile: MyProfile? = null,
     val philosopher: MyPhilosopher? = null,
     val tier: MyTier? = null,
-    val hasNewNotice: Boolean = true,
-    val isLoading: Boolean = false
+    val hasNewNotice: Boolean = false,
+    val isLoading: Boolean = false,
+    // 미읽음 알림 여부 조회가 끝나기 전까지 탑바 아이콘을 shimmer로 보여주기 위한 플래그
+    val isAlarmStatusLoading: Boolean = true
 )
 
 @HiltViewModel
 class MyViewModel @Inject constructor(
     private val myPageRepository: MyPageRepository,
+    private val alarmRepository: AlarmRepository,
     private val tokenManager: TokenManager,
     val adMobManager: AdMobManager
 ) : ViewModel() {
@@ -78,9 +82,21 @@ class MyViewModel @Inject constructor(
         fetchMyInfo()
     }
 
-    fun readNotice() {
+    // 미읽음 알림 존재 여부 조회 (탑바 벨 아이콘 빨간 점 배지)
+    fun fetchUnreadAlarmStatus() {
+        // 재진입 시에도 배지 여부가 확정되기 전까지 아이콘을 shimmer로 유지한다.
+        _uiState.update { it.copy(isAlarmStatusLoading = true) }
+
         viewModelScope.launch {
-            _uiState.update { it.copy(hasNewNotice = false) }
+            alarmRepository.hasUnreadAlarms()
+                .onSuccess { hasUnread ->
+                    _uiState.update { it.copy(hasNewNotice = hasUnread, isAlarmStatusLoading = false) }
+                }
+                .onFailure { error ->
+                    Log.e("MyPageFlow", "🔴 미읽음 알림 여부 조회 실패!", error)
+                    _uiState.update { it.copy(isAlarmStatusLoading = false) }
+                }
         }
     }
+
 }

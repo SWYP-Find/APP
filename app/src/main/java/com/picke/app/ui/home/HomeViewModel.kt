@@ -3,6 +3,7 @@ package com.picke.app.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.domain.repository.AlarmRepository
 import com.picke.app.domain.repository.HomeRepository
 import com.picke.app.util.ContentType
 import com.picke.app.domain.repository.PollQuizRepository
@@ -22,6 +23,8 @@ import javax.inject.Inject
 data class HomeUiState(
     val isLoading: Boolean = true,
     val hasNewNotice: Boolean = false,
+    // 미읽음 알림 여부 조회가 끝나기 전까지 탑바 아이콘을 shimmer로 보여주기 위한 플래그
+    val isAlarmStatusLoading: Boolean = true,
     val editorPicks: List<HomeContentUiModel> = emptyList(),
     val trendingBattles: List<HomeContentUiModel> = emptyList(),
     val bestBattles: List<HomeContentUiModel> = emptyList(),
@@ -32,7 +35,8 @@ data class HomeUiState(
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val pollQuizRepository: PollQuizRepository
+    private val pollQuizRepository: PollQuizRepository,
+    private val alarmRepository: AlarmRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState(isLoading = true))
@@ -60,7 +64,6 @@ class HomeViewModel @Inject constructor(
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
-                            hasNewNotice = boardData.hasNewNotice,
                             editorPicks = boardData.editorPicks.map { it.toUiModel() },
                             trendingBattles = boardData.trendingBattles.map { it.toUiModel() },
                             bestBattles = boardData.bestBattles.map { it.toUiModel() },
@@ -135,9 +138,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun clearNewNotice() {
-        _uiState.update { it.copy(hasNewNotice = false) }
+    // 미읽음 알림 존재 여부 조회 (탑바 벨 아이콘 빨간 점 배지)
+    fun fetchUnreadAlarmStatus() {
+        // 재진입 시에도 배지 여부가 확정되기 전까지 아이콘을 shimmer로 유지한다.
+        _uiState.update { it.copy(isAlarmStatusLoading = true) }
+
+        viewModelScope.launch {
+            alarmRepository.hasUnreadAlarms()
+                .onSuccess { hasUnread ->
+                    _uiState.update { it.copy(hasNewNotice = hasUnread, isAlarmStatusLoading = false) }
+                }
+                .onFailure { error ->
+                    Log.e("HomeFlow", "🔴 미읽음 알림 여부 조회 실패!", error)
+                    _uiState.update { it.copy(isAlarmStatusLoading = false) }
+                }
+        }
     }
+
 
     // 투표/퀴즈 제출 로직
     fun submitTodayPickVote(battleId: String, optionId: Long, type: String) {
