@@ -5,7 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.google.android.gms.ads.MobileAds
+// AdMob 미사용으로 SDK import 비활성화 (추후 재사용 예정)
+// import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.KakaoSdk
 import com.picke.app.di.AdMobManager
 import com.picke.app.notification.FCMService
@@ -25,7 +26,8 @@ class SwypApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.KAKAO_DEBUG_APPKEY)
-        MobileAds.initialize(this) { adMobManager.onMobileAdsInitialized() }
+        // AdMob SDK 초기화 비활성화 (추후 재사용 예정)
+        // MobileAds.initialize(this) { adMobManager.onMobileAdsInitialized() }
         createNotificationChannel()
         ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
     }
