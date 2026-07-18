@@ -10,7 +10,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import com.picke.app.domain.repository.BattleRepository
+import com.picke.app.domain.usecase.battle.GetBattleStatusUseCase
 import com.picke.app.ui.vote.VoteSkeleton
 import com.picke.app.ui.vote.VoteType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,7 @@ private const val TAG = "BattleRoutingFlow"
 @HiltViewModel
 class BattleRoutingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val battleRepository: BattleRepository
+    private val getBattleStatusUseCase: GetBattleStatusUseCase
 ) : ViewModel() {
     val battleId: String = checkNotNull(savedStateHandle["battleId"])
 
@@ -41,7 +41,7 @@ class BattleRoutingViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d(TAG, "🔍 [배틀 상태 확인] 요청 시작 - battleId: $battleId")
 
-            battleRepository.getBattleStatus(battleId.toLongOrNull() ?: 0L)
+            getBattleStatusUseCase(battleId.toLongOrNull() ?: 0L)
                 .onSuccess { statusBoard ->
                     Log.d(TAG, "🟢 [배틀 상태 확인] 서버 통신 성공! - 현재 상태(step): ${statusBoard.step}")
 
