@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.AlarmDetailBoard
 import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.domain.model.NoticeEventItem
-import com.picke.app.domain.usecase.GetAlarmDetailUseCase
-import com.picke.app.domain.usecase.GetAlarmsUseCase
+import com.picke.app.domain.usecase.alarm.GetAlarmDetailUseCase
+import com.picke.app.domain.usecase.alarm.GetAlarmsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

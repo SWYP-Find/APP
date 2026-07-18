@@ -7,8 +7,8 @@ import com.picke.app.analytics.AnalyticsScreen
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.UiActionName
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.usecase.LogoutUseCase
-import com.picke.app.domain.usecase.WithdrawUseCase
+import com.picke.app.domain.usecase.auth.LogoutUseCase
+import com.picke.app.domain.usecase.auth.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

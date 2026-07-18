@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.BuildConfig
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.BattleStepName
-import com.picke.app.domain.usecase.FetchBattleScenarioUseCase
+import com.picke.app.domain.usecase.scenario.FetchBattleScenarioUseCase
 import com.picke.app.ui.scenario.model.*
 import com.picke.app.util.ScenarioAudioKey
 import dagger.hilt.android.lifecycle.HiltViewModel

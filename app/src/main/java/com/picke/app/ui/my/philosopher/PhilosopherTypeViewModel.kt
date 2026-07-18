@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.ShareTarget
 import com.picke.app.domain.model.MyRecapBoard
-import com.picke.app.domain.usecase.GetMyRecapUseCase
-import com.picke.app.domain.usecase.GetRecapDetailUseCase
-import com.picke.app.domain.usecase.GetRecapShareKeyUseCase
+import com.picke.app.domain.usecase.mypage.GetMyRecapUseCase
+import com.picke.app.domain.usecase.share.GetRecapDetailUseCase
+import com.picke.app.domain.usecase.share.GetRecapShareKeyUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

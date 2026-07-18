@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.MyBattleRecordItem
-import com.picke.app.domain.usecase.GetMyBattleRecordsUseCase
+import com.picke.app.domain.usecase.mypage.GetMyBattleRecordsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

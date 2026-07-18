@@ -6,10 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.NotificationActionType
 import com.picke.app.domain.model.AlarmItemBoard
-import com.picke.app.domain.usecase.GetAlarmDetailUseCase
-import com.picke.app.domain.usecase.GetAlarmsUseCase
-import com.picke.app.domain.usecase.ReadAlarmUseCase
-import com.picke.app.domain.usecase.ReadAllAlarmsUseCase
+import com.picke.app.domain.usecase.alarm.GetAlarmDetailUseCase
+import com.picke.app.domain.usecase.alarm.GetAlarmsUseCase
+import com.picke.app.domain.usecase.alarm.ReadAlarmUseCase
+import com.picke.app.domain.usecase.alarm.ReadAllAlarmsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

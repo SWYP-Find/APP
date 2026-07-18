@@ -10,11 +10,11 @@ import com.picke.app.analytics.ShareTarget
 import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.BattleDetailBoard
-import com.picke.app.domain.usecase.GetBattleDetailUseCase
-import com.picke.app.domain.usecase.GetBattleShareLinkUseCase
-import com.picke.app.domain.usecase.GetMyVoteHistoryUseCase
-import com.picke.app.domain.usecase.SubmitVoteResult
-import com.picke.app.domain.usecase.SubmitVoteUseCase
+import com.picke.app.domain.usecase.battle.GetBattleDetailUseCase
+import com.picke.app.domain.usecase.share.GetBattleShareLinkUseCase
+import com.picke.app.domain.usecase.vote.GetMyVoteHistoryUseCase
+import com.picke.app.domain.usecase.vote.SubmitVoteResult
+import com.picke.app.domain.usecase.vote.SubmitVoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

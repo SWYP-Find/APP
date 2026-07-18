@@ -8,8 +8,8 @@ import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.MyProfile
 import com.picke.app.domain.model.MyTier
-import com.picke.app.domain.usecase.GetMyPageInfoUseCase
-import com.picke.app.domain.usecase.GetUnreadAlarmStatusUseCase
+import com.picke.app.domain.usecase.mypage.GetMyPageInfoUseCase
+import com.picke.app.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -7,7 +7,7 @@ import com.picke.app.analytics.AnalyticsScreen
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.OnboardingStep
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.usecase.RefreshAccessTokenUseCase
+import com.picke.app.domain.usecase.auth.RefreshAccessTokenUseCase
 import com.picke.app.di.AdMobManager
 import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel

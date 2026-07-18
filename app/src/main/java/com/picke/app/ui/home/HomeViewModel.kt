@@ -3,10 +3,10 @@ package com.picke.app.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.app.domain.usecase.FetchHomeDataUseCase
-import com.picke.app.domain.usecase.GetTodayPickVoteUseCase
-import com.picke.app.domain.usecase.GetUnreadAlarmStatusUseCase
-import com.picke.app.domain.usecase.SubmitTodayPickVoteUseCase
+import com.picke.app.domain.usecase.home.FetchHomeDataUseCase
+import com.picke.app.domain.usecase.pollquiz.GetTodayPickVoteUseCase
+import com.picke.app.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
+import com.picke.app.domain.usecase.pollquiz.SubmitTodayPickVoteUseCase
 import com.picke.app.util.ContentType
 import com.picke.app.ui.home.model.HomeContentUiModel
 import com.picke.app.ui.home.model.TodayPickUiModel

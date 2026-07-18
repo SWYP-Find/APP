@@ -3,10 +3,10 @@ package com.picke.app.ui.todaybattle
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.app.domain.usecase.FetchTodayBattlesUseCase
-import com.picke.app.domain.usecase.GetBattleShareLinkUseCase
-import com.picke.app.domain.usecase.SubmitVoteResult
-import com.picke.app.domain.usecase.SubmitVoteUseCase
+import com.picke.app.domain.usecase.todaybattle.FetchTodayBattlesUseCase
+import com.picke.app.domain.usecase.share.GetBattleShareLinkUseCase
+import com.picke.app.domain.usecase.vote.SubmitVoteResult
+import com.picke.app.domain.usecase.vote.SubmitVoteUseCase
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.ui.todaybattle.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -3,8 +3,8 @@ package com.picke.app.ui.my.setting.alarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.NotificationSettingsBoard
-import com.picke.app.domain.usecase.GetNotificationSettingsUseCase
-import com.picke.app.domain.usecase.UpdateNotificationSettingsUseCase
+import com.picke.app.domain.usecase.mypage.GetNotificationSettingsUseCase
+import com.picke.app.domain.usecase.mypage.UpdateNotificationSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.usecase.LoginUseCase
-import com.picke.app.domain.usecase.RegisterDeviceUseCase
+import com.picke.app.domain.usecase.auth.LoginUseCase
+import com.picke.app.domain.usecase.device.RegisterDeviceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

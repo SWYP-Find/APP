@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.MyContentActivityItem
-import com.picke.app.domain.usecase.GetMyContentActivitiesUseCase
+import com.picke.app.domain.usecase.mypage.GetMyContentActivitiesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

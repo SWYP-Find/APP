@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
-import com.picke.app.domain.usecase.SubmitProposalResult
-import com.picke.app.domain.usecase.SubmitProposalUseCase
+import com.picke.app.domain.usecase.proposal.SubmitProposalResult
+import com.picke.app.domain.usecase.proposal.SubmitProposalUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
