@@ -6,7 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.picke.app.domain.repository.ExploreRepository
+import com.picke.app.domain.usecase.SearchBattlesUseCase
 import com.picke.app.util.CategoryOption
 import com.picke.app.util.SortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
-    private val exploreRepository: ExploreRepository
+    private val searchBattlesUseCase: SearchBattlesUseCase
 ) : ViewModel() {
 
     private companion object {
@@ -40,7 +40,7 @@ class ExploreViewModel @Inject constructor(
     }.flatMapLatest { (category, sort) ->
         Pager(PagingConfig(pageSize = 10)) {
             val apiCategory = if (category == CategoryOption.ALL) null else category
-            ExplorePagingSource(exploreRepository, apiCategory, sort)
+            ExplorePagingSource(searchBattlesUseCase, apiCategory, sort)
         }.flow
     }.cachedIn(viewModelScope)
 
