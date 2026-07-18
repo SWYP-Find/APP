@@ -406,7 +406,7 @@ private fun SecondOnboardingHeader() {
                     .clip(CircleShape)
             ) {
                 Box(modifier = Modifier.weight(0.78f).fillMaxHeight().background(Color(0xFFA64D47)))
-                Box(modifier = Modifier.weight(0.22f).fillMaxHeight().background(Color(0xFFEBEBEB)))
+                Box(modifier = Modifier.weight(0.22f).fillMaxHeight().background(SwypTheme.colors.backgroundTertiary))
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(text = "B 22.0%", style = SwypTheme.typography.label, color = SwypTheme.colors.neutral600)
