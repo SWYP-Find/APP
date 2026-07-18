@@ -6,8 +6,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.app.ui.vote.VoteSkeleton
-import com.picke.app.ui.vote.VoteType
 
 @Composable
 fun BattleRoutingScreen(
@@ -26,7 +24,7 @@ fun BattleRoutingScreen(
     }
 
     // API 결과를 기다리는 아주 짧은 시간 동안 보여줄 로딩 화면.
-    // 목적지 대부분(NONE/PRE_VOTE/SCENARIO/실패 시 기본값)이 사전투표 화면이므로
-    // 그 화면의 스켈레톤을 미리 보여줘서 전환이 매끄럽게 이어지도록 한다.
-    VoteSkeleton(voteType = VoteType.PRE, modifier = Modifier.fillMaxSize())
+    // 사전투표/관점 중 어디로 갈지 아직 모르는 상태이므로, 특정 화면의 모양을
+    // 흉내내지 않는 중립적인 shimmer만 보여준다.
+    BattleEntrySkeleton(modifier = Modifier.fillMaxSize())
 }
