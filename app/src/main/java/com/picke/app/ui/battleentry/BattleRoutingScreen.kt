@@ -1,4 +1,4 @@
-package com.picke.app.ui.routing
+package com.picke.app.ui.battleentry
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
