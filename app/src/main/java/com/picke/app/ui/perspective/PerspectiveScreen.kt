@@ -196,24 +196,32 @@ fun PerspectiveScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // 1. 투표 통계
-            PerspectiveHeader(
-                voteOptions = uiState.voteOptions,
-                opinionChanged = uiState.opinionChanged
-            )
+            // 투표 비율 데이터가 로드되기 전에는 헤더/탭바를 기본값(50:50 비율, "전체" 탭 1개)으로
+            // 그대로 렌더링하지 않는다. 그렇게 하면 실제 데이터가 도착하는 순간 비율바와 탭
+            // 개수가 눈에 띄게 움직여 보이므로, 로드되기 전까지는 스켈레톤으로 가린다.
+            if (voteOptions.isEmpty()) {
+                PerspectiveHeaderSkeleton()
+                PerspectiveTabBarSkeleton()
+            } else {
+                // 1. 투표 통계
+                PerspectiveHeader(
+                    voteOptions = uiState.voteOptions,
+                    opinionChanged = uiState.opinionChanged
+                )
 
-            // 2. 전체/옵션별 탭
-            CustomTabBar(
-                tabs = tabList,
-                selectedTab = tabList[pagerState.currentPage],
-                isScrollable = tabList.size > 3,
-                onTabSelected = { selected ->
-                    val targetIndex = tabList.indexOf(selected)
-                    coroutineScope.launch { pagerState.animateScrollToPage(targetIndex) }
-                    val optionId = if (targetIndex == 0) null else voteOptions.getOrNull(targetIndex - 1)?.optionId
-                    viewModel.selectOption(optionId)
-                }
-            )
+                // 2. 전체/옵션별 탭
+                CustomTabBar(
+                    tabs = tabList,
+                    selectedTab = tabList[pagerState.currentPage],
+                    isScrollable = tabList.size > 3,
+                    onTabSelected = { selected ->
+                        val targetIndex = tabList.indexOf(selected)
+                        coroutineScope.launch { pagerState.animateScrollToPage(targetIndex) }
+                        val optionId = if (targetIndex == 0) null else voteOptions.getOrNull(targetIndex - 1)?.optionId
+                        viewModel.selectOption(optionId)
+                    }
+                )
+            }
 
             LaunchedEffect(pagerState.currentPage) {
                 val optionId = if (pagerState.currentPage == 0) null else voteOptions.getOrNull(pagerState.currentPage - 1)?.optionId
