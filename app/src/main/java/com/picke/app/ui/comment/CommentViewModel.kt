@@ -6,8 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.domain.model.CommentBoard
-import com.picke.app.domain.repository.CommentRepository
-import com.picke.app.domain.repository.PerspectiveRepository
+import com.picke.app.domain.usecase.DeleteCommentUseCase
+import com.picke.app.domain.usecase.LoadCommentsUseCase
+import com.picke.app.domain.usecase.LoadMainPerspectiveUseCase
+import com.picke.app.domain.usecase.ReportCommentResult
+import com.picke.app.domain.usecase.ReportCommentUseCase
+import com.picke.app.domain.usecase.SubmitCommentUseCase
+import com.picke.app.domain.usecase.ToggleCommentLikeUseCase
+import com.picke.app.domain.usecase.TogglePerspectiveLikeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,8 +57,13 @@ data class CommentUiState(
 @HiltViewModel
 class CommentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val commentRepository: CommentRepository,
-    private val perspectiveRepository: PerspectiveRepository,
+    private val loadMainPerspectiveUseCase: LoadMainPerspectiveUseCase,
+    private val loadCommentsUseCase: LoadCommentsUseCase,
+    private val submitCommentUseCase: SubmitCommentUseCase,
+    private val deleteCommentUseCase: DeleteCommentUseCase,
+    private val toggleCommentLikeUseCase: ToggleCommentLikeUseCase,
+    private val togglePerspectiveLikeUseCase: TogglePerspectiveLikeUseCase,
+    private val reportCommentUseCase: ReportCommentUseCase,
     private val analyticsTracker: AnalyticsTracker,
 ) : ViewModel() {
 
@@ -88,7 +99,7 @@ class CommentViewModel @Inject constructor(
             val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 메인 관점(본문) 데이터 호출 시작")
 
-            perspectiveRepository.getPerspective(targetIdLong)
+            loadMainPerspectiveUseCase(targetIdLong)
                 .onSuccess { perspective ->
                     Log.i(TAG, "[STATE] 메인 관점(perspectiveId: ${perspective.perspectiveId}) 조회 성공")
 
@@ -127,7 +138,7 @@ class CommentViewModel @Inject constructor(
 
             Log.d(TAG, "[FLOW] 댓글 목록 호출 시작. Cursor: $cursor")
 
-            commentRepository.getComments(targetIdLong, cursor, size = 10)
+            loadCommentsUseCase(targetIdLong, cursor, size = 10)
                 .onSuccess { page ->
                     Log.i(TAG, "[STATE] 댓글 목록 조회 성공 - 가져온 개수: ${page.items.size}")
                     val newItems = page.items.map { it.toUiModel() }
@@ -154,30 +165,22 @@ class CommentViewModel @Inject constructor(
 
         val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
         val editId = _uiState.value.editingCommentId
+        val isEditMode = editId != null
 
         _uiState.update { it.copy(editingCommentId = null) }
 
         viewModelScope.launch {
-            if (editId != null) {
-                Log.d(TAG, "[FLOW] 댓글 수정 요청 시작. ID: $editId")
-                commentRepository.updateComment(targetIdLong, editId, content)
-                    .onSuccess {
-                        Log.i(TAG, "[STATE] 댓글 수정 완료")
-                        onSuccess()
-                        loadComments(isRefresh = true)
-                    }
-                    .onFailure { Log.w(TAG, "[FLOW] 댓글 수정 실패: ${it.message}") }
-            } else {
-                Log.d(TAG, "[FLOW] 댓글 작성 요청 시작")
-                commentRepository.createComment(targetIdLong, content)
-                    .onSuccess {
-                        Log.i(TAG, "[STATE] 댓글 작성 완료")
+            Log.d(TAG, "[FLOW] 댓글 ${if (isEditMode) "수정" else "작성"} 요청 시작. ID: $editId")
+            submitCommentUseCase(targetIdLong, editId, content)
+                .onSuccess {
+                    Log.i(TAG, "[STATE] 댓글 ${if (isEditMode) "수정" else "작성"} 완료")
+                    if (!isEditMode) {
                         analyticsTracker.trackCommunityAction(receivedTargetId, content.length)
-                        onSuccess()
-                        loadComments(isRefresh = true)
                     }
-                    .onFailure { Log.w(TAG, "[FLOW] 댓글 작성 실패: ${it.message}") }
-            }
+                    onSuccess()
+                    loadComments(isRefresh = true)
+                }
+                .onFailure { Log.w(TAG, "[FLOW] 댓글 ${if (isEditMode) "수정" else "작성"} 실패: ${it.message}") }
         }
     }
 
@@ -195,7 +198,7 @@ class CommentViewModel @Inject constructor(
             val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 댓글 삭제 요청. TargetId: $targetIdLong, CommentId: $commentId")
 
-            commentRepository.deleteComment(targetIdLong, commentId)
+            deleteCommentUseCase(targetIdLong, commentId)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 댓글 삭제 통신 성공")
                     loadMainPerspective()
@@ -210,27 +213,22 @@ class CommentViewModel @Inject constructor(
     // 댓글 좋아요 토글 (등록/취소)
     fun toggleLike(commentId: Long, isCurrentlyLiked: Boolean) {
         viewModelScope.launch {
-            val result = if (isCurrentlyLiked) {
-                Log.d(TAG, "[FLOW] 댓글 좋아요 취소 요청. ID: $commentId")
-                commentRepository.unlikeComment(commentId)
-            } else {
-                Log.d(TAG, "[FLOW] 댓글 좋아요 등록 요청. ID: $commentId")
-                commentRepository.likeComment(commentId)
-            }
+            Log.d(TAG, "[FLOW] 댓글 좋아요 ${if (isCurrentlyLiked) "취소" else "등록"} 요청. ID: $commentId")
 
-            result.onSuccess { toggleData ->
-                Log.i(TAG, "[STATE] 댓글 좋아요 변경 완료 (현재 수: ${toggleData.likeCount})")
+            toggleCommentLikeUseCase(commentId, isCurrentlyLiked)
+                .onSuccess { toggleData ->
+                    Log.i(TAG, "[STATE] 댓글 좋아요 변경 완료 (현재 수: ${toggleData.likeCount})")
 
-                _uiState.update { state ->
-                    state.copy(
-                        comments = state.comments.map { item ->
-                            if (item.commentId == commentId.toString()) {
-                                item.copy(likeCount = toggleData.likeCount, isLiked = toggleData.isLiked)
-                            } else item
-                        }
-                    )
-                }
-            }.onFailure { Log.w(TAG, "[FLOW] 댓글 좋아요 변경 실패: ${it.message}") }
+                    _uiState.update { state ->
+                        state.copy(
+                            comments = state.comments.map { item ->
+                                if (item.commentId == commentId.toString()) {
+                                    item.copy(likeCount = toggleData.likeCount, isLiked = toggleData.isLiked)
+                                } else item
+                            }
+                        )
+                    }
+                }.onFailure { Log.w(TAG, "[FLOW] 댓글 좋아요 변경 실패: ${it.message}") }
         }
     }
 
@@ -242,23 +240,18 @@ class CommentViewModel @Inject constructor(
 
             Log.d(TAG, "[FLOW] 메인 관점 좋아요 토글 요청. 현재 상태: ${mainItem.isLiked}")
 
-            val result = if (mainItem.isLiked) {
-                perspectiveRepository.unlikePerspective(targetIdLong)
-            } else {
-                perspectiveRepository.likePerspective(targetIdLong)
-            }
-
-            result.onSuccess { toggleData ->
-                Log.i(TAG, "[STATE] 메인 관점 좋아요 변경 완료 (현재 수: ${toggleData.likeCount})")
-                _uiState.update { state ->
-                    state.copy(
-                        mainPerspective = state.mainPerspective?.copy(
-                            likeCount = toggleData.likeCount,
-                            isLiked = toggleData.isLiked
+            togglePerspectiveLikeUseCase(targetIdLong, mainItem.isLiked)
+                .onSuccess { toggleData ->
+                    Log.i(TAG, "[STATE] 메인 관점 좋아요 변경 완료 (현재 수: ${toggleData.likeCount})")
+                    _uiState.update { state ->
+                        state.copy(
+                            mainPerspective = state.mainPerspective?.copy(
+                                likeCount = toggleData.likeCount,
+                                isLiked = toggleData.isLiked
+                            )
                         )
-                    )
-                }
-            }.onFailure { Log.w(TAG, "[FLOW] 메인 관점 좋아요 토글 실패: ${it.message}") }
+                    }
+                }.onFailure { Log.w(TAG, "[FLOW] 메인 관점 좋아요 토글 실패: ${it.message}") }
         }
     }
 
@@ -274,18 +267,21 @@ class CommentViewModel @Inject constructor(
             val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 댓글 신고 요청. ID: $commentId")
 
-            commentRepository.reportComment(targetIdLong, commentId)
-                .onSuccess {
-                    Log.i(TAG, "[NAV] 신고 접수 완료 토스트 노출")
-                    _uiEvent.emit(CommentUiEvent.ShowToast("신고가 정상 접수되었습니다."))
+            reportCommentUseCase(targetIdLong, commentId)
+                .onSuccess { result ->
+                    when (result) {
+                        is ReportCommentResult.Reported -> {
+                            Log.i(TAG, "[NAV] 신고 접수 완료 토스트 노출")
+                            _uiEvent.emit(CommentUiEvent.ShowToast("신고가 정상 접수되었습니다."))
+                        }
+                        is ReportCommentResult.AlreadyReported -> {
+                            Log.i(TAG, "[NAV] 이미 신고한 사용자 토스트 노출")
+                            _uiEvent.emit(CommentUiEvent.ShowToast("이미 신고한 사용자입니다."))
+                        }
+                    }
                 }
                 .onFailure { error ->
-                    if (error.message == "ALREADY_REPORTED") {
-                        Log.i(TAG, "[NAV] 이미 신고한 사용자 토스트 노출")
-                        _uiEvent.emit(CommentUiEvent.ShowToast("이미 신고한 사용자입니다."))
-                    } else {
-                        Log.w(TAG, "[FLOW] 댓글 신고 실패: ${error.message}")
-                    }
+                    Log.w(TAG, "[FLOW] 댓글 신고 실패: ${error.message}")
                 }
         }
     }
