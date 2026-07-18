@@ -3,7 +3,8 @@ package com.picke.app.ui.my.setting.alarm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.NotificationSettingsBoard
-import com.picke.app.domain.repository.MyPageRepository
+import com.picke.app.domain.usecase.GetNotificationSettingsUseCase
+import com.picke.app.domain.usecase.UpdateNotificationSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +21,8 @@ data class SettingAlarmUiState(
 
 @HiltViewModel
 class SettingAlarmViewModel @Inject constructor(
-    private val myPageRepository: MyPageRepository
+    private val getNotificationSettingsUseCase: GetNotificationSettingsUseCase,
+    private val updateNotificationSettingsUseCase: UpdateNotificationSettingsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingAlarmUiState())
@@ -33,7 +35,7 @@ class SettingAlarmViewModel @Inject constructor(
     private fun loadNotificationSettings() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            myPageRepository.getNotificationSettings()
+            getNotificationSettingsUseCase()
                 .onSuccess { settings ->
                     _uiState.update { it.copy(isLoading = false, settings = settings) }
                 }
@@ -48,7 +50,7 @@ class SettingAlarmViewModel @Inject constructor(
         // 낙관적 업데이트: 즉시 UI 반영 후 API 실패 시 롤백
         _uiState.update { it.copy(settings = updated) }
         viewModelScope.launch {
-            myPageRepository.updateNotificationSettings(updated)
+            updateNotificationSettingsUseCase(updated)
                 .onFailure {
                     _uiState.update { it.copy(settings = previous) }
                 }
