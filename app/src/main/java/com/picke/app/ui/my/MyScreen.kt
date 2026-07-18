@@ -170,27 +170,28 @@ fun MyScreen(
                         onNavigateToPoint()
                     },
                     onChargeClick = {
-                        activity?.let {
-                        val isAdReady = viewModel.adMobManager.showAd(
-                            activity = it,
-                            placement = "mypage_charge",
-                            onRewardEarned = {
-                                viewModel.refreshPointsAfterAd()
-                                uiState.profile?.userTag?.let { tag -> viewModel.adMobManager.loadAd(userId = tag) }
-                                Toast.makeText(context, "20포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-
-                        if (!isAdReady) {
-                            Toast.makeText(
-                                context,
-                                "아직 광고가 준비되지 않았습니다.\n잠시 후 다시 시도해주세요.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } ?: run {
-                        Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
-                    }
+                        // AdMob 광고 로직 비활성화 (추후 재사용 예정)
+                        // activity?.let {
+                        // val isAdReady = viewModel.adMobManager.showAd(
+                        //     activity = it,
+                        //     placement = "mypage_charge",
+                        //     onRewardEarned = {
+                        //         viewModel.refreshPointsAfterAd()
+                        //         uiState.profile?.userTag?.let { tag -> viewModel.adMobManager.loadAd(userId = tag) }
+                        //         Toast.makeText(context, "20포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
+                        //     }
+                        // )
+                        //
+                        // if (!isAdReady) {
+                        //     Toast.makeText(
+                        //         context,
+                        //         "아직 광고가 준비되지 않았습니다.\n잠시 후 다시 시도해주세요.",
+                        //         Toast.LENGTH_SHORT
+                        //     ).show()
+                        // }
+                        // } ?: run {
+                        //     Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        // }
                     }
                 )
 
@@ -355,21 +356,21 @@ fun CreditCard(
             }
         }
 
-        // [오른쪽] 무료 충전 버튼
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(SwypTheme.colors.secondary300)
-                .clickable { onChargeClick() }
-                .padding(horizontal = 6.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.my_charge_free),
-                style = SwypTheme.typography.label,
-                color = SwypTheme.colors.textPrimary
-            )
-        }
+        // [오른쪽] 무료 충전 버튼 (UI 비활성화)
+        // Box(
+        //     modifier = Modifier
+        //         .clip(RoundedCornerShape(4.dp))
+        //         .background(SwypTheme.colors.secondary300)
+        //         .clickable { onChargeClick() }
+        //         .padding(horizontal = 6.dp, vertical = 4.dp),
+        //     contentAlignment = Alignment.Center
+        // ) {
+        //     Text(
+        //         text = stringResource(R.string.my_charge_free),
+        //         style = SwypTheme.typography.label,
+        //         color = SwypTheme.colors.textPrimary
+        //     )
+        // }
     }
 }
 

@@ -9,6 +9,7 @@ import com.picke.app.analytics.OnboardingStep
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.usecase.auth.RefreshAccessTokenUseCase
 import com.picke.app.di.AdMobManager
+import com.picke.app.util.AppLifecycleObserver
 import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -32,7 +33,8 @@ class SplashViewModel @Inject constructor(
     private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private val tokenManager: TokenManager,
     private val analyticsTracker: AnalyticsTracker,
-    private val adMobManager: AdMobManager
+    private val adMobManager: AdMobManager,
+    private val appLifecycleObserver: AppLifecycleObserver
 ) : ViewModel() {
     companion object {
         private const val TAG = "SplashViewModel_Picke"
@@ -81,9 +83,12 @@ class SplashViewModel @Inject constructor(
                         analyticsTracker.onSessionStart(savedUserTag, tokenManager.getLoginProvider())
                         Log.d(TAG, "[Mixpanel] 유저 식별 완료: $savedUserTag")
 
-                        // 4. 광고 미리 로드 (프리패치)
-                        adMobManager.loadAd(userId = savedUserTag)
-                        Log.d(TAG, "[AdMob] 광고 프리패치 시작")
+                        // 4. 광고 미리 로드 (프리패치) - AdMob 미사용으로 비활성화 (추후 재사용 예정)
+                        // adMobManager.loadAd(userId = savedUserTag)
+                        // Log.d(TAG, "[AdMob] 광고 프리패치 시작")
+
+                        // 5. 출석 체크 (콜드 스타트 - 갱신된 토큰으로 호출)
+                        appLifecycleObserver.checkAttendanceIfNeeded()
                     }
 
                     val needsTermsAgreement = !tokenManager.isTermsAgreed()

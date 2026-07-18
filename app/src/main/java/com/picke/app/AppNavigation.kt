@@ -94,9 +94,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
     fun checkAndShowNotificationSheet(isNewUser: Boolean) {
         if (!isNewUser) return                                  // 신규 가입자에게만
-        if (splashViewModel.isNotificationPermissionAsked()) return  // 아직 안 물어본 경우 한 번만
-        // 신규 가입자는 현재 알림 권한이 켜져 있든 아니든 최초 1회는 안내 시트를 띄운다.
-        // (이전엔 areNotificationsEnabled()가 true면 스킵했으나, 이미 허용된 기기에선 안 떠서 조건 제거)
+        // 신규 가입자는 이전에 물어본 적이 있든 없든, 알림 권한이 켜져 있든 아니든 무조건 안내 시트를 띄운다.
         showNotificationSheet = true
     }
 

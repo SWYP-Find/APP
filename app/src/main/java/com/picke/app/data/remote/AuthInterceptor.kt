@@ -33,7 +33,7 @@ class AuthInterceptor @Inject constructor(
 
         // 로컬에 저장된 accessToken 가져오기
         val accessToken = tokenManager.getAccessToken()
-        if (BuildConfig.DEBUG) Log.d(TAG, "🔑 [DEBUG] AccessToken: ${accessToken?.take(10)}...")
+        if (BuildConfig.DEBUG) Log.d(TAG, "🔑 [DEBUG] AccessToken: $accessToken")
 
         // 3. 토큰이 존재하면서, 동시에 예외 API(로그인, 재발급)가 '아닐 때만' 헤더에 추가!
         if (!accessToken.isNullOrEmpty() && !isLoginRequest && !isRefreshRequest) {

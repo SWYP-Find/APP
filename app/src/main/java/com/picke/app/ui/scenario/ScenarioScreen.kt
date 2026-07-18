@@ -281,8 +281,8 @@ fun OptionConfirmButton(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isEnabled) SwypTheme.colors.secondary else SwypTheme.colors.neutral200
-    val textColor = if (isEnabled) Color.White else Color.White
+    val bgColor = if (isEnabled) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled
+    val textColor = SwypTheme.colors.buttonPrimaryText
 
     Box(
         modifier = Modifier
