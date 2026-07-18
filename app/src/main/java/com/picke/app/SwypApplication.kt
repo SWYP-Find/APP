@@ -4,10 +4,12 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.KakaoSdk
 import com.picke.app.di.AdMobManager
 import com.picke.app.notification.FCMService
+import com.picke.app.util.AppLifecycleObserver
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -17,11 +19,15 @@ class SwypApplication : Application() {
     @Inject
     lateinit var adMobManager: AdMobManager
 
+    @Inject
+    lateinit var appLifecycleObserver: AppLifecycleObserver
+
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.KAKAO_DEBUG_APPKEY)
         MobileAds.initialize(this) { adMobManager.onMobileAdsInitialized() }
         createNotificationChannel()
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
     }
 
     private fun createNotificationChannel() {

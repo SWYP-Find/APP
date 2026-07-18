@@ -266,7 +266,31 @@ class TokenManager @Inject constructor(
             ?.remove("login_provider")
             ?.remove("fcm_token")
             ?.remove("notification_permission_asked")
+            ?.remove("last_attendance_date")
             ?.apply()
+    }
+    // endregion
+
+    // region 9. 마지막 출석 체크 날짜 관리 (자정 기준 최초 진입 판단용)
+    /**
+     * 출석 체크 성공한 날짜를 ISO-8601(yyyy-MM-dd) 문자열로 저장
+     */
+    fun saveLastAttendanceDate(date: String) {
+        prefs?.edit()?.putString("last_attendance_date", date)?.apply()
+    }
+
+    /**
+     * 마지막으로 출석 체크에 성공한 날짜 반환
+     *
+     * @return ISO-8601(yyyy-MM-dd) 문자열 (없으면 null)
+     */
+    fun getLastAttendanceDate(): String? {
+        return try {
+            prefs?.getString("last_attendance_date", null)
+        } catch (e: Exception) {
+            Log.e(TAG, "[LOCAL] last_attendance_date 로드 중 에러 발생", e)
+            null
+        }
     }
     // endregion
 }
