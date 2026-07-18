@@ -6,8 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.ShareTarget
 import com.picke.app.domain.model.MyRecapBoard
-import com.picke.app.domain.repository.MyPageRepository
-import com.picke.app.domain.repository.ShareRepository
+import com.picke.app.domain.usecase.mypage.GetMyRecapUseCase
+import com.picke.app.domain.usecase.share.GetRecapDetailUseCase
+import com.picke.app.domain.usecase.share.GetRecapShareKeyUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +25,9 @@ data class PhilosopherTypeUiState(
 
 @HiltViewModel
 class PhilosopherTypeViewModel @Inject constructor(
-    private val myPageRepository: MyPageRepository,
-    private val shareRepository: ShareRepository,
+    private val getMyRecapUseCase: GetMyRecapUseCase,
+    private val getRecapDetailUseCase: GetRecapDetailUseCase,
+    private val getRecapShareKeyUseCase: GetRecapShareKeyUseCase,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel(){
 
@@ -45,7 +47,7 @@ class PhilosopherTypeViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
 
             // 2. 서버에 데이터 요청
-            val result = myPageRepository.getMyRecap()
+            val result = getMyRecapUseCase()
 
             // 3. 통신 결과에 따른 분기 처리
             result.onSuccess { data ->
@@ -79,7 +81,7 @@ class PhilosopherTypeViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 타인의 철학자 리포트 데이터 요청 시작 (shareKey: $shareKey)")
             _uiState.update { it.copy(isLoading = true) }
 
-            val result = shareRepository.getRecapDetail(shareKey)
+            val result = getRecapDetailUseCase(shareKey)
 
             result.onSuccess { data ->
                 Log.i(TAG, "[STATE] 타인 리포트 데이터 로드 성공")
@@ -113,7 +115,7 @@ class PhilosopherTypeViewModel @Inject constructor(
     fun getRecapShareKey(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 리캡 공유 키 발급 요청 시작")
-            val result = shareRepository.getRecapShareKey()
+            val result = getRecapShareKeyUseCase()
 
             result.onSuccess { shareKeyData ->
                 val key = shareKeyData.shareKey

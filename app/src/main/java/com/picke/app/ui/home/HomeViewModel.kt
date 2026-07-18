@@ -3,10 +3,11 @@ package com.picke.app.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.app.domain.repository.AlarmRepository
-import com.picke.app.domain.repository.HomeRepository
+import com.picke.app.domain.usecase.home.FetchHomeDataUseCase
+import com.picke.app.domain.usecase.pollquiz.GetTodayPickVoteUseCase
+import com.picke.app.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
+import com.picke.app.domain.usecase.pollquiz.SubmitTodayPickVoteUseCase
 import com.picke.app.util.ContentType
-import com.picke.app.domain.repository.PollQuizRepository
 import com.picke.app.ui.home.model.HomeContentUiModel
 import com.picke.app.ui.home.model.TodayPickUiModel
 import com.picke.app.ui.home.model.toUiModel
@@ -34,9 +35,10 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val homeRepository: HomeRepository,
-    private val pollQuizRepository: PollQuizRepository,
-    private val alarmRepository: AlarmRepository
+    private val fetchHomeDataUseCase: FetchHomeDataUseCase,
+    private val submitTodayPickVoteUseCase: SubmitTodayPickVoteUseCase,
+    private val getTodayPickVoteUseCase: GetTodayPickVoteUseCase,
+    private val getUnreadAlarmStatusUseCase: GetUnreadAlarmStatusUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState(isLoading = true))
@@ -52,7 +54,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            homeRepository.fetchHomeData()
+            fetchHomeDataUseCase()
                 .onSuccess { boardData ->
                     Log.d("HomeFlow", "2. 🟢 홈 데이터 통신 성공!")
 
@@ -97,13 +99,7 @@ class HomeViewModel @Inject constructor(
 
                 Log.d("HomeFlow", "   - 📤 [Request] 동기화 요청: battleId=$battleIdLong, type=${pick.type}")
 
-                val result = if (pick.type == ContentType.QUIZ) {
-                    pollQuizRepository.getMyQuizVote(battleIdLong)
-                } else {
-                    pollQuizRepository.getMyPollVote(battleIdLong)
-                }
-
-                result.fold(
+                getTodayPickVoteUseCase(battleIdLong, pick.type).fold(
                     onSuccess = { voteBoard ->
                         Log.d("HomeFlow", "   - 📥 [Response] 내역 동기화 성공: battleId=$battleIdLong")
                         Log.d("HomeFlow", "      ㄴ 받아온 진짜 optionId 통계: ${voteBoard.stats}")
@@ -144,7 +140,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isAlarmStatusLoading = true) }
 
         viewModelScope.launch {
-            alarmRepository.hasUnreadAlarms()
+            getUnreadAlarmStatusUseCase()
                 .onSuccess { hasUnread ->
                     _uiState.update { it.copy(hasNewNotice = hasUnread, isAlarmStatusLoading = false) }
                 }
@@ -166,13 +162,7 @@ class HomeViewModel @Inject constructor(
             Log.d("HomeFlow", "   - 보낸 데이터 (타입): $type")
             Log.d("HomeFlow", "   - 보낸 데이터 (선택한옵션ID): $optionId")
 
-            val result = if (type == ContentType.QUIZ) {
-                pollQuizRepository.submitQuizVote(battleIdLong, optionId)
-            } else {
-                pollQuizRepository.submitPollVote(battleIdLong, optionId)
-            }
-
-            result.onSuccess { voteBoard ->
+            submitTodayPickVoteUseCase(battleIdLong, optionId, type).onSuccess { voteBoard ->
                 Log.d("HomeFlow", "✅ 📥 [Response] 투표/퀴즈 제출 성공!")
                 Log.d("HomeFlow", "   - 서버가 인정한 내 선택: ${voteBoard.selectedOptionId}")
                 Log.d("HomeFlow", "   - 서버가 내려준 최신 통계: ${voteBoard.stats}")

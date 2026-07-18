@@ -2,10 +2,10 @@ package com.picke.app.ui.explore
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.picke.app.domain.repository.ExploreRepository
+import com.picke.app.domain.usecase.explore.SearchBattlesUseCase
 
 class ExplorePagingSource(
-    private val repository: ExploreRepository,
+    private val searchBattlesUseCase: SearchBattlesUseCase,
     private val category: String?,
     private val sort: String
 ) : PagingSource<Int, ExploreUiModel>() {
@@ -15,7 +15,7 @@ class ExplorePagingSource(
             // 처음 로드할 때는 offset 0을 사용합니다.
             val currentOffset = params.key ?: 0
 
-            val response = repository.searchBattles(
+            val response = searchBattlesUseCase(
                 category = category,
                 sort = sort,
                 offset = currentOffset,

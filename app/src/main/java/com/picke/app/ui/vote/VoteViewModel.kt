@@ -10,9 +10,11 @@ import com.picke.app.analytics.ShareTarget
 import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.BattleDetailBoard
-import com.picke.app.domain.repository.BattleRepository
-import com.picke.app.domain.repository.ShareRepository
-import com.picke.app.domain.repository.VoteRepository
+import com.picke.app.domain.usecase.battle.GetBattleDetailUseCase
+import com.picke.app.domain.usecase.share.GetBattleShareLinkUseCase
+import com.picke.app.domain.usecase.vote.GetMyVoteHistoryUseCase
+import com.picke.app.domain.usecase.vote.SubmitVoteResult
+import com.picke.app.domain.usecase.vote.SubmitVoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,9 +38,10 @@ data class VoteUiState(
 @HiltViewModel
 class VoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val battleRepository: BattleRepository,
-    private val voteRepository: VoteRepository,
-    private val shareRepository: ShareRepository,
+    private val getBattleDetailUseCase: GetBattleDetailUseCase,
+    private val submitVoteUseCase: SubmitVoteUseCase,
+    private val getMyVoteHistoryUseCase: GetMyVoteHistoryUseCase,
+    private val getBattleShareLinkUseCase: GetBattleShareLinkUseCase,
     private val tokenManager: TokenManager,
     val adMobManager: AdMobManager,
     private val analyticsTracker: AnalyticsTracker
@@ -72,7 +75,7 @@ class VoteViewModel @Inject constructor(
             val battleIdLong = battleId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 배틀 상세 정보 호출 시작. Battle ID: $battleIdLong")
 
-            battleRepository.getBattleDetail(battleIdLong)
+            getBattleDetailUseCase(battleIdLong)
                 .onSuccess { detailBoard ->
                     Log.i(TAG, "[STATE] 배틀 상세 정보 로드 성공")
                     _uiState.update {
@@ -101,49 +104,46 @@ class VoteViewModel @Inject constructor(
 
             Log.d(TAG, "[FLOW] 투표 전송 시작. Type: $voteType, Battle ID: $battleIdLong, Option ID: $optionIdLong")
 
-            val result = if (voteType == VoteType.PRE) {
-                voteRepository.submitPreVote(battleIdLong, optionIdLong)
-            } else {
-                voteRepository.submitPostVote(battleIdLong, optionIdLong)
-            }
+            submitVoteUseCase(battleIdLong, optionIdLong, isPreVote = voteType == VoteType.PRE)
+                .onSuccess { result ->
+                    when (result) {
+                        is SubmitVoteResult.Success -> {
+                            Log.i(TAG, "[NAV] 투표 전송 성공")
 
-            result.onSuccess {
-                Log.i(TAG, "[NAV] 투표 전송 성공")
+                            if (voteType == VoteType.PRE) {
+                                analyticsTracker.trackBattleStep(
+                                    stepName = BattleStepName.PRE_VOTE,
+                                    contentId = battleId,
+                                    choice = selectedOptionId
+                                )
+                                Log.d(TAG, "[STATE] battle_step(pre_vote) 믹스패널 이벤트 전송 완료")
+                            } else {
+                                // is_changed: 투표 이력 조회로 사전/사후 선택 변경 여부 확인 (실패 시 미첨부)
+                                val isChanged = getMyVoteHistoryUseCase(battleIdLong)
+                                    .getOrNull()?.opinionChanged
+                                analyticsTracker.trackBattleStep(
+                                    stepName = BattleStepName.POST_VOTE,
+                                    contentId = battleId,
+                                    choice = selectedOptionId,
+                                    isChanged = isChanged
+                                )
+                                Log.d(TAG, "[STATE] battle_step(post_vote) 믹스패널 이벤트 전송 완료 (is_changed: $isChanged)")
+                            }
 
-                if (voteType == VoteType.PRE) {
-                    analyticsTracker.trackBattleStep(
-                        stepName = BattleStepName.PRE_VOTE,
-                        contentId = battleId,
-                        choice = selectedOptionId
-                    )
-                    Log.d(TAG, "[STATE] battle_step(pre_vote) 믹스패널 이벤트 전송 완료")
-                } else {
-                    // is_changed: 투표 이력 조회로 사전/사후 선택 변경 여부 확인 (실패 시 미첨부)
-                    val isChanged = voteRepository.getMyVoteHistory(battleIdLong)
-                        .getOrNull()?.opinionChanged
-                    analyticsTracker.trackBattleStep(
-                        stepName = BattleStepName.POST_VOTE,
-                        contentId = battleId,
-                        choice = selectedOptionId,
-                        isChanged = isChanged
-                    )
-                    Log.d(TAG, "[STATE] battle_step(post_vote) 믹스패널 이벤트 전송 완료 (is_changed: $isChanged)")
+                            // 성공 상태 업데이트 및 콜백
+                            _uiState.update { it.copy(isLoading = false) }
+                            onSuccess()
+                        }
+                        is SubmitVoteResult.InsufficientPoints -> {
+                            Log.i(TAG, "[STATE] 포인트 부족 에러 감지 -> 충전 다이얼로그 노출")
+                            _uiState.update { it.copy(isInsufficientPoints = true, isLoading = false) }
+                        }
+                    }
                 }
-
-                // 성공 상태 업데이트 및 콜백
-                _uiState.update { it.copy(isLoading = false) }
-                onSuccess()
-
-            }.onFailure { error ->
-                Log.w(TAG, "[FLOW] 투표 전송 실패: ${error.message}")
-
-                if (error.message?.contains("CREDIT_400_INSUFFICIENT") == true) {
-                    Log.i(TAG, "[STATE] 포인트 부족 에러 감지 -> 충전 다이얼로그 노출")
-                    _uiState.update { it.copy(isInsufficientPoints = true, isLoading = false) }
-                } else {
+                .onFailure { error ->
+                    Log.w(TAG, "[FLOW] 투표 전송 실패: ${error.message}")
                     _uiState.update { it.copy(error = error.message, isLoading = false) }
                 }
-            }
         }
     }
 
@@ -154,7 +154,7 @@ class VoteViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 공유 링크 생성 요청. Battle ID: $battleId")
-            shareRepository.getBattleShareLink(battleId)
+            getBattleShareLinkUseCase(battleId)
                 .onSuccess { shareUrl ->
                     Log.i(TAG, "[STATE] 공유 링크 생성 성공")
                     onSuccess(shareUrl.shareUrl)

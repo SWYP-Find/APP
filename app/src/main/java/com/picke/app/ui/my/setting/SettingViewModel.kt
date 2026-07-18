@@ -7,8 +7,8 @@ import com.picke.app.analytics.AnalyticsScreen
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.UiActionName
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.repository.AuthRepository
-import com.picke.app.domain.repository.DeviceRepository
+import com.picke.app.domain.usecase.auth.LogoutUseCase
+import com.picke.app.domain.usecase.auth.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +25,8 @@ data class SettingUiState(
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val deviceRepository: DeviceRepository,
+    private val logoutUseCase: LogoutUseCase,
+    private val withdrawUseCase: WithdrawUseCase,
     private val tokenManager: TokenManager,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
@@ -42,12 +42,7 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            tokenManager.getFcmToken()?.let { fcmToken ->
-                deviceRepository.unregisterDevice(fcmToken)
-                    .onFailure { Log.w(TAG, "FCM 토큰 해제 실패 (무시하고 계속)", it) }
-            }
-
-            val result = authRepository.logout()
+            val result = logoutUseCase(tokenManager.getFcmToken())
             Log.d(TAG, "➡️ [로그아웃] 결과 수신: $result")
 
             result.onSuccess {
@@ -74,24 +69,13 @@ class SettingViewModel @Inject constructor(
 
     // 2. 회원 탈퇴
     fun withdraw(selectedKoreanReason: String) {
-        // 명세서에 따른 탈퇴 사유
-        val withdrawalReason = when (selectedKoreanReason) {
-            "자주 이용하지 않아요" -> "NOT_USED_OFTEN"
-            "보고 싶은 배틀 주제가 없어요" -> "NO_INTERESTING_BATTLES"
-            "배틀 방식이 제게 잘 맞지 않아요" -> "BATTLE_STYLE_NOT_FIT"
-            "서비스 이용이 불편해요" -> "SERVICE_INCONVENIENT"
-            "이용할 시간이 없어요" -> "NO_TIME"
-            "기타" -> "OTHER"
-            else -> "OTHER"
-        }
-
-        Log.d(TAG, "▶️ [회원탈퇴] 프로세스 시작 (사유: $withdrawalReason)")
+        Log.d(TAG, "▶️ [회원탈퇴] 프로세스 시작 (사유: $selectedKoreanReason)")
         analyticsTracker.trackUiAction(UiActionName.SETTINGS_WITHDRAW, AnalyticsScreen.WITHDRAW)
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val result = authRepository.withdraw(reason = withdrawalReason)
+            val result = withdrawUseCase(selectedKoreanReason)
             Log.d(TAG, "➡️ [회원탈퇴] 서버 응답 결과: $result")
 
             result.onSuccess {

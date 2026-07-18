@@ -1,4 +1,4 @@
-package com.picke.app.domain.usecase
+package com.picke.app.domain.usecase.auth
 
 import com.picke.app.BuildConfig
 import com.picke.app.domain.model.AuthBoard

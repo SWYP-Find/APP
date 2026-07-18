@@ -1,6 +1,5 @@
 package com.picke.app.ui.my.makebattle
 
-import retrofit2.HttpException
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
@@ -8,7 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
-import com.picke.app.domain.repository.ProposalRepository
+import com.picke.app.domain.usecase.proposal.SubmitProposalResult
+import com.picke.app.domain.usecase.proposal.SubmitProposalUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +32,7 @@ sealed class MakeBattleEvent {
 
 @HiltViewModel
 class MakeBattleViewModel @Inject constructor(
-    private val proposalRepository: ProposalRepository,
+    private val submitProposalUseCase: SubmitProposalUseCase,
     val adMobManager: AdMobManager,
     private val tokenManager: TokenManager
 ) : ViewModel() {
@@ -68,28 +68,28 @@ class MakeBattleViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 배틀 주제 제안 API 호출 시작")
             _uiState.update { it.copy(isLoading = true) }
 
-            val result = proposalRepository.submitProposal(
+            submitProposalUseCase(
                 category = category,
                 topic = topic,
-                positionA = stanceA,
-                positionB = stanceB,
+                stanceA = stanceA,
+                stanceB = stanceB,
                 description = description
-            )
-
-            result.onSuccess { boardData ->
-                Log.i(TAG, "🟢 [SUCCESS] 배틀 제안 성공! ID: ${boardData.id}")
+            ).onSuccess { result ->
                 _uiState.update { it.copy(isLoading = false) }
 
-                _eventFlow.emit(MakeBattleEvent.Success)
+                when (result) {
+                    is SubmitProposalResult.Success -> {
+                        Log.i(TAG, "🟢 [SUCCESS] 배틀 제안 성공! ID: ${result.proposalId}")
+                        _eventFlow.emit(MakeBattleEvent.Success)
+                    }
+                    is SubmitProposalResult.NotEnoughPoints -> {
+                        _eventFlow.emit(MakeBattleEvent.NotEnoughPoints)
+                    }
+                }
             }.onFailure { error ->
                 Log.e(TAG, "🔴 [ERROR] 배틀 제안 실패: ${error.message}", error)
                 _uiState.update { it.copy(isLoading = false) }
-
-                if (error is HttpException && error.code() == 400) {
-                    _eventFlow.emit(MakeBattleEvent.NotEnoughPoints)
-                } else {
-                    _eventFlow.emit(MakeBattleEvent.Error(error.message ?: "제안 제출에 실패했습니다."))
-                }
+                _eventFlow.emit(MakeBattleEvent.Error(error.message ?: "제안 제출에 실패했습니다."))
             }
         }
     }

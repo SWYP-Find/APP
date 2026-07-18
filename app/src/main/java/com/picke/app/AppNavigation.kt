@@ -55,7 +55,7 @@ import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.onboarding.OnboardingScreen
 import com.picke.app.ui.perspective.PerspectiveScreen
 import com.picke.app.ui.recommend.RecommendScreen
-import com.picke.app.ui.routing.BattleRoutingScreen
+import com.picke.app.ui.battleentry.BattleRoutingScreen
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
 import com.picke.app.ui.theme.SwypTheme

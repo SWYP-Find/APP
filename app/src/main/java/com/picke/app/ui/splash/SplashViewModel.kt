@@ -7,7 +7,7 @@ import com.picke.app.analytics.AnalyticsScreen
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.analytics.OnboardingStep
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.repository.AuthRepository
+import com.picke.app.domain.usecase.auth.RefreshAccessTokenUseCase
 import com.picke.app.di.AdMobManager
 import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +29,7 @@ sealed class SplashUiState{
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private val tokenManager: TokenManager,
     private val analyticsTracker: AnalyticsTracker,
     private val adMobManager: AdMobManager
@@ -69,7 +69,7 @@ class SplashViewModel @Inject constructor(
                 _uiState.value = SplashUiState.NavigateToOnboarding
             } else {
                 Log.d(TAG, "[STATE] 기존 토큰 발견: 서버 확인 절차 진입")
-                val result = authRepository.refreshAccessToken(localRefreshToken)
+                val result = refreshAccessTokenUseCase(localRefreshToken)
 
                 result.onSuccess {
                     Log.i(TAG, "[NAV] 인증 성공: 메인 화면")

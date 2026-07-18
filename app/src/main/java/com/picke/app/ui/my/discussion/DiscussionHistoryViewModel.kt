@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.MyBattleRecordItem
-import com.picke.app.domain.repository.MyPageRepository
+import com.picke.app.domain.usecase.mypage.GetMyBattleRecordsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +23,7 @@ data class DiscussionHistoryUiState(
 
 @HiltViewModel
 class DiscussionHistoryViewModel @Inject constructor(
-    private val myPageRepository: MyPageRepository
+    private val getMyBattleRecordsUseCase: GetMyBattleRecordsUseCase
 ) : ViewModel(){
     private val _uiState = MutableStateFlow(DiscussionHistoryUiState())
     val uiState: StateFlow<DiscussionHistoryUiState> = _uiState.asStateFlow()
@@ -38,7 +38,7 @@ class DiscussionHistoryViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val result = myPageRepository.getMyBattleRecords(offset = 0, size = 20, voteSide = null)
+            val result = getMyBattleRecordsUseCase(offset = 0, size = 20, voteSide = null)
 
             result.onSuccess { data ->
                 Log.d(TAG, "배틀 기록 불러오기 성공! 아이템 개수: ${data.items.size}, nextOffset: ${data.nextOffset}")
@@ -66,7 +66,7 @@ class DiscussionHistoryViewModel @Inject constructor(
             _uiState.update { it.copy(isPagingLoading = true) }
             Log.d(TAG, "페이징 시작: offset=${currentState.nextOffset}")
 
-            val result = myPageRepository.getMyBattleRecords(
+            val result = getMyBattleRecordsUseCase(
                 offset = currentState.nextOffset,
                 size = 20,
                 voteSide = null

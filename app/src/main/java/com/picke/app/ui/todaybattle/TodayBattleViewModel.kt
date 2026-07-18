@@ -3,9 +3,10 @@ package com.picke.app.ui.todaybattle
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.app.domain.repository.ShareRepository
-import com.picke.app.domain.repository.TodayBattleRepository
-import com.picke.app.domain.repository.VoteRepository
+import com.picke.app.domain.usecase.todaybattle.FetchTodayBattlesUseCase
+import com.picke.app.domain.usecase.share.GetBattleShareLinkUseCase
+import com.picke.app.domain.usecase.vote.SubmitVoteResult
+import com.picke.app.domain.usecase.vote.SubmitVoteUseCase
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.ui.todaybattle.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,9 +25,9 @@ data class TodayBattleUiState(
 
 @HiltViewModel
 class TodayBattleViewModel @Inject constructor(
-    private val todayBattleRepository: TodayBattleRepository,
-    private val voteRepository: VoteRepository,
-    private val shareRepository: ShareRepository
+    private val fetchTodayBattlesUseCase: FetchTodayBattlesUseCase,
+    private val submitVoteUseCase: SubmitVoteUseCase,
+    private val getBattleShareLinkUseCase: GetBattleShareLinkUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayBattleUiState())
@@ -38,10 +39,17 @@ class TodayBattleViewModel @Inject constructor(
 
     fun submitPreVote(battleId: Long, optionId: Long, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            voteRepository.submitPreVote(battleId, optionId)
-                .onSuccess {
-                    Log.d("VoteFlow", "🟢 사전 투표 성공! 배틀에 입장합니다.")
-                    onSuccess()
+            submitVoteUseCase(battleId, optionId, isPreVote = true)
+                .onSuccess { result ->
+                    when (result) {
+                        is SubmitVoteResult.Success -> {
+                            Log.d("VoteFlow", "🟢 사전 투표 성공! 배틀에 입장합니다.")
+                            onSuccess()
+                        }
+                        is SubmitVoteResult.InsufficientPoints -> {
+                            Log.w("VoteFlow", "🟡 사전 투표 실패: 포인트 부족")
+                        }
+                    }
                 }
                 .onFailure { error ->
                     Log.e("VoteFlow", "🔴 사전 투표 실패!", error)
@@ -53,7 +61,7 @@ class TodayBattleViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            todayBattleRepository.fetchTodayBattles()
+            fetchTodayBattlesUseCase()
                 .onSuccess { board ->
                     Log.d("BattleFlow", "🟢 배틀 목록 불러오기 성공! (${board.items.size}개)")
                     Log.d("BattleFlow", "🟢 배틀 목록 : (${board.items})")
@@ -80,7 +88,7 @@ class TodayBattleViewModel @Inject constructor(
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            shareRepository.getBattleShareLink(battleId)
+            getBattleShareLinkUseCase(battleId)
                 .onSuccess { shareUrl ->
                     Log.d("ShareFlow", "🟢 배틀 공유 링크 획득 성공! url: ${shareUrl.shareUrl}")
                     onSuccess(shareUrl.shareUrl)

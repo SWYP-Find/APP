@@ -8,8 +8,8 @@ import com.picke.app.di.AdMobManager
 import com.picke.app.domain.model.MyPhilosopher
 import com.picke.app.domain.model.MyProfile
 import com.picke.app.domain.model.MyTier
-import com.picke.app.domain.repository.AlarmRepository
-import com.picke.app.domain.repository.MyPageRepository
+import com.picke.app.domain.usecase.mypage.GetMyPageInfoUseCase
+import com.picke.app.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +30,8 @@ data class MyUiState(
 
 @HiltViewModel
 class MyViewModel @Inject constructor(
-    private val myPageRepository: MyPageRepository,
-    private val alarmRepository: AlarmRepository,
+    private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
+    private val getUnreadAlarmStatusUseCase: GetUnreadAlarmStatusUseCase,
     private val tokenManager: TokenManager,
     val adMobManager: AdMobManager
 ) : ViewModel() {
@@ -49,7 +49,7 @@ class MyViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
-            myPageRepository.getMyPageInfo()
+            getMyPageInfoUseCase()
                 .onSuccess { infoBoard ->
                     Log.d("MyPageFlow", "🟢 마이페이지 정보 로드 성공: ${infoBoard}")
                     _uiState.update {
@@ -88,7 +88,7 @@ class MyViewModel @Inject constructor(
         _uiState.update { it.copy(isAlarmStatusLoading = true) }
 
         viewModelScope.launch {
-            alarmRepository.hasUnreadAlarms()
+            getUnreadAlarmStatusUseCase()
                 .onSuccess { hasUnread ->
                     _uiState.update { it.copy(hasNewNotice = hasUnread, isAlarmStatusLoading = false) }
                 }
