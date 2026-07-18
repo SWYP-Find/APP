@@ -3,8 +3,10 @@ package com.picke.app.data.repository
 import com.picke.app.data.model.ProposalRequestDto
 import com.picke.app.data.model.toDomainModel
 import com.picke.app.data.remote.ProposalApi
+import com.picke.app.domain.exception.NotEnoughPointsException
 import com.picke.app.domain.model.ProposalBoard
 import com.picke.app.domain.repository.ProposalRepository
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class ProposalRepositoryImpl @Inject constructor(
@@ -31,6 +33,12 @@ class ProposalRepositoryImpl @Inject constructor(
             val data = response.data ?: throw Exception(response.error?.message ?: "주제 제안에 실패했습니다.")
 
             Result.success(data.toDomainModel())
+        } catch (e: HttpException) {
+            if (e.code() == 400) {
+                Result.failure(NotEnoughPointsException())
+            } else {
+                Result.failure(e)
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

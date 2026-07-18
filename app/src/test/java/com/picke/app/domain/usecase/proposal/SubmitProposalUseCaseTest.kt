@@ -1,18 +1,15 @@
 package com.picke.app.domain.usecase.proposal
 
+import com.picke.app.domain.exception.NotEnoughPointsException
 import com.picke.app.domain.model.ProposalBoard
 import com.picke.app.domain.repository.ProposalRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import retrofit2.HttpException
-import retrofit2.Response
 
 class SubmitProposalUseCaseTest {
 
@@ -50,13 +47,10 @@ class SubmitProposalUseCaseTest {
     }
 
     @Test
-    fun `HTTP 400 에러이면 NotEnoughPoints로 변환한다`() = runTest {
-        val httpException = HttpException(
-            Response.error<Any>(400, "{}".toResponseBody("application/json".toMediaTypeOrNull()))
-        )
+    fun `NotEnoughPointsException이면 NotEnoughPoints로 변환한다`() = runTest {
         coEvery {
             proposalRepository.submitProposal(any(), any(), any(), any(), any())
-        } returns Result.failure(httpException)
+        } returns Result.failure(NotEnoughPointsException())
 
         val result = useCase("일반", "topic", "A", "B", "desc")
 

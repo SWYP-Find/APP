@@ -1,7 +1,7 @@
 package com.picke.app.domain.usecase.proposal
 
+import com.picke.app.domain.exception.NotEnoughPointsException
 import com.picke.app.domain.repository.ProposalRepository
-import retrofit2.HttpException
 import javax.inject.Inject
 
 sealed class SubmitProposalResult {
@@ -28,7 +28,7 @@ class SubmitProposalUseCase @Inject constructor(
         )
             .map { SubmitProposalResult.Success(it.id) as SubmitProposalResult }
             .recoverCatching { error ->
-                if (error is HttpException && error.code() == 400) {
+                if (error is NotEnoughPointsException) {
                     SubmitProposalResult.NotEnoughPoints
                 } else {
                     throw error
