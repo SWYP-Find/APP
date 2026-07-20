@@ -221,7 +221,10 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             }
 
             composable(route = AppRoute.Main.route) {
-                MainScreen(rootNavController = rootNavController)
+                MainScreen(
+                    rootNavController = rootNavController,
+                    isNotificationSheetPending = showNotificationSheet
+                )
             }
 
             composable(

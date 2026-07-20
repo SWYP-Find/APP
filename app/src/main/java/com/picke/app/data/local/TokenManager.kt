@@ -267,6 +267,7 @@ class TokenManager @Inject constructor(
             ?.remove("fcm_token")
             ?.remove("notification_permission_asked")
             ?.remove("last_attendance_date")
+            ?.remove("last_attendance_sheet_shown_date")
             ?.apply()
     }
     // endregion
@@ -289,6 +290,29 @@ class TokenManager @Inject constructor(
             prefs?.getString("last_attendance_date", null)
         } catch (e: Exception) {
             Log.e(TAG, "[LOCAL] last_attendance_date 로드 중 에러 발생", e)
+            null
+        }
+    }
+    // endregion
+
+    // region 10. 출석체크 바텀시트 노출 날짜 관리 (하루 최초 진입 시 1회만 노출)
+    /**
+     * 출석체크 바텀시트를 보여준 날짜를 ISO-8601(yyyy-MM-dd) 문자열로 저장
+     */
+    fun saveLastAttendanceSheetShownDate(date: String) {
+        prefs?.edit()?.putString("last_attendance_sheet_shown_date", date)?.apply()
+    }
+
+    /**
+     * 마지막으로 출석체크 바텀시트를 보여준 날짜 반환
+     *
+     * @return ISO-8601(yyyy-MM-dd) 문자열 (없으면 null)
+     */
+    fun getLastAttendanceSheetShownDate(): String? {
+        return try {
+            prefs?.getString("last_attendance_sheet_shown_date", null)
+        } catch (e: Exception) {
+            Log.e(TAG, "[LOCAL] last_attendance_sheet_shown_date 로드 중 에러 발생", e)
             null
         }
     }

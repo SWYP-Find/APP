@@ -16,3 +16,39 @@ data class AttendanceBoard(
     val consecutiveDays: Int,
     val totalPoints: Int
 )
+
+/**
+ * 이번 주(월~일) 출석 현황 도메인 모델
+ *
+ * @property weekStartDate 이번 주 시작일(월요일)
+ * @property consecutiveDays 현재까지의 연속 출석 일수
+ * @property isStreakAchieved 7일 연속 출석 달성 여부
+ * @property days 월~일 요일별 출석 상태
+ * @property streakRewardPoints 7일 연속 출석 달성 시 지급되는 보너스 포인트
+ */
+data class WeeklyAttendance(
+    val userTag: String,
+    val weekStartDate: String,
+    val consecutiveDays: Int,
+    val isStreakAchieved: Boolean,
+    val days: List<WeeklyAttendanceDay>,
+    val streakRewardPoints: Int
+)
+
+data class WeeklyAttendanceDay(
+    val day: String,
+    val date: String,
+    val status: WeeklyAttendanceDayStatus,
+    val points: Int
+)
+
+enum class WeeklyAttendanceDayStatus {
+    /** 출석 성공 */
+    ATTENDED,
+
+    /** 출석 실패 */
+    MISSED,
+
+    /** 아직 지나지 않은 날 */
+    UPCOMING
+}

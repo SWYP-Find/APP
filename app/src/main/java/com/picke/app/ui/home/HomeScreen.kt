@@ -37,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.picke.app.R
+import com.picke.app.ui.attendance.AttendanceCheckBottomSheet
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
@@ -51,6 +52,7 @@ fun HomeScreen(
     onNavigateToTodayPicke : ()->Unit,
     onNavigateToNewBattle : ()->Unit,
     scrollToTopTrigger: Int = 0,
+    isNotificationSheetPending: Boolean = false,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
@@ -64,6 +66,14 @@ fun HomeScreen(
         if (scrollToTopTrigger > 0) {
             scrollState.animateScrollTo(0)
             viewModel.fetchHomeData()
+        }
+    }
+
+    // 신규 가입 유저는 알림 권한 바텀시트가 먼저 떠야 하므로, 그 시트가 처리되기 전까지는
+    // 출석체크 바텀시트를 띄우지 않는다. 기존 유저는 처음부터 false이므로 즉시 진행된다.
+    LaunchedEffect(isNotificationSheetPending) {
+        if (!isNotificationSheetPending) {
+            viewModel.checkInAndShowAttendanceSheetIfNeeded()
         }
     }
 
@@ -266,5 +276,12 @@ fun HomeScreen(
 
             }
         }
+    }
+
+    uiState.attendanceCheckUiState?.let { attendanceCheckUiState ->
+        AttendanceCheckBottomSheet(
+            uiState = attendanceCheckUiState,
+            onDismiss = { viewModel.dismissAttendanceCheckSheet() }
+        )
     }
 }
