@@ -57,12 +57,12 @@ class AlarmRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun readAllAlarms(): Result<String> {
+    override suspend fun readAllAlarms(): Result<Unit> {
         return try {
             val response = alarmApi.readAllAlarms()
 
             if (response.statusCode == 200) {
-                Result.success(response.data ?: "Success")
+                Result.success(Unit)
             } else {
                 val errorMessage = response.error?.message ?: "알림 전체 읽음 처리에 실패했습니다."
                 Result.failure(Exception(errorMessage))

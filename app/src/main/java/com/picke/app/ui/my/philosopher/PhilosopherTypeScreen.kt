@@ -312,7 +312,7 @@ fun LockedPhilosopherHeaderSection() {
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .background(Color(0xFFEBEBEB), CircleShape),
+                    .background(SwypTheme.colors.backgroundTertiary, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

@@ -38,5 +38,5 @@ interface AlarmApi {
 
     // 3. 알림 전체 읽음 처리
     @PATCH("/api/v1/notifications/read-all")
-    suspend fun readAllAlarms(): BaseResponse<String>
+    suspend fun readAllAlarms(): BaseResponse<AlarmUnreadDto>
 }
