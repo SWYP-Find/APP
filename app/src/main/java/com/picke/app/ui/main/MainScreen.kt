@@ -38,7 +38,8 @@ import com.picke.app.ui.theme.SwypTheme
 
 @Composable
 fun MainScreen(
-    rootNavController : NavController
+    rootNavController : NavController,
+    isNotificationSheetPending: Boolean = false,
 ){
     val mainNavController = rememberNavController()
     val analyticsTracker = rememberAnalyticsTracker()
@@ -74,6 +75,7 @@ fun MainScreen(
             composable(BottomNavItem.Home.route){
                 HomeScreen(
                     scrollToTopTrigger = homeScrollTrigger,
+                    isNotificationSheetPending = isNotificationSheetPending,
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },

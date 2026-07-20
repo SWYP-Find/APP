@@ -3,10 +3,15 @@ package com.picke.app.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.data.local.TokenManager
+import com.picke.app.domain.usecase.attendance.CheckAttendanceUseCase
+import com.picke.app.domain.usecase.attendance.GetWeeklyAttendanceUseCase
 import com.picke.app.domain.usecase.home.FetchHomeDataUseCase
 import com.picke.app.domain.usecase.pollquiz.GetTodayPickVoteUseCase
 import com.picke.app.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
 import com.picke.app.domain.usecase.pollquiz.SubmitTodayPickVoteUseCase
+import com.picke.app.ui.attendance.AttendanceCheckUiState
+import com.picke.app.ui.attendance.toAttendanceCheckUiState
 import com.picke.app.util.ContentType
 import com.picke.app.ui.home.model.HomeContentUiModel
 import com.picke.app.ui.home.model.TodayPickUiModel
@@ -19,6 +24,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 data class HomeUiState(
@@ -30,7 +37,9 @@ data class HomeUiState(
     val trendingBattles: List<HomeContentUiModel> = emptyList(),
     val bestBattles: List<HomeContentUiModel> = emptyList(),
     val newBattles: List<HomeContentUiModel> = emptyList(),
-    val todayPicks: List<TodayPickUiModel> = emptyList()
+    val todayPicks: List<TodayPickUiModel> = emptyList(),
+    // null이 아니면 당일 최초 진입 출석체크 바텀시트를 노출한다.
+    val attendanceCheckUiState: AttendanceCheckUiState? = null
 )
 
 @HiltViewModel
@@ -38,14 +47,67 @@ class HomeViewModel @Inject constructor(
     private val fetchHomeDataUseCase: FetchHomeDataUseCase,
     private val submitTodayPickVoteUseCase: SubmitTodayPickVoteUseCase,
     private val getTodayPickVoteUseCase: GetTodayPickVoteUseCase,
-    private val getUnreadAlarmStatusUseCase: GetUnreadAlarmStatusUseCase
+    private val getUnreadAlarmStatusUseCase: GetUnreadAlarmStatusUseCase,
+    private val checkAttendanceUseCase: CheckAttendanceUseCase,
+    private val getWeeklyAttendanceUseCase: GetWeeklyAttendanceUseCase,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
+
+    companion object {
+        private val ATTENDANCE_ZONE = ZoneId.of("Asia/Seoul")
+    }
 
     private val _uiState = MutableStateFlow(HomeUiState(isLoading = true))
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    // 같은 화면 인스턴스에서 출석 플로우가 중복 실행되는 것을 막기 위한 메모리 가드
+    // (알림 권한 바텀시트가 먼저 뜨는 신규 유저는 그 시트가 닫힌 뒤에야 호출된다)
+    private var isAttendanceFlowTriggered = false
+
     init {
         fetchHomeData()
+    }
+
+    /**
+     * 출석체크 바텀시트 노출 플로우.
+     * 1) 출석 체크 API(POST)를 호출해 서버에 오늘 출석했음을 알리고
+     * 2) 이어서 이번 주 출석 현황 API(GET)를 호출해 그 결과로 바텀시트를 노출한다.
+     *
+     * 신규 가입 유저의 경우 알림 권한 바텀시트가 먼저 노출되어야 하므로,
+     * 호출 시점은 HomeScreen에서 알림 권한 바텀시트 노출 여부를 보고 결정한다.
+     */
+    fun checkInAndShowAttendanceSheetIfNeeded() {
+        val today = LocalDate.now(ATTENDANCE_ZONE).toString()
+        if (isAttendanceFlowTriggered || tokenManager.getLastAttendanceSheetShownDate() == today) {
+            Log.d("HomeFlow", "[출석] 오늘($today) 이미 처리됨 - 스킵")
+            return
+        }
+        isAttendanceFlowTriggered = true
+
+        viewModelScope.launch {
+            checkAttendanceUseCase()
+                .onSuccess { result ->
+                    Log.d("HomeFlow", "[출석] 체크 성공: +${result.pointsEarned}P (연속 ${result.consecutiveDays}일)")
+                }
+                .onFailure { error ->
+                    Log.w("HomeFlow", "[출석] 체크 실패 - 현황 조회는 계속 진행: ${error.message}")
+                }
+
+            getWeeklyAttendanceUseCase()
+                .onSuccess { weeklyAttendance ->
+                    tokenManager.saveLastAttendanceSheetShownDate(today)
+                    _uiState.update {
+                        it.copy(attendanceCheckUiState = weeklyAttendance.toAttendanceCheckUiState())
+                    }
+                }
+                .onFailure { error ->
+                    Log.e("HomeFlow", "[출석] 이번 주 출석 현황 조회 실패", error)
+                }
+        }
+    }
+
+    fun dismissAttendanceCheckSheet() {
+        _uiState.update { it.copy(attendanceCheckUiState = null) }
     }
 
     // 홈 데이터 불러오기
