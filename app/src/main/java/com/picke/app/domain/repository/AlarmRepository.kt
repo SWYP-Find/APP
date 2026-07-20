@@ -8,5 +8,5 @@ interface AlarmRepository {
     suspend fun hasUnreadAlarms(category: String? = null): Result<Boolean>
     suspend fun getAlarmDetail(notificationId: Long): Result<AlarmDetailBoard>
     suspend fun readAlarm(notificationId: Long): Result<String>
-    suspend fun readAllAlarms(): Result<String>
+    suspend fun readAllAlarms(): Result<Unit>
 }

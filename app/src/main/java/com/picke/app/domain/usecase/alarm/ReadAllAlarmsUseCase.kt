@@ -6,7 +6,7 @@ import javax.inject.Inject
 class ReadAllAlarmsUseCase @Inject constructor(
     private val alarmRepository: AlarmRepository
 ) {
-    suspend operator fun invoke(): Result<String> {
+    suspend operator fun invoke(): Result<Unit> {
         return alarmRepository.readAllAlarms()
     }
 }
