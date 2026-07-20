@@ -1,6 +1,7 @@
 package com.picke.app.domain.repository
 
 import com.picke.app.domain.model.AttendanceBoard
+import com.picke.app.domain.model.WeeklyAttendance
 
 interface AttendanceRepository {
     /**
@@ -9,4 +10,11 @@ interface AttendanceRepository {
      * @return 지급된 포인트 및 연속 출석 정보를 담은 [AttendanceBoard]
      */
     suspend fun checkAttendance(): Result<AttendanceBoard>
+
+    /**
+     * 이번 주(월~일) 요일별 출석 상태와 연속 출석 정보를 조회하는 API
+     *
+     * @return 이번 주 출석 현황을 담은 [WeeklyAttendance]
+     */
+    suspend fun getWeeklyAttendance(): Result<WeeklyAttendance>
 }
