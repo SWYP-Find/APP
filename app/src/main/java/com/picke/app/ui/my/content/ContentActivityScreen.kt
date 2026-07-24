@@ -51,7 +51,7 @@ fun ContentActivityScreen(
     modifier: Modifier = Modifier,
     viewModel: ContentActivityViewModel = hiltViewModel()
 ) {
-    val tabs = listOf("내 댓글", "좋아요")
+    val tabs = listOf("내 댓글·관점", "좋아요")
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(pageCount = { tabs.size })
@@ -100,7 +100,7 @@ fun ContentActivityScreen(
                         0 -> ContentActivityList(
                             items = uiState.commentList,
                             activityType = "COMMENT",
-                            emptyMessage = "아직 작성한 댓글이 없습니다",
+                            emptyMessage = "아직 작성한 댓글이나 관점이 없습니다",
                             onItemClick = onNavigateToComment,
                             onLoadMore = { viewModel.loadMore("COMMENT") }
                         )
