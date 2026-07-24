@@ -75,14 +75,15 @@ fun TodayBattleScreen(
     viewModel: TodayBattleViewModel = hiltViewModel(),
     initialBattleId: String? = null,
     onBackClick: () -> Unit,
-    onEnterBattle: (String) -> Unit
+    onNavigateToScenario: (String) -> Unit,
+    onNavigateToPerspective: (String) -> Unit
 ){
     val uiState by viewModel.uiState.collectAsState()
     val battleList = uiState.battleList
 
     val pagerState = rememberPagerState(pageCount = { battleList.size })
     var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null
+    val isButtonEnabled = selectedOptionId != null && !uiState.isEntering
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(battleList, initialBattleId) {
@@ -94,6 +95,11 @@ fun TodayBattleScreen(
     val graphicsLayer = rememberGraphicsLayer()
 
     val context = LocalContext.current
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
     val analyticsTracker = com.picke.app.analytics.rememberAnalyticsTracker()
     var showShareDialog by remember { mutableStateOf(false) }
     val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
@@ -233,12 +239,11 @@ fun TodayBattleScreen(
                     onClick = {
                         if (isButtonEnabled) {
                             val currentBattleId = battleList[pagerState.currentPage].battleId
-                            viewModel.submitPreVote(
+                            viewModel.enterBattle(
                                 battleId = currentBattleId.toLong(),
                                 optionId = selectedOptionId!!.toLong(),
-                                onSuccess = {
-                                    onEnterBattle(currentBattleId)
-                                }
+                                onNavigateToScenario = onNavigateToScenario,
+                                onNavigateToPerspective = onNavigateToPerspective
                             )
                         }
                     },
