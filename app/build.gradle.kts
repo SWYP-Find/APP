@@ -27,11 +27,23 @@ android {
     val admobRewardedAdUnitId = properties.getProperty("ADMOB_REWARDED_AD_UNIT_ID") ?: ""
     val mixpanelToken = properties.getProperty("MIXPANEL_PROJECT_TOKEN") ?: ""
     val sentryDsn = properties.getProperty("SENTRY_DSN") ?: ""
+    val adfitBanner320x50 = properties.getProperty("ADFIT_BANNER_320X50") ?: ""
+    val adfitBanner320x100 = properties.getProperty("ADFIT_BANNER_320X100") ?: ""
+    val adfitBanner320x480 = properties.getProperty("ADFIT_BANNER_320X480") ?: ""
+    val adfitNative2x1 = properties.getProperty("ADFIT_NATIVE_2X1") ?: ""
+    val adfitNative1x1 = properties.getProperty("ADFIT_NATIVE_1X1") ?: ""
+    val adfitAppTransition = properties.getProperty("ADFIT_APP_TRANSITION") ?: ""
 
     println("🔑💛 KAKAO_DEBUG_APPKEY: $kakaoDebugAppKey")
     println("🔑🤍 GOOGLE_WEB_CLIENT_ID: ${if (googleWebClientId.isNotEmpty()) "${googleWebClientId.take(20)}..." else "❌ 미설정 (local.properties 확인)"}")
     println("🔑🤍 ADMOB_APP_ID: $admobAppId")
     println("🔑🤍 ADMOB_REWARDED_AD_UNIT_ID: $admobRewardedAdUnitId")
+    println("🔑🤍 ADFIT_BANNER_320X50: ${if (adfitBanner320x50.isNotEmpty()) adfitBanner320x50 else "❌ 미설정 (local.properties 확인)"}")
+    println("🔑🤍 ADFIT_BANNER_320X100: ${if (adfitBanner320x100.isNotEmpty()) adfitBanner320x100 else "❌ 미설정 (local.properties 확인)"}")
+    println("🔑🤍 ADFIT_BANNER_320X480: ${if (adfitBanner320x480.isNotEmpty()) adfitBanner320x480 else "❌ 미설정 (local.properties 확인)"}")
+    println("🔑🤍 ADFIT_NATIVE_2X1: ${if (adfitNative2x1.isNotEmpty()) adfitNative2x1 else "❌ 미설정 (local.properties 확인)"}")
+    println("🔑🤍 ADFIT_NATIVE_1X1: ${if (adfitNative1x1.isNotEmpty()) adfitNative1x1 else "❌ 미설정 (local.properties 확인)"}")
+    println("🔑🤍 ADFIT_APP_TRANSITION: ${if (adfitAppTransition.isNotEmpty()) adfitAppTransition else "❌ 미설정 (local.properties 확인)"}")
 
     // [2. 앱의 기본 정보]
     defaultConfig {
@@ -46,6 +58,12 @@ android {
         buildConfigField("String", "KAKAO_DEBUG_APPKEY", "\"$kakaoDebugAppKey\"")
         buildConfigField("String", "ADMOB_REWARDED_AD_UNIT_ID", "\"$admobRewardedAdUnitId\"")
         buildConfigField("String", "MIXPANEL_PROJECT_TOKEN", "\"$mixpanelToken\"")
+        buildConfigField("String", "ADFIT_BANNER_320X50", "\"$adfitBanner320x50\"")
+        buildConfigField("String", "ADFIT_BANNER_320X100", "\"$adfitBanner320x100\"")
+        buildConfigField("String", "ADFIT_BANNER_320X480", "\"$adfitBanner320x480\"")
+        buildConfigField("String", "ADFIT_NATIVE_2X1", "\"$adfitNative2x1\"")
+        buildConfigField("String", "ADFIT_NATIVE_1X1", "\"$adfitNative1x1\"")
+        buildConfigField("String", "ADFIT_APP_TRANSITION", "\"$adfitAppTransition\"")
 
         manifestPlaceholders["admobAppId"] = admobAppId
         manifestPlaceholders["kakaoDebugAppKey"] = kakaoDebugAppKey
@@ -179,6 +197,8 @@ dependencies {
     implementation(libs.google.play.services.auth) // 구글 로그인
     implementation(libs.androidx.security.crypto) // 보안 공유 환경설정(EncryptedSharedPreferences) 등 암호화
     implementation(libs.play.services.ads) // 구글 AdMob 광고
+    implementation(libs.kakao.adfit) // 카카오 애드핏 배너 광고
+    implementation(libs.play.services.ads.identifier) // 애드핏 SDK 필수 의존성
 
     // [보류] 로컬 데이터베이스 (Room)
     // implementation(libs.androidx.room.ktx)

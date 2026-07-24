@@ -30,17 +30,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import com.picke.app.BuildConfig
 import com.picke.app.R
 import com.picke.app.ui.attendance.AttendanceCheckBottomSheet
+import com.picke.app.ui.component.AdFitBannerAd
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.showAdFitTransitionPopupAd
 
 @Composable
 fun HomeScreen(
@@ -56,6 +61,7 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     // 오늘의 Pické(투표/퀴즈) 섹션은 홈에서 제거하기로 하여 빈 화면 판정에서도 제외한다.
     val isDataEmpty = uiState.editorPicks.isEmpty() &&
             uiState.trendingBattles.isEmpty() &&
@@ -80,6 +86,14 @@ fun HomeScreen(
     // 최초 진입/탭 복귀/알림함에서 돌아올 때마다 미읽음 알림 여부를 조회해 벨 아이콘 배지를 갱신한다.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.fetchUnreadAlarmStatus()
+    }
+
+    // 홈 화면 진입 시 카카오 애드핏 앱 전환(팝업) 광고 노출 시도.
+    // AdFit 자체 빈도 제한/오늘 그만보기 정책이 있어 매번 뜨지는 않는다.
+    LaunchedEffect(Unit) {
+        (context as? FragmentActivity)?.let { activity ->
+            showAdFitTransitionPopupAd(activity, BuildConfig.ADFIT_APP_TRANSITION)
+        }
     }
 
     Scaffold(
@@ -205,6 +219,12 @@ fun HomeScreen(
                     }
                     Spacer(modifier = Modifier.height(40.dp))
                 }
+
+                // 카카오 애드핏 배너 광고 (지금 뜨는 배틀 ↔ Best 배틀 사이)
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
+                }
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // 3. Best 배틀
                 if (uiState.bestBattles.isNotEmpty()) {

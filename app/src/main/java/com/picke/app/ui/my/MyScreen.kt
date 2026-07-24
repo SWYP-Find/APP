@@ -43,8 +43,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.picke.app.BuildConfig
 import com.picke.app.R
 import com.picke.app.domain.model.MyPhilosopher
+import com.picke.app.ui.component.AdFitBannerAd
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.component.shimmer
@@ -218,6 +220,15 @@ fun MyScreen(
                     title = stringResource(R.string.my_menu_notice),
                     onClick = { onNavigateToNotice() }
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 카카오 애드핏 배너 광고 (마이 탭 최하단)
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
