@@ -93,7 +93,7 @@ fun MyScreen(
                     if (uiState.isLoading || uiState.isAlarmStatusLoading) {
                         repeat(2) {
                             Box(
-                                modifier = Modifier.size(48.dp),
+                                modifier = Modifier.size(36.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Spacer(
@@ -107,7 +107,7 @@ fun MyScreen(
                     } else {
                         // 배지는 서버의 미읽음 여부 응답으로만 갱신한다.
                         // (여기서 임의로 숨기면 알림함에서 돌아올 때 배지가 다시 나타나는 깜빡임이 생긴다)
-                        IconButton(onClick = onNavigateToAlarm) {
+                        IconButton(onClick = onNavigateToAlarm, modifier = Modifier.size(36.dp)) {
                             BadgedBox(
                                 badge = {
                                     if (uiState.hasNewNotice) {
@@ -128,7 +128,9 @@ fun MyScreen(
                         IconButton(
                             onClick = {
                                 onNavigateToSetting()
-                            }) {
+                            },
+                            modifier = Modifier.size(36.dp)
+                        ) {
                             Icon(
                                 painterResource(R.drawable.ic_setting),
                                 contentDescription =  stringResource(R.string.setting),
@@ -255,7 +257,6 @@ fun PhilosopherTypeCard(
     val isLocked = philosopher == null || philosopher.philosopherType == "UNKNOWN"
     val displayImage = if (isLocked) R.drawable.img_lock else philosopher?.imageUrl
     val displayName = if (isLocked) "??형" else philosopher?.philosopherLabel ?: ""
-    val displayDesc = if (isLocked) "나만의 철학자를 찾아보세요" else philosopher?.description ?: ""
 
     Row(
         modifier = Modifier
@@ -287,12 +288,6 @@ fun PhilosopherTypeCard(
                 text = if (isLocked) displayName else "$displayName ",
                 style = SwypTheme.typography.b3SemiBold,
                 color = SwypTheme.colors.textSecondary
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = if (isLocked) displayName else "$displayDesc",
-                style = SwypTheme.typography.labelXSmall,
-                color = SwypTheme.colors.textMuted
             )
         }
 

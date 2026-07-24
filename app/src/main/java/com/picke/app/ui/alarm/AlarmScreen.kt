@@ -42,6 +42,7 @@ import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.SortFilterChip
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.toRelativeTimeText
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -51,7 +52,7 @@ import java.util.TimeZone
 @Composable
 fun AlarmScreen(
     onBackClick: () -> Unit,
-    onNavigateToTodayBattle: (battleId: String) -> Unit,
+    onNavigateToPreVote: (battleId: String) -> Unit,
     onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
     onNavigateToPoint: () -> Unit,
     onNavigateToNotice: (Long) -> Unit,
@@ -176,7 +177,7 @@ fun AlarmScreen(
 
                                     when (item.detailCode) {
                                         "NEW_BATTLE" ->
-                                            onNavigateToTodayBattle(item.referenceId.toString())
+                                            onNavigateToPreVote(item.referenceId.toString())
                                         "COMMENT_LIKE", "NEW_COMMENT" ->
                                             if (item.perspectiveId != 0L)
                                                 onNavigateToComment(item.perspectiveId.toString(), item.referenceId.toString())
@@ -264,7 +265,7 @@ fun AlarmCard(
                     modifier = Modifier.alignByBaseline()
                 ) {
                     Text(
-                        text = item.createdAt,
+                        text = item.createdAt.toRelativeTimeText(),
                         style = SwypTheme.typography.caption2Medium,
                         color = SwypTheme.colors.neutral200
                     )

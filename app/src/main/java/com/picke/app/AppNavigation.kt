@@ -258,8 +258,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 TodayBattleScreen(
                     initialBattleId = battleId,
                     onBackClick = { rootNavController.popBackStack() },
-                    onEnterBattle = { id ->
-                        rootNavController.navigate(AppRoute.BattleRouting.createRoute(id))
+                    onNavigateToScenario = { id ->
+                        rootNavController.navigate(AppRoute.Scenario.createRoute(id)) {
+                            popUpTo(AppRoute.TodayBattle.route) { inclusive = true }
+                        }
+                    },
+                    onNavigateToPerspective = { id ->
+                        rootNavController.navigate(AppRoute.Perspective.createRoute(id)) {
+                            popUpTo(AppRoute.TodayBattle.route) { inclusive = true }
+                        }
                     }
                 )
             }
@@ -267,8 +274,8 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
             composable(AppRoute.Alarm.route) {
                 AlarmScreen(
                     onBackClick = { rootNavController.popBackStack() },
-                    onNavigateToTodayBattle = { battleId ->
-                        rootNavController.navigate(AppRoute.TodayBattle.createRoute(battleId))
+                    onNavigateToPreVote = { battleId ->
+                        rootNavController.navigate(AppRoute.PreVote.createRoute(battleId))
                     },
                     onNavigateToComment = { perspectiveId, commentId ->
                         rootNavController.navigate(AppRoute.Comment.createRoute(perspectiveId, commentId))
@@ -304,7 +311,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
             composable(AppRoute.MakeBattle.route) {
                 MakeBattleScreen(
-                    onBackClick = { rootNavController.popBackStack() }
+                    onBackClick = { rootNavController.popBackStack() },
+                    onNavigateToExplore = {
+                        DeepLinkManager.pendingTab = BottomNavItem.Explore.route
+                        rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
+                    }
                 )
             }
 
@@ -335,6 +346,10 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         rootNavController.navigate(AppRoute.Scenario.createRoute(submittedBattleId)) {
                             popUpTo(AppRoute.PreVote.route) { inclusive = true }
                         }
+                    },
+                    onNavigateToExplore = {
+                        DeepLinkManager.pendingTab = BottomNavItem.Explore.route
+                        rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                     }
                 )
             }
@@ -367,6 +382,10 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         rootNavController.navigate(AppRoute.Perspective.createRoute(submittedBattleId)) {
                             popUpTo(AppRoute.Main.route) { inclusive = false }
                         }
+                    },
+                    onNavigateToExplore = {
+                        DeepLinkManager.pendingTab = BottomNavItem.Explore.route
+                        rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                     }
                 )
             }

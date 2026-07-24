@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,6 +36,7 @@ import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.my.setting.SettingScreen
 import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.DeepLinkManager
 
 @Composable
 fun MainScreen(
@@ -43,6 +45,12 @@ fun MainScreen(
 ){
     val mainNavController = rememberNavController()
     val analyticsTracker = rememberAnalyticsTracker()
+
+    // 배틀 화면 등에서 "탐색 탭으로 이동" 같은 특정 탭 지정 진입이 예약되어 있으면 그 탭에서 시작하고,
+    // 소비 즉시 리셋해서 이후의 일반적인 Main 진입에는 영향을 주지 않는다.
+    val initialTabRoute = remember {
+        DeepLinkManager.pendingTab?.also { DeepLinkManager.pendingTab = null } ?: BottomNavItem.Home.route
+    }
 
     // 탭 NavHost 내부 화면들의 screen_view 자동 전송
     TrackScreenViews(mainNavController)
@@ -63,7 +71,7 @@ fun MainScreen(
     ){ innerPadding ->
         NavHost(
             navController = mainNavController,
-            startDestination = BottomNavItem.Home.route,
+            startDestination = initialTabRoute,
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
                 .background(SwypTheme.colors.surface),
@@ -136,7 +144,16 @@ fun MainScreen(
 
             composable(AppRoute.MakeBattle.route){
                 MakeBattleScreen(
-                    onBackClick = { mainNavController.popBackStack() }
+                    onBackClick = { mainNavController.popBackStack() },
+                    onNavigateToExplore = {
+                        mainNavController.navigate(BottomNavItem.Explore.route) {
+                            popUpTo(mainNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
 

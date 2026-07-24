@@ -41,6 +41,7 @@ import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.toRelativeTimeText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -215,7 +216,7 @@ fun ContentActivityCard(
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = item.createdAt,
+                    text = item.createdAt.toRelativeTimeText(),
                     style = SwypTheme.typography.b4Regular,
                     color = SwypTheme.colors.textMuted
                 )

@@ -102,8 +102,6 @@ private fun PhilosopherTypeCardSkeleton() {
             SkeletonLine(width = 60.dp, height = 14.dp)
             Spacer(modifier = Modifier.height(4.dp))
             SkeletonLine(width = 100.dp, height = 18.dp)
-            Spacer(modifier = Modifier.height(4.dp))
-            SkeletonLine(width = 140.dp, height = 14.dp)
         }
     }
 }

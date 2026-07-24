@@ -18,6 +18,7 @@ import com.picke.app.domain.usecase.perspective.ReportPerspectiveUseCase
 import com.picke.app.domain.usecase.perspective.RetryModerationUseCase
 import com.picke.app.domain.usecase.perspective.SubmitPerspectiveUseCase
 import com.picke.app.domain.usecase.perspective.TogglePerspectiveLikeUseCase
+import com.picke.app.util.toRelativeTimeText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,10 +56,11 @@ data class PerspectiveUiState(
     val nextCursor: String? = null,
     val hasNext: Boolean = true,
     val isLoading: Boolean = false,
-    val sort: String = "latest",
+    val sort: String = "popular",
     val selectedOptionId: Long? = null,
     val opinionChanged: Boolean = false,
-    val editingPerspectiveId: Long? = null
+    val editingPerspectiveId: Long? = null,
+    val battleTitle: String = ""
 )
 
 @HiltViewModel
@@ -112,7 +114,9 @@ class PerspectiveViewModel @Inject constructor(
             getMyVoteHistoryUseCase(battleIdLong)
                 .onSuccess { voteHistory ->
                     Log.i(TAG, "[STATE] 내 투표 내역 조회 성공 - 생각 변화 여부: ${voteHistory.opinionChanged}")
-                    _uiState.update { it.copy(opinionChanged = voteHistory.opinionChanged) }
+                    _uiState.update {
+                        it.copy(opinionChanged = voteHistory.opinionChanged, battleTitle = voteHistory.battleTitle)
+                    }
                 }
                 .onFailure { error ->
                     Log.w(TAG, "[FLOW] 내 투표 내역 없음 (정상 처리): ${error.message}")
@@ -226,7 +230,6 @@ class PerspectiveViewModel @Inject constructor(
         Log.d(TAG, "[FLOW] 관점 ${if (isEditMode) "수정" else "작성"} 로직 시작")
 
         _uiState.update { it.copy(editingPerspectiveId = null) }
-        onSuccess() // 입력창 닫기 및 키보드 내림
 
         // 백엔드 통신
         viewModelScope.launch {
@@ -234,6 +237,7 @@ class PerspectiveViewModel @Inject constructor(
             submitPerspectiveUseCase(battleIdLong, editId, content)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 관점 ${if (isEditMode) "수정" else "작성"} 완료 -> 서버 데이터 동기화")
+                    onSuccess() // 입력창 닫기 및 키보드 내림
                     loadMyPerspective()
                     loadPerspectives(isRefresh = true)
                 }
@@ -344,7 +348,7 @@ private fun PerspectiveBoard.toUiModel() = PerspectiveUiModel(
     optionTitle = this.optionTitle,
     optionId = this.optionId,
     content = this.content,
-    timeAgo = this.createdAt.take(10),
+    timeAgo = this.createdAt.toRelativeTimeText(),
     replyCount = this.replyCount,
     likeCount = this.likeCount,
     isLiked = this.isLiked,

@@ -49,6 +49,7 @@ fun VoteRoute(
     voteType: VoteType,
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit,
+    onNavigateToExplore: () -> Unit,
     viewModel: VoteViewModel = hiltViewModel()
 ) {
     BackHandler {
@@ -59,14 +60,58 @@ fun VoteRoute(
     if (uiState.isLoading) {
         VoteSkeleton(voteType = voteType, modifier = Modifier.fillMaxSize())
     } else {
-        uiState.battleDetail?.let { detail ->
+        val detail = uiState.battleDetail
+        if (detail != null) {
             VoteScreen(
                 voteType = voteType,
                 battleDetail = detail,
                 uiState = uiState,
                 onBackClick = onBackClick,
                 onVoteSubmit = onVoteSubmit,
+                onNavigateToExplore = onNavigateToExplore,
                 viewModel = viewModel
+            )
+        } else {
+            BattleNotFoundScreen(onBackClick = onBackClick)
+        }
+    }
+}
+
+// 존재하지 않거나 삭제된 배틀 id로 진입했을 때 보여주는 빈 화면
+// (관점 화면의 빈 목록 상태와 동일한 Picke 로고 + 안내 문구 UI를 재사용)
+@Composable
+private fun BattleNotFoundScreen(onBackClick: () -> Unit) {
+    Scaffold(
+        containerColor = SwypTheme.colors.backgroundBrand,
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            Box(modifier = Modifier.statusBarsPadding()) {
+                CustomTopAppBar(
+                    showBackButton = true,
+                    onBackClick = onBackClick,
+                    backgroundColor = SwypTheme.colors.backgroundBrand,
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.logo_picke),
+                contentDescription = "빈 화면 로고",
+                modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                tint = SwypTheme.colors.borderDefault
+            )
+            // Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "해당 배틀은 존재하지 않습니다",
+                style = SwypTheme.typography.b3Regular,
+                color = SwypTheme.colors.beige800
             )
         }
     }
@@ -79,6 +124,7 @@ fun VoteScreen(
     uiState: VoteUiState,
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit,
+    onNavigateToExplore: () -> Unit,
     viewModel: VoteViewModel
 ) {
     val isPreVote = voteType == VoteType.PRE
@@ -97,7 +143,6 @@ fun VoteScreen(
     val graphicsLayer = androidx.compose.ui.graphics.rememberGraphicsLayer()
     var showShareDialog by remember { mutableStateOf(false) }
     var isSharing by remember { mutableStateOf(false) }
-    val activity = context as? android.app.Activity
 
     // 공유하기 함수
     val onKakaoShareClick = {
@@ -304,7 +349,7 @@ fun VoteScreen(
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
-                            text = if (isPreVote) battleInfo.summary else battleDetail.description,
+                            text = battleDetail.description,
                             style = SwypTheme.typography.b3Regular,
                             color = descColor
                         )
@@ -415,28 +460,12 @@ fun VoteScreen(
         if (uiState.isInsufficientPoints) {
             CustomSingleActionDialog(
                 message = "컨텐츠를 시청하기 위한\n포인트가 부족해요!",
-                buttonText = "무료충전 하러 가기",
+                subMessage = "매일 출석체크만 해도 5P를 받을 수 있어요!",
+                buttonText = "배틀 주제 구경하러 가기",
                 onDismiss = { viewModel.dismissPointDialog() },
                 onConfirm = {
                     viewModel.dismissPointDialog()
-
-                    activity?.let { act ->
-                        val isAdReady = viewModel.adMobManager.showAd(
-                            activity = act,
-                            placement = "battle_vote",
-                            onRewardEarned = {
-                                // 1. 보상 획득 성공!
-                                Toast.makeText(context, "20포인트가 충전되었습니다. 다시 투표를 시도해보세요!", Toast.LENGTH_SHORT).show()
-                                // 2. 광고 재장전
-                                viewModel.reloadAd()
-                            }
-                        )
-
-                        if (!isAdReady) {
-                            Toast.makeText(context, "광고가 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                            viewModel.reloadAd()
-                        }
-                    }
+                    onNavigateToExplore()
                 }
             )
         }

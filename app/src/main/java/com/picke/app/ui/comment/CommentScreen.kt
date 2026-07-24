@@ -24,6 +24,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -44,7 +49,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -68,7 +76,9 @@ fun CommentScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = androidx.compose.ui.platform.LocalContext.current
-    var inputText by remember { mutableStateOf("") }
+    // TextFieldState: 프로그램적으로 텍스트를 비우거나(clearText) 채울 때(setTextAndPlaceCursorAtEnd)
+    // IME 조합 상태와의 경쟁 없이 안전하게 처리해주는 최신 API.
+    val inputFieldState = rememberTextFieldState()
 
     var commentToDelete by remember { mutableStateOf<Long?>(null) }
     var commentToReport by remember { mutableStateOf<Long?>(null) }
@@ -110,7 +120,7 @@ fun CommentScreen(
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
-                    title = "댓글 남기기",
+                    title = "댓글",
                     centerTitle = true,
                     showLogo = false,
                     showBackButton = true,
@@ -125,14 +135,14 @@ fun CommentScreen(
             val inputHint = if (isEditing) "수정할 내용을 입력해주세요..." else "댓글을 남겨보세요..."
 
             CommentInputField(
-                inputText = inputText,
-                onTextChanged = { inputText = it },
+                textFieldState = inputFieldState,
                 onSubmit = {
-                    viewModel.submitComment(inputText) {
-                        inputText = ""
+                    viewModel.submitComment(inputFieldState.text.toString()) {
+                        inputFieldState.clearText()
                     }
                 },
-                hintText = inputHint
+                hintText = inputHint,
+                editingKey = uiState.editingCommentId
             )
         }
     ) { innerPadding ->
@@ -147,20 +157,10 @@ fun CommentScreen(
             } else {
                 // 2. 상단 고정 영역 (스크롤 되지 않음)
                 // 1) 메인 관점 카드
-                val mainStance = uiState.mainPerspective?.stance ?: ""
-                val firstOptionId = uiState.firstOptionId
-                val mainIsPro = if (firstOptionId != 0L) {
-                    (uiState.mainPerspective?.optionId ?: 0L) == firstOptionId
-                } else {
-                    // firstOptionId 없이 진입한 경우(FCM 등) 메인 관점 stance를 Pro 기준으로 삼아 댓글과 색깔 일치
-                    mainStance.isNotEmpty()
-                }
-
                 uiState.mainPerspective?.let { mainContent ->
                     CommentItemCard(
                         item = mainContent,
                         isMainContent = true,
-                        isPro = mainIsPro,
                         onLikeClick = {
                             if (mainContent.isMine) {
                                 android.widget.Toast.makeText(
@@ -205,13 +205,8 @@ fun CommentScreen(
                         items(uiState.comments) { comment ->
                             CommentItemCard(
                                 item = comment,
-                                isPro = if (firstOptionId != 0L) {
-                                    (comment.stance == mainStance) == mainIsPro
-                                } else {
-                                    mainStance.isNotEmpty() && comment.stance == mainStance
-                                },
                                 onEditClick = { content ->
-                                    inputText = content
+                                    inputFieldState.setTextAndPlaceCursorAtEnd(content)
                                     viewModel.setEditMode(comment.commentId.toLongOrNull())
                                 },
                                 onDeleteClick = {
@@ -300,7 +295,6 @@ fun CommentItemCard(
     item: CommentUiModel,
     modifier: Modifier = Modifier,
     isMainContent: Boolean = false,
-    isPro: Boolean = false,
     onEditClick: (String) -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onLikeClick: () -> Unit = {},
@@ -322,22 +316,7 @@ fun CommentItemCard(
             Spacer(modifier = Modifier.width(8.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
-                    Spacer(modifier = Modifier.width(6.dp))
-
-                    Surface(
-                        color = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary,
-                        shape = RoundedCornerShape(2.dp)
-                    ) {
-                        Text(
-                            text = item.stance,
-                            style = SwypTheme.typography.b5Medium,
-                            color = if (isPro) SwypTheme.colors.primary else Color.White,
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                        )
-                    }
-                }
+                Text(text = if (item.isMine) "나" else item.nickname, style = SwypTheme.typography.labelMedium, color = SwypTheme.colors.textSecondary)
                 Text(text = item.timeAgo, style = SwypTheme.typography.labelXSmall, color = SwypTheme.colors.outline)
             }
 
@@ -370,6 +349,21 @@ fun CommentItemCard(
                     }
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 입장 뱃지
+        Surface(
+            color = SwypTheme.colors.badgeBackground,
+            shape = RoundedCornerShape(2.dp)
+        ) {
+            Text(
+                text = item.stance,
+                style = SwypTheme.typography.b5Medium,
+                color = SwypTheme.colors.badgeText,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -444,15 +438,25 @@ fun CommentMenuItem(
 
 @Composable
 fun CommentInputField(
-    inputText: String,
-    onTextChanged: (String) -> Unit,
+    textFieldState: TextFieldState,
     onSubmit: () -> Unit,
     isEnabled: Boolean = true,
     hintText: String = "댓글을 남겨보세요...",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    editingKey: Any? = null,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(editingKey) {
+        if (editingKey != null) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
+
     Surface(
-        color = SwypTheme.colors.surface,
+        color = SwypTheme.colors.surfaceTertiary,
         shadowElevation = 16.dp,
         modifier = modifier
             .fillMaxWidth()
@@ -466,10 +470,10 @@ fun CommentInputField(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(if (isEnabled) SwypTheme.colors.backgroundBrand else SwypTheme.colors.beige100, RoundedCornerShape(8.dp))
+                    .background(if (isEnabled) SwypTheme.colors.surface else SwypTheme.colors.beige100, RoundedCornerShape(8.dp))
                     .padding(12.dp)
             ) {
-                if (inputText.isEmpty()) {
+                if (textFieldState.text.isEmpty()) {
                     Text(
                         text = hintText,
                         style = SwypTheme.typography.b3Regular,
@@ -479,34 +483,31 @@ fun CommentInputField(
                 }
 
                 BasicTextField(
-                    value = inputText,
-                    onValueChange = { if (it.length <= 200) onTextChanged(it) },
+                    state = textFieldState,
                     enabled = isEnabled,
+                    lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 3, maxHeightInLines = Int.MAX_VALUE),
                     textStyle = SwypTheme.typography.b3Regular.copy(color = SwypTheme.colors.textPrimary, lineHeight = 20.sp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp)
-                )
-
-                Text(
-                    text = "${inputText.length}/200",
-                    style = SwypTheme.typography.labelXSmall,
-                    color = SwypTheme.colors.outline,
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                        .focusRequester(focusRequester)
                 )
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            IconButton(
-                onClick = onSubmit,
-                enabled = isEnabled,
-                modifier = Modifier.size(40.dp)
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(if (isEnabled) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled)
+                    .clickable(enabled = isEnabled) { onSubmit() },
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_send),
+                    painter = painterResource(id = R.drawable.ic_send),
                     contentDescription = "등록",
-                    tint = SwypTheme.colors.primary
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

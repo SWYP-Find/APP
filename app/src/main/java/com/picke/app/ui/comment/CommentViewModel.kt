@@ -14,6 +14,7 @@ import com.picke.app.domain.usecase.comment.ReportCommentUseCase
 import com.picke.app.domain.usecase.comment.SubmitCommentUseCase
 import com.picke.app.domain.usecase.comment.ToggleCommentLikeUseCase
 import com.picke.app.domain.usecase.perspective.TogglePerspectiveLikeUseCase
+import com.picke.app.util.toRelativeTimeText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -112,7 +113,7 @@ class CommentViewModel @Inject constructor(
                                 stance = perspective.optionTitle,
                                 optionId = perspective.optionId,
                                 content = perspective.content,
-                                timeAgo = perspective.createdAt.take(10),
+                                timeAgo = perspective.createdAt.toRelativeTimeText(),
                                 likeCount = perspective.likeCount,
                                 isLiked = perspective.isLiked,
                                 isMine = perspective.isMine,
@@ -300,7 +301,7 @@ private fun CommentBoard.toUiModel() = CommentUiModel(
         nickname = this.user.nickname,
         stance = this.stance,
         content = this.content,
-        timeAgo = this.createdAt.take(10),
+        timeAgo = this.createdAt.toRelativeTimeText(),
         likeCount = this.likeCount,
         isLiked = this.isLiked,
         isMine = this.isMine
