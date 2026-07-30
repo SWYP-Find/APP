@@ -51,7 +51,9 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.SubcomposeAsyncImage
+import com.picke.app.BuildConfig
 import com.picke.app.R
+import com.picke.app.ui.component.AdFitBannerAd
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.SortFilterChip
@@ -216,7 +218,43 @@ fun ExploreList(
                 modifier = Modifier.fillMaxSize(),
                 //verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(count = pagingItems.itemCount) { index ->
+                val topCount = minOf(3, pagingItems.itemCount)
+
+                // 상위 3개 배틀
+                items(count = topCount) { index ->
+                    pagingItems[index]?.let { item ->
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = SwypTheme.colors.borderDefault,
+                        )
+                        ExploreCard(
+                            item = item,
+                            onClick = { id -> onNavigateToVote(id) }
+                        )
+                        if (index == pagingItems.itemCount - 1) {
+                            HorizontalDivider(
+                                thickness = 1.dp,
+                                color = SwypTheme.colors.borderDefault,
+                            )
+                        }
+                    }
+                }
+
+                // 카카오 애드핏 배너 광고 (상위 3개 배틀 다음)
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
+                    }
+                }
+
+                // 나머지 배틀 (4번째 이후)
+                items(count = pagingItems.itemCount - topCount) { offset ->
+                    val index = topCount + offset
                     pagingItems[index]?.let { item ->
                         HorizontalDivider(
                             thickness = 1.dp,

@@ -55,7 +55,7 @@ fun NoticeEventScreen(
     modifier: Modifier = Modifier,
     viewModel: NoticeEventViewModel = hiltViewModel()
 ) {
-    val tabs = listOf("공지사항", "이벤트", "콘텐츠")
+    val tabs = listOf("공지사항", "이벤트")
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(pageCount = { tabs.size })
@@ -151,23 +151,6 @@ fun NoticeEventScreen(
                                 NoticeEventList(
                                     items = uiState.eventList,
                                     emptyMessage = "아직 진행 중인 이벤트가 없습니다",
-                                    onItemClick = { item ->
-                                        item.id.toLongOrNull()?.let { viewModel.fetchNoticeEventDetail(it) }
-                                        selectedItem = item
-                                    }
-                                )
-                            }
-                        }
-                        2 -> {
-                            if (selectedItem != null && selectedItem?.type == "콘텐츠") {
-                                NoticeEventDetailContent(
-                                    item = selectedItem!!,
-                                    onGoToList = { selectedItem = null }
-                                )
-                            } else {
-                                NoticeEventList(
-                                    items = uiState.contentList,
-                                    emptyMessage = "아직 등록된 콘텐츠가 없습니다",
                                     onItemClick = { item ->
                                         item.id.toLongOrNull()?.let { viewModel.fetchNoticeEventDetail(it) }
                                         selectedItem = item

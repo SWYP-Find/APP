@@ -20,7 +20,6 @@ import javax.inject.Inject
 data class NoticeEventUiState(
     val noticeList: List<NoticeEventItem> = emptyList(),
     val eventList: List<NoticeEventItem> = emptyList(),
-    val contentList: List<NoticeEventItem> = emptyList(),
     val isLoading: Boolean = false,
     val isRead: Boolean = false,
     val initialDetailItem: NoticeEventItem? = null
@@ -42,15 +41,13 @@ class NoticeEventViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            Log.d("NoticeEventFlow", "🚀 [목록 API 호출] 공지사항, 이벤트, 콘텐츠 요청 시작")
+            Log.d("NoticeEventFlow", "🚀 [목록 API 호출] 공지사항, 이벤트 요청 시작")
 
             val noticeDeferred = async { getAlarmsUseCase(category = "NOTICE", page = 0, size = 50) }
             val eventDeferred = async { getAlarmsUseCase(category = "EVENT", page = 0, size = 50) }
-            val contentDeferred = async { getAlarmsUseCase(category = "CONTENT", page = 0, size = 50) }
 
             val noticeResult = noticeDeferred.await()
             val eventResult = eventDeferred.await()
-            val contentResult = contentDeferred.await()
 
             noticeResult.onSuccess { data ->
                 Log.d("NoticeEventFlow", "✅ [목록 성공] 공지사항 수신: ${data.items.size}개")
@@ -64,21 +61,13 @@ class NoticeEventViewModel @Inject constructor(
                 Log.e("NoticeEventFlow", "❌ [목록 실패] 이벤트 에러: ${error.message}")
             }
 
-            contentResult.onSuccess { data ->
-                Log.d("NoticeEventFlow", "✅ [목록 성공] 콘텐츠 수신: ${data.items.size}개")
-            }.onFailure { error ->
-                Log.e("NoticeEventFlow", "❌ [목록 실패] 콘텐츠 에러: ${error.message}")
-            }
-
             val notices = noticeResult.getOrNull()?.items?.map { it.toNoticeEventItem("공지사항") } ?: emptyList()
             val events = eventResult.getOrNull()?.items?.map { it.toNoticeEventItem("이벤트") } ?: emptyList()
-            val contents = contentResult.getOrNull()?.items?.map { it.toNoticeEventItem("콘텐츠") } ?: emptyList()
 
             _uiState.update {
                 it.copy(
                     noticeList = notices,
                     eventList = events,
-                    contentList = contents,
                     isLoading = false
                 )
             }
@@ -93,8 +82,7 @@ class NoticeEventViewModel @Inject constructor(
                 val targetId = notificationId.toString()
                 state.copy(
                     noticeList = state.noticeList.map { if (it.id == targetId) it.copy(isRead = true) else it },
-                    eventList = state.eventList.map { if (it.id == targetId) it.copy(isRead = true) else it },
-                    contentList = state.contentList.map { if (it.id == targetId) it.copy(isRead = true) else it }
+                    eventList = state.eventList.map { if (it.id == targetId) it.copy(isRead = true) else it }
                 )
             }
 

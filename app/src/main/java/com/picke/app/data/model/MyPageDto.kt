@@ -205,7 +205,7 @@ fun MyContentActivityItemDto.toDomainModel() = MyContentActivityItem(
     optionTitle = this.optionTitle,
     content = this.content ?: "",
     likeCount = this.likeCount ?: 0,
-    createdAt = this.createdAt?.take(10) ?: ""
+    createdAt = this.createdAt ?: ""
 )
 
 fun MyContentActivityPageDto.toDomainModel() = MyContentActivityPage(

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -12,6 +11,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.FragmentActivity
 import com.picke.app.BuildConfig
 import com.picke.app.data.local.TokenManager
 import com.picke.app.notification.FCMService
@@ -23,8 +23,11 @@ import com.picke.app.util.DeepLinkManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+// FragmentActivity: 카카오 애드핏 앱 전환 팝업 광고(AdFitPopupAdDialogFragment)를 띄우려면
+// supportFragmentManager가 필요해서 ComponentActivity에서 변경. 앱 테마가 AppCompat 테마가
+// 아니라서(Theme.Material 계열) AppCompatActivity 대신 더 가벼운 FragmentActivity를 사용한다.
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     @Inject lateinit var tokenManager: TokenManager
 

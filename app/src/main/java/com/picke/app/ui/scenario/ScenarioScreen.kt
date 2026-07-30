@@ -88,6 +88,7 @@ fun ScenarioScreen(
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
                     title = uiState.title,
+                    centerTitle = true,
                     showBackButton = false,
                     backgroundColor = SwypTheme.colors.backgroundBrand,
                 )

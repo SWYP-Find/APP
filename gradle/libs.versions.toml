@@ -30,10 +30,12 @@ retrofit = "2.11.0"
 firebaseBom = "33.5.1"
 googleServices = "4.4.2"
 playServicesAds = "23.6.0"
+playServicesAdsIdentifier = "18.0.1"
 playServicesAuth = "21.0.0"
 
 # [Social & Security]
 kakao = "2.20.1"
+adfit = "3.22.2"
 securityCrypto = "1.1.0-alpha06"
 
 # [Paging]
@@ -100,11 +102,13 @@ firebase-dynamic-links = { group = "com.google.firebase", name = "firebase-dynam
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+play-services-ads-identifier = { group = "com.google.android.gms", name = "play-services-ads-identifier", version.ref = "playServicesAdsIdentifier" }
 
 # [Social & Security]
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 kakao-sdk-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakao" }
 kakao-share = { group = "com.kakao.sdk", name = "v2-share", version.ref = "kakao" }
+kakao-adfit = { group = "com.kakao.adfit", name = "ads-base", version.ref = "adfit" }
 
 # [Paging]
 androidx-paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "pagingCommon" }

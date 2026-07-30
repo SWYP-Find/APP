@@ -3,6 +3,7 @@ package com.picke.app.ui.todaybattle
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.app.domain.usecase.battle.GetBattleStatusUseCase
 import com.picke.app.domain.usecase.todaybattle.FetchTodayBattlesUseCase
 import com.picke.app.domain.usecase.share.GetBattleShareLinkUseCase
 import com.picke.app.domain.usecase.vote.SubmitVoteResult
@@ -19,6 +20,7 @@ import javax.inject.Inject
 
 data class TodayBattleUiState(
     val isLoading: Boolean = true,
+    val isEntering: Boolean = false,
     val battleList: List<TodayBattleUiModel> = emptyList(),
     val errorMessage: String? = null
 )
@@ -27,6 +29,7 @@ data class TodayBattleUiState(
 class TodayBattleViewModel @Inject constructor(
     private val fetchTodayBattlesUseCase: FetchTodayBattlesUseCase,
     private val submitVoteUseCase: SubmitVoteUseCase,
+    private val getBattleStatusUseCase: GetBattleStatusUseCase,
     private val getBattleShareLinkUseCase: GetBattleShareLinkUseCase
 ) : ViewModel() {
 
@@ -37,24 +40,53 @@ class TodayBattleViewModel @Inject constructor(
         fetchTodayBattles()
     }
 
-    fun submitPreVote(battleId: Long, optionId: Long, onSuccess: () -> Unit) {
+    // "배틀 입장하기" 클릭 시: 참여 여부를 먼저 확인해서
+    // 이미 참여한 배틀이면 관점 화면으로, 처음 참여하는 배틀이면 사전 투표 후 TTS(시나리오) 화면으로 보낸다.
+    fun enterBattle(
+        battleId: Long,
+        optionId: Long,
+        onNavigateToScenario: (String) -> Unit,
+        onNavigateToPerspective: (String) -> Unit
+    ) {
         viewModelScope.launch {
-            submitVoteUseCase(battleId, optionId, isPreVote = true)
-                .onSuccess { result ->
-                    when (result) {
-                        is SubmitVoteResult.Success -> {
-                            Log.d("VoteFlow", "🟢 사전 투표 성공! 배틀에 입장합니다.")
-                            onSuccess()
-                        }
-                        is SubmitVoteResult.InsufficientPoints -> {
-                            Log.w("VoteFlow", "🟡 사전 투표 실패: 포인트 부족")
-                        }
+            _uiState.update { it.copy(isEntering = true) }
+
+            getBattleStatusUseCase(battleId)
+                .onSuccess { status ->
+                    if (status.step == "NONE") {
+                        submitPreVote(battleId, optionId, onNavigateToScenario)
+                    } else {
+                        Log.d("VoteFlow", "🟢 이미 참여한 배틀! 관점 화면으로 이동합니다. (step=${status.step})")
+                        _uiState.update { it.copy(isEntering = false) }
+                        onNavigateToPerspective(battleId.toString())
                     }
                 }
                 .onFailure { error ->
-                    Log.e("VoteFlow", "🔴 사전 투표 실패!", error)
+                    Log.e("VoteFlow", "🔴 배틀 참여 상태 확인 실패! 사전 투표를 시도합니다.", error)
+                    submitPreVote(battleId, optionId, onNavigateToScenario)
                 }
         }
+    }
+
+    private suspend fun submitPreVote(battleId: Long, optionId: Long, onNavigateToScenario: (String) -> Unit) {
+        submitVoteUseCase(battleId, optionId, isPreVote = true)
+            .onSuccess { result ->
+                when (result) {
+                    is SubmitVoteResult.Success -> {
+                        Log.d("VoteFlow", "🟢 사전 투표 성공! TTS 화면으로 이동합니다.")
+                        _uiState.update { it.copy(isEntering = false) }
+                        onNavigateToScenario(battleId.toString())
+                    }
+                    is SubmitVoteResult.InsufficientPoints -> {
+                        Log.w("VoteFlow", "🟡 사전 투표 실패: 포인트 부족")
+                        _uiState.update { it.copy(isEntering = false, errorMessage = "포인트가 부족합니다.") }
+                    }
+                }
+            }
+            .onFailure { error ->
+                Log.e("VoteFlow", "🔴 사전 투표 실패!", error)
+                _uiState.update { it.copy(isEntering = false, errorMessage = error.message) }
+            }
     }
 
     private fun fetchTodayBattles() {

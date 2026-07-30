@@ -68,15 +68,16 @@ private fun CommentItemCardSkeleton(showContentTwoLines: Boolean = false) {
             Spacer(modifier = Modifier.width(8.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SkeletonLine(width = 48.dp, height = 16.dp)
-                    Spacer(modifier = Modifier.width(6.dp))
-                    SkeletonLine(width = 28.dp, height = 16.dp)
-                }
+                SkeletonLine(width = 48.dp, height = 16.dp)
                 Spacer(modifier = Modifier.height(4.dp))
                 SkeletonLine(width = 40.dp, height = 12.dp)
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // 입장 뱃지 자리
+        SkeletonLine(width = 70.dp, height = 20.dp)
 
         Spacer(modifier = Modifier.height(12.dp))
 

@@ -29,6 +29,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -52,7 +57,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -94,7 +102,10 @@ fun PerspectiveScreen(
     val tabList = remember(voteOptions) {
         listOf("전체") + voteOptions.map { it.title }
     }
-    var inputText by remember { mutableStateOf("") }
+    // TextFieldState: 프로그램적으로 텍스트를 비우거나(clearText) 채울 때(setTextAndPlaceCursorAtEnd)
+    // IME 조합 상태와의 경쟁 없이 안전하게 처리해주는 최신 API. (구형 TextFieldValue 방식은
+    // 외부에서 값을 리셋해도 IME가 뒤늦게 보내는 조합 완료 콜백이 되돌려놓는 문제가 있었다.)
+    val inputFieldState = rememberTextFieldState()
     val pagerState = rememberPagerState(pageCount = { tabList.size })
     val coroutineScope = rememberCoroutineScope()
 
@@ -139,7 +150,7 @@ fun PerspectiveScreen(
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
-                    title = "관점 남기기",
+                    title = uiState.battleTitle.ifBlank { "관점 남기기" },
                     centerTitle = true,
                     showLogo = false,
                     showBackButton = false,
@@ -159,35 +170,22 @@ fun PerspectiveScreen(
             }
         },
         bottomBar = {
-            val myView = uiState.myPerspective
             val isEditing = uiState.editingPerspectiveId != null
 
-            val isInputLocked = when {
-                isEditing -> false
-                myView != null -> true
-                else -> false
-            }
-
             // 힌트 문구
-            val inputHint = when {
-                isEditing -> "수정할 내용을 입력해주세요..."
-                myView?.status == "REJECTED" -> "거절된 관점이 있습니다. \n더보기 메뉴에서 수정을 눌러주세요."
-                myView != null -> "이미 내 관점을 등록했습니다."
-                else -> "본인의 관점을 적어주세요. \n관점은 하나만 작성할 수 있습니다."
-            }
+            val inputHint = if (isEditing) "수정할 내용을 입력해주세요..." else "의견을 남겨보세요..."
 
             PerspectiveInputField(
-                inputText = inputText,
-                onTextChanged = { inputText = it },
+                textFieldState = inputFieldState,
                 onSubmit = {
-                    viewModel.submitPerspective(inputText) {
-                        inputText = ""
+                    viewModel.submitPerspective(inputFieldState.text.toString()) {
+                        inputFieldState.clearText()
                         focusManager.clearFocus()
                         scrollToTopTrigger++
                     }
                 },
-                isEnabled = !isInputLocked,
                 hintText = inputHint,
+                editingKey = uiState.editingPerspectiveId,
             )
         }
     ){ innerPadding ->
@@ -264,22 +262,22 @@ fun PerspectiveScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         SortFilterChip(
-                            text = "최신순",
-                            isSelected = uiState.sort == "latest",
-                            onClick = {
-                                if (uiState.sort != "latest") {
-                                    isSorting = true
-                                    viewModel.updateSort("latest")
-                                }
-                            }
-                        )
-                        SortFilterChip(
                             text = "인기순",
                             isSelected = uiState.sort == "popular",
                             onClick = {
                                 if (uiState.sort != "popular") {
                                     isSorting = true
                                     viewModel.updateSort("popular")
+                                }
+                            }
+                        )
+                        SortFilterChip(
+                            text = "최신순",
+                            isSelected = uiState.sort == "latest",
+                            onClick = {
+                                if (uiState.sort != "latest") {
+                                    isSorting = true
+                                    viewModel.updateSort("latest")
                                 }
                             }
                         )
@@ -334,11 +332,10 @@ fun PerspectiveScreen(
                                                     isLiked = false,
                                                     isMine = true
                                                 ),
-                                                firstOptionId = uiState.voteOptions.firstOrNull()?.optionId ?: 0L,
                                                 status = myView.status,
                                                 clickable = false,
                                                 onEditClick = { content ->
-                                                    inputText = content
+                                                    inputFieldState.setTextAndPlaceCursorAtEnd(content)
                                                     viewModel.setEditMode(myView.perspectiveId ?: 0L)
                                                 },
                                                 onDeleteClick = {
@@ -379,10 +376,9 @@ fun PerspectiveScreen(
                                     ) { index, item ->
                                         PerspectiveItemCard(
                                             item = item,
-                                            firstOptionId = uiState.voteOptions.firstOrNull()?.optionId ?: 0L,
                                             onMoreClick = { onMoreClick(item.commentId, uiState.voteOptions.firstOrNull()?.optionId ?: 0L) },
                                             onEditClick = { content ->
-                                                inputText = content
+                                                inputFieldState.setTextAndPlaceCursorAtEnd(content)
                                                 viewModel.setEditMode(
                                                     item.commentId.toLongOrNull() ?: 0L
                                                 )
@@ -483,7 +479,6 @@ fun PerspectiveScreen(
 fun PerspectiveItemCard(
     item: PerspectiveUiModel,
     modifier: Modifier = Modifier,
-    firstOptionId: Long = 0L,
     status: String? = null,
     isDetail: Boolean = false,
     onMoreClick: () -> Unit = {},
@@ -506,7 +501,9 @@ fun PerspectiveItemCard(
     }
 
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(enabled = clickable && !isDetail) { onMoreClick() },
         colors = CardDefaults.cardColors(containerColor = cardBgColor),
         shape = RoundedCornerShape(2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
@@ -522,47 +519,12 @@ fun PerspectiveItemCard(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        // 닉네임
-                        Text(
-                            text = if (item.isMine) "나" else item.nickname,
-                            style = SwypTheme.typography.labelMedium,
-                            color = SwypTheme.colors.textSecondary
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-
-                        // 1. 검수중 또는 거절됨 상태일 때
-                        if (status == "PENDING" || status == "REJECTED") {
-                            Surface(
-                                color = borderBadgeColor,
-                                shape = RoundedCornerShape(2.dp)
-                            ) {
-                                Text(
-                                    text = if (status == "PENDING") "검수중" else "거절됨",
-                                    style = SwypTheme.typography.b5Medium,
-                                    color = Color.White,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
-                        // 2. 일반 상태일 때 (입장별 뱃지 노출)
-                        else {
-                            val isPro = firstOptionId != 0L && item.optionId == firstOptionId
-                            Surface(
-                                color = if (isPro) SwypTheme.colors.borderDefault else SwypTheme.colors.primary,
-                                shape = RoundedCornerShape(2.dp)
-                            ) {
-                                Text(
-                                    text = item.optionTitle,
-                                    style = SwypTheme.typography.b5Medium,
-                                    color = if (isPro) SwypTheme.colors.primary else Color.White,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
-                            }
-                        }
-                    }
+                    // 닉네임
+                    Text(
+                        text = if (item.isMine) "나" else item.nickname,
+                        style = SwypTheme.typography.labelMedium,
+                        color = SwypTheme.colors.textSecondary
+                    )
                     Text(
                         text = item.timeAgo,
                         style = SwypTheme.typography.labelXSmall,
@@ -602,6 +564,37 @@ fun PerspectiveItemCard(
                             }
                         }
                     }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 뱃지: 검수중/거절됨 상태이거나, 일반 상태면 입장(찬/반) 뱃지
+            if (status == "PENDING" || status == "REJECTED") {
+                Surface(
+                    color = borderBadgeColor,
+                    shape = RoundedCornerShape(2.dp)
+                ) {
+                    Text(
+                        text = if (status == "PENDING") "검수중" else "거절됨",
+                        style = SwypTheme.typography.b5Medium,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            } else {
+                Surface(
+                    color = SwypTheme.colors.badgeBackground,
+                    shape = RoundedCornerShape(2.dp)
+                ) {
+                    Text(
+                        text = item.optionTitle,
+                        style = SwypTheme.typography.b5Medium,
+                        color = SwypTheme.colors.badgeText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
                 }
             }
 
@@ -741,15 +734,25 @@ fun PerspectiveMenuItem(
 
 @Composable
 fun PerspectiveInputField(
-    inputText: String,
-    onTextChanged: (String) -> Unit,
+    textFieldState: TextFieldState,
     onSubmit: () -> Unit,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
-    hintText: String = "제도화가 무서운 건...",
+    hintText: String = "의견을 남겨보세요...",
+    editingKey: Any? = null,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(editingKey) {
+        if (editingKey != null) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
+
     Surface(
-        color = SwypTheme.colors.surface,
+        color = SwypTheme.colors.surfaceTertiary,
         shadowElevation = 16.dp,
         modifier = modifier
             .fillMaxWidth()
@@ -764,11 +767,11 @@ fun PerspectiveInputField(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(if (isEnabled) SwypTheme.colors.backgroundBrand else SwypTheme.colors.beige100, RoundedCornerShape(8.dp))
+                    .background(if (isEnabled) SwypTheme.colors.surface else SwypTheme.colors.beige100, RoundedCornerShape(8.dp))
                     .padding(12.dp)
             ) {
                 // Hint
-                if (inputText.isEmpty()) {
+                if (textFieldState.text.isEmpty()) {
                     Text(
                         text = hintText,
                         style = SwypTheme.typography.b3Regular,
@@ -778,36 +781,32 @@ fun PerspectiveInputField(
                 }
 
                 BasicTextField(
-                    value = inputText,
-                    onValueChange = { if (it.length <= 200) onTextChanged(it) },
+                    state = textFieldState,
                     enabled = isEnabled,
+                    lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 3, maxHeightInLines = Int.MAX_VALUE),
                     textStyle = SwypTheme.typography.b3Regular.copy(color = SwypTheme.colors.textPrimary, lineHeight = 20.sp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp)
-                )
-
-                // 글자 수 카운터
-                Text(
-                    text = "${inputText.length}/200",
-                    style = SwypTheme.typography.labelXSmall,
-                    color = SwypTheme.colors.outline,
-                    modifier = Modifier.align(Alignment.BottomEnd)
+                        .focusRequester(focusRequester)
                 )
             }
 
             Spacer(modifier = Modifier.width(8.dp))
 
             // 보내기 버튼
-            IconButton(
-                onClick = onSubmit,
-                enabled = isEnabled,
-                modifier = Modifier.size(40.dp)
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(if (isEnabled) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled)
+                    .clickable(enabled = isEnabled) { onSubmit() },
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_send),
+                    painter = painterResource(id = R.drawable.ic_send),
                     contentDescription = "등록",
-                    tint = SwypTheme.colors.primary
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }

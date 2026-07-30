@@ -95,10 +95,10 @@ fun ChatBubble(
                 )
             }
 
-            // 말풍선 본체
+            // 말풍선 본체 (hug: 내용 길이만큼만 너비를 차지하고, 화자 쪽으로 정렬된다)
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .align(if (isLeft) Alignment.Start else Alignment.End)
                     .clickable { onClick() }
                     .background(bubbleBgColor, RoundedCornerShape(2.dp))
                     .border(1.dp, bubbleBorderColor, RoundedCornerShape(2.dp))
