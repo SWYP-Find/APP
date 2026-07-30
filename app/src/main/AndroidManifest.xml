@@ -19,7 +19,7 @@
         android:theme="@style/Theme.SwypApp">
         <!-- 앱의 첫 화면 -->
         <activity
-            android:name=".MainActivity"
+            android:name="com.picke.presentation.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.App.Starting"
@@ -57,7 +57,7 @@
         </activity>
         <!-- FCM 알림 서비스 -->
         <service
-            android:name=".notification.FCMService"
+            android:name="com.picke.presentation.notification.FCMService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

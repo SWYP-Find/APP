@@ -1,0 +1,43 @@
+﻿package com.picke.presentation.ui.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.SubcomposeAsyncImage
+import com.picke.presentation.ui.theme.SwypTheme
+
+@Composable
+fun ProfileImage(
+    model: Any?,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = SwypTheme.colors.borderDefault
+) {
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        SubcomposeAsyncImage(
+            model = model,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(0.8f),
+            contentScale = ContentScale.Fit,
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                        .shimmer()
+                )
+            }
+        )
+    }
+}
