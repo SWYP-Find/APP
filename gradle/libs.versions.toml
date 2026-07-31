@@ -4,6 +4,10 @@ agp = "9.0.1"
 kotlin = "2.0.21"
 ksp = "2.0.21-1.0.28"
 
+android-compileSdk = "36"
+android-minSdk = "26"
+android-targetSdk = "36"
+
 # [AndroidX Core & Lifecycle]
 activityCompose = "1.9.3"
 coreKtx = "1.17.0"
@@ -55,6 +59,10 @@ mixpanel = "7.5.0"
 
 # [Sentry]
 sentry = "5.8.0"
+jetbrainsKotlinJvm = "2.2.10"
+
+# [Coroutines]
+kotlinxCoroutinesCore = "1.11.0"
 
 
 [libraries]
@@ -128,11 +136,16 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 # [MixPanel]
 mixpanel-android = { group = "com.mixpanel.android", name = "mixpanel-android", version.ref = "mixpanel" }
 
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 sentry-android = { id = "io.sentry.android.gradle", version.ref = "sentry" }

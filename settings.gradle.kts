@@ -23,4 +23,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "SwypApp"
 include(":app")
- 
+include(":presentation")
+include(":data")
+include(":domain")
