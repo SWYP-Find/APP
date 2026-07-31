@@ -6,7 +6,6 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.picke.domain.repository.DeviceRepository
 import com.picke.domain.usecase.device.DeviceUseCases
 import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.presentation.MainActivity
@@ -20,13 +19,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FCMService(
-    private val deviceUseCases: DeviceUseCases,
-    private val localPreferencesUseCases: LocalPreferencesUseCases
-) : FirebaseMessagingService() {
+class FCMService : FirebaseMessagingService() {
 
     @Inject
-    lateinit var deviceRepository: DeviceRepository
+    lateinit var deviceUseCases: DeviceUseCases
+
+    @Inject
+    lateinit var localPreferencesUseCases: LocalPreferencesUseCases
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
