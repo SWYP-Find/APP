@@ -3,6 +3,7 @@ package com.picke.presentation.ui.my.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.auth.AuthUseCases
 import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker
@@ -24,7 +25,7 @@ data class SettingUiState(
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val authUseCases: AuthUseCases,
-//    private val tokenManager: TokenManager,
+    private val localPreferencesUseCases: LocalPreferencesUseCases,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
@@ -39,28 +40,28 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-//            val result = authUseCases.logoutUseCase(tokenManager.getFcmToken())
-//            Log.d(TAG, "➡️ [로그아웃] 결과 수신: $result")
-//
-//            result.onSuccess {
-//                Log.i(TAG, "✅ [로그아웃] 성공! 로컬 토큰 삭제 및 로그인 화면으로 이동합니다.")
-//                tokenManager.clearAll()
-//                analyticsTracker.onLogout()
-//                _uiState.update {
-//                    it.copy(
-//                        isLoading = false,
-//                        navigateToLogin = true
-//                    )
-//                }
-//            }.onFailure { error ->
-//                Log.e(TAG, "❌ [로그아웃] 실패: ${error.message}", error)
-//                _uiState.update {
-//                    it.copy(
-//                        isLoading = false,
-//                        errorMessage = "로그아웃 중 오류가 발생했습니다: ${error.localizedMessage}"
-//                    )
-//                }
-//            }
+            val result = authUseCases.logoutUseCase(localPreferencesUseCases.getFcmToken())
+            Log.d(TAG, "➡️ [로그아웃] 결과 수신: $result")
+
+            result.onSuccess {
+                Log.i(TAG, "✅ [로그아웃] 성공! 로컬 토큰 삭제 및 로그인 화면으로 이동합니다.")
+                localPreferencesUseCases.clearAll()
+                analyticsTracker.onLogout()
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        navigateToLogin = true
+                    )
+                }
+            }.onFailure { error ->
+                Log.e(TAG, "❌ [로그아웃] 실패: ${error.message}", error)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "로그아웃 중 오류가 발생했습니다: ${error.localizedMessage}"
+                    )
+                }
+            }
         }
     }
 

@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.vote.VoteType
 
 // VoteScreen의 실제 weight/padding/spacer 값을 그대로 써서
 // 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.

@@ -42,9 +42,6 @@ import com.picke.presentation.ui.theme.SwypTheme
 import com.picke.presentation.util.shareBattleToInstagramStoryBrightMode
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
-import com.picke.ui.vote.VoteType
-import com.picke.ui.vote.VoteUiState
-import com.picke.ui.vote.VoteViewModel
 import kotlinx.coroutines.launch
 
 @Composable

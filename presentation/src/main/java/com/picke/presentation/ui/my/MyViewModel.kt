@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.MyPhilosopher
 import com.picke.domain.model.MyProfile
 import com.picke.domain.model.MyTier
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.alarm.AlarmUseCases
 import com.picke.domain.usecase.mypage.MyPageUseCases
 import com.picke.presentation.ads.AdMobManager
@@ -31,7 +32,7 @@ data class MyUiState(
 class MyViewModel @Inject constructor(
     private val myPageUseCases: MyPageUseCases,
     private val alarmUseCases: AlarmUseCases,
-//    private val tokenManager: TokenManager,
+    private val localPreferencesUseCases: LocalPreferencesUseCases,
     val adMobManager: AdMobManager
 ) : ViewModel() {
 
@@ -39,7 +40,7 @@ class MyViewModel @Inject constructor(
     val uiState: StateFlow<MyUiState> = _uiState.asStateFlow()
 
     init {
-//        tokenManager.getUserTag()?.let { adMobManager.loadAd(it) }
+        localPreferencesUseCases.getUserTag()?.let { adMobManager.loadAd(it) }
     }
 
     fun fetchMyInfo() {

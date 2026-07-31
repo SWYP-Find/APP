@@ -1,13 +1,12 @@
 package com.picke.presentation.notification
 
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.picke.domain.repository.DeviceRepository
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,12 +18,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FCMService : FirebaseMessagingService() {
+class FCMService(
+    private val localPreferencesUseCases: LocalPreferencesUseCases
+) : FirebaseMessagingService() {
 
     @Inject
     lateinit var deviceRepository: DeviceRepository
-//    @Inject
-//    lateinit var tokenManager: TokenManager
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -37,15 +36,15 @@ class FCMService : FirebaseMessagingService() {
         super.onNewToken(token)
         if (BuildConfig.DEBUG) Log.d(TAG, "FCM 토큰 갱신: ${token.take(10)}...")
 
-//        tokenManager.saveFcmToken(token)
-//
-//        // 로그인 상태일 때만 서버에 등록 (비로그인 시 로그인 이후 등록)
-//        if (tokenManager.getAccessToken() != null) {
-//            serviceScope.launch {
-//                deviceRepository.registerDevice(token)
-//                    .onFailure { Log.e(TAG, "FCM 토큰 서버 등록 실패", it) }
-//            }
-//        }
+        localPreferencesUseCases.saveFcmToken(token)
+
+        // 로그인 상태일 때만 서버에 등록 (비로그인 시 로그인 이후 등록)
+        if (localPreferencesUseCases.getAccessToken() != null) {
+            serviceScope.launch {
+                deviceRepository.registerDevice(token)
+                    .onFailure { Log.e(TAG, "FCM 토큰 서버 등록 실패", it) }
+            }
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

@@ -9,13 +9,14 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @androidx.annotation.OptIn(UnstableApi::class)
 class AudioPlayerManager @Inject constructor(
     @ApplicationContext private val context: Context,
-//    private val tokenManager: TokenManager
+    private val localPreferencesUseCases: LocalPreferencesUseCases
 ) {
     companion object {
         private const val TAG = "AudioPlayerManager"
@@ -30,14 +31,14 @@ class AudioPlayerManager @Inject constructor(
 
     private fun createPlayer(): ExoPlayer {
         Log.d(TAG, "ExoPlayer 생성 시작")
-//        val accessToken = tokenManager.getAccessToken() ?: ""
-//        val dataSourceFactory = DefaultHttpDataSource.Factory()
-//            .setDefaultRequestProperties(mapOf("Authorization" to "Bearer $accessToken"))
-//        val mediaSourceFactory = DefaultMediaSourceFactory(context)
-//            .setDataSourceFactory(dataSourceFactory)
+        val accessToken = localPreferencesUseCases.getAccessToken() ?: ""
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(mapOf("Authorization" to "Bearer $accessToken"))
+        val mediaSourceFactory = DefaultMediaSourceFactory(context)
+            .setDataSourceFactory(dataSourceFactory)
 
         return ExoPlayer.Builder(context)
-//            .setMediaSourceFactory(mediaSourceFactory)
+            .setMediaSourceFactory(mediaSourceFactory)
             .build()
             .apply {
                 addListener(object : Player.Listener {
@@ -47,6 +48,7 @@ class AudioPlayerManager @Inject constructor(
                             onPlaybackEnded?.invoke()
                         }
                     }
+
                     override fun onPlayerError(error: PlaybackException) {
                         Log.e(TAG, "재생 에러: ${error.message}")
                     }
@@ -61,9 +63,17 @@ class AudioPlayerManager @Inject constructor(
         if (seekToMs > 0) player.seekTo(seekToMs)
     }
 
-    fun play() { player.play() }
-    fun pause() { player.pause() }
-    fun seekTo(positionMs: Long) { player.seekTo(positionMs) }
+    fun play() {
+        player.play()
+    }
+
+    fun pause() {
+        player.pause()
+    }
+
+    fun seekTo(positionMs: Long) {
+        player.seekTo(positionMs)
+    }
 
     fun release() {
         Log.d(TAG, "ExoPlayer 해제")

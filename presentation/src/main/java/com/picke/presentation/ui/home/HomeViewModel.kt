@@ -3,6 +3,7 @@ package com.picke.presentation.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.alarm.AlarmUseCases
 import com.picke.domain.usecase.attendance.AttendanceUseCases
 import com.picke.domain.usecase.home.HomeUseCases
@@ -44,7 +45,7 @@ class HomeViewModel @Inject constructor(
     private val pollQuizUseCases: PollQuizUseCases,
     private val attendanceUseCases: AttendanceUseCases,
     private val alarmUseCases: AlarmUseCases,
-//    private val tokenManager: TokenManager
+    private val localPreferencesUseCases: LocalPreferencesUseCases
 ) : ViewModel() {
 
     companion object {
@@ -72,10 +73,10 @@ class HomeViewModel @Inject constructor(
      */
     fun checkInAndShowAttendanceSheetIfNeeded() {
         val today = LocalDate.now(ATTENDANCE_ZONE).toString()
-//        if (isAttendanceFlowTriggered || tokenManager.getLastAttendanceSheetShownDate() == today) {
-//            Log.d("HomeFlow", "[출석] 오늘($today) 이미 처리됨 - 스킵")
-//            return
-//        }
+        if (isAttendanceFlowTriggered || localPreferencesUseCases.getLastAttendanceSheetShownDate() == today) {
+            Log.d("HomeFlow", "[출석] 오늘($today) 이미 처리됨 - 스킵")
+            return
+        }
         isAttendanceFlowTriggered = true
 
         viewModelScope.launch {
@@ -92,7 +93,7 @@ class HomeViewModel @Inject constructor(
 
             attendanceUseCases.getWeeklyAttendanceUseCase()
                 .onSuccess { weeklyAttendance ->
-//                    tokenManager.saveLastAttendanceSheetShownDate(today)
+                    localPreferencesUseCases.saveLastAttendanceSheetShownDate(today)
                     _uiState.update {
                         it.copy(attendanceCheckUiState = weeklyAttendance.toAttendanceCheckUiState())
                     }
@@ -261,11 +262,9 @@ class HomeViewModel @Inject constructor(
                         state.copy(todayPicks = updatedPicks)
                     }
                 }.onFailure { error ->
-                Log.e("HomeFlow", "❌ [Error] 투표/퀴즈 제출 실패!")
-                Log.e("HomeFlow", "   - 실패 원인(메시지): ${error.message}", error)
-            }
+                    Log.e("HomeFlow", "❌ [Error] 투표/퀴즈 제출 실패!")
+                    Log.e("HomeFlow", "   - 실패 원인(메시지): ${error.message}", error)
+                }
         }
     }
-
-
 }

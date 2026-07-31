@@ -8,7 +8,7 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.picke.data.BuildConfig
-import com.picke.data.local.TokenManager
+import com.picke.data.local.PreferencesManager
 import com.picke.data.model.AuthResponseDto
 import com.picke.data.model.BaseResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -23,7 +23,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TokenAuthenticator @Inject constructor(
-    private val tokenManager: TokenManager,
+    private val preferencesManager: PreferencesManager,
     private val gson: Gson,
     @ApplicationContext private val context: Context
 ) : Authenticator {
@@ -41,7 +41,7 @@ class TokenAuthenticator @Inject constructor(
             return null
         }
 
-        val refreshToken = tokenManager.getRefreshToken()
+        val refreshToken = preferencesManager.getRefreshToken()
         if (refreshToken.isNullOrEmpty()) {
             Log.e(TAG, "[AUTH] 저장된 리프레시 토큰 없음. 재발급 불가.")
             return null
@@ -66,8 +66,8 @@ class TokenAuthenticator @Inject constructor(
                 val data = parsed.data
 
                 if (parsed.statusCode == 200 && data != null) {
-                    tokenManager.saveAccessToken(data.accessToken)
-                    tokenManager.saveRefreshToken(data.refreshToken)
+                    preferencesManager.saveAccessToken(data.accessToken)
+                    preferencesManager.saveRefreshToken(data.refreshToken)
                     Log.i(TAG, "[AUTH] 토큰 갱신 완료. 원래 요청 재시도.")
 
                     if (BuildConfig.DEBUG) {

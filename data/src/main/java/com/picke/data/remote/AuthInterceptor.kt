@@ -2,14 +2,14 @@ package com.picke.data.remote
 
 import android.util.Log
 import com.picke.data.BuildConfig
-import com.picke.data.local.TokenManager
+import com.picke.data.local.PreferencesManager
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
 // 서버로 향하는 네트워크 요청 헤더에 accessToken을 자동으로 붙여주는 클래스
 class AuthInterceptor @Inject constructor(
-    private val tokenManager: TokenManager
+    private val preferencesManager: PreferencesManager
 ) : Interceptor {
 
     companion object {
@@ -32,7 +32,7 @@ class AuthInterceptor @Inject constructor(
         }
 
         // 로컬에 저장된 accessToken 가져오기
-        val accessToken = tokenManager.getAccessToken()
+        val accessToken = preferencesManager.getAccessToken()
         if (BuildConfig.DEBUG) Log.d(TAG, "🔑 [DEBUG] AccessToken: $accessToken")
 
         // 3. 토큰이 존재하면서, 동시에 예외 API(로그인, 재발급)가 '아닐 때만' 헤더에 추가!

@@ -1,16 +1,18 @@
-package com.picke.ui.vote
+package com.picke.presentation.ui.vote
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.BattleDetailBoard
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.battle.BattleUseCases
 import com.picke.domain.usecase.share.ShareUseCases
 import com.picke.domain.usecase.vote.SubmitVoteResult
 import com.picke.domain.usecase.vote.VoteUseCases
 import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.analytics.AnalyticsTracker
+import com.picke.presentation.analytics.BattleStepName
 import com.picke.presentation.analytics.ShareTarget
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +40,7 @@ class VoteViewModel @Inject constructor(
     private val battleUseCases: BattleUseCases,
     private val voteUseCases: VoteUseCases,
     private val shareUseCases: ShareUseCases,
-//    private val tokenManager: TokenManager,
+    private val localPreferencesUseCases: LocalPreferencesUseCases,
     val adMobManager: AdMobManager,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
@@ -58,10 +60,10 @@ class VoteViewModel @Inject constructor(
     }
 
     fun reloadAd() {
-//        tokenManager.getUserTag()?.let { tag ->
-//            Log.d(TAG, "[FLOW] 광고 리로드 시작. UserTag: $tag")
-//            adMobManager.loadAd(tag)
-//        } ?: Log.w(TAG, "[FLOW] UserTag 없음: 광고 리로드 스킵")
+        localPreferencesUseCases.getUserTag()?.let { tag ->
+            Log.d(TAG, "[FLOW] 광고 리로드 시작. UserTag: $tag")
+            adMobManager.loadAd(tag)
+        } ?: Log.w(TAG, "[FLOW] UserTag 없음: 광고 리로드 스킵")
     }
 
     private fun fetchVoteDetail() {
@@ -113,25 +115,28 @@ class VoteViewModel @Inject constructor(
                         is SubmitVoteResult.Success -> {
                             Log.i(TAG, "[NAV] 투표 전송 성공")
 
-//                            if (voteType == VoteType.PRE) {
-//                                analyticsTracker.trackBattleStep(
-//                                    stepName = BattleStepName.PRE_VOTE,
-//                                    contentId = battleId,
-//                                    choice = selectedOptionId
-//                                )
-//                                Log.d(TAG, "[STATE] battle_step(pre_vote) 믹스패널 이벤트 전송 완료")
-//                            } else {
-//                                // is_changed: 투표 이력 조회로 사전/사후 선택 변경 여부 확인 (실패 시 미첨부)
-//                                val isChanged = getMyVoteHistoryUseCase(battleIdLong)
-//                                    .getOrNull()?.opinionChanged
-//                                analyticsTracker.trackBattleStep(
-//                                    stepName = BattleStepName.POST_VOTE,
-//                                    contentId = battleId,
-//                                    choice = selectedOptionId,
-//                                    isChanged = isChanged
-//                                )
-//                                Log.d(TAG, "[STATE] battle_step(post_vote) 믹스패널 이벤트 전송 완료 (is_changed: $isChanged)")
-//                            }
+                            if (voteType == VoteType.PRE) {
+                                analyticsTracker.trackBattleStep(
+                                    stepName = BattleStepName.PRE_VOTE,
+                                    contentId = battleId,
+                                    choice = selectedOptionId
+                                )
+                                Log.d(TAG, "[STATE] battle_step(pre_vote) 믹스패널 이벤트 전송 완료")
+                            } else {
+                                // is_changed: 투표 이력 조회로 사전/사후 선택 변경 여부 확인 (실패 시 미첨부)
+                                val isChanged = voteUseCases.getMyVoteHistoryUseCase(battleIdLong)
+                                    .getOrNull()?.opinionChanged
+                                analyticsTracker.trackBattleStep(
+                                    stepName = BattleStepName.POST_VOTE,
+                                    contentId = battleId,
+                                    choice = selectedOptionId,
+                                    isChanged = isChanged
+                                )
+                                Log.d(
+                                    TAG,
+                                    "[STATE] battle_step(post_vote) 믹스패널 이벤트 전송 완료 (is_changed: $isChanged)"
+                                )
+                            }
 
                             // 성공 상태 업데이트 및 콜백
                             _uiState.update { it.copy(isLoading = false) }

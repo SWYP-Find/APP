@@ -8,6 +8,7 @@ import com.picke.data.repository.CommentRepositoryImpl
 import com.picke.data.repository.DeviceRepositoryImpl
 import com.picke.data.repository.ExploreRepositoryImpl
 import com.picke.data.repository.HomeRepositoryImpl
+import com.picke.data.repository.LocalPreferencesRepositoryImpl
 import com.picke.data.repository.MyPageRepositoryImpl
 import com.picke.data.repository.PerspectiveRepositoryImpl
 import com.picke.data.repository.PollQuizRepositoryImpl
@@ -25,6 +26,7 @@ import com.picke.domain.repository.CommentRepository
 import com.picke.domain.repository.DeviceRepository
 import com.picke.domain.repository.ExploreRepository
 import com.picke.domain.repository.HomeRepository
+import com.picke.domain.repository.LocalPreferencesRepository
 import com.picke.domain.repository.MyPageRepository
 import com.picke.domain.repository.PerspectiveRepository
 import com.picke.domain.repository.PollQuizRepository
@@ -144,4 +146,10 @@ abstract class RepositoryModule {
     abstract fun bindAttendanceRepository(
         attendanceRepositoryImpl: AttendanceRepositoryImpl
     ): AttendanceRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindLocalPreferencesRepository(
+        impl: LocalPreferencesRepositoryImpl
+    ): LocalPreferencesRepository
 }

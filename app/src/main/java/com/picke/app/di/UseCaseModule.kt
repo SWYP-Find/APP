@@ -8,6 +8,7 @@ import com.picke.domain.repository.CommentRepository
 import com.picke.domain.repository.DeviceRepository
 import com.picke.domain.repository.ExploreRepository
 import com.picke.domain.repository.HomeRepository
+import com.picke.domain.repository.LocalPreferencesRepository
 import com.picke.domain.repository.MyPageRepository
 import com.picke.domain.repository.PerspectiveRepository
 import com.picke.domain.repository.PollQuizRepository
@@ -17,6 +18,28 @@ import com.picke.domain.repository.ScenarioRepository
 import com.picke.domain.repository.ShareRepository
 import com.picke.domain.repository.TodayBattleRepository
 import com.picke.domain.repository.VoteRepository
+import com.picke.domain.usecase.local.CheckNotificationPermissionAskedUseCase
+import com.picke.domain.usecase.local.CheckTermsAgreedUseCase
+import com.picke.domain.usecase.local.ClearAllPreferencesUseCase
+import com.picke.domain.usecase.local.GetAccessTokenUseCase
+import com.picke.domain.usecase.local.GetFcmTokenUseCase
+import com.picke.domain.usecase.local.GetLastAttendanceDateUseCase
+import com.picke.domain.usecase.local.GetLastAttendanceSheetShownDateUseCase
+import com.picke.domain.usecase.local.GetLoginProviderUseCase
+import com.picke.domain.usecase.local.GetRefreshTokenUseCase
+import com.picke.domain.usecase.local.GetUserStatusUseCase
+import com.picke.domain.usecase.local.GetUserTagUseCase
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
+import com.picke.domain.usecase.local.SaveAccessTokenUseCase
+import com.picke.domain.usecase.local.SaveFcmTokenUseCase
+import com.picke.domain.usecase.local.SaveLastAttendanceDateUseCase
+import com.picke.domain.usecase.local.SaveLastAttendanceSheetShownDateUseCase
+import com.picke.domain.usecase.local.SaveLoginProviderUseCase
+import com.picke.domain.usecase.local.SaveNotificationPermissionAskedUseCase
+import com.picke.domain.usecase.local.SaveRefreshTokenUseCase
+import com.picke.domain.usecase.local.SaveTermsAgreedUseCase
+import com.picke.domain.usecase.local.SaveUserStatusUseCase
+import com.picke.domain.usecase.local.SaveUserTagUseCase
 import com.picke.domain.usecase.alarm.AlarmUseCases
 import com.picke.domain.usecase.alarm.GetAlarmDetailUseCase
 import com.picke.domain.usecase.alarm.GetAlarmsUseCase
@@ -274,6 +297,39 @@ object UseCaseModule {
             getMyVoteHistoryUseCase = GetMyVoteHistoryUseCase(voteRepository),
             getVoteStatsUseCase = GetVoteStatsUseCase(voteRepository),
             submitVoteUseCase = SubmitVoteUseCase(voteRepository)
+        )
+    }
+
+    @Provides
+    fun provideLocalPreferencesUseCases(
+        repository: LocalPreferencesRepository
+    ): LocalPreferencesUseCases {
+        return LocalPreferencesUseCases(
+            saveAccessToken = SaveAccessTokenUseCase(repository),
+            getAccessToken = GetAccessTokenUseCase(repository),
+            saveRefreshToken = SaveRefreshTokenUseCase(repository),
+            getRefreshToken = GetRefreshTokenUseCase(repository),
+
+            saveUserStatus = SaveUserStatusUseCase(repository),
+            getUserStatus = GetUserStatusUseCase(repository),
+            saveUserTag = SaveUserTagUseCase(repository),
+            getUserTag = GetUserTagUseCase(repository),
+            saveLoginProvider = SaveLoginProviderUseCase(repository),
+            getLoginProvider = GetLoginProviderUseCase(repository),
+
+            saveFcmToken = SaveFcmTokenUseCase(repository),
+            getFcmToken = GetFcmTokenUseCase(repository),
+            saveTermsAgreed = SaveTermsAgreedUseCase(repository),
+            checkTermsAgreed = CheckTermsAgreedUseCase(repository),
+            saveNotificationPermissionAsked = SaveNotificationPermissionAskedUseCase(repository),
+            checkNotificationPermissionAsked = CheckNotificationPermissionAskedUseCase(repository),
+
+            saveLastAttendanceDate = SaveLastAttendanceDateUseCase(repository),
+            getLastAttendanceDate = GetLastAttendanceDateUseCase(repository),
+            saveLastAttendanceSheetShownDate = SaveLastAttendanceSheetShownDateUseCase(repository),
+            getLastAttendanceSheetShownDate = GetLastAttendanceSheetShownDateUseCase(repository),
+
+            clearAll = ClearAllPreferencesUseCase(repository)
         )
     }
 }

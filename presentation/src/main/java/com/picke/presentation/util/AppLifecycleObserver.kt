@@ -3,8 +3,8 @@ package com.picke.presentation.util
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.attendance.AttendanceUseCases
-import com.picke.domain.usecase.attendance.CheckAttendanceUseCase
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.PointActionType
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +31,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class AppLifecycleObserver @Inject constructor(
-//    private val tokenManager: TokenManager,
+    private val localPreferencesUseCases: LocalPreferencesUseCases,
     private val attendanceUseCases: AttendanceUseCases,
     private val analyticsTracker: AnalyticsTracker
 ) : DefaultLifecycleObserver {
@@ -60,36 +60,39 @@ class AppLifecycleObserver @Inject constructor(
      * 포그라운드 복귀: [onStart]에서 호출.
      */
     fun checkAttendanceIfNeeded() {
-//        val accessToken = tokenManager.getAccessToken()
-//        if (accessToken.isNullOrBlank()) {
-//            Log.d(TAG, "[출석] 미로그인 상태 - 체크 스킵")
-//            return
-//        }
-//
-//        val today = LocalDate.now(ATTENDANCE_ZONE).toString()
-//        if (tokenManager.getLastAttendanceDate() == today) {
-//            Log.d(TAG, "[출석] 오늘($today) 이미 체크됨 - 스킵")
-//            return
-//        }
-//
-//        Log.i(TAG, "[출석] 오늘($today) 최초 진입 판단 - 출석 체크 API 호출 시작")
-//        scope.launch {
-//            checkAttendanceUseCase()
-//                .onSuccess { result ->
-//                    tokenManager.saveLastAttendanceDate(today)
-//                    Log.i(TAG, "[출석] 체크 성공: +${result.pointsEarned}P (연속 ${result.consecutiveDays}일)")
-//
-//                    val totalEarned = result.pointsEarned +
-//                        if (result.streakBonusEarned) result.streakBonusPoints else 0
-//                    analyticsTracker.trackPointAction(
-//                        type = PointActionType.ATTENDANCE_EARN,
-//                        amount = totalEarned,
-//                        balance = result.totalPoints
-//                    )
-//                }
-//                .onFailure { error ->
-//                    Log.w(TAG, "[출석] 체크 실패: ${error.message}")
-//                }
-//        }
+        val accessToken = localPreferencesUseCases.getAccessToken()
+        if (accessToken.isNullOrBlank()) {
+            Log.d(TAG, "[출석] 미로그인 상태 - 체크 스킵")
+            return
+        }
+
+        val today = LocalDate.now(ATTENDANCE_ZONE).toString()
+        if (localPreferencesUseCases.getLastAttendanceDate() == today) {
+            Log.d(TAG, "[출석] 오늘($today) 이미 체크됨 - 스킵")
+            return
+        }
+
+        Log.i(TAG, "[출석] 오늘($today) 최초 진입 판단 - 출석 체크 API 호출 시작")
+        scope.launch {
+            attendanceUseCases.checkAttendanceUseCase()
+                .onSuccess { result ->
+                    localPreferencesUseCases.saveLastAttendanceDate(today)
+                    Log.i(
+                        TAG,
+                        "[출석] 체크 성공: +${result.pointsEarned}P (연속 ${result.consecutiveDays}일)"
+                    )
+
+                    val totalEarned = result.pointsEarned +
+                            if (result.streakBonusEarned) result.streakBonusPoints else 0
+                    analyticsTracker.trackPointAction(
+                        type = PointActionType.ATTENDANCE_EARN,
+                        amount = totalEarned,
+                        balance = result.totalPoints
+                    )
+                }
+                .onFailure { error ->
+                    Log.w(TAG, "[출석] 체크 실패: ${error.message}")
+                }
+        }
     }
 }

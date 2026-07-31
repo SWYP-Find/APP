@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.proposal.ProposalUseCases
 import com.picke.domain.usecase.proposal.SubmitProposalResult
 import com.picke.presentation.ads.AdMobManager
@@ -33,7 +34,7 @@ sealed class MakeBattleEvent {
 class MakeBattleViewModel @Inject constructor(
     private val proposalUseCases: ProposalUseCases,
     val adMobManager: AdMobManager,
-//    private val tokenManager: TokenManager
+    private val localPreferencesUseCases: LocalPreferencesUseCases
 ) : ViewModel() {
 
     companion object {
@@ -41,9 +42,9 @@ class MakeBattleViewModel @Inject constructor(
     }
 
     fun reloadAd() {
-//        tokenManager.getUserTag()?.let { tag ->
-//            adMobManager.loadAd(tag)
-//        }
+        localPreferencesUseCases.getUserTag()?.let { tag ->
+            adMobManager.loadAd(tag)
+        }
     }
 
     private val _uiState = MutableStateFlow(MakeBattleUiState())

@@ -2,7 +2,7 @@ package com.picke.data.repository
 
 import android.util.Log
 import com.picke.data.BuildConfig
-import com.picke.data.local.TokenManager
+import com.picke.data.local.PreferencesManager
 import com.picke.data.model.SocialLoginRequest
 import com.picke.data.model.WithdrawalRequest
 import com.picke.data.model.toDomain
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val api: AuthApi,
-    private val tokenManager: TokenManager
+    private val preferencesManager: PreferencesManager
 ) : AuthRepository {
 
     companion object {
@@ -33,8 +33,8 @@ class AuthRepositoryImpl @Inject constructor(
                 val data = response.data
                 Log.d(TAG, "[API_RES] 토큰 갱신 성공: ${data.status}")
 
-                tokenManager.saveAccessToken(data.accessToken)
-                tokenManager.saveRefreshToken(data.refreshToken)
+                preferencesManager.saveAccessToken(data.accessToken)
+                preferencesManager.saveRefreshToken(data.refreshToken)
                 Log.d(TAG, "[LOCAL] 새로운 토큰 기기 저장 완료")
 
                 Result.success(Unit)
@@ -69,8 +69,8 @@ class AuthRepositoryImpl @Inject constructor(
 
             if (response.statusCode == 200 && response.data != null) {
 
-                tokenManager.saveAccessToken(response.data.accessToken)
-                tokenManager.saveRefreshToken(response.data.refreshToken)
+                preferencesManager.saveAccessToken(response.data.accessToken)
+                preferencesManager.saveRefreshToken(response.data.refreshToken)
                 Log.d(TAG, "[LOCAL] 새로운 토큰 기기 저장 완료")
 
                 val authToken = response.data.toDomain()
@@ -100,7 +100,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.statusCode == 200 && response.data?.loggedOut == true) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 로그아웃 성공: ${response.data}")
 
-                tokenManager.clearAll()
+                preferencesManager.clearAll()
                 Result.success(Unit)
             } else {
                 Log.e(TAG, "[API_RES] 로그아웃 실패: ${response.error}")
@@ -108,7 +108,7 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "[API_ERR] 로그아웃 예외 발생: ${e.message}", e)
-            tokenManager.clearAll()
+            preferencesManager.clearAll()
             Result.failure(e)
         }
     }
@@ -126,7 +126,7 @@ class AuthRepositoryImpl @Inject constructor(
             if (response.statusCode == 200 && response.data?.withdrawn == true) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "[API_RES] 탈퇴 성공: ${response.data}")
 
-                tokenManager.clearAll()
+                preferencesManager.clearAll()
                 Result.success(Unit)
             } else {
                 Log.e(TAG, "[API_RES] 탈퇴 실패: ${response.error}")
@@ -134,7 +134,7 @@ class AuthRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(TAG, "[API_ERR] 탈퇴 예외 발생 ${e.message}", e)
-            tokenManager.clearAll()
+            preferencesManager.clearAll()
             Result.failure(e)
         }
     }
