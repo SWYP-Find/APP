@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.picke.domain.model.UserStatus
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.security.KeyStore
 import javax.inject.Inject
@@ -82,8 +81,8 @@ class PreferencesManager @Inject constructor(
         return prefs.getString("refresh_token", null)
     }
 
-    fun saveUserStatus(status: UserStatus) {
-        prefs.edit()?.putString("user_status", status.name)?.apply()
+    fun saveUserStatus(status: String) {
+        prefs.edit()?.putString("user_status", status)?.apply()
     }
 
     fun getUserStatus(): String? {

@@ -31,14 +31,14 @@ class AudioPlayerManager @Inject constructor(
 
     private fun createPlayer(): ExoPlayer {
         Log.d(TAG, "ExoPlayer 생성 시작")
-        val accessToken = localPreferencesUseCases.getAccessToken() ?: ""
-        val dataSourceFactory = DefaultHttpDataSource.Factory()
-            .setDefaultRequestProperties(mapOf("Authorization" to "Bearer $accessToken"))
-        val mediaSourceFactory = DefaultMediaSourceFactory(context)
-            .setDataSourceFactory(dataSourceFactory)
+//        val accessToken = localPreferencesUseCases.getAccessToken() ?: ""
+//        val dataSourceFactory = DefaultHttpDataSource.Factory()
+//            .setDefaultRequestProperties(mapOf("Authorization" to "Bearer $accessToken"))
+//        val mediaSourceFactory = DefaultMediaSourceFactory(context)
+//            .setDataSourceFactory(dataSourceFactory)
 
         return ExoPlayer.Builder(context)
-            .setMediaSourceFactory(mediaSourceFactory)
+//            .setMediaSourceFactory(mediaSourceFactory)
             .build()
             .apply {
                 addListener(object : Player.Listener {

@@ -3,8 +3,8 @@ package com.picke.presentation.util
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.domain.usecase.attendance.AttendanceUseCases
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.PointActionType
 import kotlinx.coroutines.CoroutineScope
@@ -60,12 +60,6 @@ class AppLifecycleObserver @Inject constructor(
      * 포그라운드 복귀: [onStart]에서 호출.
      */
     fun checkAttendanceIfNeeded() {
-        val accessToken = localPreferencesUseCases.getAccessToken()
-        if (accessToken.isNullOrBlank()) {
-            Log.d(TAG, "[출석] 미로그인 상태 - 체크 스킵")
-            return
-        }
-
         val today = LocalDate.now(ATTENDANCE_ZONE).toString()
         if (localPreferencesUseCases.getLastAttendanceDate() == today) {
             Log.d(TAG, "[출석] 오늘($today) 이미 체크됨 - 스킵")

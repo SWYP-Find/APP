@@ -1,14 +1,16 @@
 package com.picke.presentation.notification
 
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.util.Log
+import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.picke.domain.repository.DeviceRepository
+import com.picke.domain.usecase.device.DeviceUseCases
 import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.presentation.BuildConfig
 import com.picke.presentation.MainActivity
+import com.picke.presentation.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +21,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FCMService(
+    private val deviceUseCases: DeviceUseCases,
     private val localPreferencesUseCases: LocalPreferencesUseCases
 ) : FirebaseMessagingService() {
 
@@ -34,24 +37,17 @@ class FCMService(
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        if (BuildConfig.DEBUG) Log.d(TAG, "FCM 토큰 갱신: ${token.take(10)}...")
 
         localPreferencesUseCases.saveFcmToken(token)
 
-        // 로그인 상태일 때만 서버에 등록 (비로그인 시 로그인 이후 등록)
-        if (localPreferencesUseCases.getAccessToken() != null) {
-            serviceScope.launch {
-                deviceRepository.registerDevice(token)
-                    .onFailure { Log.e(TAG, "FCM 토큰 서버 등록 실패", it) }
-            }
+        serviceScope.launch {
+            deviceUseCases.registerDeviceUseCase(token)
         }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        Log.d(TAG, "FCM 메시지 수신 - from: ${message.from}, data: ${message.data}")
 
-        // 서버는 data-only 메시지로 전송 (notification 블록 없음)
         val data = message.data
         val title = data["title"] ?: "픽케"
         val body = data["body"] ?: ""
@@ -86,22 +82,21 @@ class FCMService(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-//        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.ic_bell)
-//            .setContentTitle(title)
-//            .setContentText(body)
-//            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
-//            .setAutoCancel(true)
-//            .setContentIntent(pendingIntent)
-//            .setPriority(NotificationCompat.PRIORITY_HIGH)
-//            .build()
-//
-//        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-//        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_bell)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 
     companion object {
-        private const val TAG = "FCMService"
         const val CHANNEL_ID = "picke_default"
         const val EXTRA_FCM_TYPE = "fcm_type"
         const val EXTRA_FCM_BATTLE_ID = "fcm_battle_id"

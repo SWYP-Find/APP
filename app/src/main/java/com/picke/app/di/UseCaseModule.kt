@@ -18,28 +18,6 @@ import com.picke.domain.repository.ScenarioRepository
 import com.picke.domain.repository.ShareRepository
 import com.picke.domain.repository.TodayBattleRepository
 import com.picke.domain.repository.VoteRepository
-import com.picke.domain.usecase.local.CheckNotificationPermissionAskedUseCase
-import com.picke.domain.usecase.local.CheckTermsAgreedUseCase
-import com.picke.domain.usecase.local.ClearAllPreferencesUseCase
-import com.picke.domain.usecase.local.GetAccessTokenUseCase
-import com.picke.domain.usecase.local.GetFcmTokenUseCase
-import com.picke.domain.usecase.local.GetLastAttendanceDateUseCase
-import com.picke.domain.usecase.local.GetLastAttendanceSheetShownDateUseCase
-import com.picke.domain.usecase.local.GetLoginProviderUseCase
-import com.picke.domain.usecase.local.GetRefreshTokenUseCase
-import com.picke.domain.usecase.local.GetUserStatusUseCase
-import com.picke.domain.usecase.local.GetUserTagUseCase
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.domain.usecase.local.SaveAccessTokenUseCase
-import com.picke.domain.usecase.local.SaveFcmTokenUseCase
-import com.picke.domain.usecase.local.SaveLastAttendanceDateUseCase
-import com.picke.domain.usecase.local.SaveLastAttendanceSheetShownDateUseCase
-import com.picke.domain.usecase.local.SaveLoginProviderUseCase
-import com.picke.domain.usecase.local.SaveNotificationPermissionAskedUseCase
-import com.picke.domain.usecase.local.SaveRefreshTokenUseCase
-import com.picke.domain.usecase.local.SaveTermsAgreedUseCase
-import com.picke.domain.usecase.local.SaveUserStatusUseCase
-import com.picke.domain.usecase.local.SaveUserTagUseCase
 import com.picke.domain.usecase.alarm.AlarmUseCases
 import com.picke.domain.usecase.alarm.GetAlarmDetailUseCase
 import com.picke.domain.usecase.alarm.GetAlarmsUseCase
@@ -69,6 +47,25 @@ import com.picke.domain.usecase.explore.ExploreUseCases
 import com.picke.domain.usecase.explore.SearchBattlesUseCase
 import com.picke.domain.usecase.home.FetchHomeDataUseCase
 import com.picke.domain.usecase.home.HomeUseCases
+import com.picke.domain.usecase.local.CheckNotificationPermissionAskedUseCase
+import com.picke.domain.usecase.local.CheckRefreshToken
+import com.picke.domain.usecase.local.CheckTermsAgreedUseCase
+import com.picke.domain.usecase.local.ClearAllPreferencesUseCase
+import com.picke.domain.usecase.local.GetFcmTokenUseCase
+import com.picke.domain.usecase.local.GetLastAttendanceDateUseCase
+import com.picke.domain.usecase.local.GetLastAttendanceSheetShownDateUseCase
+import com.picke.domain.usecase.local.GetLoginProviderUseCase
+import com.picke.domain.usecase.local.GetUserStatusUseCase
+import com.picke.domain.usecase.local.GetUserTagUseCase
+import com.picke.domain.usecase.local.LocalPreferencesUseCases
+import com.picke.domain.usecase.local.SaveFcmTokenUseCase
+import com.picke.domain.usecase.local.SaveLastAttendanceDateUseCase
+import com.picke.domain.usecase.local.SaveLastAttendanceSheetShownDateUseCase
+import com.picke.domain.usecase.local.SaveLoginProviderUseCase
+import com.picke.domain.usecase.local.SaveNotificationPermissionAskedUseCase
+import com.picke.domain.usecase.local.SaveTermsAgreedUseCase
+import com.picke.domain.usecase.local.SaveUserStatusUseCase
+import com.picke.domain.usecase.local.SaveUserTagUseCase
 import com.picke.domain.usecase.mypage.GetCreditHistoryUseCase
 import com.picke.domain.usecase.mypage.GetMyBattleRecordsUseCase
 import com.picke.domain.usecase.mypage.GetMyContentActivitiesUseCase
@@ -305,10 +302,7 @@ object UseCaseModule {
         repository: LocalPreferencesRepository
     ): LocalPreferencesUseCases {
         return LocalPreferencesUseCases(
-            saveAccessToken = SaveAccessTokenUseCase(repository),
-            getAccessToken = GetAccessTokenUseCase(repository),
-            saveRefreshToken = SaveRefreshTokenUseCase(repository),
-            getRefreshToken = GetRefreshTokenUseCase(repository),
+            checkRefreshToken = CheckRefreshToken(repository),
 
             saveUserStatus = SaveUserStatusUseCase(repository),
             getUserStatus = GetUserStatusUseCase(repository),

@@ -1,10 +1,7 @@
 package com.picke.domain.usecase.local
 
 data class LocalPreferencesUseCases(
-    val saveAccessToken: SaveAccessTokenUseCase,
-    val getAccessToken: GetAccessTokenUseCase,
-    val saveRefreshToken: SaveRefreshTokenUseCase,
-    val getRefreshToken: GetRefreshTokenUseCase,
+    val checkRefreshToken: CheckRefreshToken,
 
     val saveUserStatus: SaveUserStatusUseCase,
     val getUserStatus: GetUserStatusUseCase,

@@ -1,30 +1,17 @@
 package com.picke.domain.usecase.local
 
-import com.picke.domain.model.UserStatus
 import com.picke.domain.repository.LocalPreferencesRepository
 
-class SaveAccessTokenUseCase(private val repo: LocalPreferencesRepository) {
-    operator fun invoke(token: String) = repo.saveAccessToken(token)
-}
-
-class GetAccessTokenUseCase(private val repo: LocalPreferencesRepository) {
-    operator fun invoke(): String? = repo.getAccessToken()
-}
-
-class SaveRefreshTokenUseCase(private val repo: LocalPreferencesRepository) {
-    operator fun invoke(token: String) = repo.saveRefreshToken(token)
-}
-
-class GetRefreshTokenUseCase(private val repo: LocalPreferencesRepository) {
-    operator fun invoke(): String? = repo.getRefreshToken()
+class CheckRefreshToken(private val repo: LocalPreferencesRepository) {
+    operator fun invoke(): Boolean = repo.checkRefreshToken()
 }
 
 class SaveUserStatusUseCase(private val repo: LocalPreferencesRepository) {
-    operator fun invoke(status: UserStatus) = repo.saveUserStatus(status)
+    operator fun invoke(status: String) = repo.saveUserStatus(status)
 }
 
 class GetUserStatusUseCase(private val repo: LocalPreferencesRepository) {
-    operator fun invoke(): UserStatus = repo.getUserStatus()
+    operator fun invoke(): String? = repo.getUserStatus()
 }
 
 class SaveUserTagUseCase(private val repo: LocalPreferencesRepository) {

@@ -1,17 +1,12 @@
 package com.picke.domain.repository
 
-import com.picke.domain.model.UserStatus
-
 interface LocalPreferencesRepository {
-    // 1. Token
-    fun saveAccessToken(token: String)
-    fun getAccessToken(): String?
-    fun saveRefreshToken(token: String)
-    fun getRefreshToken(): String?
+
+    fun checkRefreshToken(): Boolean
 
     // 2. User
-    fun saveUserStatus(status: UserStatus)
-    fun getUserStatus(): UserStatus // String 대신 Enum으로 반환
+    fun saveUserStatus(status: String)
+    fun getUserStatus(): String?
     fun saveUserTag(tag: String)
     fun getUserTag(): String?
     fun saveLoginProvider(provider: String)
