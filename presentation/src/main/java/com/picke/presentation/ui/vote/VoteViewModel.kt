@@ -5,11 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.BattleDetailBoard
-import com.picke.domain.usecase.battle.GetBattleDetailUseCase
-import com.picke.domain.usecase.share.GetBattleShareLinkUseCase
-import com.picke.domain.usecase.vote.GetMyVoteHistoryUseCase
+import com.picke.domain.usecase.battle.BattleUseCases
+import com.picke.domain.usecase.share.ShareUseCases
 import com.picke.domain.usecase.vote.SubmitVoteResult
-import com.picke.domain.usecase.vote.SubmitVoteUseCase
+import com.picke.domain.usecase.vote.VoteUseCases
 import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.ShareTarget
@@ -36,10 +35,9 @@ data class VoteUiState(
 @HiltViewModel
 class VoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getBattleDetailUseCase: GetBattleDetailUseCase,
-    private val submitVoteUseCase: SubmitVoteUseCase,
-    private val getMyVoteHistoryUseCase: GetMyVoteHistoryUseCase,
-    private val getBattleShareLinkUseCase: GetBattleShareLinkUseCase,
+    private val battleUseCases: BattleUseCases,
+    private val voteUseCases: VoteUseCases,
+    private val shareUseCases: ShareUseCases,
 //    private val tokenManager: TokenManager,
     val adMobManager: AdMobManager,
     private val analyticsTracker: AnalyticsTracker
@@ -73,7 +71,7 @@ class VoteViewModel @Inject constructor(
             val battleIdLong = battleId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 배틀 상세 정보 호출 시작. Battle ID: $battleIdLong")
 
-            getBattleDetailUseCase(battleIdLong)
+            battleUseCases.getBattleDetailUseCase(battleIdLong)
                 .onSuccess { detailBoard ->
                     Log.i(TAG, "[STATE] 배틀 상세 정보 로드 성공")
                     _uiState.update {
@@ -100,9 +98,16 @@ class VoteViewModel @Inject constructor(
             val optionIdLong = selectedOptionId.toLongOrNull() ?: 0L
             val battleIdLong = battleId.toLongOrNull() ?: 0L
 
-            Log.d(TAG, "[FLOW] 투표 전송 시작. Type: $voteType, Battle ID: $battleIdLong, Option ID: $optionIdLong")
+            Log.d(
+                TAG,
+                "[FLOW] 투표 전송 시작. Type: $voteType, Battle ID: $battleIdLong, Option ID: $optionIdLong"
+            )
 
-            submitVoteUseCase(battleIdLong, optionIdLong, isPreVote = voteType == VoteType.PRE)
+            voteUseCases.submitVoteUseCase(
+                battleIdLong,
+                optionIdLong,
+                isPreVote = voteType == VoteType.PRE
+            )
                 .onSuccess { result ->
                     when (result) {
                         is SubmitVoteResult.Success -> {
@@ -132,9 +137,15 @@ class VoteViewModel @Inject constructor(
                             _uiState.update { it.copy(isLoading = false) }
                             onSuccess()
                         }
+
                         is SubmitVoteResult.InsufficientPoints -> {
                             Log.i(TAG, "[STATE] 포인트 부족 에러 감지 -> 충전 다이얼로그 노출")
-                            _uiState.update { it.copy(isInsufficientPoints = true, isLoading = false) }
+                            _uiState.update {
+                                it.copy(
+                                    isInsufficientPoints = true,
+                                    isLoading = false
+                                )
+                            }
                         }
                     }
                 }
@@ -152,7 +163,7 @@ class VoteViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 공유 링크 생성 요청. Battle ID: $battleId")
-            getBattleShareLinkUseCase(battleId)
+            shareUseCases.getBattleShareLinkUseCase(battleId)
                 .onSuccess { shareUrl ->
                     Log.i(TAG, "[STATE] 공유 링크 생성 성공")
                     onSuccess(shareUrl.shareUrl)

@@ -75,9 +75,6 @@ import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.SortFilterChip
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.perspective.PerspectiveUiEvent
-import com.picke.ui.perspective.PerspectiveUiModel
-import com.picke.ui.perspective.PerspectiveViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

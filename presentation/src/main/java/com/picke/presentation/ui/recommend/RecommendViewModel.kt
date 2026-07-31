@@ -1,11 +1,11 @@
-package com.picke.ui.recommend
+package com.picke.presentation.ui.recommend
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.RecommendBoard
-import com.picke.domain.usecase.recommend.GetInterestingRecommendationsUseCase
+import com.picke.domain.usecase.recommend.RecommendUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +39,7 @@ data class RecommendUiState(
 @HiltViewModel
 class RecommendViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getInterestingRecommendationsUseCase: GetInterestingRecommendationsUseCase
+    private val recommendUseCases: RecommendUseCases
 ) : ViewModel() {
 
     private val receivedBattleId: String = checkNotNull(savedStateHandle["battleId"])
@@ -56,7 +56,7 @@ class RecommendViewModel @Inject constructor(
 
         viewModelScope.launch {
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
-            getInterestingRecommendationsUseCase(battleIdLong)
+            recommendUseCases.getInterestingRecommendationsUseCase(battleIdLong)
                 .onSuccess { page ->
                     Log.d("RecommendFlow", "🟢 추천 배틀 목록 조회 성공: ${page.items.size}개")
 
@@ -64,7 +64,8 @@ class RecommendViewModel @Inject constructor(
                         val optA = board.options.getOrNull(0)
                         val optB = board.options.getOrNull(1)
 
-                        Log.d("RecommendFlow", """
+                        Log.d(
+                            "RecommendFlow", """
                             --- [추천 배틀 Item $index] ---
                             battleId: ${board.battleId}
                             title: ${board.title}
@@ -84,7 +85,8 @@ class RecommendViewModel @Inject constructor(
                             - representative(철학자): ${optB?.representative}
                             - imageUrl: ${optB?.imageUrl}
                             -----------------------------
-                        """.trimIndent())
+                        """.trimIndent()
+                        )
                     }
 
                     val uiModels = page.items.map { it.toUiModel() }
@@ -108,7 +110,7 @@ class RecommendViewModel @Inject constructor(
 private fun RecommendBoard.toUiModel(): RecommendUiModel {
     val optA = this.options.getOrNull(0)
     val optB = this.options.getOrNull(1)
-    val durationInMinutes = if (this.audioDuration > 0 && this.audioDuration < 60) {
+    val durationInMinutes = if (this.audioDuration in 1..<60) {
         1
     } else {
         this.audioDuration / 60

@@ -3,11 +3,11 @@ package com.picke.presentation.ui.todaybattle
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.battle.GetBattleStatusUseCase
-import com.picke.domain.usecase.share.GetBattleShareLinkUseCase
-import com.picke.domain.usecase.todaybattle.FetchTodayBattlesUseCase
+import com.picke.domain.usecase.battle.BattleUseCases
+import com.picke.domain.usecase.share.ShareUseCases
+import com.picke.domain.usecase.todaybattle.TodayBattleUseCases
 import com.picke.domain.usecase.vote.SubmitVoteResult
-import com.picke.domain.usecase.vote.SubmitVoteUseCase
+import com.picke.domain.usecase.vote.VoteUseCases
 import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.presentation.ui.todaybattle.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,10 +27,10 @@ data class TodayBattleUiState(
 
 @HiltViewModel
 class TodayBattleViewModel @Inject constructor(
-    private val fetchTodayBattlesUseCase: FetchTodayBattlesUseCase,
-    private val submitVoteUseCase: SubmitVoteUseCase,
-    private val getBattleStatusUseCase: GetBattleStatusUseCase,
-    private val getBattleShareLinkUseCase: GetBattleShareLinkUseCase
+    private val todayBattleUseCases: TodayBattleUseCases,
+    private val voteUseCases: VoteUseCases,
+    private val battleUseCases: BattleUseCases,
+    private val shareUseCases: ShareUseCases
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TodayBattleUiState())
@@ -51,7 +51,7 @@ class TodayBattleViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isEntering = true) }
 
-            getBattleStatusUseCase(battleId)
+            battleUseCases.getBattleStatusUseCase(battleId)
                 .onSuccess { status ->
                     if (status.step == "NONE") {
                         submitPreVote(battleId, optionId, onNavigateToScenario)
@@ -73,7 +73,7 @@ class TodayBattleViewModel @Inject constructor(
         optionId: Long,
         onNavigateToScenario: (String) -> Unit
     ) {
-        submitVoteUseCase(battleId, optionId, isPreVote = true)
+        voteUseCases.submitVoteUseCase(battleId, optionId, isPreVote = true)
             .onSuccess { result ->
                 when (result) {
                     is SubmitVoteResult.Success -> {
@@ -103,7 +103,7 @@ class TodayBattleViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            fetchTodayBattlesUseCase()
+            todayBattleUseCases.fetchTodayBattlesUseCase()
                 .onSuccess { board ->
                     Log.d("BattleFlow", "🟢 배틀 목록 불러오기 성공! (${board.items.size}개)")
                     Log.d("BattleFlow", "🟢 배틀 목록 : (${board.items})")
@@ -130,7 +130,7 @@ class TodayBattleViewModel @Inject constructor(
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            getBattleShareLinkUseCase(battleId)
+            shareUseCases.getBattleShareLinkUseCase(battleId)
                 .onSuccess { shareUrl ->
                     Log.d("ShareFlow", "🟢 배틀 공유 링크 획득 성공! url: ${shareUrl.shareUrl}")
                     onSuccess(shareUrl.shareUrl)

@@ -1,4 +1,4 @@
-package com.picke.ui.perspective
+package com.picke.presentation.ui.perspective
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -8,16 +8,9 @@ import com.picke.domain.model.PerspectiveBoard
 import com.picke.domain.model.PerspectiveDetailBoard
 import com.picke.domain.model.PollQuizVoteBoard
 import com.picke.domain.model.VoteStatsOptionBoard
-import com.picke.domain.usecase.perspective.DeletePerspectiveUseCase
-import com.picke.domain.usecase.perspective.GetMyPerspectiveUseCase
-import com.picke.domain.usecase.perspective.LoadPerspectivesUseCase
+import com.picke.domain.usecase.perspective.PerspectiveUseCases
 import com.picke.domain.usecase.perspective.ReportPerspectiveResult
-import com.picke.domain.usecase.perspective.ReportPerspectiveUseCase
-import com.picke.domain.usecase.perspective.RetryModerationUseCase
-import com.picke.domain.usecase.perspective.SubmitPerspectiveUseCase
-import com.picke.domain.usecase.perspective.TogglePerspectiveLikeUseCase
-import com.picke.domain.usecase.vote.GetMyVoteHistoryUseCase
-import com.picke.domain.usecase.vote.GetVoteStatsUseCase
+import com.picke.domain.usecase.vote.VoteUseCases
 import com.picke.presentation.util.toRelativeTimeText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -66,15 +59,8 @@ data class PerspectiveUiState(
 @HiltViewModel
 class PerspectiveViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val loadPerspectivesUseCase: LoadPerspectivesUseCase,
-    private val getMyPerspectiveUseCase: GetMyPerspectiveUseCase,
-    private val submitPerspectiveUseCase: SubmitPerspectiveUseCase,
-    private val deletePerspectiveUseCase: DeletePerspectiveUseCase,
-    private val togglePerspectiveLikeUseCase: TogglePerspectiveLikeUseCase,
-    private val reportPerspectiveUseCase: ReportPerspectiveUseCase,
-    private val retryModerationUseCase: RetryModerationUseCase,
-    private val getVoteStatsUseCase: GetVoteStatsUseCase,
-    private val getMyVoteHistoryUseCase: GetMyVoteHistoryUseCase
+    private val perspectiveUseCases: PerspectiveUseCases,
+    private val voteUseCases: VoteUseCases
 ) : ViewModel() {
 
     companion object {
@@ -111,7 +97,7 @@ class PerspectiveViewModel @Inject constructor(
         viewModelScope.launch {
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 내 투표 내역 조회 시도")
-            getMyVoteHistoryUseCase(battleIdLong)
+            voteUseCases.getMyVoteHistoryUseCase(battleIdLong)
                 .onSuccess { voteHistory ->
                     Log.i(TAG, "[STATE] 내 투표 내역 조회 성공 - 생각 변화 여부: ${voteHistory.opinionChanged}")
                     _uiState.update {
@@ -132,7 +118,7 @@ class PerspectiveViewModel @Inject constructor(
         viewModelScope.launch {
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 내 관점 데이터 조회 시도")
-            getMyPerspectiveUseCase(battleIdLong)
+            perspectiveUseCases.getMyPerspectiveUseCase(battleIdLong)
                 .onSuccess { myData ->
                     Log.i(TAG, "[STATE] 내 관점 존재함 - 상태: ${myData.status}, 입장: ${myData.optionTitle}")
                     _uiState.update { it.copy(myPerspective = myData) }
@@ -183,7 +169,7 @@ class PerspectiveViewModel @Inject constructor(
                 "[FLOW] 관점 목록 조회 시도 - cursor: $cursor, optionId: ${state.selectedOptionId}, sort: ${state.sort}"
             )
 
-            loadPerspectivesUseCase(
+            perspectiveUseCases.loadPerspectivesUseCase(
                 battleId = battleIdLong,
                 cursor = cursor,
                 size = 10,
@@ -215,7 +201,7 @@ class PerspectiveViewModel @Inject constructor(
     private fun loadVoteStats() {
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 투표 통계(비율) 단건 조회 시도")
-            getVoteStatsUseCase(receivedBattleId.toLong())
+            voteUseCases.getVoteStatsUseCase(receivedBattleId.toLong())
                 .onSuccess { statsBoard ->
                     Log.i(TAG, "[STATE] 투표 통계 조회 성공 - 옵션 수: ${statsBoard.options.size}")
                     _uiState.update { it.copy(voteOptions = statsBoard.options) }
@@ -246,7 +232,7 @@ class PerspectiveViewModel @Inject constructor(
         // 백엔드 통신
         viewModelScope.launch {
             Log.d(TAG, "[API_REQ] 관점 ${if (isEditMode) "수정" else "작성"} 요청 전송")
-            submitPerspectiveUseCase(battleIdLong, editId, content)
+            perspectiveUseCases.submitPerspectiveUseCase(battleIdLong, editId, content)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 관점 ${if (isEditMode) "수정" else "작성"} 완료 -> 서버 데이터 동기화")
                     onSuccess() // 입력창 닫기 및 키보드 내림
@@ -282,7 +268,7 @@ class PerspectiveViewModel @Inject constructor(
                 TAG,
                 "[API_REQ] 관점 삭제 요청 전송 - perspectiveId: $perspectiveId, battleId: $receivedBattleId"
             )
-            deletePerspectiveUseCase(perspectiveId)
+            perspectiveUseCases.deletePerspectiveUseCase(perspectiveId)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 관점 삭제 완료")
                 }
@@ -300,7 +286,7 @@ class PerspectiveViewModel @Inject constructor(
             val action = if (isCurrentlyLiked) "취소" else "등록"
             Log.d(TAG, "[API_REQ] 관점 좋아요 $action 요청 - ID: $perspectiveId")
 
-            togglePerspectiveLikeUseCase(perspectiveId, isCurrentlyLiked)
+            perspectiveUseCases.togglePerspectiveLikeUseCase(perspectiveId, isCurrentlyLiked)
                 .onSuccess { toggleData ->
                     Log.i(TAG, "[STATE] 관점 좋아요 $action 완료 - 바뀐 좋아요 수: ${toggleData.likeCount}")
                     _uiState.update { state ->
@@ -324,7 +310,7 @@ class PerspectiveViewModel @Inject constructor(
     fun reportPerspective(perspectiveId: Long) {
         viewModelScope.launch {
             Log.d(TAG, "[API_REQ] 관점 신고 요청 - ID: $perspectiveId")
-            reportPerspectiveUseCase(perspectiveId)
+            perspectiveUseCases.reportPerspectiveUseCase(perspectiveId)
                 .onSuccess { result ->
                     when (result) {
                         is ReportPerspectiveResult.Reported -> {
@@ -347,7 +333,7 @@ class PerspectiveViewModel @Inject constructor(
     fun retryModeration(perspectiveId: Long) {
         viewModelScope.launch {
             Log.d(TAG, "[API_REQ] 검수 재시도 요청 - ID: $perspectiveId")
-            retryModerationUseCase(perspectiveId)
+            perspectiveUseCases.retryModerationUseCase(perspectiveId)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 검수 재시도 성공 -> 서버 동기화")
                     loadMyPerspective()

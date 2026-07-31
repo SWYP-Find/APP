@@ -58,8 +58,8 @@ import com.picke.presentation.ui.todaybattle.TodayBattleScreen
 import com.picke.presentation.ui.vote.VoteRoute
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager
-import com.picke.ui.splash.SplashUiState
-import com.picke.ui.splash.SplashViewModel
+import com.picke.presentation.ui.splash.SplashUiState
+import com.picke.presentation.ui.splash.SplashViewModel
 import com.picke.ui.vote.VoteType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

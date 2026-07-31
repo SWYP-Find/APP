@@ -39,8 +39,6 @@ import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.CustomSingleActionDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.my.makebattle.MakeBattleEvent
-import com.picke.ui.my.makebattle.MakeBattleViewModel
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable

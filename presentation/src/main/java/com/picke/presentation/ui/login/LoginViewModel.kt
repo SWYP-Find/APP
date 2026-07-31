@@ -1,11 +1,9 @@
-package com.picke.ui.login
+package com.picke.presentation.ui.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.messaging.FirebaseMessaging
-import com.picke.domain.usecase.auth.LoginUseCase
-import com.picke.domain.usecase.device.RegisterDeviceUseCase
+import com.picke.domain.usecase.auth.AuthUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,15 +15,16 @@ import javax.inject.Inject
 sealed class LoginUiState {
     object Idle : LoginUiState()
     object Loading : LoginUiState() // 로딩중
-    data class Success(val isNewUser: Boolean, val needsTermsAgreement: Boolean) : LoginUiState() // 로그인 성공
+    data class Success(val isNewUser: Boolean, val needsTermsAgreement: Boolean) :
+        LoginUiState() // 로그인 성공
+
     data class Error(val message: String) : LoginUiState() // 에러 발생
 }
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
+    private val authUseCases: AuthUseCases,
 //    private val tokenManager: TokenManager,
-    private val registerDeviceUseCase: RegisterDeviceUseCase,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
     companion object {
@@ -33,7 +32,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Idle)
-    val uiState : StateFlow<LoginUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     fun resetState() {
         _uiState.value = LoginUiState.Idle
@@ -53,7 +52,7 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
-            val result = loginUseCase(provider = provider, authCode = authCode)
+            val result = authUseCases.loginUseCase(provider = provider, authCode = authCode)
 
 //            result.onSuccess { authToken ->
 //                val needsTermsAgreement = authToken.isNewUser || !tokenManager.isTermsAgreed()

@@ -1,11 +1,10 @@
-package com.picke.ui.my.point
+package com.picke.presentation.ui.my.point
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.CreditHistoryItem
-import com.picke.domain.usecase.mypage.GetCreditHistoryUseCase
-import com.picke.presentation.ui.my.point.PointHistoryUiModel
+import com.picke.domain.usecase.mypage.MyPageUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +23,7 @@ data class PointUiState(
 
 @HiltViewModel
 class PointViewModel @Inject constructor(
-    private val getCreditHistoryUseCase: GetCreditHistoryUseCase
+    private val myPageUseCases: MyPageUseCases
 ) : ViewModel() {
 
     companion object {
@@ -54,7 +53,7 @@ class PointViewModel @Inject constructor(
 
             Log.d(TAG, "포인트 내역 요청 시작 - offset: $offset, isRefresh: $isRefresh")
 
-            getCreditHistoryUseCase(offset = offset, size = 15)
+            myPageUseCases.getCreditHistoryUseCase(offset = offset, size = 15)
                 .onSuccess { page ->
                     Log.d(TAG, "포인트 내역 성공 - 가져온 개수: ${page.items.size}")
 

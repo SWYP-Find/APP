@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.AlarmItemBoard
-import com.picke.domain.usecase.alarm.GetAlarmDetailUseCase
-import com.picke.domain.usecase.alarm.GetAlarmsUseCase
-import com.picke.domain.usecase.alarm.ReadAlarmUseCase
-import com.picke.domain.usecase.alarm.ReadAllAlarmsUseCase
+import com.picke.domain.usecase.alarm.AlarmUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.NotificationActionType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,10 +33,7 @@ sealed class AlarmUiEvent {
 
 @HiltViewModel
 class AlarmViewModel @Inject constructor(
-    private val getAlarmsUseCase: GetAlarmsUseCase,
-    private val getAlarmDetailUseCase: GetAlarmDetailUseCase,
-    private val readAlarmUseCase: ReadAlarmUseCase,
-    private val readAllAlarmsUseCase: ReadAllAlarmsUseCase,
+    private val alarmsUseCases: AlarmUseCases,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
@@ -81,7 +75,7 @@ class AlarmViewModel @Inject constructor(
 
             Log.d("AlarmFlow", "🚀 [API 호출] category: $category, page: $targetPage")
 
-            val result = getAlarmsUseCase(
+            val result = alarmsUseCases.getAlarmsUseCase(
                 category = category,
                 page = targetPage,
                 size = 20
@@ -122,7 +116,7 @@ class AlarmViewModel @Inject constructor(
     fun fetchAlarmDetail(notificationId: Long) {
         viewModelScope.launch {
             Log.d("AlarmFlow", "▶️ 개별 알림 상세 정보 요청 시작! (ID: $notificationId)")
-            val result = getAlarmDetailUseCase(notificationId)
+            val result = alarmsUseCases.getAlarmDetailUseCase(notificationId)
 
             result.onSuccess { detailData ->
                 Log.d("AlarmFlow", "✅ 알림 상세 조회 성공: $detailData")
@@ -138,7 +132,7 @@ class AlarmViewModel @Inject constructor(
         analyticsTracker.trackNotificationAction(NotificationActionType.ITEM_TAP)
         viewModelScope.launch {
             Log.d("AlarmFlow", "▶️ 개별 알림 읽음 처리 API 호출 시작! (notificationId: $notificationId)")
-            val result = readAlarmUseCase(notificationId)
+            val result = alarmsUseCases.readAlarmUseCase(notificationId)
 
             result.onSuccess {
                 Log.d("AlarmFlow", "✅ 개별 알림 읽음 처리 성공!")
@@ -170,7 +164,7 @@ class AlarmViewModel @Inject constructor(
 
         viewModelScope.launch {
             Log.d("AlarmFlow", "▶️ 전체 알림 읽음 처리 API 호출 시작!")
-            val result = readAllAlarmsUseCase()
+            val result = alarmsUseCases.readAllAlarmsUseCase()
 
             result.onSuccess {
                 Log.d("AlarmFlow", "✅ 전체 알림 읽음 처리 성공!")

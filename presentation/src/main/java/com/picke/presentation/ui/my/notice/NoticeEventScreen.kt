@@ -46,7 +46,6 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTabBar
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.my.notice.NoticeEventViewModel
 import kotlinx.coroutines.launch
 
 @Composable

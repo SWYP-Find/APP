@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.scenario.FetchBattleScenarioUseCase
+import com.picke.domain.usecase.scenario.ScenarioUseCases
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.BattleStepName
@@ -52,7 +52,7 @@ data class ScenarioUiState(
 
 @HiltViewModel
 class ScenarioViewModel @Inject constructor(
-    private val fetchBattleScenarioUseCase: FetchBattleScenarioUseCase,
+    private val scenarioUseCases: ScenarioUseCases,
     private val audioPlayerManager: AudioPlayerManager,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
@@ -82,7 +82,7 @@ class ScenarioViewModel @Inject constructor(
                     maxListenedPositionMs = 0L
                 )
             }
-            fetchBattleScenarioUseCase(battleId)
+            scenarioUseCases.fetchBattleScenarioUseCase(battleId)
                 .onSuccess { board ->
                     Log.d("TTSFlow", "▶️ loadScenario() 성공 - 서버에서 데이터 받아옴")
                     fullScenario = board.toUiModel()

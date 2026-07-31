@@ -51,8 +51,6 @@ import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.TermsOfServiceBottomSheet
 import com.picke.presentation.ui.theme.SwypAppTheme
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.login.LoginUiState
-import com.picke.ui.login.LoginViewModel
 
 private const val TAG = "LoginScreen_Picke"
 

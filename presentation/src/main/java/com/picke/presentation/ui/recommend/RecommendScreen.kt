@@ -29,8 +29,6 @@ import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.home.BattleOpinionBox
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.recommend.RecommendUiModel
-import com.picke.ui.recommend.RecommendViewModel
 
 
 @Composable

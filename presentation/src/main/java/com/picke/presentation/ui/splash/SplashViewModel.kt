@@ -1,4 +1,4 @@
-package com.picke.ui.splash
+package com.picke.presentation.ui.splash
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -9,7 +9,6 @@ import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.OnboardingStep
 import com.picke.presentation.util.AppLifecycleObserver
-import com.picke.presentation.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +28,6 @@ sealed class SplashUiState{
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
 //    private val tokenManager: TokenManager,
     private val analyticsTracker: AnalyticsTracker,
     private val adMobManager: AdMobManager,

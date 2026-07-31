@@ -3,12 +3,10 @@ package com.picke.presentation.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
-import com.picke.domain.usecase.attendance.CheckAttendanceUseCase
-import com.picke.domain.usecase.attendance.GetWeeklyAttendanceUseCase
-import com.picke.domain.usecase.home.FetchHomeDataUseCase
-import com.picke.domain.usecase.pollquiz.GetTodayPickVoteUseCase
-import com.picke.domain.usecase.pollquiz.SubmitTodayPickVoteUseCase
+import com.picke.domain.usecase.alarm.AlarmUseCases
+import com.picke.domain.usecase.attendance.AttendanceUseCases
+import com.picke.domain.usecase.home.HomeUseCases
+import com.picke.domain.usecase.pollquiz.PollQuizUseCases
 import com.picke.presentation.ui.attendance.AttendanceCheckUiState
 import com.picke.presentation.ui.attendance.toAttendanceCheckUiState
 import com.picke.ui.home.model.HomeContentUiModel
@@ -42,12 +40,10 @@ data class HomeUiState(
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val fetchHomeDataUseCase: FetchHomeDataUseCase,
-    private val submitTodayPickVoteUseCase: SubmitTodayPickVoteUseCase,
-    private val getTodayPickVoteUseCase: GetTodayPickVoteUseCase,
-    private val getUnreadAlarmStatusUseCase: GetUnreadAlarmStatusUseCase,
-    private val checkAttendanceUseCase: CheckAttendanceUseCase,
-    private val getWeeklyAttendanceUseCase: GetWeeklyAttendanceUseCase,
+    private val homeUseCases: HomeUseCases,
+    private val pollQuizUseCases: PollQuizUseCases,
+    private val attendanceUseCases: AttendanceUseCases,
+    private val alarmUseCases: AlarmUseCases,
 //    private val tokenManager: TokenManager
 ) : ViewModel() {
 
@@ -83,7 +79,7 @@ class HomeViewModel @Inject constructor(
         isAttendanceFlowTriggered = true
 
         viewModelScope.launch {
-            checkAttendanceUseCase()
+            attendanceUseCases.checkAttendanceUseCase()
                 .onSuccess { result ->
                     Log.d(
                         "HomeFlow",
@@ -94,7 +90,7 @@ class HomeViewModel @Inject constructor(
                     Log.w("HomeFlow", "[출석] 체크 실패 - 현황 조회는 계속 진행: ${error.message}")
                 }
 
-            getWeeklyAttendanceUseCase()
+            attendanceUseCases.getWeeklyAttendanceUseCase()
                 .onSuccess { weeklyAttendance ->
 //                    tokenManager.saveLastAttendanceSheetShownDate(today)
                     _uiState.update {
@@ -117,7 +113,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            fetchHomeDataUseCase()
+            homeUseCases.fetchHomeDataUseCase()
                 .onSuccess { boardData ->
                     Log.d("HomeFlow", "2. 🟢 홈 데이터 통신 성공!")
 
@@ -165,7 +161,7 @@ class HomeViewModel @Inject constructor(
                     "   - 📤 [Request] 동기화 요청: battleId=$battleIdLong, type=${pick.type}"
                 )
 
-                getTodayPickVoteUseCase(battleIdLong, pick.type).fold(
+                pollQuizUseCases.getTodayPickVoteUseCase(battleIdLong, pick.type).fold(
                     onSuccess = { voteBoard ->
                         Log.d("HomeFlow", "   - 📥 [Response] 내역 동기화 성공: battleId=$battleIdLong")
                         Log.d("HomeFlow", "      ㄴ 받아온 진짜 optionId 통계: ${voteBoard.stats}")
@@ -209,7 +205,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(isAlarmStatusLoading = true) }
 
         viewModelScope.launch {
-            getUnreadAlarmStatusUseCase()
+            alarmUseCases.getUnreadAlarmStatusUseCase()
                 .onSuccess { hasUnread ->
                     _uiState.update {
                         it.copy(
@@ -236,34 +232,35 @@ class HomeViewModel @Inject constructor(
             Log.d("HomeFlow", "   - 보낸 데이터 (타입): $type")
             Log.d("HomeFlow", "   - 보낸 데이터 (선택한옵션ID): $optionId")
 
-            submitTodayPickVoteUseCase(battleIdLong, optionId, type).onSuccess { voteBoard ->
-                Log.d("HomeFlow", "✅ 📥 [Response] 투표/퀴즈 제출 성공!")
-                Log.d("HomeFlow", "   - 서버가 인정한 내 선택: ${voteBoard.selectedOptionId}")
-                Log.d("HomeFlow", "   - 서버가 내려준 최신 통계: ${voteBoard.stats}")
+            pollQuizUseCases.submitTodayPickVoteUseCase(battleIdLong, optionId, type)
+                .onSuccess { voteBoard ->
+                    Log.d("HomeFlow", "✅ 📥 [Response] 투표/퀴즈 제출 성공!")
+                    Log.d("HomeFlow", "   - 서버가 인정한 내 선택: ${voteBoard.selectedOptionId}")
+                    Log.d("HomeFlow", "   - 서버가 내려준 최신 통계: ${voteBoard.stats}")
 
-                _uiState.update { state ->
-                    val updatedPicks = state.todayPicks.map { pick ->
-                        if (pick.contentId == battleId) {
-                            when (pick) {
-                                is TodayPickUiModel.VotePick -> pick.copy(
-                                    selectedOptionId = voteBoard.selectedOptionId,
-                                    options = voteBoard.stats.sortedBy { it.optionId }
-                                        .map { it.toUiModel() },
-                                    participantsCount = pick.participantsCount + 1
-                                )
+                    _uiState.update { state ->
+                        val updatedPicks = state.todayPicks.map { pick ->
+                            if (pick.contentId == battleId) {
+                                when (pick) {
+                                    is TodayPickUiModel.VotePick -> pick.copy(
+                                        selectedOptionId = voteBoard.selectedOptionId,
+                                        options = voteBoard.stats.sortedBy { it.optionId }
+                                            .map { it.toUiModel() },
+                                        participantsCount = pick.participantsCount + 1
+                                    )
 
-                                is TodayPickUiModel.QuizPick -> pick.copy(
-                                    selectedOptionId = voteBoard.selectedOptionId,
-                                    options = voteBoard.stats.sortedBy { it.optionId }
-                                        .map { it.toUiModel() },
-                                    participantsCount = pick.participantsCount + 1
-                                )
-                            }
-                        } else pick
+                                    is TodayPickUiModel.QuizPick -> pick.copy(
+                                        selectedOptionId = voteBoard.selectedOptionId,
+                                        options = voteBoard.stats.sortedBy { it.optionId }
+                                            .map { it.toUiModel() },
+                                        participantsCount = pick.participantsCount + 1
+                                    )
+                                }
+                            } else pick
+                        }
+                        state.copy(todayPicks = updatedPicks)
                     }
-                    state.copy(todayPicks = updatedPicks)
-                }
-            }.onFailure { error ->
+                }.onFailure { error ->
                 Log.e("HomeFlow", "❌ [Error] 투표/퀴즈 제출 실패!")
                 Log.e("HomeFlow", "   - 실패 원인(메시지): ${error.message}", error)
             }

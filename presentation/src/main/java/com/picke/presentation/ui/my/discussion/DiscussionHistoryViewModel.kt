@@ -1,10 +1,10 @@
-package com.picke.ui.my.discussion
+package com.picke.presentation.ui.my.discussion
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.MyBattleRecordItem
-import com.picke.domain.usecase.mypage.GetMyBattleRecordsUseCase
+import com.picke.domain.usecase.mypage.MyPageUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,8 +23,8 @@ data class DiscussionHistoryUiState(
 
 @HiltViewModel
 class DiscussionHistoryViewModel @Inject constructor(
-    private val getMyBattleRecordsUseCase: GetMyBattleRecordsUseCase
-) : ViewModel(){
+    private val myPageUseCases: MyPageUseCases
+) : ViewModel() {
     private val _uiState = MutableStateFlow(DiscussionHistoryUiState())
     val uiState: StateFlow<DiscussionHistoryUiState> = _uiState.asStateFlow()
 
@@ -38,10 +38,14 @@ class DiscussionHistoryViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            val result = getMyBattleRecordsUseCase(offset = 0, size = 20, voteSide = null)
+            val result =
+                myPageUseCases.getMyBattleRecordsUseCase(offset = 0, size = 20, voteSide = null)
 
             result.onSuccess { data ->
-                Log.d(TAG, "배틀 기록 불러오기 성공! 아이템 개수: ${data.items.size}, nextOffset: ${data.nextOffset}")
+                Log.d(
+                    TAG,
+                    "배틀 기록 불러오기 성공! 아이템 개수: ${data.items.size}, nextOffset: ${data.nextOffset}"
+                )
             }.onFailure { exception ->
                 Log.e(TAG, "배틀 기록 불러오기 실패: ${exception.message}")
             }
@@ -66,7 +70,7 @@ class DiscussionHistoryViewModel @Inject constructor(
             _uiState.update { it.copy(isPagingLoading = true) }
             Log.d(TAG, "페이징 시작: offset=${currentState.nextOffset}")
 
-            val result = getMyBattleRecordsUseCase(
+            val result = myPageUseCases.getMyBattleRecordsUseCase(
                 offset = currentState.nextOffset,
                 size = 20,
                 voteSide = null

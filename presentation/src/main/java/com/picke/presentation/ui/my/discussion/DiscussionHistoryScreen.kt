@@ -36,7 +36,6 @@ import com.picke.domain.model.MyBattleRecordItem
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.my.discussion.DiscussionHistoryViewModel
 
 @Composable
 fun DiscussionHistoryScreen(

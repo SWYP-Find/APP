@@ -6,7 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.picke.domain.usecase.explore.SearchBattlesUseCase
+import com.picke.domain.usecase.explore.ExploreUseCases
 import com.picke.presentation.util.CategoryOption
 import com.picke.presentation.util.SortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
-    private val searchBattlesUseCase: SearchBattlesUseCase
+    private val exploreUseCases: ExploreUseCases
 ) : ViewModel() {
 
     private companion object {
@@ -35,14 +35,15 @@ class ExploreViewModel @Inject constructor(
     val selectedSort: StateFlow<String> = _selectedSort.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val explorePagingData: Flow<PagingData<ExploreUiModel>> = combine(_selectedCategory, _selectedSort) { cat, sort ->
-        Pair(cat, sort)
-    }.flatMapLatest { (category, sort) ->
-        Pager(PagingConfig(pageSize = 10)) {
-            val apiCategory = if (category == CategoryOption.ALL) null else category
-            ExplorePagingSource(searchBattlesUseCase, apiCategory, sort)
-        }.flow
-    }.cachedIn(viewModelScope)
+    val explorePagingData: Flow<PagingData<ExploreUiModel>> =
+        combine(_selectedCategory, _selectedSort) { cat, sort ->
+            Pair(cat, sort)
+        }.flatMapLatest { (category, sort) ->
+            Pager(PagingConfig(pageSize = 10)) {
+                val apiCategory = if (category == CategoryOption.ALL) null else category
+                ExplorePagingSource(exploreUseCases.searchBattlesUseCase, apiCategory, sort)
+            }.flow
+        }.cachedIn(viewModelScope)
 
     fun updateCategory(newCategory: String) {
         if (_selectedCategory.value != newCategory) {

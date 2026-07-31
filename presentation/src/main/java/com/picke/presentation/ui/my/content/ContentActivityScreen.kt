@@ -42,7 +42,6 @@ import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.theme.SwypTheme
 import com.picke.presentation.util.toRelativeTimeText
-import com.picke.ui.my.content.ContentActivityViewModel
 import kotlinx.coroutines.launch
 
 @Composable

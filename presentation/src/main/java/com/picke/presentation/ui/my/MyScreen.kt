@@ -48,7 +48,6 @@ import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.my.MyViewModel
 
 @Composable
 fun MyScreen(

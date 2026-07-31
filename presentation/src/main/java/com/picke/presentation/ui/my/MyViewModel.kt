@@ -1,4 +1,4 @@
-package com.picke.ui.my
+package com.picke.presentation.ui.my
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.MyPhilosopher
 import com.picke.domain.model.MyProfile
 import com.picke.domain.model.MyTier
-import com.picke.domain.usecase.alarm.GetUnreadAlarmStatusUseCase
-import com.picke.domain.usecase.mypage.GetMyPageInfoUseCase
+import com.picke.domain.usecase.alarm.AlarmUseCases
+import com.picke.domain.usecase.mypage.MyPageUseCases
 import com.picke.presentation.ads.AdMobManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +29,8 @@ data class MyUiState(
 
 @HiltViewModel
 class MyViewModel @Inject constructor(
-    private val getMyPageInfoUseCase: GetMyPageInfoUseCase,
-    private val getUnreadAlarmStatusUseCase: GetUnreadAlarmStatusUseCase,
+    private val myPageUseCases: MyPageUseCases,
+    private val alarmUseCases: AlarmUseCases,
 //    private val tokenManager: TokenManager,
     val adMobManager: AdMobManager
 ) : ViewModel() {
@@ -48,7 +48,7 @@ class MyViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
-            getMyPageInfoUseCase()
+            myPageUseCases.getMyPageInfoUseCase()
                 .onSuccess { infoBoard ->
                     Log.d("MyPageFlow", "🟢 마이페이지 정보 로드 성공: ${infoBoard}")
                     _uiState.update {
@@ -87,9 +87,14 @@ class MyViewModel @Inject constructor(
         _uiState.update { it.copy(isAlarmStatusLoading = true) }
 
         viewModelScope.launch {
-            getUnreadAlarmStatusUseCase()
+            alarmUseCases.getUnreadAlarmStatusUseCase()
                 .onSuccess { hasUnread ->
-                    _uiState.update { it.copy(hasNewNotice = hasUnread, isAlarmStatusLoading = false) }
+                    _uiState.update {
+                        it.copy(
+                            hasNewNotice = hasUnread,
+                            isAlarmStatusLoading = false
+                        )
+                    }
                 }
                 .onFailure { error ->
                     Log.e("MyPageFlow", "🔴 미읽음 알림 여부 조회 실패!", error)

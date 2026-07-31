@@ -1,12 +1,11 @@
-package com.picke.ui.my.philosopher
+package com.picke.presentation.ui.my.philosopher
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.MyRecapBoard
-import com.picke.domain.usecase.mypage.GetMyRecapUseCase
-import com.picke.domain.usecase.share.GetRecapDetailUseCase
-import com.picke.domain.usecase.share.GetRecapShareKeyUseCase
+import com.picke.domain.usecase.mypage.MyPageUseCases
+import com.picke.domain.usecase.share.ShareUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.ShareTarget
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,11 +24,10 @@ data class PhilosopherTypeUiState(
 
 @HiltViewModel
 class PhilosopherTypeViewModel @Inject constructor(
-    private val getMyRecapUseCase: GetMyRecapUseCase,
-    private val getRecapDetailUseCase: GetRecapDetailUseCase,
-    private val getRecapShareKeyUseCase: GetRecapShareKeyUseCase,
+    private val myPageUseCases: MyPageUseCases,
+    private val shareUseCases: ShareUseCases,
     private val analyticsTracker: AnalyticsTracker
-) : ViewModel(){
+) : ViewModel() {
 
     companion object {
         private const val TAG = "PhilosopherTypeVM_Picke"
@@ -47,7 +45,7 @@ class PhilosopherTypeViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
 
             // 2. 서버에 데이터 요청
-            val result = getMyRecapUseCase()
+            val result = myPageUseCases.getMyRecapUseCase()
 
             // 3. 통신 결과에 따른 분기 처리
             result.onSuccess { data ->
@@ -81,7 +79,7 @@ class PhilosopherTypeViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 타인의 철학자 리포트 데이터 요청 시작 (shareKey: $shareKey)")
             _uiState.update { it.copy(isLoading = true) }
 
-            val result = getRecapDetailUseCase(shareKey)
+            val result = shareUseCases.getRecapDetailUseCase(shareKey)
 
             result.onSuccess { data ->
                 Log.i(TAG, "[STATE] 타인 리포트 데이터 로드 성공")
@@ -115,7 +113,7 @@ class PhilosopherTypeViewModel @Inject constructor(
     fun getRecapShareKey(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 리캡 공유 키 발급 요청 시작")
-            val result = getRecapShareKeyUseCase()
+            val result = shareUseCases.getRecapShareKeyUseCase()
 
             result.onSuccess { shareKeyData ->
                 val key = shareKeyData.shareKey

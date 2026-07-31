@@ -3,6 +3,7 @@ package com.picke.presentation.util
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.picke.domain.usecase.attendance.AttendanceUseCases
 import com.picke.domain.usecase.attendance.CheckAttendanceUseCase
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.PointActionType
@@ -31,7 +32,7 @@ import javax.inject.Singleton
 @Singleton
 class AppLifecycleObserver @Inject constructor(
 //    private val tokenManager: TokenManager,
-    private val checkAttendanceUseCase: CheckAttendanceUseCase,
+    private val attendanceUseCases: AttendanceUseCases,
     private val analyticsTracker: AnalyticsTracker
 ) : DefaultLifecycleObserver {
 

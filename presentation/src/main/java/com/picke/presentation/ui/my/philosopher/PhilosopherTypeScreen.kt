@@ -74,7 +74,6 @@ import com.picke.presentation.ui.theme.SwypTheme
 import com.picke.presentation.ui.theme.tokens.BrandColorTokens
 import com.picke.presentation.util.shareCapturedImageToKakao
 import com.picke.presentation.util.shareToInstagramStory
-import com.picke.ui.my.philosopher.PhilosopherTypeViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin

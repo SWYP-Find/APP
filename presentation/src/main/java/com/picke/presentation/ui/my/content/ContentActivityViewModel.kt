@@ -1,10 +1,10 @@
-package com.picke.ui.my.content
+package com.picke.presentation.ui.my.content
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.MyContentActivityItem
-import com.picke.domain.usecase.mypage.GetMyContentActivitiesUseCase
+import com.picke.domain.usecase.mypage.MyPageUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ data class ContentActivityUiState(
 
 @HiltViewModel
 class ContentActivityViewModel @Inject constructor(
-    private val getMyContentActivitiesUseCase: GetMyContentActivitiesUseCase
+    private val myPageUseCases: MyPageUseCases
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ContentActivityUiState())
     val uiState: StateFlow<ContentActivityUiState> = _uiState.asStateFlow()
@@ -39,15 +39,24 @@ class ContentActivityViewModel @Inject constructor(
     init {
         fetchContentActivity()
     }
+
     private fun fetchContentActivity() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
             val commentsDeferred = async {
-                getMyContentActivitiesUseCase(offset = 0, size = 20, activityType = "COMMENT")
+                myPageUseCases.getMyContentActivitiesUseCase(
+                    offset = 0,
+                    size = 20,
+                    activityType = "COMMENT"
+                )
             }
             val likesDeferred = async {
-                getMyContentActivitiesUseCase(offset = 0, size = 20, activityType = "LIKE")
+                myPageUseCases.getMyContentActivitiesUseCase(
+                    offset = 0,
+                    size = 20,
+                    activityType = "LIKE"
+                )
             }
 
             val commentsResult = commentsDeferred.await()
@@ -103,7 +112,7 @@ class ContentActivityViewModel @Inject constructor(
             _uiState.update { it.copy(isPagingLoading = true) }
             Log.d(TAG, "페이징 시작: 타입=$activityType, offset=$currentOffset")
 
-            val result = getMyContentActivitiesUseCase(
+            val result = myPageUseCases.getMyContentActivitiesUseCase(
                 offset = currentOffset,
                 size = 20,
                 activityType = activityType

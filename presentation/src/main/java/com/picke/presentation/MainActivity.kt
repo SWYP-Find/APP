@@ -10,13 +10,12 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresExtension
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
-import com.kakao.sdk.auth.TokenManager
 import com.picke.presentation.notification.FCMService
 import com.picke.presentation.ui.theme.SwypAppTheme
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager
-import com.picke.ui.splash.SplashUiState
-import com.picke.ui.splash.SplashViewModel
+import com.picke.presentation.ui.splash.SplashUiState
+import com.picke.presentation.ui.splash.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,8 +25,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
 
-    @Inject
-    lateinit var tokenManager: TokenManager
+//    @Inject
+//    lateinit var tokenManager: TokenManager
 
     private val splashViewModel: SplashViewModel by viewModels()
 

@@ -1,12 +1,12 @@
-package com.picke.ui.my.makebattle
+package com.picke.presentation.ui.my.makebattle
 
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.domain.usecase.proposal.ProposalUseCases
 import com.picke.domain.usecase.proposal.SubmitProposalResult
-import com.picke.domain.usecase.proposal.SubmitProposalUseCase
 import com.picke.presentation.ads.AdMobManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,7 +31,7 @@ sealed class MakeBattleEvent {
 
 @HiltViewModel
 class MakeBattleViewModel @Inject constructor(
-    private val submitProposalUseCase: SubmitProposalUseCase,
+    private val proposalUseCases: ProposalUseCases,
     val adMobManager: AdMobManager,
 //    private val tokenManager: TokenManager
 ) : ViewModel() {
@@ -67,7 +67,7 @@ class MakeBattleViewModel @Inject constructor(
             Log.d(TAG, "[FLOW] 배틀 주제 제안 API 호출 시작")
             _uiState.update { it.copy(isLoading = true) }
 
-            submitProposalUseCase(
+            proposalUseCases.submitProposalUseCase(
                 category = category,
                 topic = topic,
                 stanceA = stanceA,
@@ -81,6 +81,7 @@ class MakeBattleViewModel @Inject constructor(
                         Log.i(TAG, "🟢 [SUCCESS] 배틀 제안 성공! ID: ${result.proposalId}")
                         _eventFlow.emit(MakeBattleEvent.Success)
                     }
+
                     is SubmitProposalResult.NotEnoughPoints -> {
                         _eventFlow.emit(MakeBattleEvent.NotEnoughPoints)
                     }

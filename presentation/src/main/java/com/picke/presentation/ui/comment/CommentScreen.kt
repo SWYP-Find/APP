@@ -63,9 +63,6 @@ import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.theme.SwypTheme
-import com.picke.ui.comment.CommentUiEvent
-import com.picke.ui.comment.CommentUiModel
-import com.picke.ui.comment.CommentViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)

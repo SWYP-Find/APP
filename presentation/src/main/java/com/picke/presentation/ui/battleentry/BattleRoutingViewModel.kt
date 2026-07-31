@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.battle.GetBattleStatusUseCase
+import com.picke.domain.usecase.battle.BattleUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ private const val TAG = "BattleRoutingFlow"
 @HiltViewModel
 class BattleRoutingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getBattleStatusUseCase: GetBattleStatusUseCase
+    private val battleUseCases: BattleUseCases
 ) : ViewModel() {
     val battleId: String = checkNotNull(savedStateHandle["battleId"])
 
@@ -32,7 +32,7 @@ class BattleRoutingViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d(TAG, "🔍 [배틀 상태 확인] 요청 시작 - battleId: $battleId")
 
-            getBattleStatusUseCase(battleId.toLongOrNull() ?: 0L)
+            battleUseCases.getBattleStatusUseCase(battleId.toLongOrNull() ?: 0L)
                 .onSuccess { statusBoard ->
                     Log.d(TAG, "🟢 [배틀 상태 확인] 서버 통신 성공! - 현재 상태(step): ${statusBoard.step}")
 

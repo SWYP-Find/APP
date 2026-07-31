@@ -3,11 +3,10 @@ package com.picke.presentation.ui.my.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.picke.domain.usecase.auth.AuthUseCases
 import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.UiActionName
-import com.picke.domain.usecase.auth.LogoutUseCase
-import com.picke.domain.usecase.auth.WithdrawUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +23,7 @@ data class SettingUiState(
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val logoutUseCase: LogoutUseCase,
-    private val withdrawUseCase: WithdrawUseCase,
+    private val authUseCases: AuthUseCases,
 //    private val tokenManager: TokenManager,
     private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
@@ -41,7 +39,7 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-//            val result = logoutUseCase(tokenManager.getFcmToken())
+//            val result = authUseCases.logoutUseCase(tokenManager.getFcmToken())
 //            Log.d(TAG, "➡️ [로그아웃] 결과 수신: $result")
 //
 //            result.onSuccess {
@@ -74,7 +72,7 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val result = withdrawUseCase(selectedKoreanReason)
+            val result = authUseCases.withdrawUseCase(selectedKoreanReason)
             Log.d(TAG, "➡️ [회원탈퇴] 서버 응답 결과: $result")
 
             result.onSuccess {

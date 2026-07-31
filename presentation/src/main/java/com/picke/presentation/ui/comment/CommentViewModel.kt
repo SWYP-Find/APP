@@ -1,18 +1,13 @@
-package com.picke.ui.comment
+package com.picke.presentation.ui.comment
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.model.CommentBoard
-import com.picke.domain.usecase.comment.DeleteCommentUseCase
-import com.picke.domain.usecase.comment.LoadCommentsUseCase
+import com.picke.domain.usecase.comment.CommentUseCases
 import com.picke.domain.usecase.comment.ReportCommentResult
-import com.picke.domain.usecase.comment.ReportCommentUseCase
-import com.picke.domain.usecase.comment.SubmitCommentUseCase
-import com.picke.domain.usecase.comment.ToggleCommentLikeUseCase
-import com.picke.domain.usecase.perspective.LoadMainPerspectiveUseCase
-import com.picke.domain.usecase.perspective.TogglePerspectiveLikeUseCase
+import com.picke.domain.usecase.perspective.PerspectiveUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.util.toRelativeTimeText
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,14 +53,9 @@ data class CommentUiState(
 @HiltViewModel
 class CommentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val loadMainPerspectiveUseCase: LoadMainPerspectiveUseCase,
-    private val loadCommentsUseCase: LoadCommentsUseCase,
-    private val submitCommentUseCase: SubmitCommentUseCase,
-    private val deleteCommentUseCase: DeleteCommentUseCase,
-    private val toggleCommentLikeUseCase: ToggleCommentLikeUseCase,
-    private val togglePerspectiveLikeUseCase: TogglePerspectiveLikeUseCase,
-    private val reportCommentUseCase: ReportCommentUseCase,
-    private val analyticsTracker: AnalyticsTracker,
+    private val commentUseCases: CommentUseCases,
+    private val perspectiveUseCases: PerspectiveUseCases,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     companion object {
@@ -100,7 +90,7 @@ class CommentViewModel @Inject constructor(
             val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 메인 관점(본문) 데이터 호출 시작")
 
-            loadMainPerspectiveUseCase(targetIdLong)
+            perspectiveUseCases.loadMainPerspectiveUseCase(targetIdLong)
                 .onSuccess { perspective ->
                     Log.i(TAG, "[STATE] 메인 관점(perspectiveId: ${perspective.perspectiveId}) 조회 성공")
 
@@ -139,7 +129,7 @@ class CommentViewModel @Inject constructor(
 
             Log.d(TAG, "[FLOW] 댓글 목록 호출 시작. Cursor: $cursor")
 
-            loadCommentsUseCase(targetIdLong, cursor, size = 10)
+            commentUseCases.loadCommentsUseCase(targetIdLong, cursor, size = 10)
                 .onSuccess { page ->
                     Log.i(TAG, "[STATE] 댓글 목록 조회 성공 - 가져온 개수: ${page.items.size}")
                     val newItems = page.items.map { it.toUiModel() }
@@ -172,7 +162,7 @@ class CommentViewModel @Inject constructor(
 
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 댓글 ${if (isEditMode) "수정" else "작성"} 요청 시작. ID: $editId")
-            submitCommentUseCase(targetIdLong, editId, content)
+            commentUseCases.submitCommentUseCase(targetIdLong, editId, content)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 댓글 ${if (isEditMode) "수정" else "작성"} 완료")
                     if (!isEditMode) {
@@ -181,7 +171,12 @@ class CommentViewModel @Inject constructor(
                     onSuccess()
                     loadComments(isRefresh = true)
                 }
-                .onFailure { Log.w(TAG, "[FLOW] 댓글 ${if (isEditMode) "수정" else "작성"} 실패: ${it.message}") }
+                .onFailure {
+                    Log.w(
+                        TAG,
+                        "[FLOW] 댓글 ${if (isEditMode) "수정" else "작성"} 실패: ${it.message}"
+                    )
+                }
         }
     }
 
@@ -199,7 +194,7 @@ class CommentViewModel @Inject constructor(
             val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 댓글 삭제 요청. TargetId: $targetIdLong, CommentId: $commentId")
 
-            deleteCommentUseCase(targetIdLong, commentId)
+            commentUseCases.deleteCommentUseCase(targetIdLong, commentId)
                 .onSuccess {
                     Log.i(TAG, "[STATE] 댓글 삭제 통신 성공")
                     loadMainPerspective()
@@ -216,7 +211,7 @@ class CommentViewModel @Inject constructor(
         viewModelScope.launch {
             Log.d(TAG, "[FLOW] 댓글 좋아요 ${if (isCurrentlyLiked) "취소" else "등록"} 요청. ID: $commentId")
 
-            toggleCommentLikeUseCase(commentId, isCurrentlyLiked)
+            commentUseCases.toggleCommentLikeUseCase(commentId, isCurrentlyLiked)
                 .onSuccess { toggleData ->
                     Log.i(TAG, "[STATE] 댓글 좋아요 변경 완료 (현재 수: ${toggleData.likeCount})")
 
@@ -224,7 +219,10 @@ class CommentViewModel @Inject constructor(
                         state.copy(
                             comments = state.comments.map { item ->
                                 if (item.commentId == commentId.toString()) {
-                                    item.copy(likeCount = toggleData.likeCount, isLiked = toggleData.isLiked)
+                                    item.copy(
+                                        likeCount = toggleData.likeCount,
+                                        isLiked = toggleData.isLiked
+                                    )
                                 } else item
                             }
                         )
@@ -241,7 +239,7 @@ class CommentViewModel @Inject constructor(
 
             Log.d(TAG, "[FLOW] 메인 관점 좋아요 토글 요청. 현재 상태: ${mainItem.isLiked}")
 
-            togglePerspectiveLikeUseCase(targetIdLong, mainItem.isLiked)
+            perspectiveUseCases.togglePerspectiveLikeUseCase(targetIdLong, mainItem.isLiked)
                 .onSuccess { toggleData ->
                     Log.i(TAG, "[STATE] 메인 관점 좋아요 변경 완료 (현재 수: ${toggleData.likeCount})")
                     _uiState.update { state ->
@@ -268,13 +266,14 @@ class CommentViewModel @Inject constructor(
             val targetIdLong = receivedTargetId.toLongOrNull() ?: 0L
             Log.d(TAG, "[FLOW] 댓글 신고 요청. ID: $commentId")
 
-            reportCommentUseCase(targetIdLong, commentId)
+            commentUseCases.reportCommentUseCase(targetIdLong, commentId)
                 .onSuccess { result ->
                     when (result) {
                         is ReportCommentResult.Reported -> {
                             Log.i(TAG, "[NAV] 신고 접수 완료 토스트 노출")
                             _uiEvent.emit(CommentUiEvent.ShowToast("신고가 정상 접수되었습니다."))
                         }
+
                         is ReportCommentResult.AlreadyReported -> {
                             Log.i(TAG, "[NAV] 이미 신고한 사용자 토스트 노출")
                             _uiEvent.emit(CommentUiEvent.ShowToast("이미 신고한 사용자입니다."))
@@ -296,13 +295,13 @@ class CommentViewModel @Inject constructor(
 }
 
 private fun CommentBoard.toUiModel() = CommentUiModel(
-        commentId = this.commentId.toString(),
-        profileImageUrl = this.user.characterImageUrl,
-        nickname = this.user.nickname,
-        stance = this.stance,
-        content = this.content,
-        timeAgo = this.createdAt.toRelativeTimeText(),
-        likeCount = this.likeCount,
-        isLiked = this.isLiked,
-        isMine = this.isMine
-    )
+    commentId = this.commentId.toString(),
+    profileImageUrl = this.user.characterImageUrl,
+    nickname = this.user.nickname,
+    stance = this.stance,
+    content = this.content,
+    timeAgo = this.createdAt.toRelativeTimeText(),
+    likeCount = this.likeCount,
+    isLiked = this.isLiked,
+    isMine = this.isMine
+)
