@@ -2,8 +2,8 @@ package com.picke.data.di
 
 import com.google.gson.Gson
 import com.picke.data.BuildConfig
-import com.picke.data.remote.AuthInterceptor
-import com.picke.data.remote.TokenAuthenticator
+import com.picke.data.common.network.AuthInterceptor
+import com.picke.data.common.network.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
