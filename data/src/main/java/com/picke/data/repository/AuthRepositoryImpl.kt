@@ -1,7 +1,5 @@
 package com.picke.data.repository
 
-import android.util.Log
-import com.picke.data.BuildConfig
 import com.picke.data.local.PreferencesManager
 import com.picke.data.model.SocialLoginRequest
 import com.picke.data.model.WithdrawalRequest
