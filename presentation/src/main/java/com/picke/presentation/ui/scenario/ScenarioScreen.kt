@@ -1,6 +1,5 @@
 package com.picke.presentation.ui.scenario
 
-import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,7 +40,7 @@ import com.picke.presentation.ui.component.ChatBubble
 import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -83,14 +82,14 @@ fun ScenarioScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
                     title = uiState.title,
                     centerTitle = true,
                     showBackButton = false,
-                    backgroundColor = SwypTheme.colors.backgroundBrand,
+                    backgroundColor = PickeTheme.colors.backgroundBrand,
                 )
             }
         },
@@ -205,14 +204,14 @@ fun InteractiveOptionsUI(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            HorizontalDivider(modifier = Modifier.weight(1f), color = SwypTheme.colors.neutral200)
+            HorizontalDivider(modifier = Modifier.weight(1f), color = PickeTheme.colors.neutral200)
             Text(
                 text = if (selectedNodeId == null) "이제 당신의 입장을 선택해주세요" else "아래가 당신의 선택입니다.",
-                style = SwypTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
-                color = SwypTheme.colors.textTertiary,
+                style = PickeTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
+                color = PickeTheme.colors.textTertiary,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-            HorizontalDivider(modifier = Modifier.weight(1f), color = SwypTheme.colors.neutral200)
+            HorizontalDivider(modifier = Modifier.weight(1f), color = PickeTheme.colors.neutral200)
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -253,8 +252,8 @@ fun OptionSelectionCard(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) SwypTheme.colors.secondary else SwypTheme.colors.borderSubtle
-    val bgColor = if (isSelected) SwypTheme.colors.surfaceTertiary else SwypTheme.colors.surfaceTertiary
+    val borderColor = if (isSelected) PickeTheme.colors.secondary else PickeTheme.colors.borderSubtle
+    val bgColor = if (isSelected) PickeTheme.colors.surfaceTertiary else PickeTheme.colors.surfaceTertiary
 
     Box(
         modifier = Modifier
@@ -268,8 +267,8 @@ fun OptionSelectionCard(
     ) {
         Text(
             text = text,
-            style = SwypTheme.typography.b5Medium,
-            color = if (isSelected) SwypTheme.colors.textPrimary else SwypTheme.colors.textTertiary,
+            style = PickeTheme.typography.b5Medium,
+            color = if (isSelected) PickeTheme.colors.textPrimary else PickeTheme.colors.textTertiary,
             textAlign = TextAlign.Center
         )
     }
@@ -282,8 +281,8 @@ fun OptionConfirmButton(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isEnabled) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled
-    val textColor = SwypTheme.colors.buttonPrimaryText
+    val bgColor = if (isEnabled) PickeTheme.colors.buttonPrimaryBackground else PickeTheme.colors.buttonPrimaryBackgroundDisabled
+    val textColor = PickeTheme.colors.buttonPrimaryText
 
     Box(
         modifier = Modifier
@@ -296,7 +295,7 @@ fun OptionConfirmButton(
     ) {
         Text(
             text = text,
-            style = SwypTheme.typography.b5Medium,
+            style = PickeTheme.typography.b5Medium,
             color = textColor,
             textAlign = TextAlign.Center
         )

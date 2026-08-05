@@ -50,8 +50,7 @@ import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.TermsOfServiceBottomSheet
 import com.picke.presentation.ui.login.model.Provider
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 private const val TAG = "LoginScreen_Picke"
 
@@ -173,7 +172,7 @@ private fun LoginScreenContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(SwypTheme.colors.backgroundSubtle),
+            .background(PickeTheme.colors.backgroundSubtle),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -181,8 +180,8 @@ private fun LoginScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                style = SwypTheme.typography.h4SemiBold,
-                color = SwypTheme.colors.neutral200,
+                style = PickeTheme.typography.h4SemiBold,
+                color = PickeTheme.colors.neutral200,
                 text = stringResource(R.string.login_your_think)
             )
             Image(
@@ -203,14 +202,14 @@ private fun LoginScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (isLoading) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
                 Spacer(modifier = Modifier.height(16.dp))
             } else {
                 CustomButton(
                     text = stringResource(R.string.login_with_kakao),
                     onClick = onKakaoClick,
                     backgroundColor = Color(0xFFFEE500),
-                    textColor = SwypTheme.colors.textPrimary,
+                    textColor = PickeTheme.colors.textPrimary,
                     iconResId = R.drawable.logo_login_kakao
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -218,7 +217,7 @@ private fun LoginScreenContent(
                     text = stringResource(R.string.login_with_google),
                     onClick = onGoogleClick,
                     backgroundColor = Color.White,
-                    textColor = SwypTheme.colors.textPrimary,
+                    textColor = PickeTheme.colors.textPrimary,
                     iconResId = R.drawable.logo_login_google
                 )
             }
@@ -229,7 +228,7 @@ private fun LoginScreenContent(
 @Preview(showSystemUi = true, name = "Login - 기본")
 @Composable
 private fun LoginScreenPreview() {
-    SwypAppTheme {
+    PickeTheme {
         LoginScreenContent(isLoading = false)
     }
 }
@@ -237,7 +236,7 @@ private fun LoginScreenPreview() {
 @Preview(showSystemUi = true, name = "Login - 로딩중")
 @Composable
 private fun LoginScreenLoadingPreview() {
-    SwypAppTheme {
+    PickeTheme {
         LoginScreenContent(isLoading = true)
     }
 }

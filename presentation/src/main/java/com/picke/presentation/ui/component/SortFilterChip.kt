@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun SortFilterChip(
@@ -20,9 +20,9 @@ fun SortFilterChip(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) SwypTheme.colors.primary else SwypTheme.colors.primaryLight
-    val contentColor = if (isSelected) SwypTheme.colors.primaryLight else SwypTheme.colors.primary
-    val borderColor = SwypTheme.colors.primary
+    val backgroundColor = if (isSelected) PickeTheme.colors.primary else PickeTheme.colors.primaryLight
+    val contentColor = if (isSelected) PickeTheme.colors.primaryLight else PickeTheme.colors.primary
+    val borderColor = PickeTheme.colors.primary
 
     Box(
         modifier = Modifier
@@ -35,7 +35,7 @@ fun SortFilterChip(
     ) {
         Text(
             text = text,
-            style = SwypTheme.typography.b4Medium,
+            style = PickeTheme.typography.b4Medium,
             color = contentColor
         )
     }

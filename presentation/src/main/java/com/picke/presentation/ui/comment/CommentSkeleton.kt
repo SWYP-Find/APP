@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // CommentItemCard/CommentHeader와 동일한 padding 값을 그대로 써서
 // 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
@@ -45,7 +45,7 @@ fun CommentSkeleton(modifier: Modifier = Modifier) {
         // 3. 댓글 리스트 자리
         repeat(4) {
             CommentItemCardSkeleton()
-            HorizontalDivider(thickness = 1.dp, color = SwypTheme.colors.borderDefault)
+            HorizontalDivider(thickness = 1.dp, color = PickeTheme.colors.borderDefault)
         }
     }
 }

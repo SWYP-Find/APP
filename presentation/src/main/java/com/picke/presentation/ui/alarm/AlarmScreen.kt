@@ -41,7 +41,7 @@ import com.picke.domain.feature.alarm.model.AlarmItemBoard
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.SortFilterChip
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.toRelativeTimeText
 import kotlinx.coroutines.flow.collectLatest
 
@@ -75,7 +75,7 @@ fun AlarmScreen(
     )
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         modifier = Modifier.systemBarsPadding(),
         topBar = {
             CustomTopAppBar(
@@ -84,12 +84,12 @@ fun AlarmScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.backgroundBrand,
+                backgroundColor = PickeTheme.colors.backgroundBrand,
                 actions = {
                     Text(
                         text = "모두 읽음",
-                        style = SwypTheme.typography.b4Medium,
-                        color = SwypTheme.colors.textTertiary,
+                        style = PickeTheme.typography.b4Medium,
+                        color = PickeTheme.colors.textTertiary,
                         modifier = Modifier
                             .clickable {
                                 val hasUnreadAlarms = uiState.alarmList.any { !it.isRead }
@@ -145,13 +145,13 @@ fun AlarmScreen(
                             painter = painterResource(id = R.drawable.logo_picke),
                             contentDescription = "빈 화면 로고",
                             modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                            tint = SwypTheme.colors.borderDefault
+                            tint = PickeTheme.colors.borderDefault
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = "아직 도착한 알림이 없습니다",
-                            style = SwypTheme.typography.b3Regular,
-                            color = SwypTheme.colors.beige800
+                            style = PickeTheme.typography.b3Regular,
+                            color = PickeTheme.colors.beige800
                         )
                     }
                 } else {
@@ -227,7 +227,7 @@ fun AlarmCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(Color.White)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(4.dp))
+            .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(4.dp))
             .clickable { onClick() }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -255,8 +255,8 @@ fun AlarmCard(
             ) {
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.caption2Medium,
-                    color = SwypTheme.colors.textMuted,
+                    style = PickeTheme.typography.caption2Medium,
+                    color = PickeTheme.colors.textMuted,
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -270,8 +270,8 @@ fun AlarmCard(
                 ) {
                     Text(
                         text = item.createdAt.toRelativeTimeText(),
-                        style = SwypTheme.typography.caption2Medium,
-                        color = SwypTheme.colors.neutral200
+                        style = PickeTheme.typography.caption2Medium,
+                        color = PickeTheme.colors.neutral200
                     )
 
                     if (!item.isRead) {
@@ -279,7 +279,7 @@ fun AlarmCard(
                         Box(
                             modifier = Modifier
                                 .size(4.dp)
-                                .background(SwypTheme.colors.primary, CircleShape)
+                                .background(PickeTheme.colors.primary, CircleShape)
                         )
                     }
                 }
@@ -290,8 +290,8 @@ fun AlarmCard(
             // [하단] 본문 내용
             Text(
                 text = item.body,
-                style = SwypTheme.typography.b3SemiBold,
-                color = SwypTheme.colors.textPrimary,
+                style = PickeTheme.typography.b3SemiBold,
+                color = PickeTheme.colors.textPrimary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

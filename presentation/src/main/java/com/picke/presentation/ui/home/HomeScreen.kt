@@ -44,7 +44,7 @@ import com.picke.presentation.ui.attendance.AttendanceCheckBottomSheet
 import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.showAdFitTransitionPopupAd
 import kotlin.collections.isNotEmpty
 
@@ -98,12 +98,12 @@ fun HomeScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = SwypTheme.colors.backgroundBrand,
+                backgroundColor = PickeTheme.colors.backgroundBrand,
                 actions = {
                     // 벨 배지(미읽음 여부)는 API 응답 후에야 확정되므로,
                     // 그 전까지는 아이콘 자리도 스켈레톤과 동일하게 shimmer로 보여준다.
@@ -127,7 +127,7 @@ fun HomeScreen(
                                 badge = {
                                     if (uiState.hasNewNotice) {
                                         Badge(
-                                            containerColor = SwypTheme.colors.primary,
+                                            containerColor = PickeTheme.colors.primary,
                                             modifier = Modifier.offset(x = 4.dp, y = (-4).dp)
                                         )
                                     }
@@ -167,13 +167,13 @@ fun HomeScreen(
                     painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = SwypTheme.colors.borderDefault
+                    tint = PickeTheme.colors.borderDefault
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "아직 준비된 배틀이 없어요!",
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.beige800
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.beige800
                 )
             }
         }

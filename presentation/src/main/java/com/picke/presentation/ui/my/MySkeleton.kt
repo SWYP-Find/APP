@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // MyScreen의 실제 Column과 동일한 padding/spacer 값을 그대로 써서
 // 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
@@ -86,8 +86,8 @@ private fun PhilosopherTypeCardSkeleton() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surfaceTertiary)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
+            .background(PickeTheme.colors.surfaceTertiary)
+            .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -118,6 +118,6 @@ private fun MyPageMenuItemSkeleton() {
         ) {
             SkeletonLine(width = 120.dp, height = 18.dp)
         }
-        HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 1.dp)
+        HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 1.dp)
     }
 }

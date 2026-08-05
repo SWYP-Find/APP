@@ -26,7 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.picke.presentation.R
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun ShareDialog(
@@ -41,8 +41,8 @@ fun ShareDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SwypTheme.colors.borderDefault, RoundedCornerShape(4.dp))
-                .border(1.dp, SwypTheme.colors.beige900, RoundedCornerShape(4.dp))
+                .background(PickeTheme.colors.borderDefault, RoundedCornerShape(4.dp))
+                .border(1.dp, PickeTheme.colors.beige900, RoundedCornerShape(4.dp))
         ) {
             // [상단 헤더 영역]
             Box(
@@ -54,8 +54,8 @@ fun ShareDialog(
                 // 왼쪽 '공유하기' 텍스트
                 Text(
                     text = "공유하기",
-                    style = SwypTheme.typography.h4SemiBold,
-                    color = SwypTheme.colors.textPrimary,
+                    style = PickeTheme.typography.h4SemiBold,
+                    color = PickeTheme.colors.textPrimary,
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
 
@@ -63,7 +63,7 @@ fun ShareDialog(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_x),
                     contentDescription = "닫기",
-                    tint = SwypTheme.colors.textPrimary,
+                    tint = PickeTheme.colors.textPrimary,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .size(12.dp)
@@ -72,7 +72,7 @@ fun ShareDialog(
             }
 
             // 구분선
-            HorizontalDivider(color = SwypTheme.colors.textPrimary, thickness = 1.dp)
+            HorizontalDivider(color = PickeTheme.colors.textPrimary, thickness = 1.dp)
 
             // [하단 SNS 버튼 영역]
             Row(
@@ -110,8 +110,8 @@ fun ShareItem(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = title,
-            color = SwypTheme.colors.primary,
-            style = SwypTheme.typography.b5Medium
+            color = PickeTheme.colors.primary,
+            style = PickeTheme.typography.b5Medium
         )
     }
 }

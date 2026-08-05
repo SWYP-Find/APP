@@ -35,7 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.domain.feature.mypage.model.MyBattleRecordItem
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun DiscussionHistoryScreen(
@@ -48,7 +48,7 @@ fun DiscussionHistoryScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_discussion),
@@ -56,7 +56,7 @@ fun DiscussionHistoryScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.backgroundBrand
+                backgroundColor = PickeTheme.colors.backgroundBrand
             )
         }
     ) { innerPadding ->
@@ -96,12 +96,12 @@ fun DiscussionHistoryList(
                 painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = SwypTheme.colors.borderDefault
+                tint = PickeTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
-                style = SwypTheme.typography.b3Regular,
-                color = SwypTheme.colors.beige800
+                style = PickeTheme.typography.b3Regular,
+                color = PickeTheme.colors.beige800
             )
         }
     } else {
@@ -134,8 +134,8 @@ fun DiscussionHistoryCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surface)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
+            .background(PickeTheme.colors.surface)
+            .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -145,20 +145,20 @@ fun DiscussionHistoryCard(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Surface(
-                color = SwypTheme.colors.borderDefault,
+                color = PickeTheme.colors.borderDefault,
                 shape = RoundedCornerShape(2.dp)
             ) {
                 Text(
                     text = "#${item.category ?: "이슈"}",
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                    style = SwypTheme.typography.label,
-                    color = SwypTheme.colors.primary
+                    style = PickeTheme.typography.label,
+                    color = PickeTheme.colors.primary
                 )
             }
             Text(
                 text = item.title,
-                style = SwypTheme.typography.labelMedium,
-                color = SwypTheme.colors.textTertiary,
+                style = PickeTheme.typography.labelMedium,
+                color = PickeTheme.colors.textTertiary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -169,8 +169,8 @@ fun DiscussionHistoryCard(
         // [중단] 내가 남긴 요약 내용
         Text(
             text = item.summary,
-            style = SwypTheme.typography.b4Regular,
-            color = SwypTheme.colors.neutral400,
+            style = PickeTheme.typography.b4Regular,
+            color = PickeTheme.colors.neutral400,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -180,8 +180,8 @@ fun DiscussionHistoryCard(
         // [하단] 작성 날짜
         Text(
             text = item.createdAt,
-            style = SwypTheme.typography.label,
-            color = SwypTheme.colors.neutral200
+            style = PickeTheme.typography.label,
+            color = PickeTheme.colors.neutral200
         )
     }
 }

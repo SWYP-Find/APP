@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // NoticeEventCard와 동일한 padding 값을 그대로 써서
 // 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
@@ -40,7 +39,7 @@ private fun NoticeEventCardSkeleton() {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(2.dp))
+            .border(1.dp, PickeTheme.colors.surfaceTertiary, RoundedCornerShape(2.dp))
             .padding(16.dp)
     ) {
         SkeletonLine(width = 50.dp, height = 18.dp)

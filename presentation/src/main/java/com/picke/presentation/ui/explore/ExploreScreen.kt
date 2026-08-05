@@ -58,7 +58,7 @@ import com.picke.presentation.ui.component.CustomTabBar
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.SortFilterChip
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -85,12 +85,12 @@ fun ExploreScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 showLogo = true,
                 centerTitle = false,
-                backgroundColor = SwypTheme.colors.backgroundBrand,
+                backgroundColor = PickeTheme.colors.backgroundBrand,
                 /*actions = {
                     IconButton(
                         onClick = {
@@ -202,13 +202,13 @@ fun ExploreList(
                     painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = SwypTheme.colors.borderDefault
+                    tint = PickeTheme.colors.borderDefault
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "아직 준비된 배틀이 없어요!",
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.beige800
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.beige800
                 )
             }
         }
@@ -225,7 +225,7 @@ fun ExploreList(
                     pagingItems[index]?.let { item ->
                         HorizontalDivider(
                             thickness = 1.dp,
-                            color = SwypTheme.colors.borderDefault,
+                            color = PickeTheme.colors.borderDefault,
                         )
                         ExploreCard(
                             item = item,
@@ -234,7 +234,7 @@ fun ExploreList(
                         if (index == pagingItems.itemCount - 1) {
                             HorizontalDivider(
                                 thickness = 1.dp,
-                                color = SwypTheme.colors.borderDefault,
+                                color = PickeTheme.colors.borderDefault,
                             )
                         }
                     }
@@ -258,7 +258,7 @@ fun ExploreList(
                     pagingItems[index]?.let { item ->
                         HorizontalDivider(
                             thickness = 1.dp,
-                            color = SwypTheme.colors.borderDefault,
+                            color = PickeTheme.colors.borderDefault,
                         )
                         ExploreCard(
                             item = item,
@@ -267,7 +267,7 @@ fun ExploreList(
                         if (index == pagingItems.itemCount - 1) {
                             HorizontalDivider(
                                 thickness = 1.dp,
-                                color = SwypTheme.colors.borderDefault,
+                                color = PickeTheme.colors.borderDefault,
                             )
                         }
                     }
@@ -281,7 +281,7 @@ fun ExploreList(
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest, modifier = Modifier.size(24.dp))
                         }
                     }
                 }
@@ -300,7 +300,7 @@ fun ExploreCard(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surface)
+            .background(PickeTheme.colors.surface)
             .clickable { onClick(item.battleId) }
             .padding(horizontal = 16.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -333,15 +333,15 @@ fun ExploreCard(
             Row(verticalAlignment = Alignment.Top) {
                 item.tags.firstOrNull()?.let { category ->
                     Surface(
-                        color = SwypTheme.colors.borderDefault,
+                        color = PickeTheme.colors.borderDefault,
                         shape = RoundedCornerShape(2.dp)
                     ) {
                         Text(
                             text = "#$category",
                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                             // 피그마 스펙: 뱃지 텍스트 12sp (labelXSmall 기본 10sp에서 크기만 12로 조정)
-                            style = SwypTheme.typography.labelXSmall.copy(fontSize = 12.sp),
-                            color = SwypTheme.colors.primary,
+                            style = PickeTheme.typography.labelXSmall.copy(fontSize = 12.sp),
+                            color = PickeTheme.colors.primary,
                             maxLines = 1
                         )
                     }
@@ -349,14 +349,14 @@ fun ExploreCard(
                 }
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.b3SemiBold.copy(
+                    style = PickeTheme.typography.b3SemiBold.copy(
                         lineBreak = LineBreak(
                             strategy = LineBreak.Strategy.HighQuality,
                             strictness = LineBreak.Strictness.Loose,
                             wordBreak = LineBreak.WordBreak.Default
                         )
                     ),
-                    color = SwypTheme.colors.textTertiary,
+                    color = PickeTheme.colors.textTertiary,
                     // 제목이 1줄을 넘어가면 ...으로 말줄임 (iOS 탐색탭과 동일)
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -369,8 +369,8 @@ fun ExploreCard(
             // 2. 설명 내용
             Text(
                 text = item.summary,
-                style = SwypTheme.typography.b4Regular,
-                color = SwypTheme.colors.neutral400,
+                style = PickeTheme.typography.b4Regular,
+                color = PickeTheme.colors.neutral400,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -389,13 +389,13 @@ fun ExploreCard(
                         painter = painterResource(id = R.drawable.ic_clock),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = SwypTheme.colors.textMuted
+                        tint = PickeTheme.colors.textMuted
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = item.audioDurationText,
-                        style = SwypTheme.typography.label,
-                        color = SwypTheme.colors.neutral400
+                        style = PickeTheme.typography.label,
+                        color = PickeTheme.colors.neutral400
                     )
 
                     Spacer(modifier = Modifier.width(12.dp))
@@ -404,13 +404,13 @@ fun ExploreCard(
                         painter = painterResource(id = R.drawable.ic_eye),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
-                        tint = SwypTheme.colors.textMuted
+                        tint = PickeTheme.colors.textMuted
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = item.viewCountText,
-                        style = SwypTheme.typography.label,
-                        color = SwypTheme.colors.neutral400
+                        style = PickeTheme.typography.label,
+                        color = PickeTheme.colors.neutral400
                     )
                 }
             }

@@ -1,6 +1,5 @@
 package com.picke.presentation.ui.my.makebattle
 
-import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.CustomSingleActionDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun MakeBattleScreen(
@@ -77,7 +76,7 @@ fun MakeBattleScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar={
             CustomTopAppBar(
@@ -86,13 +85,13 @@ fun MakeBattleScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.backgroundBrand,
+                backgroundColor = PickeTheme.colors.backgroundBrand,
             )
         },
         bottomBar = {
             Box(
                 modifier = Modifier
-                    .background(SwypTheme.colors.backgroundBrand)
+                    .background(PickeTheme.colors.backgroundBrand)
                     //.navigationBarsPadding()
                     .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
@@ -110,7 +109,7 @@ fun MakeBattleScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth().height(54.dp),
-                    backgroundColor = if (isFormValid) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
+                    backgroundColor = if (isFormValid) PickeTheme.colors.primary else PickeTheme.colors.primaryDisabled,
                     textColor = Color.White
                 )
             }
@@ -121,7 +120,7 @@ fun MakeBattleScreen(
                 modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
             }
         } else {
             Column(
@@ -167,7 +166,7 @@ fun MakeBattleScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 StanceInputField(
                     label = "A",
-                    labelColor = SwypTheme.colors.primary,
+                    labelColor = PickeTheme.colors.primary,
                     value = stanceA,
                     onValueChange = { stanceA = it },
                     placeholder = "첫 번째 입장을 입력하세요",
@@ -175,7 +174,7 @@ fun MakeBattleScreen(
                 )
                 StanceInputField(
                     label = "B",
-                    labelColor = SwypTheme.colors.textPrimary,
+                    labelColor = PickeTheme.colors.textPrimary,
                     value = stanceB,
                     onValueChange = { stanceB = it },
                     placeholder = "두 번째 입장을 입력하세요",
@@ -226,8 +225,8 @@ fun SectionTitle(title: String, isRequired: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = title,
-            color = SwypTheme.colors.neutral400,
-            style = SwypTheme.typography.labelMedium
+            color = PickeTheme.colors.neutral400,
+            style = PickeTheme.typography.labelMedium
         )
     }
 }
@@ -239,8 +238,8 @@ fun CategoryTab(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val bgColor = if (isSelected) SwypTheme.colors.primary else Color.White
-    val textColor = if (isSelected) Color.White else SwypTheme.colors.textMuted
+    val bgColor = if (isSelected) PickeTheme.colors.primary else Color.White
+    val textColor = if (isSelected) Color.White else PickeTheme.colors.textMuted
 
     Box(
         modifier = modifier
@@ -252,7 +251,7 @@ fun CategoryTab(
         Text(
             text = text,
             color = textColor,
-            style = if (isSelected) SwypTheme.typography.b3SemiBold else SwypTheme.typography.b3Regular
+            style = if (isSelected) PickeTheme.typography.b3SemiBold else PickeTheme.typography.b3Regular
         )
     }
 }
@@ -271,7 +270,7 @@ fun CustomFormTextField(
         modifier = modifier
             .fillMaxWidth()
             .background(Color.White)
-            .border(1.dp, SwypTheme.colors.borderDefault)
+            .border(1.dp, PickeTheme.colors.borderDefault)
             .padding(16.dp)
     ) {
         Row(
@@ -287,11 +286,11 @@ fun CustomFormTextField(
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = singleLine,
-                    textStyle = SwypTheme.typography.b4Medium,
+                    textStyle = PickeTheme.typography.b4Medium,
                     modifier = Modifier.fillMaxWidth()
                 ) { innerTextField ->
                     if (value.isEmpty()) {
-                        Text(text = placeholder, color = SwypTheme.colors.neutral200, style = SwypTheme.typography.b4Medium)
+                        Text(text = placeholder, color = PickeTheme.colors.neutral200, style = PickeTheme.typography.b4Medium)
                     }
                     innerTextField()
                 }
@@ -301,8 +300,8 @@ fun CustomFormTextField(
         if (bottomRightText != null) {
             Text(
                 text = bottomRightText,
-                color = SwypTheme.colors.neutral400,
-                style = SwypTheme.typography.labelXSmall,
+                color = PickeTheme.colors.neutral400,
+                style = PickeTheme.typography.labelXSmall,
                 modifier = Modifier.align(Alignment.BottomEnd)
             )
         }
@@ -327,7 +326,7 @@ fun StanceInputField(
             Text(
                 text = label,
                 color = labelColor,
-                style = SwypTheme.typography.b3SemiBold,
+                style = PickeTheme.typography.b3SemiBold,
                 modifier = Modifier.width(28.dp)
             )
         }

@@ -47,7 +47,7 @@ import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun MyScreen(
@@ -80,10 +80,10 @@ fun MyScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
-                backgroundColor = SwypTheme.colors.backgroundBrand,
+                backgroundColor = PickeTheme.colors.backgroundBrand,
                 centerTitle = false,
                 actions = {
                     // 벨 배지(미읽음 여부)는 API 응답 후에야 확정되므로,
@@ -110,7 +110,7 @@ fun MyScreen(
                                 badge = {
                                     if (uiState.hasNewNotice) {
                                         Badge(
-                                            containerColor = SwypTheme.colors.primary,
+                                            containerColor = PickeTheme.colors.primary,
                                             modifier = Modifier.offset(x = 4.dp, y = (-4).dp)
                                         )
                                     }
@@ -119,7 +119,7 @@ fun MyScreen(
                                 Icon(
                                     painterResource(R.drawable.ic_alarm),
                                     contentDescription = stringResource(R.string.alarm),
-                                    tint = SwypTheme.colors.textPrimary
+                                    tint = PickeTheme.colors.textPrimary
                                 )
                             }
                         }
@@ -132,7 +132,7 @@ fun MyScreen(
                             Icon(
                                 painterResource(R.drawable.ic_setting),
                                 contentDescription = stringResource(R.string.setting),
-                                tint = SwypTheme.colors.textPrimary
+                                tint = PickeTheme.colors.textPrimary
                             )
                         }
                     }
@@ -248,12 +248,12 @@ fun ProfileSection(
         Spacer(modifier = Modifier.width(12.dp))
         // 이름 & 유형 & ID
         Column {
-            Text(text = nickname, style = SwypTheme.typography.h4SemiBold)
+            Text(text = nickname, style = PickeTheme.typography.h4SemiBold)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = userHandle,
-                style = SwypTheme.typography.b4Regular,
-                color = SwypTheme.colors.textTertiary
+                style = PickeTheme.typography.b4Regular,
+                color = PickeTheme.colors.textTertiary
             )
         }
     }
@@ -272,8 +272,8 @@ fun PhilosopherTypeCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surfaceTertiary)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
+            .background(PickeTheme.colors.surfaceTertiary)
+            .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -290,14 +290,14 @@ fun PhilosopherTypeCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.my_menu_philosopher),
-                style = SwypTheme.typography.caption2Medium,
-                color = SwypTheme.colors.textTertiary
+                style = PickeTheme.typography.caption2Medium,
+                color = PickeTheme.colors.textTertiary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (isLocked) displayName else "$displayName ",
-                style = SwypTheme.typography.b3SemiBold,
-                color = SwypTheme.colors.textSecondary
+                style = PickeTheme.typography.b3SemiBold,
+                color = PickeTheme.colors.textSecondary
             )
         }
 
@@ -306,7 +306,7 @@ fun PhilosopherTypeCard(
             painter = painterResource(id = R.drawable.ic_arrow_right_a),
             contentDescription = null,
             modifier = Modifier.size(12.dp),
-            tint = SwypTheme.colors.textPrimary
+            tint = PickeTheme.colors.textPrimary
         )
     }
 }
@@ -321,7 +321,7 @@ fun CreditCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.primaryDark)
+            .background(PickeTheme.colors.primaryDark)
             .clickable { onClick() }
             .padding(horizontal = 20.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -336,13 +336,13 @@ fun CreditCard(
             Box(
                 modifier = Modifier
                     .size(24.dp)
-                    .background(color = SwypTheme.colors.secondary300, shape = CircleShape),
+                    .background(color = PickeTheme.colors.secondary300, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "P",
-                    style = SwypTheme.typography.b5Medium,
-                    color = SwypTheme.colors.textSecondary
+                    style = PickeTheme.typography.b5Medium,
+                    color = PickeTheme.colors.textSecondary
                 )
             }
 
@@ -350,13 +350,13 @@ fun CreditCard(
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(R.string.my_point),
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.surfaceDefault
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.surfaceDefault
                 )
                 Text(
                     text = credit.toString(),
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.secondary700
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.secondary700
                 )
             }
         }
@@ -398,16 +398,16 @@ fun MyPageMenuItem(
         ) {
             Text(
                 text = title,
-                style = SwypTheme.typography.b3SemiBold,
-                color = SwypTheme.colors.textSecondary
+                style = PickeTheme.typography.b3SemiBold,
+                color = PickeTheme.colors.textSecondary
             )
             Icon(
                 painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
-                tint = SwypTheme.colors.textPrimary
+                tint = PickeTheme.colors.textPrimary
             )
         }
-        HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 1.dp)
+        HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 1.dp)
     }
 }

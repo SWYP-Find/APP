@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color // 🌟 반드시 이 Color여야 합니다!
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun CustomButton(
@@ -51,7 +51,7 @@ fun CustomButton(
                 Spacer(modifier = Modifier.width(2.dp))
             }
             Text(
-                style = SwypTheme.typography.b3SemiBold,
+                style = PickeTheme.typography.b3SemiBold,
                 text = text,
                 color = textColor,
             )

@@ -1,7 +1,6 @@
 package com.picke.presentation
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -12,7 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import com.picke.presentation.notification.FCMService
 import com.picke.presentation.ui.splash.SplashUiState
 import com.picke.presentation.ui.splash.SplashViewModel
-import com.picke.presentation.ui.theme.SwypAppTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +42,7 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            SwypAppTheme {
+            PickeTheme {
                 AppNavigation(splashViewModel)
             }
         }

@@ -66,7 +66,7 @@ import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.ShareDialog
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
@@ -222,12 +222,12 @@ fun TodayBattleScreen(
                     painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = SwypTheme.colors.borderDefault
+                    tint = PickeTheme.colors.borderDefault
                 )
                 Text(
                     text = "아직 빠른 배틀이 선정되지 않았어요\n조금만 기다려주세요!",
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.surfaceTertiary,
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.surfaceTertiary,
                     textAlign = TextAlign.Center
                 )
             }
@@ -256,8 +256,8 @@ fun TodayBattleScreen(
                     modifier = Modifier
                         .navigationBarsPadding()
                         .padding(20.dp),
-                    backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
-                    textColor = SwypTheme.colors.surfaceDefault
+                    backgroundColor = if (isButtonEnabled) PickeTheme.colors.primary else PickeTheme.colors.primaryDisabled,
+                    textColor = PickeTheme.colors.surfaceDefault
                 )
             }
         ) { innerPadding ->
@@ -389,7 +389,7 @@ fun TodayBattleScreen(
                     .pointerInput(Unit) {},
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
             }
         }
     }
@@ -434,7 +434,7 @@ fun BattleContent(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .shimmer(SwypTheme.colors.neutral600, SwypTheme.colors.neutral400)
+                            .shimmer(PickeTheme.colors.neutral600, PickeTheme.colors.neutral400)
                     )
                 }
             )
@@ -458,8 +458,8 @@ fun BattleContent(
                             Text(
                                 text = "#$tag",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                style = SwypTheme.typography.label,
-                                color = SwypTheme.colors.primary
+                                style = PickeTheme.typography.label,
+                                color = PickeTheme.colors.primary
                             )
                         }
                     }
@@ -469,15 +469,15 @@ fun BattleContent(
 
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.h1SemiBold,
-                    color = SwypTheme.colors.surface,
+                    style = PickeTheme.typography.h1SemiBold,
+                    color = PickeTheme.colors.surface,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = item.description,
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.neutral400,
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.neutral400,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -486,7 +486,7 @@ fun BattleContent(
                 Surface(
                     color = Color.Transparent,
                     shape = RoundedCornerShape(2.dp),
-                    border = BorderStroke(1.dp, SwypTheme.colors.textSecondary)
+                    border = BorderStroke(1.dp, PickeTheme.colors.textSecondary)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -501,7 +501,7 @@ fun BattleContent(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             item.timeLeft,
-                            style = SwypTheme.typography.labelXSmall,
+                            style = PickeTheme.typography.labelXSmall,
                             color = Color.LightGray
                         )
                     }
@@ -547,10 +547,10 @@ fun BattleContent(
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = SwypTheme.colors.secondaryLight
+                color = PickeTheme.colors.secondaryLight
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text("VS", style = SwypTheme.typography.b3SemiBold, color = Color.Black)
+                    Text("VS", style = PickeTheme.typography.b3SemiBold, color = Color.Black)
                 }
             }
         }
@@ -583,7 +583,7 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
         // 텍스트 부분 (예: 1/4)
         Text(
             text = "${currentPage + 1}/$totalPages",
-            style = SwypTheme.typography.labelXSmall,
+            style = PickeTheme.typography.labelXSmall,
             color = Color.White.copy(alpha = 0.3f)
         )
     }
@@ -597,8 +597,8 @@ fun OpinionCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) SwypTheme.colors.secondary700 else Color.Transparent
-    val bgColor = if (isSelected) SwypTheme.colors.textPrimary else SwypTheme.colors.textPrimary
+    val borderColor = if (isSelected) PickeTheme.colors.secondary700 else Color.Transparent
+    val bgColor = if (isSelected) PickeTheme.colors.textPrimary else PickeTheme.colors.textPrimary
 
     Column(
         modifier = Modifier
@@ -613,15 +613,15 @@ fun OpinionCard(
     ) {
         Text(
             text = name,
-            style = SwypTheme.typography.labelXSmall,
-            color = SwypTheme.colors.secondary,
+            style = PickeTheme.typography.labelXSmall,
+            color = PickeTheme.colors.secondary,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = opinion,
-            style = SwypTheme.typography.h3SemiBold,
+            style = PickeTheme.typography.h3SemiBold,
             color = Color.White,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -629,7 +629,7 @@ fun OpinionCard(
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = "\"$quote\"",
-            style = SwypTheme.typography.labelXSmall,
+            style = PickeTheme.typography.labelXSmall,
             color = Color.White.copy(0.3f),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()

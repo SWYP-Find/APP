@@ -26,8 +26,7 @@ import com.picke.presentation.ui.theme.Beige100
 import com.picke.presentation.ui.theme.Gray100
 import com.picke.presentation.ui.theme.Gray50
 import com.picke.presentation.ui.theme.Gray900
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.theme.White
 import com.picke.presentation.ui.theme.tokens.SemanticColorTokens
 
@@ -72,7 +71,7 @@ fun AttendanceCheckBottomSheet(
         ) {
             Text(
                 text = uiState.title,
-                style = SwypTheme.typography.h2SemiBold,
+                style = PickeTheme.typography.h2SemiBold,
                 color = Gray900,
                 textAlign = TextAlign.Center
             )
@@ -81,7 +80,7 @@ fun AttendanceCheckBottomSheet(
 
             Text(
                 text = uiState.subtitle,
-                style = SwypTheme.typography.b4Regular,
+                style = PickeTheme.typography.b4Regular,
                 color = SemanticColorTokens.textMuted,
                 textAlign = TextAlign.Center
             )
@@ -216,7 +215,7 @@ private fun sampleFailureWeekComplete(): AttendanceCheckUiState {
 @Preview(showBackground = true, showSystemUi = true, name = "출석체크 - 진행 중 (성공)")
 @Composable
 private fun AttendanceCheckBottomSheetSuccessInProgressPreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceCheckBottomSheet(uiState = sampleSuccessInProgress(), onDismiss = {})
     }
 }
@@ -224,7 +223,7 @@ private fun AttendanceCheckBottomSheetSuccessInProgressPreview() {
 @Preview(showBackground = true, showSystemUi = true, name = "출석체크 - 7일 연속 달성")
 @Composable
 private fun AttendanceCheckBottomSheetSuccessWeekCompletePreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceCheckBottomSheet(uiState = sampleSuccessWeekComplete(), onDismiss = {})
     }
 }
@@ -232,7 +231,7 @@ private fun AttendanceCheckBottomSheetSuccessWeekCompletePreview() {
 @Preview(showBackground = true, showSystemUi = true, name = "출석체크 - 진행 중 (실패 포함)")
 @Composable
 private fun AttendanceCheckBottomSheetFailureInProgressPreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceCheckBottomSheet(uiState = sampleFailureInProgress(), onDismiss = {})
     }
 }
@@ -240,7 +239,7 @@ private fun AttendanceCheckBottomSheetFailureInProgressPreview() {
 @Preview(showBackground = true, showSystemUi = true, name = "출석체크 - 실패 포함 + 일주일 끝")
 @Composable
 private fun AttendanceCheckBottomSheetFailureWeekCompletePreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceCheckBottomSheet(uiState = sampleFailureWeekComplete(), onDismiss = {})
     }
 }

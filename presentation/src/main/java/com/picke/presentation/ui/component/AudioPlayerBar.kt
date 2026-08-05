@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +56,7 @@ fun AudioPlayerBar(
                     Box(
                         modifier = Modifier
                             .size(12.dp)
-                            .background(color = SwypTheme.colors.primary, shape = CircleShape)
+                            .background(color = PickeTheme.colors.primary, shape = CircleShape)
                     )
                 }
             },
@@ -81,7 +81,7 @@ fun AudioPlayerBar(
                             .fillMaxWidth(fraction = sliderState.value.coerceIn(0f, 1f))
                             .height(trackHeight)
                             .clip(RoundedCornerShape(50))
-                            .background(SwypTheme.colors.primary)
+                            .background(PickeTheme.colors.primary)
                     )
                 }
             }
@@ -96,13 +96,13 @@ fun AudioPlayerBar(
         ) {
             Text(
                 text = formatTime(currentPositionMs),
-                style = SwypTheme.typography.labelXSmall,
-                color = SwypTheme.colors.textTertiary
+                style = PickeTheme.typography.labelXSmall,
+                color = PickeTheme.colors.textTertiary
             )
             Text(
                 text = formatTime(totalDurationMs),
-                style = SwypTheme.typography.labelXSmall,
-                color = SwypTheme.colors.textTertiary
+                style = PickeTheme.typography.labelXSmall,
+                color = PickeTheme.colors.textTertiary
             )
         }
 
@@ -133,7 +133,7 @@ fun AudioPlayerBar(
                         if (isPlaying) R.drawable.ic_play_stop else R.drawable.ic_play
                     ),
                     contentDescription = null,
-                    tint = SwypTheme.colors.primaryDarkest,
+                    tint = PickeTheme.colors.primaryDarkest,
                     modifier = Modifier.size(36.dp) // 아이콘 자체 크기 키움
                 )
             }
@@ -163,14 +163,14 @@ private fun ControlSkipButton(iconResId: Int, label: String, onClick: () -> Unit
         Icon(
             painter = painterResource(iconResId),
             contentDescription = label,
-            tint = SwypTheme.colors.primaryDarkest,
+            tint = PickeTheme.colors.primaryDarkest,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
-            style = SwypTheme.typography.labelXSmall,
-            color = SwypTheme.colors.textTertiary
+            style = PickeTheme.typography.labelXSmall,
+            color = PickeTheme.colors.textTertiary
         )
     }
 }

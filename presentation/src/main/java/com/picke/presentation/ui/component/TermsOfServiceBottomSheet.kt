@@ -41,8 +41,7 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.theme.Gray100
 import com.picke.presentation.ui.theme.Gray300
 import com.picke.presentation.ui.theme.Gray900
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.theme.White
 import com.picke.presentation.ui.theme.tokens.BrandColorTokens
 
@@ -98,7 +97,7 @@ fun TermsOfServiceBottomSheet(
                 modifier = Modifier
                     .border(1.dp, BrandColorTokens.neutral50, RoundedCornerShape(50))
                     .background(
-                        color = SwypTheme.colors.backgroundBrand,
+                        color = PickeTheme.colors.backgroundBrand,
                         shape = RoundedCornerShape(50)
                     )
                     .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -117,7 +116,7 @@ fun TermsOfServiceBottomSheet(
 
             Text(
                 text = "픽케 약관 동의서",
-                style = SwypTheme.typography.h3SemiBold,
+                style = PickeTheme.typography.h3SemiBold,
                 color = Gray900
             )
 
@@ -125,7 +124,7 @@ fun TermsOfServiceBottomSheet(
 
             Text(
                 text = "편리한 서비스 이용을 위해 약관에 동의해 주세요",
-                style = SwypTheme.typography.b3Regular,
+                style = PickeTheme.typography.b3Regular,
                 color = Gray300,
                 textAlign = TextAlign.Center
             )
@@ -156,7 +155,7 @@ fun TermsOfServiceBottomSheet(
             CustomButton(
                 text = "동의",
                 onClick = { if (isAllAgreed) onConfirm() },
-                backgroundColor = if (isAllAgreed) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled,
+                backgroundColor = if (isAllAgreed) PickeTheme.colors.buttonPrimaryBackground else PickeTheme.colors.buttonPrimaryBackgroundDisabled,
                 textColor = White,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -174,7 +173,7 @@ private fun TermsItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SwypTheme.colors.surfaceSubtle, RoundedCornerShape(8.dp))
+            .background(PickeTheme.colors.surfaceSubtle, RoundedCornerShape(8.dp))
             .border(1.dp, Gray100, RoundedCornerShape(8.dp))
             .clickable { onToggle() }
             .padding(horizontal = 16.dp, vertical = 16.dp),
@@ -185,10 +184,10 @@ private fun TermsItem(
             modifier = Modifier
                 .size(24.dp)
                 .clip(CircleShape)
-                .background(if (isAgreed) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled)
+                .background(if (isAgreed) PickeTheme.colors.buttonPrimaryBackground else PickeTheme.colors.buttonPrimaryBackgroundDisabled)
                 .border(
                     1.dp,
-                    if (isAgreed) SwypTheme.colors.borderDefault else SwypTheme.colors.borderDisabled,
+                    if (isAgreed) PickeTheme.colors.borderDefault else PickeTheme.colors.borderDisabled,
                     CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -207,7 +206,7 @@ private fun TermsItem(
 
         Text(
             text = text,
-            style = SwypTheme.typography.b3Regular,
+            style = PickeTheme.typography.b3Regular,
             color = Gray900,
             modifier = Modifier.weight(1f)
         )
@@ -226,7 +225,7 @@ private fun TermsItem(
 @Preview(showBackground = true)
 @Composable
 private fun TermsOfServiceBottomSheetPreview() {
-    SwypAppTheme {
+    PickeTheme {
         TermsOfServiceBottomSheet(
             onConfirm = {}
         )

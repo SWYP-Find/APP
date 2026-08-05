@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.PolicyStrings
 
 @Composable
@@ -30,11 +30,11 @@ fun TermsOfServiceScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = onBackClick,
-                    backgroundColor = SwypTheme.colors.backgroundBrand
+                    backgroundColor = PickeTheme.colors.backgroundBrand
                 )
             }
         },
-        containerColor = SwypTheme.colors.backgroundBrand
+        containerColor = PickeTheme.colors.backgroundBrand
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -49,8 +49,8 @@ fun TermsOfServiceScreen(
             // 시행 일자
             Text(
                 text = "시행일자: ${PolicyStrings.EFFECTIVE_DATE}",
-                style = SwypTheme.typography.b5Medium,
-                color = SwypTheme.colors.textMuted,
+                style = PickeTheme.typography.b5Medium,
+                color = PickeTheme.colors.textMuted,
                 modifier = Modifier.align(Alignment.End)
             )
 
@@ -58,9 +58,9 @@ fun TermsOfServiceScreen(
 
             Text(
                 text = PolicyStrings.TERMS_OF_SERVICE,
-                style = SwypTheme.typography.b4Medium,
-                color = SwypTheme.colors.neutral600,
-                lineHeight = SwypTheme.typography.b4Medium.fontSize * 1.5
+                style = PickeTheme.typography.b4Medium,
+                color = PickeTheme.colors.neutral600,
+                lineHeight = PickeTheme.typography.b4Medium.fontSize * 1.5
             )
 
             Spacer(modifier = Modifier.height(48.dp))

@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.my.setting.SettingViewModel
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun WithdrawScreen(
@@ -56,7 +56,7 @@ fun WithdrawScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         bottomBar = {
             Box(modifier = Modifier.navigationBarsPadding()) {
                 Row(
@@ -77,12 +77,12 @@ fun WithdrawScreen(
                             .weight(1f)
                             .fillMaxHeight(),
                         shape = RectangleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = SwypTheme.colors.backgroundBrand)
+                        colors = ButtonDefaults.buttonColors(containerColor = PickeTheme.colors.backgroundBrand)
                     ) {
                         Text(
                             text = "제출하기",
-                            color = SwypTheme.colors.primaryDark,
-                            style = SwypTheme.typography.h4SemiBold
+                            color = PickeTheme.colors.primaryDark,
+                            style = PickeTheme.typography.h4SemiBold
                         )
                     }
                     // 2. 돌아가기 버튼
@@ -92,12 +92,12 @@ fun WithdrawScreen(
                             .weight(1f)
                             .fillMaxHeight(),
                         shape = RectangleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = SwypTheme.colors.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = PickeTheme.colors.primary)
                     ) {
                         Text(
                             text = "픽케로 다시 돌아가기",
                             color = Color.White,
-                            style = SwypTheme.typography.h4SemiBold
+                            style = PickeTheme.typography.h4SemiBold
                         )
                     }
                 }
@@ -115,8 +115,8 @@ fun WithdrawScreen(
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 text = "정말 떠나시나요? 아쉬워요 😢",
-                style = SwypTheme.typography.h3SemiBold,
-                color = SwypTheme.colors.primaryDark
+                style = PickeTheme.typography.h3SemiBold,
+                color = PickeTheme.colors.primaryDark
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -125,8 +125,8 @@ fun WithdrawScreen(
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 text = "지금까지 픽케를 이용해주셔서 감사합니다.\n더 나은 서비스를 만들기 위해, 탈퇴 이유를 알려주세요.",
-                color = SwypTheme.colors.neutral400,
-                style = SwypTheme.typography.labelMedium
+                color = PickeTheme.colors.neutral400,
+                style = PickeTheme.typography.labelMedium
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -187,7 +187,7 @@ fun WithdrawReasonItem(
                 .clip(CircleShape)
                 .border(
                     width = 2.dp,
-                    color = if (isSelected) SwypTheme.colors.primary else SwypTheme.colors.neutral200,
+                    color = if (isSelected) PickeTheme.colors.primary else PickeTheme.colors.neutral200,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -198,7 +198,7 @@ fun WithdrawReasonItem(
                     modifier = Modifier
                         .size(10.dp)
                         .clip(CircleShape)
-                        .background(SwypTheme.colors.primary)
+                        .background(PickeTheme.colors.primary)
                 )
             }
         }
@@ -207,8 +207,8 @@ fun WithdrawReasonItem(
 
         Text(
             text = text,
-            color = SwypTheme.colors.textPrimary,
-            style = SwypTheme.typography.b3Regular
+            color = PickeTheme.colors.textPrimary,
+            style = PickeTheme.typography.b3Regular
         )
     }
 }

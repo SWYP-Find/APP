@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.presentation.R
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun ChatBubble(
@@ -37,8 +37,8 @@ fun ChatBubble(
         ) {
             Text(
                 text = formattedText,
-                color = if (isActive) SwypTheme.colors.textSecondary else SwypTheme.colors.textMuted,
-                style = SwypTheme.typography.label.copy(
+                color = if (isActive) PickeTheme.colors.textSecondary else PickeTheme.colors.textMuted,
+                style = PickeTheme.typography.label.copy(
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 ),
                 textAlign = TextAlign.Center,
@@ -49,9 +49,9 @@ fun ChatBubble(
     }
 
     val isLeft = script.speakerType == SpeakerType.A
-    val bubbleBgColor = if (isLeft) Color.White else SwypTheme.colors.borderDisabled
+    val bubbleBgColor = if (isLeft) Color.White else PickeTheme.colors.borderDisabled
     val bubbleBorderColor =
-        if (isLeft) SwypTheme.colors.borderDisabled else SwypTheme.colors.borderSubtle
+        if (isLeft) PickeTheme.colors.borderDisabled else PickeTheme.colors.borderSubtle
     val imageModel = script.profileImageUrl ?: R.drawable.illust_mengzi
 
     // 구조: [왼쪽 슬롯(36dp)] + [말풍선 영역(남은공간 전부)] + [오른쪽 슬롯(36dp)]
@@ -87,8 +87,8 @@ fun ChatBubble(
             if (showAvatarAndName) {
                 Text(
                     text = script.speakerName,
-                    style = SwypTheme.typography.b3SemiBold,
-                    color = SwypTheme.colors.neutral400,
+                    style = PickeTheme.typography.b3SemiBold,
+                    color = PickeTheme.colors.neutral400,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 6.dp),
@@ -107,8 +107,8 @@ fun ChatBubble(
             ) {
                 Text(
                     text = script.displayText,
-                    style = SwypTheme.typography.b5Medium,
-                    color = if (isActive) SwypTheme.colors.textSecondary else SwypTheme.colors.textMuted,
+                    style = PickeTheme.typography.b5Medium,
+                    color = if (isActive) PickeTheme.colors.textSecondary else PickeTheme.colors.textMuted,
                     textAlign = TextAlign.Start
                 )
             }

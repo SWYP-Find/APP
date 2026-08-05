@@ -12,17 +12,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Preview(showSystemUi = true, name = "Splash")
 @Composable
 private fun SplashScreenPreview() {
-    SwypAppTheme {
+    PickeTheme {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(SwypTheme.colors.primary),
+                .background(PickeTheme.colors.primary),
             contentAlignment = Alignment.Center
         ) {
             Image(

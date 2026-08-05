@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // ExploreCard와 동일한 padding/size 값을 그대로 써서
 // 실제 카드와 스켈레톤 카드의 높이가 어긋나지 않도록 맞춘다.
@@ -27,10 +27,10 @@ import com.picke.presentation.ui.theme.SwypTheme
 fun ExploreSkeleton(modifier: Modifier = Modifier, itemCount: Int = 6) {
     Column(modifier = modifier.fillMaxWidth()) {
         repeat(itemCount) {
-            HorizontalDivider(thickness = 1.dp, color = SwypTheme.colors.borderDefault)
+            HorizontalDivider(thickness = 1.dp, color = PickeTheme.colors.borderDefault)
             ExploreCardSkeleton()
         }
-        HorizontalDivider(thickness = 1.dp, color = SwypTheme.colors.borderDefault)
+        HorizontalDivider(thickness = 1.dp, color = PickeTheme.colors.borderDefault)
     }
 }
 

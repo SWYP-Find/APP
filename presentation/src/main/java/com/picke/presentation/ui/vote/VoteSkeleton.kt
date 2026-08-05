@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // VoteScreen의 실제 weight/padding/spacer 값을 그대로 써서
 // 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
@@ -33,9 +33,9 @@ import com.picke.presentation.ui.theme.SwypTheme
 @Composable
 fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
     val isPreVote = voteType == VoteType.PRE
-    val bgColor = if (isPreVote) SwypTheme.colors.surface else Color.Black
-    val shimmerBase = if (isPreVote) null else SwypTheme.colors.neutral600
-    val shimmerHighlight = if (isPreVote) null else SwypTheme.colors.neutral400
+    val bgColor = if (isPreVote) PickeTheme.colors.surface else Color.Black
+    val shimmerBase = if (isPreVote) null else PickeTheme.colors.neutral600
+    val shimmerHighlight = if (isPreVote) null else PickeTheme.colors.neutral400
 
     Column(
         modifier = modifier
@@ -147,8 +147,8 @@ private fun VoteOptionCardSkeleton(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, SwypTheme.colors.borderDisabled, RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surfaceSubtle)
+            .border(1.dp, PickeTheme.colors.borderDisabled, RoundedCornerShape(2.dp))
+            .background(PickeTheme.colors.surfaceSubtle)
             .padding(vertical = 24.dp, horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

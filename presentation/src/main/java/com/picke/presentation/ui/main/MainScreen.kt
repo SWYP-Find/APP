@@ -34,7 +34,7 @@ import com.picke.presentation.ui.my.notice.NoticeEventScreen
 import com.picke.presentation.ui.my.philosopher.PhilosopherTypeScreen
 import com.picke.presentation.ui.my.point.PointScreen
 import com.picke.presentation.ui.my.setting.SettingScreen
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.DeepLinkManager
 
 @Composable
@@ -58,7 +58,7 @@ fun MainScreen(
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         bottomBar = {
             CustomBottomNavigationBar(
                 mainNavController = mainNavController,
@@ -73,7 +73,7 @@ fun MainScreen(
             startDestination = initialTabRoute,
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
-                .background(SwypTheme.colors.surface),
+                .background(PickeTheme.colors.surface),
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None },
             popEnterTransition = { EnterTransition.None },

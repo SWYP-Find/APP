@@ -74,7 +74,7 @@ import com.picke.presentation.ui.component.CustomTabBar
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.SortFilterChip
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -145,7 +145,7 @@ fun PerspectiveScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
@@ -155,13 +155,13 @@ fun PerspectiveScreen(
                     showLogo = false,
                     showBackButton = false,
                     onBackClick = onBackClick,
-                    backgroundColor = SwypTheme.colors.backgroundBrand,
+                    backgroundColor = PickeTheme.colors.backgroundBrand,
                     actions = {
                         IconButton(onClick = { onNextClick(uiState.battleId) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_arrow_right),
                                 contentDescription = "null",
-                                tint = SwypTheme.colors.textPrimary,
+                                tint = PickeTheme.colors.textPrimary,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -307,7 +307,7 @@ fun PerspectiveScreen(
                                     state = pullToRefreshState,
                                     isRefreshing = isRefreshing,
                                     containerColor = Color.White,
-                                    color = SwypTheme.colors.primary,
+                                    color = PickeTheme.colors.primary,
                                     modifier = Modifier.align(Alignment.TopCenter)
                                 )
                             }
@@ -445,7 +445,7 @@ fun PerspectiveScreen(
                                                     .padding(16.dp),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                                                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
                                             }
                                         }
                                     }
@@ -511,13 +511,13 @@ fun PerspectiveItemCard(
     var isMenuExpanded by remember { mutableStateOf(false) }
     val cardBgColor = when (status) {
         "REJECTED" -> Color(0xFFFFF9F9)
-        "PENDING" -> SwypTheme.colors.secondary50
+        "PENDING" -> PickeTheme.colors.secondary50
         else -> Color.White
     }
     val borderBadgeColor = when (status) {
         "REJECTED" -> Color(0xFFA64D47)
-        "PENDING" -> SwypTheme.colors.secondary
-        else -> SwypTheme.colors.borderDefault
+        "PENDING" -> PickeTheme.colors.secondary
+        else -> PickeTheme.colors.borderDefault
     }
 
     Card(
@@ -544,13 +544,13 @@ fun PerspectiveItemCard(
                     // 닉네임
                     Text(
                         text = if (item.isMine) "나" else item.nickname,
-                        style = SwypTheme.typography.labelMedium,
-                        color = SwypTheme.colors.textSecondary
+                        style = PickeTheme.typography.labelMedium,
+                        color = PickeTheme.colors.textSecondary
                     )
                     Text(
                         text = item.timeAgo,
-                        style = SwypTheme.typography.labelXSmall,
-                        color = SwypTheme.colors.outline
+                        style = PickeTheme.typography.labelXSmall,
+                        color = PickeTheme.colors.outline
                     )
                 }
 
@@ -563,14 +563,14 @@ fun PerspectiveItemCard(
                             Icon(
                                 painterResource(id = R.drawable.ic_more),
                                 "더보기",
-                                tint = SwypTheme.colors.textMuted
+                                tint = PickeTheme.colors.textMuted
                             )
                         }
                         DropdownMenu(
                             expanded = isMenuExpanded,
                             onDismissRequest = { isMenuExpanded = false },
                             modifier = Modifier
-                                .background(SwypTheme.colors.primaryPressed)
+                                .background(PickeTheme.colors.primaryPressed)
                                 .clip(RoundedCornerShape(8.dp))
                         ) {
                             if (item.isMine) {
@@ -608,20 +608,20 @@ fun PerspectiveItemCard(
                 ) {
                     Text(
                         text = if (status == "PENDING") "검수중" else "거절됨",
-                        style = SwypTheme.typography.b5Medium,
+                        style = PickeTheme.typography.b5Medium,
                         color = Color.White,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                     )
                 }
             } else {
                 Surface(
-                    color = SwypTheme.colors.badgeBackground,
+                    color = PickeTheme.colors.badgeBackground,
                     shape = RoundedCornerShape(2.dp)
                 ) {
                     Text(
                         text = item.optionTitle,
-                        style = SwypTheme.typography.b5Medium,
-                        color = SwypTheme.colors.badgeText,
+                        style = PickeTheme.typography.b5Medium,
+                        color = PickeTheme.colors.badgeText,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -634,8 +634,8 @@ fun PerspectiveItemCard(
             // 2. 본문 영역
             Text(
                 text = item.content,
-                style = SwypTheme.typography.b4Regular,
-                color = SwypTheme.colors.neutral600,
+                style = PickeTheme.typography.b4Regular,
+                color = PickeTheme.colors.neutral600,
                 maxLines = if (isDetail) Int.MAX_VALUE else 3,
                 overflow = TextOverflow.Ellipsis
             )
@@ -651,8 +651,8 @@ fun PerspectiveItemCard(
                     if (!isDetail) {
                         Text(
                             text = "더보기",
-                            style = SwypTheme.typography.b5Medium,
-                            color = SwypTheme.colors.textMuted,
+                            style = PickeTheme.typography.b5Medium,
+                            color = PickeTheme.colors.textMuted,
                             modifier = Modifier.clickable(
                                 interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
                                 indication = null
@@ -685,14 +685,14 @@ fun PerspectiveItemCard(
                                     painter = painterResource(id = R.drawable.ic_message),
                                     contentDescription = "댓글",
                                     modifier = Modifier.size(12.dp),
-                                    tint = SwypTheme.colors.textMuted
+                                    tint = PickeTheme.colors.textMuted
                                 )
                             }
                             Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = "${item.replyCount}",
-                                style = SwypTheme.typography.b5Medium,
-                                color = SwypTheme.colors.textMuted
+                                style = PickeTheme.typography.b5Medium,
+                                color = PickeTheme.colors.textMuted
                             )
                         }
                         Spacer(modifier = Modifier.width(12.dp))
@@ -718,13 +718,13 @@ fun PerspectiveItemCard(
                                 painter = painterResource(id = R.drawable.ic_heart_plus),
                                 contentDescription = "좋아요",
                                 modifier = Modifier.size(12.dp),
-                                tint = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted
+                                tint = if (item.isLiked) PickeTheme.colors.primary else PickeTheme.colors.textMuted
                             )
                         }
                         Text(
                             text = "${item.likeCount}",
-                            style = SwypTheme.typography.b5Medium,
-                            color = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted,
+                            style = PickeTheme.typography.b5Medium,
+                            color = if (item.isLiked) PickeTheme.colors.primary else PickeTheme.colors.textMuted,
                             modifier = Modifier.padding(start = 2.dp)
                         )
                     }
@@ -756,7 +756,7 @@ fun PerspectiveMenuItem(
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
-            style = SwypTheme.typography.labelMedium,
+            style = PickeTheme.typography.labelMedium,
             color = Color.White
         )
     }
@@ -783,7 +783,7 @@ fun PerspectiveInputField(
     }
 
     Surface(
-        color = SwypTheme.colors.surfaceTertiary,
+        color = PickeTheme.colors.surfaceTertiary,
         shadowElevation = 16.dp,
         modifier = modifier
             .fillMaxWidth()
@@ -799,7 +799,7 @@ fun PerspectiveInputField(
                 modifier = Modifier
                     .weight(1f)
                     .background(
-                        if (isEnabled) SwypTheme.colors.surface else SwypTheme.colors.beige100,
+                        if (isEnabled) PickeTheme.colors.surface else PickeTheme.colors.beige100,
                         RoundedCornerShape(8.dp)
                     )
                     .padding(12.dp)
@@ -808,8 +808,8 @@ fun PerspectiveInputField(
                 if (textFieldState.text.isEmpty()) {
                     Text(
                         text = hintText,
-                        style = SwypTheme.typography.b3Regular,
-                        color = SwypTheme.colors.outline,
+                        style = PickeTheme.typography.b3Regular,
+                        color = PickeTheme.colors.outline,
                         lineHeight = 20.sp
                     )
                 }
@@ -821,8 +821,8 @@ fun PerspectiveInputField(
                         minHeightInLines = 3,
                         maxHeightInLines = Int.MAX_VALUE
                     ),
-                    textStyle = SwypTheme.typography.b3Regular.copy(
-                        color = SwypTheme.colors.textPrimary,
+                    textStyle = PickeTheme.typography.b3Regular.copy(
+                        color = PickeTheme.colors.textPrimary,
                         lineHeight = 20.sp
                     ),
                     modifier = Modifier
@@ -838,7 +838,7 @@ fun PerspectiveInputField(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(if (isEnabled) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled)
+                    .background(if (isEnabled) PickeTheme.colors.buttonPrimaryBackground else PickeTheme.colors.buttonPrimaryBackgroundDisabled)
                     .clickable(enabled = isEnabled) { onSubmit() },
                 contentAlignment = Alignment.Center
             ) {
@@ -882,15 +882,15 @@ fun PerspectiveHeader(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = leftOption?.title ?: "",
-                style = SwypTheme.typography.labelXSmall,
-                color = SwypTheme.colors.textSecondary,
+                style = PickeTheme.typography.labelXSmall,
+                color = PickeTheme.colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = "${proRatio.toInt()}%",
-                style = SwypTheme.typography.label,
-                color = SwypTheme.colors.neutral600
+                style = PickeTheme.typography.label,
+                color = PickeTheme.colors.neutral600
             )
         }
 
@@ -903,7 +903,7 @@ fun PerspectiveHeader(
         ) {
             // 1. 생각이 바뀌었어요 버튼
             Surface(
-                color = SwypTheme.colors.primaryLight,
+                color = PickeTheme.colors.primaryLight,
                 shape = RoundedCornerShape(4.dp)
             ) {
                 Row(
@@ -913,14 +913,14 @@ fun PerspectiveHeader(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_think),
                         contentDescription = "생각 변경",
-                        tint = SwypTheme.colors.primary,
+                        tint = PickeTheme.colors.primary,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = if (opinionChanged) "생각이 바뀌었어요" else "생각이 동일해요",
-                        style = SwypTheme.typography.caption2SemiBold,
-                        color = SwypTheme.colors.primary
+                        style = PickeTheme.typography.caption2SemiBold,
+                        color = PickeTheme.colors.primary
                     )
                 }
             }
@@ -944,7 +944,7 @@ fun PerspectiveHeader(
                     modifier = Modifier
                         .weight(if (conRatio > 0) conRatio else 0.1f)
                         .fillMaxHeight()
-                        .background(SwypTheme.colors.backgroundTertiary)
+                        .background(PickeTheme.colors.backgroundTertiary)
                 )
             }
         }
@@ -963,15 +963,15 @@ fun PerspectiveHeader(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = rightOption?.title ?: "",
-                style = SwypTheme.typography.labelXSmall,
-                color = SwypTheme.colors.textSecondary,
+                style = PickeTheme.typography.labelXSmall,
+                color = PickeTheme.colors.textSecondary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = "${conRatio.toInt()}%",
-                style = SwypTheme.typography.label,
-                color = SwypTheme.colors.neutral600
+                style = PickeTheme.typography.label,
+                color = PickeTheme.colors.neutral600
             )
         }
     }
@@ -993,12 +993,12 @@ fun PerspectiveEmptyState(
             painter = painterResource(id = R.drawable.logo_picke),
             contentDescription = "빈 화면 로고",
             modifier = Modifier.size(width = 160.dp, height = 120.dp),
-            tint = SwypTheme.colors.borderDefault
+            tint = PickeTheme.colors.borderDefault
         )
         Text(
             text = message,
-            style = SwypTheme.typography.b3Regular,
-            color = SwypTheme.colors.beige800
+            style = PickeTheme.typography.b3Regular,
+            color = PickeTheme.colors.beige800
         )
     }
 }

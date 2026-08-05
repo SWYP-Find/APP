@@ -62,7 +62,7 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,7 +114,7 @@ fun CommentScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
@@ -124,7 +124,7 @@ fun CommentScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = onBackClick,
-                    backgroundColor = SwypTheme.colors.backgroundBrand,
+                    backgroundColor = PickeTheme.colors.backgroundBrand,
 
                     )
             }
@@ -191,7 +191,7 @@ fun CommentScreen(
                             state = pullToRefreshState,
                             isRefreshing = isRefreshing,
                             containerColor = Color.White,
-                            color = SwypTheme.colors.primary,
+                            color = PickeTheme.colors.primary,
                             modifier = Modifier.align(Alignment.TopCenter)
                         )
                     }
@@ -231,7 +231,7 @@ fun CommentScreen(
                             )
                             HorizontalDivider(
                                 thickness = 1.dp,
-                                color = SwypTheme.colors.borderDefault,
+                                color = PickeTheme.colors.borderDefault,
                             )
                         }
                     }
@@ -283,8 +283,8 @@ fun CommentHeader(count: Int) {
     ) {
         Text(
             text = "답글 ${count}개",
-            style = SwypTheme.typography.b4Regular.copy(fontWeight = FontWeight.SemiBold),
-            color = SwypTheme.colors.neutral600
+            style = PickeTheme.typography.b4Regular.copy(fontWeight = FontWeight.SemiBold),
+            color = PickeTheme.colors.neutral600
         )
     }
 }
@@ -319,13 +319,13 @@ fun CommentItemCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = if (item.isMine) "나" else item.nickname,
-                    style = SwypTheme.typography.labelMedium,
-                    color = SwypTheme.colors.textSecondary
+                    style = PickeTheme.typography.labelMedium,
+                    color = PickeTheme.colors.textSecondary
                 )
                 Text(
                     text = item.timeAgo,
-                    style = SwypTheme.typography.labelXSmall,
-                    color = SwypTheme.colors.outline
+                    style = PickeTheme.typography.labelXSmall,
+                    color = PickeTheme.colors.outline
                 )
             }
 
@@ -339,14 +339,14 @@ fun CommentItemCard(
                         Icon(
                             painterResource(id = R.drawable.ic_more),
                             "더보기",
-                            tint = SwypTheme.colors.textMuted
+                            tint = PickeTheme.colors.textMuted
                         )
                     }
                     DropdownMenu(
                         expanded = isMenuExpanded,
                         onDismissRequest = { isMenuExpanded = false },
                         modifier = Modifier
-                            .background(SwypTheme.colors.primaryPressed)
+                            .background(PickeTheme.colors.primaryPressed)
                             .clip(RoundedCornerShape(8.dp))
                     ) {
                         if (item.isMine) {
@@ -373,13 +373,13 @@ fun CommentItemCard(
 
         // 입장 뱃지
         Surface(
-            color = SwypTheme.colors.badgeBackground,
+            color = PickeTheme.colors.badgeBackground,
             shape = RoundedCornerShape(2.dp)
         ) {
             Text(
                 text = item.stance,
-                style = SwypTheme.typography.b5Medium,
-                color = SwypTheme.colors.badgeText,
+                style = PickeTheme.typography.b5Medium,
+                color = PickeTheme.colors.badgeText,
                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
             )
         }
@@ -388,8 +388,8 @@ fun CommentItemCard(
 
         Text(
             text = item.content,
-            style = SwypTheme.typography.b4Regular,
-            color = SwypTheme.colors.neutral600
+            style = PickeTheme.typography.b4Regular,
+            color = PickeTheme.colors.neutral600
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -419,14 +419,14 @@ fun CommentItemCard(
                         painter = painterResource(id = R.drawable.ic_heart_plus),
                         contentDescription = "좋아요",
                         modifier = Modifier.size(16.dp),
-                        tint = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted
+                        tint = if (item.isLiked) PickeTheme.colors.primary else PickeTheme.colors.textMuted
                     )
                 }
 
                 Text(
                     text = "${item.likeCount}",
-                    style = SwypTheme.typography.b5Medium,
-                    color = if (item.isLiked) SwypTheme.colors.primary else SwypTheme.colors.textMuted,
+                    style = PickeTheme.typography.b5Medium,
+                    color = if (item.isLiked) PickeTheme.colors.primary else PickeTheme.colors.textMuted,
                     modifier = Modifier.padding(start = 2.dp)
                 )
             }
@@ -454,7 +454,7 @@ fun CommentMenuItem(
             modifier = Modifier.size(16.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, style = SwypTheme.typography.labelMedium, color = Color.White)
+        Text(text = text, style = PickeTheme.typography.labelMedium, color = Color.White)
     }
 }
 
@@ -478,7 +478,7 @@ fun CommentInputField(
     }
 
     Surface(
-        color = SwypTheme.colors.surfaceTertiary,
+        color = PickeTheme.colors.surfaceTertiary,
         shadowElevation = 16.dp,
         modifier = modifier
             .fillMaxWidth()
@@ -493,7 +493,7 @@ fun CommentInputField(
                 modifier = Modifier
                     .weight(1f)
                     .background(
-                        if (isEnabled) SwypTheme.colors.surface else SwypTheme.colors.beige100,
+                        if (isEnabled) PickeTheme.colors.surface else PickeTheme.colors.beige100,
                         RoundedCornerShape(8.dp)
                     )
                     .padding(12.dp)
@@ -501,8 +501,8 @@ fun CommentInputField(
                 if (textFieldState.text.isEmpty()) {
                     Text(
                         text = hintText,
-                        style = SwypTheme.typography.b3Regular,
-                        color = SwypTheme.colors.outline,
+                        style = PickeTheme.typography.b3Regular,
+                        color = PickeTheme.colors.outline,
                         lineHeight = 20.sp
                     )
                 }
@@ -514,8 +514,8 @@ fun CommentInputField(
                         minHeightInLines = 3,
                         maxHeightInLines = Int.MAX_VALUE
                     ),
-                    textStyle = SwypTheme.typography.b3Regular.copy(
-                        color = SwypTheme.colors.textPrimary,
+                    textStyle = PickeTheme.typography.b3Regular.copy(
+                        color = PickeTheme.colors.textPrimary,
                         lineHeight = 20.sp
                     ),
                     modifier = Modifier
@@ -530,7 +530,7 @@ fun CommentInputField(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(if (isEnabled) SwypTheme.colors.buttonPrimaryBackground else SwypTheme.colors.buttonPrimaryBackgroundDisabled)
+                    .background(if (isEnabled) PickeTheme.colors.buttonPrimaryBackground else PickeTheme.colors.buttonPrimaryBackgroundDisabled)
                     .clickable(enabled = isEnabled) { onSubmit() },
                 contentAlignment = Alignment.Center
             ) {

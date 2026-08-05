@@ -30,7 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun SettingScreen(
@@ -56,10 +56,10 @@ fun SettingScreen(
                     showLogo = false,
                     showBackButton = true,
                     onBackClick = { onBackClick() },
-                    backgroundColor = SwypTheme.colors.backgroundBrand
+                    backgroundColor = PickeTheme.colors.backgroundBrand
                 )
             },
-            containerColor = SwypTheme.colors.backgroundBrand
+            containerColor = PickeTheme.colors.backgroundBrand
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -135,7 +135,7 @@ fun SettingScreen(
                     .clickable(enabled = false) { /* 클릭 방지 */ },
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
             }
         }
     }
@@ -159,16 +159,16 @@ fun SettingMenuItem(
         ){
             Text(
                 text = title,
-                style = SwypTheme.typography.b3SemiBold,
-                color = SwypTheme.colors.textSecondary
+                style = PickeTheme.typography.b3SemiBold,
+                color = PickeTheme.colors.textSecondary
             )
             Icon(
                 painterResource(R.drawable.ic_arrow_right_a),
                 contentDescription = null,
                 modifier = Modifier.size(12.dp),
-                tint = SwypTheme.colors.textPrimary
+                tint = PickeTheme.colors.textPrimary
             )
         }
-        HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 1.dp)
+        HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 1.dp)
     }
 }

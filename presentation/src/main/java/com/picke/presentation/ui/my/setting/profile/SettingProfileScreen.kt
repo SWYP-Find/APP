@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun SettingProfileScreen(
@@ -17,7 +17,7 @@ fun SettingProfileScreen(
 ) {
 
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = PickeTheme.colors.surface,
         modifier = Modifier.systemBarsPadding(),
         topBar={
             CustomTopAppBar(
@@ -26,7 +26,7 @@ fun SettingProfileScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.surface
+                backgroundColor = PickeTheme.colors.surface
             )
         }
     ){ innerPadding ->

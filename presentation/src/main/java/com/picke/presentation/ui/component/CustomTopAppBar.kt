@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +32,7 @@ fun CustomTopAppBar(
     showLogo: Boolean = false,
     showBackButton: Boolean = false,
     backgroundColor: Color,
-    backIconColor: Color = SwypTheme.colors.textPrimary,
+    backIconColor: Color = PickeTheme.colors.textPrimary,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     val startPadding = if (showBackButton) 4.dp else 20.dp
@@ -75,8 +75,8 @@ fun CustomTopAppBar(
             if (!centerTitle && title != null) {
                 Text(
                     text = title,
-                    style = SwypTheme.typography.h4SemiBold,
-                    color = SwypTheme.colors.textPrimary
+                    style = PickeTheme.typography.h4SemiBold,
+                    color = PickeTheme.colors.textPrimary
                 )
             }
         }
@@ -84,8 +84,8 @@ fun CustomTopAppBar(
         if (centerTitle && title != null) {
             Text(
                 text = title,
-                style = SwypTheme.typography.h4SemiBold,
-                color = SwypTheme.colors.textPrimary,
+                style = PickeTheme.typography.h4SemiBold,
+                color = PickeTheme.colors.textPrimary,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

@@ -2,7 +2,7 @@ package com.picke.presentation.ui.home.new
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun NewBattleScreen(
@@ -10,6 +10,6 @@ fun NewBattleScreen(
 ) {
     Text(
         text = "뉴 배틀이지롱",
-        style = SwypTheme.typography.h1SemiBold,
+        style = PickeTheme.typography.h1SemiBold,
     )
 }

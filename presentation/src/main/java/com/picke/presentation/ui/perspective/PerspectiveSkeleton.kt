@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -27,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // 투표 비율 데이터(voteOptions)가 아직 로드되기 전에 보여주는 상단 영역 자리.
 // PerspectiveHeader와 동일한 padding/spacer 값을 써서, 실데이터가 도착해
@@ -95,7 +94,7 @@ fun PerspectiveTabBarSkeleton(modifier: Modifier = Modifier) {
         ) {
             SkeletonLine(width = 64.dp, height = 20.dp)
         }
-        HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 2.dp)
+        HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 2.dp)
     }
 }
 
@@ -121,7 +120,7 @@ private fun PerspectiveItemCardSkeleton() {
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(2.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(width = 1.dp, color = SwypTheme.colors.borderDefault)
+        border = BorderStroke(width = 1.dp, color = PickeTheme.colors.borderDefault)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             // 1. 프로필 영역

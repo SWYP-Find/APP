@@ -46,8 +46,7 @@ import com.picke.presentation.BuildConfig
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.NotificationPermissionBottomSheet
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun SettingAlarmScreen(
@@ -97,7 +96,7 @@ private fun SettingAlarmContent(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         modifier = Modifier.systemBarsPadding(),
         topBar = {
             CustomTopAppBar(
@@ -106,7 +105,7 @@ private fun SettingAlarmContent(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.backgroundBrand
+                backgroundColor = PickeTheme.colors.backgroundBrand
             )
         }
     ) { innerPadding ->
@@ -245,8 +244,8 @@ private fun fetchFcmToken() {
 fun AlarmCategoryHeader(title: String) {
     Text(
         text = title,
-        style = SwypTheme.typography.b5Medium,
-        color = SwypTheme.colors.textSecondary,
+        style = PickeTheme.typography.b5Medium,
+        color = PickeTheme.colors.textSecondary,
         modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 8.dp)
     )
 }
@@ -268,14 +267,14 @@ fun AlarmSettingItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = SwypTheme.typography.b4Medium,
-                color = SwypTheme.colors.textPrimary
+                style = PickeTheme.typography.b4Medium,
+                color = PickeTheme.colors.textPrimary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = subtitle,
-                style = SwypTheme.typography.caption2Medium,
-                color = SwypTheme.colors.neutral400
+                style = PickeTheme.typography.caption2Medium,
+                color = PickeTheme.colors.neutral400
             )
         }
 
@@ -287,9 +286,9 @@ fun AlarmSettingItem(
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = SwypTheme.colors.primary,
+                checkedTrackColor = PickeTheme.colors.primary,
                 uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = SwypTheme.colors.textMuted,
+                uncheckedTrackColor = PickeTheme.colors.textMuted,
                 uncheckedBorderColor = Color.Transparent
             )
         )
@@ -301,14 +300,14 @@ fun AlarmDivider() {
     HorizontalDivider(
         modifier = Modifier.padding(horizontal = 16.dp),
         thickness = 1.dp,
-        color = SwypTheme.colors.borderDefault
+        color = PickeTheme.colors.borderDefault
     )
 }
 
 @Preview(showBackground = true, showSystemUi = true, name = "알림 설정 화면")
 @Composable
 private fun SettingAlarmScreenPreview() {
-    SwypAppTheme {
+    PickeTheme {
         SettingAlarmContent(
             uiState = SettingAlarmUiState(
                 settings = NotificationSettingsBoard(

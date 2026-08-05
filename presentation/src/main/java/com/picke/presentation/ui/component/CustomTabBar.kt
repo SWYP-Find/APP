@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun CustomTabBar(
@@ -49,8 +49,8 @@ fun CustomTabBar(
             ) {
                 Text(
                     text = tab,
-                    style = SwypTheme.typography.labelMedium,
-                    color = if(selectedTab == tab) SwypTheme.colors.primary else SwypTheme.colors.outline,
+                    style = PickeTheme.typography.labelMedium,
+                    color = if(selectedTab == tab) PickeTheme.colors.primary else PickeTheme.colors.outline,
                     fontWeight = if(selectedTab == tab) FontWeight.Bold else FontWeight.Normal,
                     maxLines = 1
                 )
@@ -67,10 +67,10 @@ fun CustomTabBar(
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[tabs.indexOf(selectedTab)]),
-                    color = SwypTheme.colors.primary,
+                    color = PickeTheme.colors.primary,
                 )
             },
-            divider = { HorizontalDivider(color = SwypTheme.colors.surfaceTertiary, thickness = 2.dp) }
+            divider = { HorizontalDivider(color = PickeTheme.colors.surfaceTertiary, thickness = 2.dp) }
         ) {
             tabContent()
         }
@@ -82,10 +82,10 @@ fun CustomTabBar(
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[tabs.indexOf(selectedTab)]),
-                    color = SwypTheme.colors.primary,
+                    color = PickeTheme.colors.primary,
                 )
             },
-            divider = { HorizontalDivider(color = SwypTheme.colors.borderDefault, thickness = 2.dp) }
+            divider = { HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 2.dp) }
         ) {
             tabContent()
         }

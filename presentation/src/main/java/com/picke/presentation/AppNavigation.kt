@@ -52,7 +52,7 @@ import com.picke.presentation.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.presentation.ui.onboarding.OnboardingScreen
 import com.picke.presentation.ui.perspective.PerspectiveScreen
 import com.picke.presentation.ui.recommend.RecommendScreen
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.todaybattle.TodayBattleScreen
 import com.picke.presentation.ui.vote.VoteRoute
 import com.picke.presentation.util.DeepLinkEvent
@@ -131,7 +131,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = SwypTheme.colors.backgroundBrand
+        color = PickeTheme.colors.backgroundBrand
     ) {
         LaunchedEffect(Unit) {
             DeepLinkManager.deepLinkEvent.collect { event ->
@@ -198,7 +198,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(SwypTheme.colors.primary),
+                        .background(PickeTheme.colors.primary),
                     contentAlignment = Alignment.Center
                 ) { }
             }

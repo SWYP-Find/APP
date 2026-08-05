@@ -19,7 +19,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun SwypAppTheme(
+fun PickeTheme(
     content: @Composable () -> Unit
 ) {
     // 1. 현재 화면(View) 정보를 가져옵니다.
@@ -54,7 +54,7 @@ fun SwypAppTheme(
 }
 
 
-object SwypTheme {
+object PickeTheme {
     val colors: SwypColors
         @Composable
         get() = LocalSwypColors.current

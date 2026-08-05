@@ -20,7 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.picke.presentation.analytics.UiActionName
 import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.main.BottomNavItem
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @SuppressLint("RestrictedApi")
 @Composable
@@ -41,7 +41,7 @@ fun CustomBottomNavigationBar(
     val analyticsTracker = rememberAnalyticsTracker()
 
     NavigationBar(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = PickeTheme.colors.surface,
     ) {
         val navBackStackEntry by mainNavController.currentBackStackEntryAsState()
 
@@ -65,7 +65,7 @@ fun CustomBottomNavigationBar(
                 label = {
                     Text(
                         text = item.title,
-                        style = SwypTheme.typography.label
+                        style = PickeTheme.typography.label
                     )
                 },
 
@@ -105,10 +105,10 @@ fun CustomBottomNavigationBar(
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = SwypTheme.colors.textPrimary,
-                    selectedTextColor = SwypTheme.colors.textPrimary,
-                    unselectedIconColor = SwypTheme.colors.textPrimary.copy(alpha = 0.4f),
-                    unselectedTextColor = SwypTheme.colors.textPrimary.copy(alpha = 0.4f),
+                    selectedIconColor = PickeTheme.colors.textPrimary,
+                    selectedTextColor = PickeTheme.colors.textPrimary,
+                    unselectedIconColor = PickeTheme.colors.textPrimary.copy(alpha = 0.4f),
+                    unselectedTextColor = PickeTheme.colors.textPrimary.copy(alpha = 0.4f),
                     indicatorColor = Color.Transparent
                 )
             )
