@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.annotation.RequiresExtension
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import com.picke.presentation.notification.FCMService
@@ -30,7 +29,6 @@ class MainActivity : FragmentActivity() {
         private const val TAG = "MainActivity_Picke"
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)

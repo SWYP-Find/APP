@@ -5,7 +5,6 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresExtension
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -64,7 +63,6 @@ import com.picke.presentation.ui.vote.VoteType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()

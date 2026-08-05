@@ -1,8 +1,7 @@
-﻿package com.picke.presentation.ui.my.makebattle
+package com.picke.presentation.ui.my.makebattle
 
 import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,7 +39,6 @@ import com.picke.presentation.ui.component.CustomSingleActionDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.theme.SwypTheme
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun MakeBattleScreen(
     modifier: Modifier = Modifier,

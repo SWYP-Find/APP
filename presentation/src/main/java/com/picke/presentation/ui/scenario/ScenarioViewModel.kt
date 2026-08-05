@@ -2,7 +2,6 @@ package com.picke.presentation.ui.scenario
 
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.feature.scenario.usecase.ScenarioUseCases
@@ -16,7 +15,6 @@ import com.picke.presentation.ui.scenario.model.toUiModel
 import com.picke.presentation.util.ScenarioAudioKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -70,7 +68,6 @@ class ScenarioViewModel @Inject constructor(
         audioPlayerManager.onPlaybackEnded = { handleNodeEnd() }
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun loadScenario(battleId: String) {
         Log.d("TTSFlow", "▶️ loadScenario() 실행 - 요청된 battleId: $battleId")
         currentBattleId = battleId
@@ -235,7 +232,6 @@ class ScenarioViewModel @Inject constructor(
 
         timerJob = viewModelScope.launch {
             while (isActive) {
-                delay(100)
                 updateSync(audioPlayerManager.currentPosition)
             }
         }

@@ -1,7 +1,6 @@
-﻿package com.picke.presentation.ui.scenario
+package com.picke.presentation.ui.scenario
 
 import android.os.Build
-import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -45,7 +44,6 @@ import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
 import com.picke.presentation.ui.theme.SwypTheme
 import kotlinx.coroutines.delay
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun ScenarioScreen(
     battleId: String,

@@ -2,7 +2,6 @@ package com.picke.presentation.ui.my.makebattle
 
 import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.common.local.LocalPreferencesUseCases
@@ -54,7 +53,6 @@ class MakeBattleViewModel @Inject constructor(
     val eventFlow: SharedFlow<MakeBattleEvent> = _eventFlow.asSharedFlow()
 
     // 제안하기 제출 함수
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun submitProposal(
         category: String,
         topic: String,
