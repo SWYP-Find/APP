@@ -1,6 +1,6 @@
 package com.picke.data.feature.share.model
 
-import com.picke.domain.model.ShareUrl
+import com.picke.domain.feature.share.model.ShareUrl
 
 data class ShareUrlDto(
     val shareUrl: String?

@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.model.CommentBoard
-import com.picke.domain.usecase.comment.CommentUseCases
-import com.picke.domain.usecase.comment.ReportCommentResult
-import com.picke.domain.usecase.perspective.PerspectiveUseCases
+import com.picke.domain.feature.comment.model.CommentBoard
+import com.picke.domain.feature.comment.usecase.CommentUseCases
+import com.picke.domain.feature.comment.usecase.ReportCommentResult
+import com.picke.domain.feature.perspective.usecase.PerspectiveUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.util.toRelativeTimeText
 import dagger.hilt.android.lifecycle.HiltViewModel

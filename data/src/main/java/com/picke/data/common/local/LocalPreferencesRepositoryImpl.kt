@@ -1,6 +1,6 @@
 package com.picke.data.common.local
 
-import com.picke.domain.repository.LocalPreferencesRepository
+import com.picke.domain.common.local.LocalPreferencesRepository
 import javax.inject.Inject
 
 class LocalPreferencesRepositoryImpl @Inject constructor(

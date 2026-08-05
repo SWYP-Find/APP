@@ -1,8 +1,8 @@
 package com.picke.data.feature.alarm.model
 
-import com.picke.domain.model.AlarmDetailBoard
-import com.picke.domain.model.AlarmItemBoard
-import com.picke.domain.model.AlarmPageBoard
+import com.picke.domain.feature.alarm.model.AlarmDetailBoard
+import com.picke.domain.feature.alarm.model.AlarmItemBoard
+import com.picke.domain.feature.alarm.model.AlarmPageBoard
 
 data class AlarmItemDto(
     val notificationId: Long?,

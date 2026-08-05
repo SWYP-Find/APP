@@ -2,7 +2,7 @@ package com.picke.presentation.ui.explore
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.picke.domain.usecase.explore.SearchBattlesUseCase
+import com.picke.domain.feature.explore.usecase.SearchBattlesUseCase
 
 class ExplorePagingSource(
     private val searchBattlesUseCase: SearchBattlesUseCase,

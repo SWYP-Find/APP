@@ -3,8 +3,8 @@ package com.picke.data.feature.home.repository
 import com.picke.data.feature.home.model.toDomainModel
 import com.picke.data.feature.home.model.toTodayPickDomainModel
 import com.picke.data.feature.home.datasource.HomeApi
-import com.picke.domain.model.HomeBoard
-import com.picke.domain.repository.HomeRepository
+import com.picke.domain.feature.home.model.HomeBoard
+import com.picke.domain.feature.home.repository.HomeRepository
 import javax.inject.Inject
 
 class HomeRepositoryImpl @Inject constructor(

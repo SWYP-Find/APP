@@ -3,11 +3,11 @@ package com.picke.presentation.ui.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.domain.usecase.alarm.AlarmUseCases
-import com.picke.domain.usecase.attendance.AttendanceUseCases
-import com.picke.domain.usecase.home.HomeUseCases
-import com.picke.domain.usecase.pollquiz.PollQuizUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
+import com.picke.domain.feature.alarm.usecase.AlarmUseCases
+import com.picke.domain.feature.attendance.usecase.AttendanceUseCases
+import com.picke.domain.feature.home.usecase.HomeUseCases
+import com.picke.domain.feature.pollquiz.usecase.PollQuizUseCases
 import com.picke.presentation.ui.attendance.AttendanceCheckUiState
 import com.picke.presentation.ui.attendance.toAttendanceCheckUiState
 import com.picke.ui.home.model.HomeContentUiModel

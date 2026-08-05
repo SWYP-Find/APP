@@ -4,8 +4,8 @@ import com.picke.data.common.model.toResult
 import com.picke.data.feature.pollquiz.datasource.PollQuizApi
 import com.picke.data.feature.pollquiz.model.VoteRequestDto
 import com.picke.data.feature.pollquiz.model.toDomainModel
-import com.picke.domain.model.PollQuizVoteBoard
-import com.picke.domain.repository.PollQuizRepository
+import com.picke.domain.feature.pollquiz.model.PollQuizVoteBoard
+import com.picke.domain.feature.pollquiz.repository.PollQuizRepository
 import javax.inject.Inject
 
 class PollQuizRepositoryImpl @Inject constructor(

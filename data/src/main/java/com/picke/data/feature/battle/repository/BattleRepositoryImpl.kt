@@ -3,9 +3,9 @@ package com.picke.data.feature.battle.repository
 import com.picke.data.common.model.toResult
 import com.picke.data.feature.battle.datasource.BattleApi
 import com.picke.data.feature.battle.model.toDomainModel
-import com.picke.domain.model.BattleDetailBoard
-import com.picke.domain.model.BattleStatusBoard
-import com.picke.domain.repository.BattleRepository
+import com.picke.domain.feature.battle.model.BattleDetailBoard
+import com.picke.domain.feature.battle.model.BattleStatusBoard
+import com.picke.domain.feature.battle.repository.BattleRepository
 import javax.inject.Inject
 
 class BattleRepositoryImpl @Inject constructor(

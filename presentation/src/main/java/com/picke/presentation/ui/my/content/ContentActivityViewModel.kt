@@ -3,8 +3,8 @@ package com.picke.presentation.ui.my.content
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.model.MyContentActivityItem
-import com.picke.domain.usecase.mypage.MyPageUseCases
+import com.picke.domain.feature.mypage.model.MyContentActivityItem
+import com.picke.domain.feature.mypage.usecase.MyPageUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

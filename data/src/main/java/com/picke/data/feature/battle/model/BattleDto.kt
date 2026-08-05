@@ -1,9 +1,9 @@
 package com.picke.data.feature.battle.model
 
-import com.picke.domain.model.BattleDetailBoard
-import com.picke.domain.model.BattleInfoBoard
-import com.picke.domain.model.BattleOptionBoard
-import com.picke.domain.model.BattleTagBoard
+import com.picke.domain.feature.battle.model.BattleDetailBoard
+import com.picke.domain.feature.battle.model.BattleInfoBoard
+import com.picke.domain.feature.battle.model.BattleOptionBoard
+import com.picke.domain.feature.battle.model.BattleTagBoard
 
 data class BattleDetailDto(
     val battleInfo: BattleInfoDto?,

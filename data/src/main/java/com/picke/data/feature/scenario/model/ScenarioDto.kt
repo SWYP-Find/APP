@@ -1,11 +1,11 @@
 package com.picke.data.feature.scenario.model
 
-import com.picke.domain.model.ScenarioBoard
-import com.picke.domain.model.ScenarioNode
-import com.picke.domain.model.ScenarioOption
-import com.picke.domain.model.ScenarioPhilosopher
-import com.picke.domain.model.ScenarioScript
-import com.picke.domain.model.SpeakerType
+import com.picke.domain.feature.scenario.model.ScenarioBoard
+import com.picke.domain.feature.scenario.model.ScenarioNode
+import com.picke.domain.feature.scenario.model.ScenarioOption
+import com.picke.domain.feature.scenario.model.ScenarioPhilosopher
+import com.picke.domain.feature.scenario.model.ScenarioScript
+import com.picke.domain.feature.scenario.model.SpeakerType
 
 data class ScenarioPhilosopherDto(
     val name: String?,

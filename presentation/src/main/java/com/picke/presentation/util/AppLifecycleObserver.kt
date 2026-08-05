@@ -3,8 +3,8 @@ package com.picke.presentation.util
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.picke.domain.usecase.attendance.AttendanceUseCases
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
+import com.picke.domain.feature.attendance.usecase.AttendanceUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.PointActionType
 import kotlinx.coroutines.CoroutineScope

@@ -3,8 +3,8 @@ package com.picke.data.feature.todaybattle.repository
 import com.picke.data.common.model.toResult
 import com.picke.data.feature.todaybattle.datasource.TodayBattleApi
 import com.picke.data.feature.todaybattle.model.toDomainModel
-import com.picke.domain.model.TodayBattleBoard
-import com.picke.domain.repository.TodayBattleRepository
+import com.picke.domain.feature.todaybattle.model.TodayBattleBoard
+import com.picke.domain.feature.todaybattle.repository.TodayBattleRepository
 import javax.inject.Inject
 
 class TodayBattleRepositoryImpl @Inject constructor(

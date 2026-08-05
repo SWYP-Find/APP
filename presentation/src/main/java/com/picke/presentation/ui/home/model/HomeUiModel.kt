@@ -1,10 +1,10 @@
 package com.picke.ui.home.model
 
-import com.picke.domain.model.HomeBoard
-import com.picke.domain.model.HomeContent
-import com.picke.domain.model.ContentDomainType
-import com.picke.domain.model.PollQuizOptionStatBoard
-import com.picke.domain.model.TodayPick
+import com.picke.domain.feature.home.model.HomeBoard
+import com.picke.domain.feature.home.model.HomeContent
+import com.picke.domain.feature.home.model.ContentDomainType
+import com.picke.domain.feature.pollquiz.model.PollQuizOptionStatBoard
+import com.picke.domain.feature.home.model.TodayPick
 
 enum class ContentUiType {
     BATTLE, VOTE, QUIZ, UNKNOWN

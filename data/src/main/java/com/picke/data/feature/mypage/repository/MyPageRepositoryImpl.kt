@@ -5,14 +5,14 @@ import com.picke.data.feature.mypage.datasource.MyPageApi
 import com.picke.data.feature.mypage.model.ProfileUpdateRequestDto
 import com.picke.data.feature.mypage.model.toDomainModel
 import com.picke.data.feature.mypage.model.toDto
-import com.picke.domain.model.CreditHistoryPage
-import com.picke.domain.model.MyBattleRecordPage
-import com.picke.domain.model.MyContentActivityPage
-import com.picke.domain.model.MyPageInfoBoard
-import com.picke.domain.model.MyRecapBoard
-import com.picke.domain.model.NotificationSettingsBoard
-import com.picke.domain.model.ProfileUpdateBoard
-import com.picke.domain.repository.MyPageRepository
+import com.picke.domain.feature.mypage.model.CreditHistoryPage
+import com.picke.domain.feature.mypage.model.MyBattleRecordPage
+import com.picke.domain.feature.mypage.model.MyContentActivityPage
+import com.picke.domain.feature.mypage.model.MyPageInfoBoard
+import com.picke.domain.feature.mypage.model.MyRecapBoard
+import com.picke.domain.feature.mypage.model.NotificationSettingsBoard
+import com.picke.domain.feature.mypage.model.ProfileUpdateBoard
+import com.picke.domain.feature.mypage.repository.MyPageRepository
 import javax.inject.Inject
 
 class MyPageRepositoryImpl @Inject constructor(

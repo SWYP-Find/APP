@@ -1,22 +1,22 @@
 package com.picke.data.feature.mypage.model
 
-import com.picke.domain.model.CreditHistoryItem
-import com.picke.domain.model.CreditHistoryPage
-import com.picke.domain.model.FavoriteTopic
-import com.picke.domain.model.MyBattleRecordItem
-import com.picke.domain.model.MyBattleRecordPage
-import com.picke.domain.model.MyContentActivityAuthor
-import com.picke.domain.model.MyContentActivityItem
-import com.picke.domain.model.MyContentActivityPage
-import com.picke.domain.model.MyPageInfoBoard
-import com.picke.domain.model.MyPhilosopher
-import com.picke.domain.model.MyProfile
-import com.picke.domain.model.MyRecapBoard
-import com.picke.domain.model.MyTier
-import com.picke.domain.model.NotificationSettingsBoard
-import com.picke.domain.model.PreferenceReport
-import com.picke.domain.model.ProfileUpdateBoard
-import com.picke.domain.model.RecapScores
+import com.picke.domain.feature.mypage.model.CreditHistoryItem
+import com.picke.domain.feature.mypage.model.CreditHistoryPage
+import com.picke.domain.feature.mypage.model.FavoriteTopic
+import com.picke.domain.feature.mypage.model.MyBattleRecordItem
+import com.picke.domain.feature.mypage.model.MyBattleRecordPage
+import com.picke.domain.feature.mypage.model.MyContentActivityAuthor
+import com.picke.domain.feature.mypage.model.MyContentActivityItem
+import com.picke.domain.feature.mypage.model.MyContentActivityPage
+import com.picke.domain.feature.mypage.model.MyPageInfoBoard
+import com.picke.domain.feature.mypage.model.MyPhilosopher
+import com.picke.domain.feature.mypage.model.MyProfile
+import com.picke.domain.feature.mypage.model.MyRecapBoard
+import com.picke.domain.feature.mypage.model.MyTier
+import com.picke.domain.feature.mypage.model.NotificationSettingsBoard
+import com.picke.domain.feature.mypage.model.PreferenceReport
+import com.picke.domain.feature.mypage.model.ProfileUpdateBoard
+import com.picke.domain.feature.mypage.model.RecapScores
 
 // --- [Request DTOs] ---
 data class NotificationSettingsDto(

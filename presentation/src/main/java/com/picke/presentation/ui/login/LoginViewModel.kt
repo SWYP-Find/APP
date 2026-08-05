@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
-import com.picke.domain.usecase.auth.AuthUseCases
-import com.picke.domain.usecase.device.DeviceUseCases
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
+import com.picke.domain.feature.auth.usecase.AuthUseCases
+import com.picke.domain.feature.device.usecase.DeviceUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.ui.login.model.Provider

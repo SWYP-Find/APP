@@ -3,8 +3,8 @@ package com.picke.data.feature.recommend.repository
 import com.picke.data.common.model.toResult
 import com.picke.data.feature.recommend.datasource.RecommendApi
 import com.picke.data.feature.recommend.model.toDomainModel
-import com.picke.domain.model.RecommendPageBoard
-import com.picke.domain.repository.RecommendRepository
+import com.picke.domain.feature.recommend.model.RecommendPageBoard
+import com.picke.domain.feature.recommend.repository.RecommendRepository
 import javax.inject.Inject
 
 class RecommendRepositoryImpl @Inject constructor(

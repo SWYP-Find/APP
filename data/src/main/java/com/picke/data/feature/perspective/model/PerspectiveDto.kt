@@ -1,12 +1,12 @@
 package com.picke.data.feature.perspective.model
 
-import com.picke.domain.model.PerspectiveBoard
-import com.picke.domain.model.PerspectiveDetailBoard
-import com.picke.domain.model.PerspectiveLikeCountBoard
-import com.picke.domain.model.PerspectiveLikeToggleBoard
-import com.picke.domain.model.PerspectivePage
-import com.picke.domain.model.PerspectiveStatusBoard
-import com.picke.domain.model.PerspectiveUpdateBoard
+import com.picke.domain.feature.perspective.model.PerspectiveBoard
+import com.picke.domain.feature.perspective.model.PerspectiveDetailBoard
+import com.picke.domain.feature.perspective.model.PerspectiveLikeCountBoard
+import com.picke.domain.feature.perspective.model.PerspectiveLikeToggleBoard
+import com.picke.domain.feature.perspective.model.PerspectivePage
+import com.picke.domain.feature.perspective.model.PerspectiveStatusBoard
+import com.picke.domain.feature.perspective.model.PerspectiveUpdateBoard
 
 // [공통 DTO]
 data class PerspectiveRequestDto(

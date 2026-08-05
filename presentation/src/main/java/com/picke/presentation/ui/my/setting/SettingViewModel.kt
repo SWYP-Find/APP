@@ -3,8 +3,8 @@ package com.picke.presentation.ui.my.setting
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.domain.usecase.auth.AuthUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
+import com.picke.domain.feature.auth.usecase.AuthUseCases
 import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.UiActionName

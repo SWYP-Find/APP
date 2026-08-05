@@ -3,8 +3,8 @@ package com.picke.data.feature.scenario.repository
 import com.picke.data.common.model.toResult
 import com.picke.data.feature.scenario.datasource.ScenarioApi
 import com.picke.data.feature.scenario.model.toDomainModel
-import com.picke.domain.model.ScenarioBoard
-import com.picke.domain.repository.ScenarioRepository
+import com.picke.domain.feature.scenario.model.ScenarioBoard
+import com.picke.domain.feature.scenario.repository.ScenarioRepository
 import javax.inject.Inject
 
 class ScenarioRepositoryImpl @Inject constructor(

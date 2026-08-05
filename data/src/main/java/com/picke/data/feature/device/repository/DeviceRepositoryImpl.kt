@@ -2,7 +2,7 @@ package com.picke.data.feature.device.repository
 
 import com.picke.data.feature.device.model.RegisterDeviceRequest
 import com.picke.data.feature.device.datasource.DeviceApi
-import com.picke.domain.repository.DeviceRepository
+import com.picke.domain.feature.device.repository.DeviceRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

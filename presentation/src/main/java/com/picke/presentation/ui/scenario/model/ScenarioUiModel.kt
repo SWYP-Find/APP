@@ -1,7 +1,7 @@
 package com.picke.presentation.ui.scenario.model
 
-import com.picke.domain.model.ScenarioBoard
-import com.picke.domain.model.SpeakerType
+import com.picke.domain.feature.scenario.model.ScenarioBoard
+import com.picke.domain.feature.scenario.model.SpeakerType
 
 data class ScenarioUiModel(
     val battleId: String,

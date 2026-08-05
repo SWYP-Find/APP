@@ -1,7 +1,7 @@
 package com.picke.data.feature.auth.model
 
 import com.google.gson.annotations.SerializedName
-import com.picke.domain.model.AuthBoard
+import com.picke.domain.feature.auth.model.AuthBoard
 
 /**
  *  1&2. 소셜 로그인 및 토큰 재발급 API Response

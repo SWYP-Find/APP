@@ -1,6 +1,6 @@
 package com.picke.data.feature.battle.model
 
-import com.picke.domain.model.BattleStatusBoard
+import com.picke.domain.feature.battle.model.BattleStatusBoard
 
 data class BattleStatusDto(
     val battleId: Long?,

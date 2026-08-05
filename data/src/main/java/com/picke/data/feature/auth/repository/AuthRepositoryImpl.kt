@@ -5,8 +5,8 @@ import com.picke.data.feature.auth.model.SocialLoginRequest
 import com.picke.data.feature.auth.model.WithdrawalRequest
 import com.picke.data.feature.auth.model.toDomain
 import com.picke.data.feature.auth.datasource.AuthApi
-import com.picke.domain.model.AuthBoard
-import com.picke.domain.repository.AuthRepository
+import com.picke.domain.feature.auth.model.AuthBoard
+import com.picke.domain.feature.auth.repository.AuthRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

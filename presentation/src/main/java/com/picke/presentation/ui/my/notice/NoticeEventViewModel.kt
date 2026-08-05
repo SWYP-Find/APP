@@ -3,10 +3,10 @@ package com.picke.presentation.ui.my.notice
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.model.AlarmDetailBoard
-import com.picke.domain.model.AlarmItemBoard
-import com.picke.domain.model.NoticeEventItem
-import com.picke.domain.usecase.alarm.AlarmUseCases
+import com.picke.domain.feature.alarm.model.AlarmDetailBoard
+import com.picke.domain.feature.alarm.model.AlarmItemBoard
+import com.picke.presentation.ui.my.notice.model.NoticeEventItem
+import com.picke.domain.feature.alarm.usecase.AlarmUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -6,8 +6,8 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.picke.domain.usecase.device.DeviceUseCases
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
+import com.picke.domain.feature.device.usecase.DeviceUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.presentation.MainActivity
 import com.picke.presentation.R
 import dagger.hilt.android.AndroidEntryPoint

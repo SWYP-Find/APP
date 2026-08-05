@@ -1,8 +1,8 @@
 package com.picke.data.feature.explore.model
 
-import com.picke.domain.model.ExploreItemBoard
-import com.picke.domain.model.ExplorePageBoard
-import com.picke.domain.model.ExploreTagBoard
+import com.picke.domain.feature.explore.model.ExploreItemBoard
+import com.picke.domain.feature.explore.model.ExplorePageBoard
+import com.picke.domain.feature.explore.model.ExploreTagBoard
 
 data class ExploreTagDto(
     val tagId: Long?,

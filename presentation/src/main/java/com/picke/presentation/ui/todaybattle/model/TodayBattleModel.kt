@@ -1,6 +1,6 @@
 package com.picke.presentation.ui.todaybattle.model
 
-import com.picke.domain.model.TodayBattleItem
+import com.picke.domain.feature.todaybattle.model.TodayBattleItem
 
 data class TodayBattleUiModel(
     val battleId: String,

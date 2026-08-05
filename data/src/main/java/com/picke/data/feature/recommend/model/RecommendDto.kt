@@ -1,9 +1,9 @@
 package com.picke.data.feature.recommend.model
 
-import com.picke.domain.model.RecommendBoard
-import com.picke.domain.model.RecommendOptionBoard
-import com.picke.domain.model.RecommendPageBoard
-import com.picke.domain.model.RecommendTagBoard
+import com.picke.domain.feature.recommend.model.RecommendBoard
+import com.picke.domain.feature.recommend.model.RecommendOptionBoard
+import com.picke.domain.feature.recommend.model.RecommendPageBoard
+import com.picke.domain.feature.recommend.model.RecommendTagBoard
 
 data class RecommendTagDto(
     val tagId: Long?,

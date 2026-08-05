@@ -2,8 +2,8 @@ package com.picke.data.feature.explore.repository
 
 import com.picke.data.feature.explore.datasource.ExploreApi
 import com.picke.data.feature.explore.model.toDomainModel
-import com.picke.domain.model.ExplorePageBoard
-import com.picke.domain.repository.ExploreRepository
+import com.picke.domain.feature.explore.model.ExplorePageBoard
+import com.picke.domain.feature.explore.repository.ExploreRepository
 import javax.inject.Inject
 
 class ExploreRepositoryImpl @Inject constructor(

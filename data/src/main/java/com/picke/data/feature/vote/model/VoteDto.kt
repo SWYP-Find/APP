@@ -1,9 +1,9 @@
 package com.picke.data.feature.vote.model
 
-import com.picke.domain.model.MyVoteBoard
-import com.picke.domain.model.VoteStatsBoard
-import com.picke.domain.model.VoteStatsOptionBoard
-import com.picke.domain.model.VotedOptionBoard
+import com.picke.domain.feature.vote.model.MyVoteBoard
+import com.picke.domain.feature.vote.model.VoteStatsBoard
+import com.picke.domain.feature.vote.model.VoteStatsOptionBoard
+import com.picke.domain.feature.vote.model.VotedOptionBoard
 
 // [응답 DTO] 투표 제출 성공
 data class VoteResponseDto(

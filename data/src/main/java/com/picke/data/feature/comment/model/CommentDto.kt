@@ -1,11 +1,11 @@
 package com.picke.data.feature.comment.model
 
-import com.picke.domain.model.CommentBoard
-import com.picke.domain.model.CommentCreateBoard
-import com.picke.domain.model.CommentLikeToggleBoard
-import com.picke.domain.model.CommentPageBoard
-import com.picke.domain.model.CommentUpdateBoard
-import com.picke.domain.model.CommentUserBoard
+import com.picke.domain.feature.comment.model.CommentBoard
+import com.picke.domain.feature.comment.model.CommentCreateBoard
+import com.picke.domain.feature.comment.model.CommentLikeToggleBoard
+import com.picke.domain.feature.comment.model.CommentPageBoard
+import com.picke.domain.feature.comment.model.CommentUpdateBoard
+import com.picke.domain.feature.comment.model.CommentUserBoard
 
 // [요청 DTO] 댓글 생성 및 수정 공통
 data class CommentRequestDto(

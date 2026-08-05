@@ -5,10 +5,10 @@ import com.picke.data.BuildConfig
 import com.picke.data.feature.mypage.model.toDomainModel
 import com.picke.data.feature.share.datasource.ShareApi
 import com.picke.data.feature.share.model.toDomainModel
-import com.picke.domain.model.MyRecapBoard
-import com.picke.domain.model.ShareKey
-import com.picke.domain.model.ShareUrl
-import com.picke.domain.repository.ShareRepository
+import com.picke.domain.feature.mypage.model.MyRecapBoard
+import com.picke.domain.feature.share.model.ShareKey
+import com.picke.domain.feature.share.model.ShareUrl
+import com.picke.domain.feature.share.repository.ShareRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

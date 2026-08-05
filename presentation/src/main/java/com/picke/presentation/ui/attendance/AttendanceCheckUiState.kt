@@ -1,7 +1,7 @@
 package com.picke.presentation.ui.attendance
 
-import com.picke.domain.model.WeeklyAttendance
-import com.picke.domain.model.WeeklyAttendanceDay
+import com.picke.domain.feature.attendance.model.WeeklyAttendance
+import com.picke.domain.feature.attendance.model.WeeklyAttendanceDay
 import java.time.LocalDate
 import java.time.ZoneId
 

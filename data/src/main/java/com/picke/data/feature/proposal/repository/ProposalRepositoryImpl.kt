@@ -3,9 +3,9 @@ package com.picke.data.feature.proposal.repository
 import com.picke.data.feature.proposal.datasource.ProposalApi
 import com.picke.data.feature.proposal.model.ProposalRequestDto
 import com.picke.data.feature.proposal.model.toDomainModel
-import com.picke.domain.exception.NotEnoughPointsException
-import com.picke.domain.model.ProposalBoard
-import com.picke.domain.repository.ProposalRepository
+import com.picke.domain.common.exception.NotEnoughPointsException
+import com.picke.domain.feature.proposal.model.ProposalBoard
+import com.picke.domain.feature.proposal.repository.ProposalRepository
 import retrofit2.HttpException
 import javax.inject.Inject
 

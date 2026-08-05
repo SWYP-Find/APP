@@ -4,9 +4,9 @@ import android.util.Log
 import com.picke.data.common.model.toResult
 import com.picke.data.feature.attendance.datasource.AttendanceApi
 import com.picke.data.feature.attendance.model.toDomain
-import com.picke.domain.model.AttendanceBoard
-import com.picke.domain.model.WeeklyAttendance
-import com.picke.domain.repository.AttendanceRepository
+import com.picke.domain.feature.attendance.model.AttendanceBoard
+import com.picke.domain.feature.attendance.model.WeeklyAttendance
+import com.picke.domain.feature.attendance.repository.AttendanceRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 

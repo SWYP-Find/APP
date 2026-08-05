@@ -3,9 +3,9 @@ package com.picke.presentation.ui.my.philosopher
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.model.MyRecapBoard
-import com.picke.domain.usecase.mypage.MyPageUseCases
-import com.picke.domain.usecase.share.ShareUseCases
+import com.picke.domain.feature.mypage.model.MyRecapBoard
+import com.picke.domain.feature.mypage.usecase.MyPageUseCases
+import com.picke.domain.feature.share.usecase.ShareUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.ShareTarget
 import dagger.hilt.android.lifecycle.HiltViewModel

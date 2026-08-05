@@ -2,8 +2,8 @@ package com.picke.presentation.ui.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.auth.AuthUseCases
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
+import com.picke.domain.feature.auth.usecase.AuthUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker

@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.domain.model.MyContentActivityItem
+import com.picke.domain.feature.mypage.model.MyContentActivityItem
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTabBar
 import com.picke.presentation.ui.component.CustomTopAppBar

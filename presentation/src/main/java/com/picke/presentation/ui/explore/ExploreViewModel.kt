@@ -6,7 +6,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.picke.domain.usecase.explore.ExploreUseCases
+import com.picke.domain.feature.explore.usecase.ExploreUseCases
 import com.picke.presentation.util.CategoryOption
 import com.picke.presentation.util.SortOption
 import dagger.hilt.android.lifecycle.HiltViewModel

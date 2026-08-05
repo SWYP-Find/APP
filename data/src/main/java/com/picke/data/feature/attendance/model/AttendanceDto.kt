@@ -1,10 +1,10 @@
 package com.picke.data.feature.attendance.model
 
 import com.google.gson.annotations.SerializedName
-import com.picke.domain.model.AttendanceBoard
-import com.picke.domain.model.WeeklyAttendance
-import com.picke.domain.model.WeeklyAttendanceDay
-import com.picke.domain.model.WeeklyAttendanceDayStatus
+import com.picke.domain.feature.attendance.model.AttendanceBoard
+import com.picke.domain.feature.attendance.model.WeeklyAttendance
+import com.picke.domain.feature.attendance.model.WeeklyAttendanceDay
+import com.picke.domain.feature.attendance.model.WeeklyAttendanceDayStatus
 
 /**
  * 출석 체크 API Response

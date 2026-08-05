@@ -1,10 +1,10 @@
 package com.picke.data.feature.home.model
 
-import com.picke.domain.model.ContentDomainType
-import com.picke.domain.model.ContentOption
-import com.picke.domain.model.HomeContent
-import com.picke.domain.model.PollQuizOptionStatBoard
-import com.picke.domain.model.TodayPick
+import com.picke.domain.feature.home.model.ContentDomainType
+import com.picke.domain.feature.home.model.ContentOption
+import com.picke.domain.feature.home.model.HomeContent
+import com.picke.domain.feature.pollquiz.model.PollQuizOptionStatBoard
+import com.picke.domain.feature.home.model.TodayPick
 
 data class HomeResponseDto(
     val newNotice: Boolean?,

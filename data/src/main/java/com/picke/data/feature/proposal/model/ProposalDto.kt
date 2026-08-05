@@ -1,6 +1,6 @@
 package com.picke.data.feature.proposal.model
 
-import com.picke.domain.model.ProposalBoard
+import com.picke.domain.feature.proposal.model.ProposalBoard
 
 // 서버로 보낼 때 (Request)
 data class ProposalRequestDto(

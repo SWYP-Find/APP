@@ -3,9 +3,9 @@ package com.picke.data.feature.alarm.repository
 import com.picke.data.common.model.toResult
 import com.picke.data.feature.alarm.datasource.AlarmApi
 import com.picke.data.feature.alarm.model.toDomainModel
-import com.picke.domain.model.AlarmDetailBoard
-import com.picke.domain.model.AlarmPageBoard
-import com.picke.domain.repository.AlarmRepository
+import com.picke.domain.feature.alarm.model.AlarmDetailBoard
+import com.picke.domain.feature.alarm.model.AlarmPageBoard
+import com.picke.domain.feature.alarm.repository.AlarmRepository
 import javax.inject.Inject
 
 class AlarmRepositoryImpl @Inject constructor(

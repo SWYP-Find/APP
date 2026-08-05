@@ -6,11 +6,11 @@ import com.picke.data.common.model.toResult
 import com.picke.data.feature.comment.datasource.CommentApi
 import com.picke.data.feature.comment.model.CommentRequestDto
 import com.picke.data.feature.comment.model.toDomainModel
-import com.picke.domain.model.CommentCreateBoard
-import com.picke.domain.model.CommentLikeToggleBoard
-import com.picke.domain.model.CommentPageBoard
-import com.picke.domain.model.CommentUpdateBoard
-import com.picke.domain.repository.CommentRepository
+import com.picke.domain.feature.comment.model.CommentCreateBoard
+import com.picke.domain.feature.comment.model.CommentLikeToggleBoard
+import com.picke.domain.feature.comment.model.CommentPageBoard
+import com.picke.domain.feature.comment.model.CommentUpdateBoard
+import com.picke.domain.feature.comment.repository.CommentRepository
 import javax.inject.Inject
 
 class CommentRepositoryImpl @Inject constructor(

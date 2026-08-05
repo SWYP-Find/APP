@@ -41,7 +41,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.messaging.FirebaseMessaging
-import com.picke.domain.model.NotificationSettingsBoard
+import com.picke.domain.feature.mypage.model.NotificationSettingsBoard
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar

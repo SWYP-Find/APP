@@ -60,9 +60,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.domain.model.MyPhilosopher
-import com.picke.domain.model.PreferenceReport
-import com.picke.domain.model.RecapScores
+import com.picke.domain.feature.mypage.model.MyPhilosopher
+import com.picke.domain.feature.mypage.model.PreferenceReport
+import com.picke.domain.feature.mypage.model.RecapScores
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.R
 import com.picke.presentation.analytics.ShareChannel

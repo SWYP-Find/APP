@@ -1,8 +1,8 @@
 package com.picke.data.feature.todaybattle.model
 
-import com.picke.domain.model.TodayBattleBoard
-import com.picke.domain.model.TodayBattleItem
-import com.picke.domain.model.TodayBattleOption
+import com.picke.domain.feature.todaybattle.model.TodayBattleBoard
+import com.picke.domain.feature.todaybattle.model.TodayBattleItem
+import com.picke.domain.feature.todaybattle.model.TodayBattleOption
 
 data class TodayBattleResponseDto(
     val items: List<TodayBattleItemDto>,

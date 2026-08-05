@@ -1,7 +1,7 @@
 package com.picke.data.feature.pollquiz.model
 
-import com.picke.domain.model.PollQuizOptionStatBoard
-import com.picke.domain.model.PollQuizVoteBoard
+import com.picke.domain.feature.pollquiz.model.PollQuizOptionStatBoard
+import com.picke.domain.feature.pollquiz.model.PollQuizVoteBoard
 
 data class VoteRequestDto(
     val optionId: Long
