@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,6 +38,7 @@ import com.picke.presentation.ui.alarm.model.AlarmUiState
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.SortFilterChip
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -198,5 +200,35 @@ fun AlarmScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AlarmScreenPreview() {
+    PickeTheme {
+        AlarmScreen(
+            uiState = AlarmUiState(alarmList = DummyData.dummyAlarmList),
+            onBackClick = {},
+            onReadAllClick = {},
+            onCategoryClick = {},
+            onFetchMore = {},
+            onAlarmClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AlarmScreenPreview2() {
+    PickeTheme {
+        AlarmScreen(
+            uiState = AlarmUiState(),
+            onBackClick = {},
+            onReadAllClick = {},
+            onCategoryClick = {},
+            onFetchMore = {},
+            onAlarmClick = {}
+        )
     }
 }

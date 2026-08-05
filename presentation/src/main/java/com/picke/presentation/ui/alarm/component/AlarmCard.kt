@@ -24,10 +24,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.domain.feature.alarm.model.AlarmItemBoard
 import com.picke.presentation.R
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.toRelativeTimeText
 
 @Composable
@@ -123,4 +125,13 @@ fun AlarmCard(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AlarmCardPreview() {
+    AlarmCard(
+        item = DummyData.dummyAlarmList.first(),
+        onClick = {}
+    )
 }
