@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
 import coil.imageLoader
-import com.picke.domain.model.BattleDetailBoard
-import com.picke.domain.model.BattleOptionBoard
+import com.picke.domain.feature.battle.model.BattleDetailBoard
+import com.picke.domain.feature.battle.model.BattleOptionBoard
 import com.picke.presentation.R
 import com.picke.presentation.analytics.ShareChannel
 import com.picke.presentation.ui.component.CustomButton

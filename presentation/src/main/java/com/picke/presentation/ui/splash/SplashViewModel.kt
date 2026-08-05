@@ -1,10 +1,9 @@
 package com.picke.presentation.ui.splash
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.domain.usecase.auth.AuthUseCases
+import com.picke.domain.feature.auth.usecase.AuthUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker
@@ -40,9 +39,6 @@ class SplashViewModel @Inject constructor(
     private val adMobManager: AdMobManager,
     private val appLifecycleObserver: AppLifecycleObserver
 ) : ViewModel() {
-    companion object {
-        private const val TAG = "SplashViewModel_Picke"
-    }
 
     private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
@@ -67,20 +63,11 @@ class SplashViewModel @Inject constructor(
 
     private fun checkAutoLogin() {
         viewModelScope.launch {
-            Log.d(TAG, "[FLOW] 자동 로그인 체크 시작")
-
-            val localRefreshToken = localPreferencesUseCases.getRefreshToken()
-
-            if (localRefreshToken.isNullOrBlank()) {
-                Log.i(TAG, "[NAV] 토큰 없음: 신규 유저로 판단 -> 온보딩")
-                _uiState.value = SplashUiState.NavigateToOnboarding
-            } else {
-                Log.d(TAG, "[STATE] 기존 토큰 발견: 서버 확인 절차 진입")
-                val result = authUseCases.refreshAccessTokenUseCase(localRefreshToken)
+            val checkRefreshToken = localPreferencesUseCases.checkRefreshToken()
+            if (checkRefreshToken) {
+                val result = authUseCases.refreshAccessTokenUseCase()
 
                 result.onSuccess {
-                    Log.i(TAG, "[NAV] 인증 성공: 메인 화면")
-
                     val savedUserTag = localPreferencesUseCases.getUserTag()
 
                     if (savedUserTag != null) {
@@ -89,7 +76,6 @@ class SplashViewModel @Inject constructor(
                             savedUserTag,
                             localPreferencesUseCases.getLoginProvider()
                         )
-                        Log.d(TAG, "[Mixpanel] 유저 식별 완료: $savedUserTag")
 
                         // 4. 광고 미리 로드 (프리패치) - AdMob 미사용으로 비활성화 (추후 재사용 예정)
                         // adMobManager.loadAd(userId = savedUserTag)
@@ -105,7 +91,6 @@ class SplashViewModel @Inject constructor(
 
                     when {
                         pendingReport != null -> {
-                            Log.i(TAG, "[NAV] 딥링크 감지 -> 상대방 철학자 리포트 화면으로 이동")
                             _uiState.value = SplashUiState.NavigateToOtherPhilosopher(
                                 pendingReport,
                                 needsTermsAgreement
@@ -113,21 +98,20 @@ class SplashViewModel @Inject constructor(
                         }
 
                         pendingBattle != null -> {
-                            Log.i(TAG, "[NAV] 딥링크 감지 -> 배틀 화면으로 이동")
                             _uiState.value =
                                 SplashUiState.NavigateToBattle(pendingBattle, needsTermsAgreement)
                         }
 
                         else -> {
-                            Log.i(TAG, "[NAV] 일반 접속 -> 메인 화면으로 이동 (약관 동의 필요: $needsTermsAgreement)")
                             _uiState.value = SplashUiState.NavigateToMain(needsTermsAgreement)
                         }
                     }
-                }.onFailure { error ->
-                    Log.w(TAG, "[NAV] 인증 실패: 로그인 화면")
+                }.onFailure {
                     localPreferencesUseCases.clearAll()
                     _uiState.value = SplashUiState.NavigateToLogin
                 }
+            } else {
+                _uiState.value = SplashUiState.NavigateToOnboarding
             }
         }
     }

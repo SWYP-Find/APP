@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.scenario.ScenarioUseCases
+import com.picke.domain.feature.scenario.usecase.ScenarioUseCases
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.BattleStepName

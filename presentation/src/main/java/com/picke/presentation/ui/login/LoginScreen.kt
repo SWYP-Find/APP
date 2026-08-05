@@ -49,6 +49,7 @@ import com.picke.presentation.analytics.OnboardingStep
 import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.TermsOfServiceBottomSheet
+import com.picke.presentation.ui.login.model.Provider
 import com.picke.presentation.ui.theme.SwypAppTheme
 import com.picke.presentation.ui.theme.SwypTheme
 
@@ -83,7 +84,7 @@ fun LoginScreen(
             val account = task.getResult(ApiException::class.java)
             account.serverAuthCode?.let { authCode ->
                 if (BuildConfig.DEBUG) Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
-                viewModel.handleSocialLoginSuccess("google", authCode)
+                viewModel.handleSocialLoginSuccess(Provider.GOOGLE, authCode)
             } ?: Log.e(TAG, "[ERROR] 구글 인가 코드가 null입니다.")
         } catch (e: ApiException) {
             val hint = when (e.statusCode) {
@@ -141,7 +142,7 @@ fun LoginScreen(
             analyticsTracker.trackOnboardingStep(OnboardingStep.KAKAO_START, method = "kakao")
             loginWithKakaoForAuthCode(context, viewModel) { token ->
                 if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
-                viewModel.handleSocialLoginSuccess("kakao", token)
+                viewModel.handleSocialLoginSuccess(Provider.KAKAO, token)
             }
         },
         onGoogleClick = {

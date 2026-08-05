@@ -40,7 +40,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.domain.model.MyPhilosopher
+import com.picke.domain.feature.mypage.model.MyPhilosopher
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.AdFitBannerAd

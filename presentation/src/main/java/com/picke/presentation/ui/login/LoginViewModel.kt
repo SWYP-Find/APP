@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.domain.usecase.auth.AuthUseCases
-import com.picke.domain.usecase.device.DeviceUseCases
+import com.picke.domain.feature.auth.usecase.AuthUseCases
+import com.picke.domain.feature.device.usecase.DeviceUseCases
+import com.picke.domain.common.local.LocalPreferencesUseCases
+import com.picke.presentation.BuildConfig
 import com.picke.presentation.analytics.AnalyticsTracker
+import com.picke.presentation.ui.login.model.Provider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,8 +48,7 @@ class LoginViewModel @Inject constructor(
         preferencesUseCases.saveTermsAgreed()
     }
 
-    fun handleSocialLoginSuccess(provider: String, authCode: String) {
-        // API 중복 요청 방지
+    fun handleSocialLoginSuccess(provider: Provider, authCode: String) {
         if (_uiState.value is LoginUiState.Loading) {
             Log.d(TAG, "[FLOW] 중복 로그인 요청 차단")
             return
@@ -56,7 +57,16 @@ class LoginViewModel @Inject constructor(
         _uiState.value = LoginUiState.Loading
 
         viewModelScope.launch {
-            val result = authUseCases.loginUseCase(provider = provider, authCode = authCode)
+            val redirectUri = when (provider) {
+                Provider.KAKAO -> "kakao${BuildConfig.KAKAO_DEBUG_APPKEY}://oauth"
+                Provider.GOOGLE -> "https://picke.store/oauth/google"
+            }
+
+            val result = authUseCases.loginUseCase(
+                redirectUri = redirectUri,
+                provider = provider.name,
+                authCode = authCode
+            )
 
             result.onSuccess { authToken ->
                 val needsTermsAgreement =
@@ -72,8 +82,8 @@ class LoginViewModel @Inject constructor(
 
                 val userTag = authToken.userTag ?: "unknown_user"
                 preferencesUseCases.saveUserTag(userTag)
-                preferencesUseCases.saveLoginProvider(provider)
-                analyticsTracker.onLogin(userTag, provider, authToken.isNewUser)
+                preferencesUseCases.saveLoginProvider(provider.name)
+                analyticsTracker.onLogin(userTag, provider.name, authToken.isNewUser)
 
                 FirebaseMessaging.getInstance().token
                     .addOnSuccessListener { fcmToken ->

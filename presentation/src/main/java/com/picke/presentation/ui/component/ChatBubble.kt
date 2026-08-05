@@ -13,7 +13,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.picke.domain.model.SpeakerType
+import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.presentation.R
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
 import com.picke.presentation.ui.theme.SwypTheme

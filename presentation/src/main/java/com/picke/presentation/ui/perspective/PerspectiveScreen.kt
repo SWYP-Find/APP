@@ -67,7 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.domain.model.VoteStatsOptionBoard
+import com.picke.domain.feature.vote.model.VoteStatsOptionBoard
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.component.CustomTabBar

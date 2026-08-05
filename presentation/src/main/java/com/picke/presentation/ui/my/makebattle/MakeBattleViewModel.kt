@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.usecase.local.LocalPreferencesUseCases
-import com.picke.domain.usecase.proposal.ProposalUseCases
-import com.picke.domain.usecase.proposal.SubmitProposalResult
+import com.picke.domain.common.local.LocalPreferencesUseCases
+import com.picke.domain.feature.proposal.usecase.ProposalUseCases
+import com.picke.domain.feature.proposal.usecase.SubmitProposalResult
 import com.picke.presentation.ads.AdMobManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

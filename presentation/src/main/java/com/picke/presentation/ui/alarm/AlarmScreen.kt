@@ -37,7 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.domain.model.AlarmItemBoard
+import com.picke.domain.feature.alarm.model.AlarmItemBoard
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.SortFilterChip

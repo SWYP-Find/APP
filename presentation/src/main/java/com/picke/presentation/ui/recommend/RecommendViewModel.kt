@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.model.RecommendBoard
-import com.picke.domain.usecase.recommend.RecommendUseCases
+import com.picke.domain.feature.recommend.model.RecommendBoard
+import com.picke.domain.feature.recommend.usecase.RecommendUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,6 +1,6 @@
 package com.picke.presentation.ui.explore
 
-import com.picke.domain.model.ExploreItemBoard
+import com.picke.domain.feature.explore.model.ExploreItemBoard
 
 data class ExploreUiModel(
     val battleId: String,
