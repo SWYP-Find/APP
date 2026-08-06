@@ -156,4 +156,15 @@ fun ExploreCard(
             }
         }
     }
-}o
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExploreCardPreview() {
+    PickeTheme {
+        ExploreCard(
+            item = DummyData.dummyExploreList.first(),
+            onClick = {}
+        )
+    }
+}

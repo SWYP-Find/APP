@@ -33,9 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.picke.presentation.BuildConfig
@@ -48,6 +50,8 @@ import com.picke.presentation.ui.explore.component.ExploreCard
 import com.picke.presentation.ui.explore.component.ExploreSkeleton
 import com.picke.presentation.ui.explore.model.ExploreUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -296,5 +300,25 @@ fun ExploreList(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ExploreScreenPreview() {
+    PickeTheme {
+        val dummyPagingItems =
+            flowOf(PagingData.from(DummyData.dummyExploreList)).collectAsLazyPagingItems()
+
+        ExploreScreen(
+            selectedCategory = "전체",
+            selectedSort = "POPULAR",
+            pagingItems = dummyPagingItems,
+            scrollToTopTrigger = 0,
+            onCategoryChange = {},
+            onSortChange = {},
+            onNavigateToAlarm = {},
+            onNavigateToVote = {}
+        )
     }
 }

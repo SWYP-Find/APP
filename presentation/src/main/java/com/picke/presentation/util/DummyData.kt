@@ -2,6 +2,7 @@ package com.picke.presentation.util
 
 import com.picke.domain.feature.alarm.model.AlarmItemBoard
 import com.picke.presentation.ui.comment.model.CommentUiModel
+import com.picke.presentation.ui.explore.model.ExploreUiModel
 
 object DummyData {
 
@@ -96,6 +97,39 @@ object DummyData {
             likeCount = 0,
             isLiked = true,
             isMine = true
+        )
+    )
+
+    val dummyExploreList = listOf(
+        ExploreUiModel(
+            battleId = "",
+            thumbnailUrl = "",
+            type = "",
+            title = "test explore1",
+            summary = "test summary1",
+            tags = listOf("tag1", "tag2", "tag3"),
+            audioDurationText = "test audio duration text1",
+            viewCountText = "view count text1"
+        ),
+        ExploreUiModel(
+            battleId = "",
+            thumbnailUrl = "",
+            type = "",
+            title = "test explore2",
+            summary = "test summary2",
+            tags = listOf("tag1"),
+            audioDurationText = "test audio duration text2",
+            viewCountText = "view count text2"
+        ),
+        ExploreUiModel(
+            battleId = "",
+            thumbnailUrl = "",
+            type = "",
+            title = "test explore3",
+            summary = "test summary3",
+            tags = listOf("tag2", "tag3"),
+            audioDurationText = "test audio duration text3",
+            viewCountText = "3"
         )
     )
 }
