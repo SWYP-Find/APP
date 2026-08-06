@@ -89,3 +89,9 @@ private fun CommentItemCardSkeleton(showContentTwoLines: Boolean = false) {
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CommentSkeletonPreview() {
+    CommentSkeleton()
+}

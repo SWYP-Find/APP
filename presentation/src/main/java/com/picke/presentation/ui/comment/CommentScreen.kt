@@ -301,3 +301,30 @@ fun CommentHeaderSection(count: Int) {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CommentScreenPreview() {
+    PickeTheme {
+        CommentScreenContent(
+            uiState = CommentUiState(comments = DummyData.dummyComments),
+            scrollToCommentId = null,
+            inputFieldState = rememberTextFieldState(),
+            isRefreshing = false,
+            commentToDelete = null,
+            commentToReport = null,
+            onBackClick = {},
+            onRefresh = {},
+            onSubmit = {},
+            onMainLikeClick = {},
+            onEditComment = { _, _ -> },
+            onRequestDelete = {},
+            onRequestReport = {},
+            onLikeComment = { _, _, _ -> },
+            onConfirmDelete = {},
+            onDismissDelete = {},
+            onConfirmReport = {},
+            onDismissReport = {}
+        )
+    }
+}
