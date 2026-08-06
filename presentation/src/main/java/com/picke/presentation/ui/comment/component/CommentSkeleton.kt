@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.comment
+package com.picke.presentation.ui.comment.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,20 +19,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
 
-// CommentItemCard/CommentHeader와 동일한 padding 값을 그대로 써서
-// 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
 @Composable
 fun CommentSkeleton(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
-        // 1. 메인 관점(원본 글) 카드 자리
         CommentItemCardSkeleton(showContentTwoLines = true)
 
-        // 2. "답글 N개" 헤더 자리
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -42,7 +39,6 @@ fun CommentSkeleton(modifier: Modifier = Modifier) {
             SkeletonLine(width = 70.dp, height = 16.dp)
         }
 
-        // 3. 댓글 리스트 자리
         repeat(4) {
             CommentItemCardSkeleton()
             HorizontalDivider(thickness = 1.dp, color = PickeTheme.colors.borderDefault)
@@ -76,7 +72,6 @@ private fun CommentItemCardSkeleton(showContentTwoLines: Boolean = false) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // 입장 뱃지 자리
         SkeletonLine(width = 70.dp, height = 20.dp)
 
         Spacer(modifier = Modifier.height(12.dp))
