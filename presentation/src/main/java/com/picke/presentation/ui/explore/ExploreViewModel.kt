@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.picke.domain.feature.explore.usecase.ExploreUseCases
+import com.picke.presentation.ui.explore.model.ExploreUiModel
 import com.picke.presentation.util.CategoryOption
 import com.picke.presentation.util.SortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,10 +24,6 @@ import javax.inject.Inject
 class ExploreViewModel @Inject constructor(
     private val exploreUseCases: ExploreUseCases
 ) : ViewModel() {
-
-    private companion object {
-        const val TAG = "ExploreFlow"
-    }
 
     private val _selectedCategory = MutableStateFlow(CategoryOption.ALL)
     val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
