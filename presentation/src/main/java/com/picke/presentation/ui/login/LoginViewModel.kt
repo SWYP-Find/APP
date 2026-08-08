@@ -9,6 +9,7 @@ import com.picke.domain.feature.device.usecase.DeviceUseCases
 import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.analytics.AnalyticsTracker
+import com.picke.presentation.ui.login.model.LoginUiState
 import com.picke.presentation.ui.login.model.Provider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,15 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-sealed class LoginUiState {
-    object Idle : LoginUiState()
-    object Loading : LoginUiState() // 로딩중
-    data class Success(val isNewUser: Boolean, val needsTermsAgreement: Boolean) :
-        LoginUiState() // 로그인 성공
-
-    data class Error(val message: String) : LoginUiState() // 에러 발생
-}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
