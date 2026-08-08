@@ -590,3 +590,26 @@ fun EditorPickSection(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(
+        uiState = HomeUiState(
+            editorPicks = DummyData.dummyHomeContentItems,
+            trendingBattles = DummyData.dummyHomeContentItems,
+            bestBattles = DummyData.dummyHomeContentItems,
+            newBattles = DummyData.dummyHomeContentItems,
+            todayPicks = listOf(DummyData.dummyVotePick, DummyData.dummyQuizPick)
+        ),
+        onNavigateToAlarm = {},
+        onNavigateToVote = {},
+        onNavigateToTrendingBattle = {},
+        onNavigateToBestBattle = {},
+        onNavigateToTodayPicke = {},
+        onNavigateToNewBattle = {},
+        onFetchHomeData = {},
+        onDismissAttendanceCheckSheet = {},
+        scrollToTopTrigger = 0
+    )
+}

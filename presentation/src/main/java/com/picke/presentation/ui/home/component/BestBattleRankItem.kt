@@ -22,10 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
 import com.picke.presentation.ui.home.model.HomeContentUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun BestBattleRankItem(
@@ -124,5 +126,17 @@ fun BestBattleRankItem(
             }
         }
         HorizontalDivider(color = PickeTheme.colors.surfaceTertiary, thickness = 1.dp)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BestBattleRankItemPreview() {
+    PickeTheme {
+        BestBattleRankItem(
+            item = DummyData.dummyHomeContentItems.first(),
+            rank = 2,
+            onClick = { }
+        )
     }
 }

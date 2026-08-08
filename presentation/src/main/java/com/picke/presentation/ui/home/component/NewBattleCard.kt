@@ -24,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.BattleOpinionBox
 import com.picke.presentation.ui.home.model.HomeContentUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun NewBattleCard(
@@ -143,4 +145,13 @@ fun NewBattleCard(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NewBattleCardPreview() {
+    NewBattleCard(
+        item = DummyData.dummyHomeContentItems.first(),
+        onClick = {}
+    )
 }

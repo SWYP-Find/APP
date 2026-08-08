@@ -28,10 +28,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.home.model.PollQuizOptionStatUiModel
 import com.picke.presentation.ui.home.model.TodayPickUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun TodayPickeCard(
@@ -356,5 +358,16 @@ private fun QuizOptionCard(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TodayPickeCardPreview() {
+    PickeTheme {
+        TodayPickeCard(
+            item = DummyData.dummyVotePick,
+            onVoteClick = {}
+        )
     }
 }
