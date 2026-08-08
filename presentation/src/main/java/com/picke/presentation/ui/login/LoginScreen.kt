@@ -2,7 +2,6 @@ package com.picke.presentation.ui.login
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -49,15 +48,14 @@ import com.picke.presentation.analytics.OnboardingStep
 import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.TermsOfServiceBottomSheet
+import com.picke.presentation.ui.login.model.LoginUiState
 import com.picke.presentation.ui.login.model.Provider
 import com.picke.presentation.ui.theme.PickeTheme
 
-private const val TAG = "LoginScreen_Picke"
-
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = hiltViewModel(),
     onNavigateToMain: (isNewUser: Boolean) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
@@ -69,12 +67,10 @@ fun LoginScreen(
         analyticsTracker.trackOnboardingStep(OnboardingStep.LOGIN_SHOWN)
     }
 
-    // 뒤로가기 -> 앱 종료
     BackHandler {
         (context as? Activity)?.finish()
     }
 
-    // 구글 로그인 런처
     val googleSignInLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -82,18 +78,9 @@ fun LoginScreen(
         try {
             val account = task.getResult(ApiException::class.java)
             account.serverAuthCode?.let { authCode ->
-                if (BuildConfig.DEBUG) Log.d(TAG, "[SDK] 구글 인가 코드 획득 성공 -> ViewModel 전달")
                 viewModel.handleSocialLoginSuccess(Provider.GOOGLE, authCode)
-            } ?: Log.e(TAG, "[ERROR] 구글 인가 코드가 null입니다.")
-        } catch (e: ApiException) {
-            val hint = when (e.statusCode) {
-                10 -> "DEVELOPER_ERROR: 클라이언트 ID 타입 오류 또는 SHA-1 미등록"
-                12500 -> "Google Play Services 미지원 기기"
-                12501 -> "사용자가 로그인 취소"
-                7 -> "NETWORK_ERROR: 네트워크 연결 확인 필요"
-                else -> "알 수 없는 오류"
             }
-            Log.e(TAG, "[ERROR] 구글 SDK 로그인 실패 (Code: ${e.statusCode} / $hint)", e)
+        } catch (e: ApiException) {
             Toast.makeText(context, "구글 로그인에 실패했습니다. \n다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
             viewModel.resetState()
         }
@@ -103,18 +90,15 @@ fun LoginScreen(
         when (val state = uiState) {
             is LoginUiState.Success -> {
                 if (state.needsTermsAgreement) {
-                    Log.i(TAG, "[NAV] 로그인 성공 -> 약관 동의 필요, 바텀시트 표시 (신규 유저: ${state.isNewUser})")
                     pendingIsNewUser = state.isNewUser
                     showTermsSheet = true
                     analyticsTracker.trackOnboardingStep(OnboardingStep.TERMS_SHOWN)
                 } else {
-                    Log.i(TAG, "[NAV] 로그인 성공 -> 메인으로 이동 (신규 유저: ${state.isNewUser})")
                     onNavigateToMain(state.isNewUser)
                 }
             }
 
             is LoginUiState.Error -> {
-                Log.e(TAG, "[ERROR] 로그인 실패: ${state.message}")
                 Toast.makeText(context, "다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 viewModel.resetState()
             }
@@ -129,7 +113,6 @@ fun LoginScreen(
                 viewModel.markTermsAgreed()
                 analyticsTracker.trackOnboardingStep(OnboardingStep.TERMS_AGREED)
                 showTermsSheet = false
-                Log.i(TAG, "[NAV] 약관 동의 완료 -> 메인으로 이동 (신규 유저: $pendingIsNewUser)")
                 onNavigateToMain(pendingIsNewUser)
             }
         )
@@ -140,14 +123,11 @@ fun LoginScreen(
         onKakaoClick = {
             analyticsTracker.trackOnboardingStep(OnboardingStep.KAKAO_START, method = "kakao")
             loginWithKakaoForAuthCode(context, viewModel) { token ->
-                if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
                 viewModel.handleSocialLoginSuccess(Provider.KAKAO, token)
             }
         },
         onGoogleClick = {
-            Log.d(TAG, "[FLOW] 구글 로그인 버튼 클릭")
             if (BuildConfig.GOOGLE_WEB_CLIENT_ID.isEmpty()) {
-                Log.e(TAG, "[ERROR] GOOGLE_WEB_CLIENT_ID가 설정되지 않았습니다. local.properties를 확인하세요.")
                 Toast.makeText(context, "로그인 설정 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -249,7 +229,6 @@ private fun loginWithKakaoForAuthCode(
 ) {
     val callback: (String?, Throwable?) -> Unit = { authCode, error ->
         if (error != null) {
-            Log.e(TAG, "[ERROR] 카카오 계정 로그인 실패", error)
             Toast.makeText(context, "카카오 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
             viewModel.resetState()
         } else if (authCode != null) {
@@ -258,18 +237,14 @@ private fun loginWithKakaoForAuthCode(
     }
 
     if (AuthCodeClient.instance.isKakaoTalkLoginAvailable(context)) {
-        Log.d(TAG, "[SDK] 카카오톡 앱으로 로그인 시도")
         AuthCodeClient.instance.authorizeWithKakaoTalk(context) { authCode, error ->
             if (error != null) {
-                Log.w(TAG, "[SDK] 카카오톡 앱 로그인 실패 -> 계정 로그인 시도")
                 if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                    Log.d(TAG, "[STATE] 유저가 카카오 로그인을 취소함")
                     viewModel.resetState()
                     return@authorizeWithKakaoTalk
                 }
-                // AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
                 AuthCodeClient.instance.authorizeWithKakaoAccount(
-                    context,
+                    context = context,
                     prompts = listOf(Prompt.LOGIN),
                     callback = callback
                 )
@@ -278,10 +253,8 @@ private fun loginWithKakaoForAuthCode(
             }
         }
     } else {
-        Log.d(TAG, "[SDK] 카카오 계정(웹)으로 로그인 시도")
-        // AuthCodeClient.instance.authorizeWithKakaoAccount(context, callback = callback)
         AuthCodeClient.instance.authorizeWithKakaoAccount(
-            context,
+            context = context,
             prompts = listOf(Prompt.LOGIN),
             callback = callback
         )
