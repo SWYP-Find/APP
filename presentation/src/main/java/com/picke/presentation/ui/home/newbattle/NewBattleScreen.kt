@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.home.new
+package com.picke.presentation.ui.home.newbattle
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
