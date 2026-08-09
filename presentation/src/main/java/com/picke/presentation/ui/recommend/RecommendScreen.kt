@@ -96,7 +96,6 @@ fun RecommendScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 카카오 애드핏 배너 광고 (리스트 맨 위)
                 item {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)

@@ -1,6 +1,5 @@
 package com.picke.presentation.ui.recommend
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,37 +36,6 @@ class RecommendViewModel @Inject constructor(
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
             recommendUseCases.getInterestingRecommendationsUseCase(battleIdLong)
                 .onSuccess { page ->
-                    Log.d("RecommendFlow", "🟢 추천 배틀 목록 조회 성공: ${page.items.size}개")
-
-                    page.items.forEachIndexed { index, board ->
-                        val optA = board.options.getOrNull(0)
-                        val optB = board.options.getOrNull(1)
-
-                        Log.d(
-                            "RecommendFlow", """
-                            --- [추천 배틀 Item $index] ---
-                            battleId: ${board.battleId}
-                            title: ${board.title}
-                            summary: ${board.summary}
-                            participantsCount: ${board.participantsCount}
-                            tags: ${board.tags.map { it.name }}
-
-                            [Option A 데이터]
-                            - title: ${optA?.title}
-                            - stance: ${optA?.stance}
-                            - representative(철학자): ${optA?.representative}
-                            - imageUrl: ${optA?.imageUrl}
-
-                            [Option B 데이터]
-                            - title: ${optB?.title}
-                            - stance: ${optB?.stance}
-                            - representative(철학자): ${optB?.representative}
-                            - imageUrl: ${optB?.imageUrl}
-                            -----------------------------
-                        """.trimIndent()
-                        )
-                    }
-
                     val uiModels = page.items.map { it.toUiModel() }
 
                     _uiState.update {
@@ -77,8 +45,7 @@ class RecommendViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure { error ->
-                    Log.e("RecommendFlow", "🔴 추천 배틀 목록 로드 실패: ${error.message}", error)
+                .onFailure {
                     _uiState.update { it.copy(isLoading = false) }
                 }
         }

@@ -24,8 +24,6 @@ import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
 
-// RecommendItemCard와 동일한 padding 값을 그대로 써서
-// 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
 @Composable
 fun RecommendListSkeleton(modifier: Modifier = Modifier) {
     LazyColumn(
@@ -48,7 +46,6 @@ private fun RecommendItemCardSkeleton() {
             .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .padding(12.dp)
     ) {
-        // 1. 태그 및 시간/조회수 자리
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -59,15 +56,11 @@ private fun RecommendItemCardSkeleton() {
         }
 
         Spacer(modifier = Modifier.height(12.dp))
-
-        // 2. 제목/요약 자리
         SkeletonLine(width = 200.dp, height = 18.dp)
         Spacer(modifier = Modifier.height(6.dp))
         SkeletonLine(width = 240.dp, height = 14.dp)
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        // 3. VS 영역 자리
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

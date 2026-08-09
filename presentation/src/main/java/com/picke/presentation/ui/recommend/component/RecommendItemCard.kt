@@ -47,7 +47,6 @@ fun RecommendItemCard(
             .clickable { onClick() }
             .padding(12.dp)
     ) {
-        // 1. 최상단: 태그 및 시간/조회수 영역
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -61,6 +60,7 @@ fun RecommendItemCard(
                     color = PickeTheme.colors.primary
                 )
             }
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painterResource(R.drawable.ic_clock),
@@ -68,6 +68,7 @@ fun RecommendItemCard(
                     Modifier.size(12.dp),
                     tint = PickeTheme.colors.neutral400
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "${item.audioDuration}분",
@@ -76,13 +77,13 @@ fun RecommendItemCard(
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
-
                 Icon(
                     painterResource(R.drawable.ic_eye),
                     null,
                     Modifier.size(12.dp),
                     tint = PickeTheme.colors.neutral400
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "${item.viewCount}",
@@ -93,8 +94,6 @@ fun RecommendItemCard(
         }
 
         Spacer(modifier = Modifier.height(12.dp))
-
-        // 2. 제목 및 요약
         Text(
             text = item.title,
             style = PickeTheme.typography.b3SemiBold,
@@ -102,6 +101,7 @@ fun RecommendItemCard(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = item.summary,
@@ -113,8 +113,6 @@ fun RecommendItemCard(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        // 3. VS 영역
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
