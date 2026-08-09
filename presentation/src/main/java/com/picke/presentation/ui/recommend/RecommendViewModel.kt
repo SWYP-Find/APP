@@ -4,8 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.feature.recommend.model.RecommendBoard
 import com.picke.domain.feature.recommend.usecase.RecommendUseCases
+import com.picke.presentation.ui.recommend.model.RecommendUiState
+import com.picke.presentation.ui.recommend.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,28 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class RecommendUiModel(
-    val battleId: String,
-    val title: String,
-    val summary: String,
-    val audioDuration: Int,
-    val viewCount: Int,
-    val participantsCount: Int,
-    val tags: List<String>,
-    val imageA: String,
-    val imageB: String,
-    val stanceA: String,
-    val stanceB: String,
-    val representativeA: String,
-    val representativeB: String
-)
-
-data class RecommendUiState(
-    val battleId: String = "",
-    val recommendList: List<RecommendUiModel> = emptyList(),
-    val isLoading: Boolean = false
-)
 
 @HiltViewModel
 class RecommendViewModel @Inject constructor(
@@ -104,30 +83,4 @@ class RecommendViewModel @Inject constructor(
                 }
         }
     }
-}
-
-// Domain Model -> UI Model
-private fun RecommendBoard.toUiModel(): RecommendUiModel {
-    val optA = this.options.getOrNull(0)
-    val optB = this.options.getOrNull(1)
-    val durationInMinutes = if (this.audioDuration in 1..<60) {
-        1
-    } else {
-        this.audioDuration / 60
-    }
-    return RecommendUiModel(
-        battleId = this.battleId.toString(),
-        title = this.title,
-        summary = this.summary,
-        audioDuration = durationInMinutes,
-        viewCount = this.viewCount,
-        participantsCount = this.participantsCount,
-        tags = this.tags.map { it.name },
-        imageA = optA?.imageUrl ?: "",
-        imageB = optB?.imageUrl ?: "",
-        stanceA = optA?.stance ?: "",
-        stanceB = optB?.stance ?: "",
-        representativeA = optA?.representative ?: "",
-        representativeB = optB?.representative ?: ""
-    )
 }

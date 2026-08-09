@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.recommend
+package com.picke.presentation.ui.recommend.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
