@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.feature.perspective.usecase.PerspectiveUseCases
 import com.picke.domain.feature.perspective.usecase.ReportPerspectiveResult
-import com.picke.domain.feature.pollquiz.model.PollQuizVoteBoard
 import com.picke.domain.feature.vote.usecase.VoteUseCases
 import com.picke.presentation.ui.perspective.model.PerspectiveUiEvent
 import com.picke.presentation.ui.perspective.model.PerspectiveUiState
@@ -41,9 +40,6 @@ class PerspectiveViewModel @Inject constructor(
 
     private val _uiEvent = MutableSharedFlow<PerspectiveUiEvent>()
     val uiEvent: SharedFlow<PerspectiveUiEvent> = _uiEvent.asSharedFlow()
-
-    private val _realTimeStats = MutableStateFlow<PollQuizVoteBoard?>(null)
-    val realTimeStats: StateFlow<PollQuizVoteBoard?> = _realTimeStats.asStateFlow()
 
     init {
         loadPerspectives()
@@ -141,7 +137,7 @@ class PerspectiveViewModel @Inject constructor(
                         isLoading = false
                     )
                 }
-            }.onFailure { error ->
+            }.onFailure {
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
@@ -165,7 +161,6 @@ class PerspectiveViewModel @Inject constructor(
 
         val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
         val editId = _uiState.value.editingPerspectiveId
-        val isEditMode = editId != null
 
         _uiState.update { it.copy(editingPerspectiveId = null) }
 
@@ -201,8 +196,6 @@ class PerspectiveViewModel @Inject constructor(
 
     fun toggleLike(perspectiveId: Long, isCurrentlyLiked: Boolean) {
         viewModelScope.launch {
-            val action = if (isCurrentlyLiked) "취소" else "등록"
-
             perspectiveUseCases.togglePerspectiveLikeUseCase(perspectiveId, isCurrentlyLiked)
                 .onSuccess { toggleData ->
                     _uiState.update { state ->
@@ -236,15 +229,6 @@ class PerspectiveViewModel @Inject constructor(
                             _uiEvent.emit(PerspectiveUiEvent.ShowToast("이미 신고한 사용자입니다."))
                         }
                     }
-                }
-        }
-    }
-
-    fun retryModeration(perspectiveId: Long) {
-        viewModelScope.launch {
-            perspectiveUseCases.retryModerationUseCase(perspectiveId)
-                .onSuccess {
-                    loadMyPerspective()
                 }
         }
     }
