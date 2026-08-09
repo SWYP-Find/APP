@@ -1,4 +1,4 @@
-﻿package com.picke.presentation.ui.component
+﻿package com.picke.presentation.ui.scenario.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,10 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.presentation.R
+import com.picke.presentation.ui.component.ChattingLoadingAnimation
+import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
 import com.picke.presentation.ui.theme.PickeTheme
 
@@ -39,7 +42,7 @@ fun ChatBubble(
                 text = formattedText,
                 color = if (isActive) PickeTheme.colors.textSecondary else PickeTheme.colors.textMuted,
                 style = PickeTheme.typography.label.copy(
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = FontStyle.Italic
                 ),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.clickable { onClick() }

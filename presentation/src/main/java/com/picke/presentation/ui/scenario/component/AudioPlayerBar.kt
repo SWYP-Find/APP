@@ -1,4 +1,4 @@
-﻿package com.picke.presentation.ui.component
+﻿package com.picke.presentation.ui.scenario.component
 
 import com.picke.presentation.R
 import androidx.compose.foundation.background

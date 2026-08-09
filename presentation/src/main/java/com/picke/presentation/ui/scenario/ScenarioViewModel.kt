@@ -1,6 +1,5 @@
 package com.picke.presentation.ui.scenario
 
-import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,11 +7,12 @@ import com.picke.domain.feature.scenario.usecase.ScenarioUseCases
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.BattleStepName
-import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
-import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
+import com.picke.presentation.ui.scenario.model.PastChoice
 import com.picke.presentation.ui.scenario.model.ScenarioUiModel
+import com.picke.presentation.ui.scenario.model.ScenarioUiState
 import com.picke.presentation.ui.scenario.model.toUiModel
 import com.picke.presentation.util.ScenarioAudioKey
+import com.picke.presentation.util.splitScriptsBySentence
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,31 +22,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class PastChoice(
-    val scriptIndex: Int,
-    val options: List<ScenarioOptionUiModel>,
-    val selectedNextNodeId: String
-)
-
-data class ScenarioUiState(
-    val title: String = "",
-    val pastScripts: List<ScenarioScriptUiModel> = emptyList(),
-    val pastChoices: List<PastChoice> = emptyList(),
-    val scripts: List<ScenarioScriptUiModel> = emptyList(),
-    val activeIndex: Int = -1,
-    val maxRevealedIndex: Int = -1,
-    val nodeEndTimeMs: Long = 0L,
-    val isPlaying: Boolean = false,
-    val currentPositionMs: Long = 0L,
-    val maxListenedPositionMs: Long = 0L,
-    val totalDurationMs: Long = 0L,
-    val interactiveOptions: List<ScenarioOptionUiModel> = emptyList(),
-    val currentNodeId: String = "",
-    val showOptions: Boolean = false,
-    val showFinalVoteDialog: Boolean = false,
-    val isReviewing: Boolean = false
-)
 
 @HiltViewModel
 class ScenarioViewModel @Inject constructor(

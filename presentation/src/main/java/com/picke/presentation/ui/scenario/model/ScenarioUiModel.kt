@@ -34,10 +34,8 @@ data class ScenarioOptionUiModel(
     val nextNodeId: String
 )
 
-// Domain -> UI Mapper
 fun ScenarioBoard.toUiModel(): ScenarioUiModel {
-    // 백엔드 응답에 A/B 매칭 키가 따로 없어서, 배열 순서(0번째=A, 1번째=B)로 매핑한다.
-    val philosopherImageMap = this.philosophers.mapIndexedNotNull { index, philosopher ->
+    val philosopherImageMap = philosophers.mapIndexedNotNull { index, philosopher ->
         val speakerType = when (index) {
             0 -> SpeakerType.A
             1 -> SpeakerType.B
@@ -46,7 +44,7 @@ fun ScenarioBoard.toUiModel(): ScenarioUiModel {
         speakerType.name to philosopher.imageUrl
     }.toMap()
 
-    val nodeMap = this.nodes.associateBy(
+    val nodeMap = nodes.associateBy(
         keySelector = { it.nodeId },
         valueTransform = { node ->
             ScenarioNodeUiModel(
@@ -72,10 +70,10 @@ fun ScenarioBoard.toUiModel(): ScenarioUiModel {
     )
 
     return ScenarioUiModel(
-        battleId = this.battleId,
-        isInteractive = this.isInteractive,
-        startNodeId = this.startNodeId,
-        audios = this.audios,
+        battleId = battleId,
+        isInteractive = isInteractive,
+        startNodeId = startNodeId,
+        audios = audios,
         nodes = nodeMap
     )
 }
