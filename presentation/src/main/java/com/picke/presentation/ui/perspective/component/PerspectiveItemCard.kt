@@ -76,7 +76,6 @@ fun PerspectiveItemCard(
         border = if (isDetail) null else BorderStroke(width = 1.dp, color = borderBadgeColor)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            // 1. 프로필 영역
             Row(verticalAlignment = Alignment.CenterVertically) {
                 ProfileImage(
                     model = item.profileImageUrl,
@@ -84,10 +83,9 @@ fun PerspectiveItemCard(
                         .size(32.dp)
                         .clip(CircleShape),
                 )
-                Spacer(modifier = Modifier.width(8.dp))
 
+                Spacer(modifier = Modifier.width(8.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    // 닉네임
                     Text(
                         text = if (item.isMine) "나" else item.nickname,
                         style = PickeTheme.typography.labelMedium,
@@ -112,6 +110,7 @@ fun PerspectiveItemCard(
                                 tint = PickeTheme.colors.textMuted
                             )
                         }
+
                         DropdownMenu(
                             expanded = isMenuExpanded,
                             onDismissRequest = { isMenuExpanded = false },
@@ -145,8 +144,6 @@ fun PerspectiveItemCard(
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            // 뱃지: 검수중/거절됨 상태이거나, 일반 상태면 입장(찬/반) 뱃지
             if (status == "PENDING" || status == "REJECTED") {
                 Surface(
                     color = borderBadgeColor,
@@ -176,8 +173,6 @@ fun PerspectiveItemCard(
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            // 2. 본문 영역
             Text(
                 text = item.content,
                 style = PickeTheme.typography.b4Regular,
@@ -187,8 +182,6 @@ fun PerspectiveItemCard(
             )
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            // 3. 하단 영역 (더보기, 댓글 수, 좋아요)
             if (status != "PENDING" && status != "REJECTED") {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -209,7 +202,6 @@ fun PerspectiveItemCard(
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
-
                     if (!isDetail) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

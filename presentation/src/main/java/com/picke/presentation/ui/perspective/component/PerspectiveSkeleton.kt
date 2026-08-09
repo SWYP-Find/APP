@@ -29,11 +29,6 @@ import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
 
-// 투표 비율 데이터(voteOptions)가 아직 로드되기 전에 보여주는 상단 영역 자리.
-// PerspectiveHeader와 동일한 padding/spacer 값을 써서, 실데이터가 도착해
-// 실제 헤더로 바뀔 때 높이가 튀지 않도록 맞춘다. 로딩 전 기본값(50:50 비율 등)을
-// 그대로 렌더링하면 실제 비율로 값이 바뀌는 순간 바가 눈에 띄게 움직여 보이므로,
-// 데이터가 준비되기 전에는 이 스켈레톤으로 가린다.
 @Composable
 fun PerspectiveHeaderSkeleton(modifier: Modifier = Modifier) {
     Row(
@@ -81,9 +76,6 @@ private fun PerspectiveHeaderSideSkeleton() {
     }
 }
 
-// 전체/옵션별 탭바(CustomTabBar) 자리. voteOptions가 비어있는 동안은 실제 탭 개수를
-// 알 수 없으므로(전체 1개 vs 전체+옵션 여러개), 특정 탭 구조를 흉내내지 않고
-// 중립적인 shimmer 바 하나만 보여준다.
 @Composable
 fun PerspectiveTabBarSkeleton(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -99,8 +91,6 @@ fun PerspectiveTabBarSkeleton(modifier: Modifier = Modifier) {
     }
 }
 
-// PerspectiveItemCard와 동일한 padding 값을 그대로 써서
-// 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
 @Composable
 fun PerspectiveListSkeleton(modifier: Modifier = Modifier) {
     LazyColumn(
@@ -124,7 +114,6 @@ private fun PerspectiveItemCardSkeleton() {
         border = BorderStroke(width = 1.dp, color = PickeTheme.colors.borderDefault)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
-            // 1. 프로필 영역
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(
                     modifier = Modifier
@@ -141,20 +130,13 @@ private fun PerspectiveItemCardSkeleton() {
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
-            // 뱃지 자리
             SkeletonLine(width = 70.dp, height = 20.dp)
-
             Spacer(modifier = Modifier.height(12.dp))
-
-            // 2. 본문 영역
             SkeletonLine(width = 260.dp, height = 16.dp)
             Spacer(modifier = Modifier.height(4.dp))
             SkeletonLine(width = 200.dp, height = 16.dp)
 
             Spacer(modifier = Modifier.height(12.dp))
-
-            // 3. 하단 영역 (더보기, 댓글 수, 좋아요)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()

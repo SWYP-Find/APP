@@ -169,9 +169,7 @@ fun PerspectiveScreenContent(
     val tabList = remember(voteOptions) {
         listOf("전체") + voteOptions.map { it.title }
     }
-    // TextFieldState: 프로그램적으로 텍스트를 비우거나(clearText) 채울 때(setTextAndPlaceCursorAtEnd)
-    // IME 조합 상태와의 경쟁 없이 안전하게 처리해주는 최신 API. (구형 TextFieldValue 방식은
-    // 외부에서 값을 리셋해도 IME가 뒤늦게 보내는 조합 완료 콜백이 되돌려놓는 문제가 있었다.)
+
     val inputFieldState = rememberTextFieldState()
     val pagerState = rememberPagerState(pageCount = { tabList.size })
     val coroutineScope = rememberCoroutineScope()
@@ -228,8 +226,6 @@ fun PerspectiveScreenContent(
         },
         bottomBar = {
             val isEditing = uiState.editingPerspectiveId != null
-
-            // 힌트 문구
             val inputHint = if (isEditing) "수정할 내용을 입력해주세요..." else "의견을 남겨보세요..."
 
             PerspectiveInputField(
@@ -251,20 +247,15 @@ fun PerspectiveScreenContent(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // 투표 비율 데이터가 로드되기 전에는 헤더/탭바를 기본값(50:50 비율, "전체" 탭 1개)으로
-            // 그대로 렌더링하지 않는다. 그렇게 하면 실제 데이터가 도착하는 순간 비율바와 탭
-            // 개수가 눈에 띄게 움직여 보이므로, 로드되기 전까지는 스켈레톤으로 가린다.
             if (voteOptions.isEmpty()) {
                 PerspectiveHeaderSkeleton()
                 PerspectiveTabBarSkeleton()
             } else {
-                // 1. 투표 통계
                 PerspectiveHeader(
                     voteOptions = uiState.voteOptions,
                     opinionChanged = uiState.opinionChanged
                 )
 
-                // 2. 전체/옵션별 탭
                 CustomTabBar(
                     tabs = tabList,
                     selectedTab = tabList[pagerState.currentPage],
@@ -285,7 +276,6 @@ fun PerspectiveScreenContent(
                 onSelectOption(optionId)
             }
 
-            // 3. 인기순/최신순 칩과 관점들
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.weight(1f),
@@ -293,12 +283,15 @@ fun PerspectiveScreenContent(
             ) { pageIndex ->
                 val listState =
                     remember(uiState.sort, uiState.selectedOptionId, pageIndex) { LazyListState() }
+                val filteredList = uiState.perspectives
+
                 LaunchedEffect(scrollToTopTrigger) {
                     if (scrollToTopTrigger > 0) {
                         kotlinx.coroutines.delay(50)
                         listState.scrollToItem(0)
                     }
                 }
+
                 if (pageIndex == 0 && scrollToCommentId != null) {
                     LaunchedEffect(uiState.perspectives) {
                         if (!hasScrolledToComment && uiState.perspectives.isNotEmpty() && !uiState.isLoading) {
@@ -312,8 +305,6 @@ fun PerspectiveScreenContent(
                         }
                     }
                 }
-                // 서버 사이드 필터링: 각 탭 선택 시 optionId로 API 호출 → 별도 클라이언트 필터 불필요
-                val filteredList = uiState.perspectives
 
                 Column(modifier = Modifier.fillMaxSize()) {
                     Row(
@@ -344,13 +335,9 @@ fun PerspectiveScreenContent(
                         )
                     }
 
-                    // 로딩중 화면
                     if (uiState.isLoading && uiState.perspectives.isEmpty()) {
                         PerspectiveListSkeleton(modifier = Modifier.weight(1f))
-                    }
-                    // 로딩 됐을때 화면
-                    else {
-                        // 새로고침 박스
+                    } else {
                         PullToRefreshBox(
                             state = pullToRefreshState,
                             isRefreshing = isRefreshing,
@@ -378,7 +365,6 @@ fun PerspectiveScreenContent(
                                 ),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-
                                 uiState.myPerspective?.let { myView ->
                                     if (myView.status != "PUBLISHED") {
                                         item {
@@ -398,22 +384,18 @@ fun PerspectiveScreenContent(
                                                 ),
                                                 status = myView.status,
                                                 clickable = false,
-                                                onEditClick = { content ->
-                                                    inputFieldState.setTextAndPlaceCursorAtEnd(
-                                                        content
-                                                    )
-                                                    onSetEditMode(
-                                                        myView.perspectiveId ?: 0L
-                                                    )
+                                                onEditClick = {
+                                                    inputFieldState.setTextAndPlaceCursorAtEnd(it)
+                                                    onSetEditMode(myView.perspectiveId)
                                                 },
                                                 onDeleteClick = {
-                                                    perspectiveToDelete = myView.perspectiveId ?: 0L
+                                                    perspectiveToDelete = myView.perspectiveId
                                                 },
                                                 onLikeClick = {
-                                                    android.widget.Toast.makeText(
+                                                    Toast.makeText(
                                                         context,
                                                         "본인이 쓴 관점에는 좋아요를 누를 수 없습니다.",
-                                                        android.widget.Toast.LENGTH_SHORT
+                                                        Toast.LENGTH_SHORT
                                                     ).show()
                                                 }
                                             )
@@ -421,7 +403,6 @@ fun PerspectiveScreenContent(
                                     }
                                 }
 
-                                // 관점 목록이 아무것도 없을때
                                 if (filteredList.isEmpty() && !uiState.isLoading && !isShowingMyPendingOrRejected) {
                                     item {
                                         val emptyMsg = if (pageIndex == 0) {
@@ -435,9 +416,7 @@ fun PerspectiveScreenContent(
                                             modifier = Modifier.fillParentMaxSize()
                                         )
                                     }
-                                }
-                                // 관점 목록이 있을때
-                                else {
+                                } else {
                                     itemsIndexed(
                                         items = filteredList,
                                         key = { _, item -> item.commentId }
@@ -447,15 +426,13 @@ fun PerspectiveScreenContent(
                                             onMoreClick = {
                                                 onMoreClick(
                                                     item.commentId,
-                                                    uiState.voteOptions.firstOrNull()?.optionId
-                                                        ?: 0L
+                                                    uiState.voteOptions.firstOrNull()
+                                                        ?.optionId ?: 0L
                                                 )
                                             },
                                             onEditClick = { content ->
                                                 inputFieldState.setTextAndPlaceCursorAtEnd(content)
-                                                onSetEditMode(
-                                                    item.commentId.toLongOrNull() ?: 0L
-                                                )
+                                                onSetEditMode(item.commentId.toLongOrNull() ?: 0L)
                                             },
                                             onDeleteClick = {
                                                 perspectiveToDelete =
@@ -467,13 +444,12 @@ fun PerspectiveScreenContent(
                                             },
                                             onLikeClick = {
                                                 if (item.isMine) {
-                                                    android.widget.Toast.makeText(
+                                                    Toast.makeText(
                                                         context,
                                                         "본인이 쓴 관점에는 좋아요를 누를 수 없습니다.",
-                                                        android.widget.Toast.LENGTH_SHORT
+                                                        Toast.LENGTH_SHORT
                                                     ).show()
                                                 } else {
-                                                    // 남의 글이면 정상적으로 뷰모델의 좋아요 API 쏘기!
                                                     onToggleLike(
                                                         item.commentId.toLongOrNull() ?: 0L,
                                                         item.isLiked
@@ -493,7 +469,6 @@ fun PerspectiveScreenContent(
                                     }
                                 }
 
-                                // 전체 로딩 화면
                                 if (uiState.isLoading && !isRefreshing) {
                                     item {
                                         Box(
@@ -513,37 +488,31 @@ fun PerspectiveScreenContent(
             }
         }
 
-        // 삭제 다이얼로그 호출부
         if (perspectiveToDelete != null) {
             CustomConfirmDialog(
                 message = "관점을 삭제하시겠습니까?",
                 confirmText = "삭제하기",
                 dismissText = "뒤로가기",
                 onConfirm = {
-                    // 왼쪽에 배치한 삭제 동작 실행
                     onDeletePerspective(perspectiveToDelete!!)
                     perspectiveToDelete = null
                 },
                 onDismiss = {
-                    // 오른쪽에 배치한 취소 동작 (닫기)
                     perspectiveToDelete = null
                 }
             )
         }
 
-        // 신고 다이얼로그 호출부
         if (perspectiveToReport != null) {
             CustomConfirmDialog(
                 message = "관점을 신고하시겠습니까?",
                 confirmText = "신고하기",
                 dismissText = "뒤로가기",
                 onConfirm = {
-                    // 왼쪽에 배치한 신고 동작 실행
                     onReportPerspective(perspectiveToReport!!)
                     perspectiveToReport = null
                 },
                 onDismiss = {
-                    // 오른쪽에 배치한 취소 동작 (닫기)
                     perspectiveToReport = null
                 }
             )
@@ -568,7 +537,6 @@ fun PerspectiveHeader(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
     ) {
-        // 왼쪽 옵션 (이미지 + 타이틀 + 비율)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(64.dp)
@@ -593,13 +561,10 @@ fun PerspectiveHeader(
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-
-        // 가운데: 생각이 바뀌었어요 버튼 + 프로그래스 바
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.weight(1f)
         ) {
-            // 1. 생각이 바뀌었어요 버튼
             Surface(
                 color = PickeTheme.colors.primaryLight,
                 shape = RoundedCornerShape(4.dp)
@@ -624,8 +589,6 @@ fun PerspectiveHeader(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-            // 2. 비율에 따라 채워지는 프로그래스 바
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -648,8 +611,6 @@ fun PerspectiveHeader(
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-
-        // 오른쪽 옵션 (비율 + 타이틀 + 이미지)
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(64.dp)

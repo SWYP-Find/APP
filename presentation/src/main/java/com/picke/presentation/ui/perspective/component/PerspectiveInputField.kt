@@ -68,7 +68,6 @@ fun PerspectiveInputField(
             modifier = Modifier.padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.Bottom
         ) {
-            // 텍스트 입력 영역
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -78,7 +77,6 @@ fun PerspectiveInputField(
                     )
                     .padding(12.dp)
             ) {
-                // Hint
                 if (textFieldState.text.isEmpty()) {
                     Text(
                         text = hintText,
@@ -106,8 +104,6 @@ fun PerspectiveInputField(
             }
 
             Spacer(modifier = Modifier.width(8.dp))
-
-            // 보내기 버튼
             Box(
                 modifier = Modifier
                     .size(40.dp)
