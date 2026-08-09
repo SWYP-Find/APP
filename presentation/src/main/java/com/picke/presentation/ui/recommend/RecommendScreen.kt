@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,18 +27,34 @@ import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.recommend.component.RecommendItemCard
 import com.picke.presentation.ui.recommend.component.RecommendListSkeleton
+import com.picke.presentation.ui.recommend.model.RecommendUiState
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun RecommendScreen(
-    viewModel: RecommendViewModel = hiltViewModel(),
+    onBackClick: () -> Unit,
+    onCloseClick: () -> Unit,
+    onItemClick: (String) -> Unit,
+    viewModel: RecommendViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    RecommendScreen(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onCloseClick = onCloseClick,
+        onItemClick = onItemClick
+    )
+}
+
+@Composable
+fun RecommendScreen(
+    uiState: RecommendUiState,
     onBackClick: () -> Unit,
     onCloseClick: () -> Unit,
     onItemClick: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val recommendList = uiState.recommendList
-
     Scaffold(
         containerColor = PickeTheme.colors.surface,
         topBar = {
@@ -86,7 +103,7 @@ fun RecommendScreen(
                     }
                 }
 
-                items(recommendList) { item ->
+                items(uiState.recommendList) { item ->
                     RecommendItemCard(
                         item = item,
                         modifier = Modifier.fillMaxWidth(),
@@ -97,5 +114,20 @@ fun RecommendScreen(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RecommendScreenPreview() {
+    PickeTheme {
+        RecommendScreen(
+            uiState = RecommendUiState(
+                recommendList = DummyData.dummyRecommends
+            ),
+            onBackClick = { },
+            onCloseClick = { },
+            onItemClick = { }
+        )
     }
 }

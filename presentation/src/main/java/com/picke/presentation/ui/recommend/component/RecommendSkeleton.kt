@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
@@ -106,4 +107,10 @@ private fun OpinionBoxSkeleton(modifier: Modifier = Modifier) {
             SkeletonLine(width = 36.dp, height = 12.dp)
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RecommendListSkeletonPreview() {
+    PickeTheme { RecommendListSkeleton() }
 }

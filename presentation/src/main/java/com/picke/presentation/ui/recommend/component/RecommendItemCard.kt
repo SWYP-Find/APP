@@ -24,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.BattleOpinionBox
 import com.picke.presentation.ui.recommend.model.RecommendUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun RecommendItemCard(
@@ -146,5 +148,16 @@ fun RecommendItemCard(
                 imageUrl = item.imageB
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RecommendItemCardPreview() {
+    PickeTheme {
+        RecommendItemCard(
+            item = DummyData.dummyRecommends.first(),
+            onClick = {}
+        )
     }
 }
