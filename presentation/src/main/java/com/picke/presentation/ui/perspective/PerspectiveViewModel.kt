@@ -4,14 +4,13 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.feature.perspective.model.PerspectiveBoard
-import com.picke.domain.feature.perspective.model.PerspectiveDetailBoard
-import com.picke.domain.feature.pollquiz.model.PollQuizVoteBoard
-import com.picke.domain.feature.vote.model.VoteStatsOptionBoard
 import com.picke.domain.feature.perspective.usecase.PerspectiveUseCases
 import com.picke.domain.feature.perspective.usecase.ReportPerspectiveResult
+import com.picke.domain.feature.pollquiz.model.PollQuizVoteBoard
 import com.picke.domain.feature.vote.usecase.VoteUseCases
-import com.picke.presentation.util.toRelativeTimeText
+import com.picke.presentation.ui.perspective.model.PerspectiveUiEvent
+import com.picke.presentation.ui.perspective.model.PerspectiveUiState
+import com.picke.presentation.ui.perspective.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,39 +21,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-sealed class PerspectiveUiEvent {
-    data class ShowToast(val message: String) : PerspectiveUiEvent()
-}
-
-data class PerspectiveUiModel(
-    val commentId: String,
-    val profileImageUrl: String,
-    val nickname: String,
-    val optionTitle: String,
-    val optionId: Long,
-    val content: String,
-    val timeAgo: String,
-    val replyCount: Int,
-    val likeCount: Int,
-    val isLiked: Boolean,
-    val isMine: Boolean
-)
-
-data class PerspectiveUiState(
-    val battleId: String = "",
-    val voteOptions: List<VoteStatsOptionBoard> = emptyList(),
-    val perspectives: List<PerspectiveUiModel> = emptyList(),
-    val myPerspective: PerspectiveDetailBoard? = null,
-    val nextCursor: String? = null,
-    val hasNext: Boolean = true,
-    val isLoading: Boolean = false,
-    val sort: String = "popular",
-    val selectedOptionId: Long? = null,
-    val opinionChanged: Boolean = false,
-    val editingPerspectiveId: Long? = null,
-    val battleTitle: String = ""
-)
 
 @HiltViewModel
 class PerspectiveViewModel @Inject constructor(
@@ -68,6 +34,7 @@ class PerspectiveViewModel @Inject constructor(
     }
 
     private val receivedBattleId: String = checkNotNull(savedStateHandle["battleId"])
+
     private val _uiState = MutableStateFlow(
         PerspectiveUiState(
             battleId = receivedBattleId,
@@ -77,11 +44,11 @@ class PerspectiveViewModel @Inject constructor(
     )
     val uiState: StateFlow<PerspectiveUiState> = _uiState.asStateFlow()
 
-    private val _realTimeStats = MutableStateFlow<PollQuizVoteBoard?>(null)
-    val realTimeStats: StateFlow<PollQuizVoteBoard?> = _realTimeStats.asStateFlow()
-
     private val _uiEvent = MutableSharedFlow<PerspectiveUiEvent>()
     val uiEvent: SharedFlow<PerspectiveUiEvent> = _uiEvent.asSharedFlow()
+
+    private val _realTimeStats = MutableStateFlow<PollQuizVoteBoard?>(null)
+    val realTimeStats: StateFlow<PollQuizVoteBoard?> = _realTimeStats.asStateFlow()
 
     // 뷰모델 생성 시 초기 데이터 로드
     init {
@@ -350,18 +317,3 @@ class PerspectiveViewModel @Inject constructor(
         loadPerspectives(isRefresh = true)
     }
 }
-
-// 도메인 모델 -> UI 모델 매핑 확장 함수
-private fun PerspectiveBoard.toUiModel() = PerspectiveUiModel(
-    commentId = this.commentId,
-    profileImageUrl = this.characterImageUrl,
-    nickname = this.nickname,
-    optionTitle = this.optionTitle,
-    optionId = this.optionId,
-    content = this.content,
-    timeAgo = this.createdAt.toRelativeTimeText(),
-    replyCount = this.replyCount,
-    likeCount = this.likeCount,
-    isLiked = this.isLiked,
-    isMine = this.isMine
-)

@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.perspective
+package com.picke.presentation.ui.perspective.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
