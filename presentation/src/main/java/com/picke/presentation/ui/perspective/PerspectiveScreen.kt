@@ -54,6 +54,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,6 +75,7 @@ import com.picke.presentation.ui.perspective.model.PerspectiveUiEvent
 import com.picke.presentation.ui.perspective.model.PerspectiveUiModel
 import com.picke.presentation.ui.perspective.model.PerspectiveUiState
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -670,5 +672,31 @@ fun PerspectiveHeader(
                 color = PickeTheme.colors.neutral600
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PerspectiveScreenPreview() {
+    PickeTheme {
+        PerspectiveScreenContent(
+            uiState = PerspectiveUiState(
+                voteOptions = DummyData.dummyVoteOptions,
+                perspectives = DummyData.dummyPerspectives
+            ),
+            onBackClick = {},
+            onNextClick = {},
+            onMoreClick = { _, _ -> },
+            scrollToCommentId = null,
+            onSubmitPerspective = { _, _ -> },
+            onSelectOption = {},
+            onUpdateSort = {},
+            onRefreshAllData = {},
+            onSetEditMode = {},
+            onDeletePerspective = {},
+            onReportPerspective = {},
+            onToggleLike = { _, _ -> },
+            onLoadPerspectives = {}
+        )
     }
 }

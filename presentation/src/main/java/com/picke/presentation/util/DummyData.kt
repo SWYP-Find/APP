@@ -1,12 +1,14 @@
 package com.picke.presentation.util
 
 import com.picke.domain.feature.alarm.model.AlarmItemBoard
+import com.picke.domain.feature.vote.model.VoteStatsOptionBoard
 import com.picke.presentation.ui.comment.model.CommentUiModel
 import com.picke.presentation.ui.explore.model.ExploreUiModel
 import com.picke.presentation.ui.home.model.ContentUiType
 import com.picke.presentation.ui.home.model.HomeContentUiModel
 import com.picke.presentation.ui.home.model.PollQuizOptionStatUiModel
 import com.picke.presentation.ui.home.model.TodayPickUiModel
+import com.picke.presentation.ui.perspective.model.PerspectiveUiModel
 
 object DummyData {
 
@@ -241,6 +243,82 @@ object DummyData {
                 voteCount = 41,
                 ratio = 5.0f
             )
+        )
+    )
+
+    val dummyVoteOptions = listOf(
+        VoteStatsOptionBoard(
+            optionId = 1L,
+            title = "민초 극호",
+            imageUrl = "",
+            isCorrect = false,
+            voteCount = 1520,
+            ratio = 65.0f,
+            stance = "PRO"
+        ),
+        VoteStatsOptionBoard(
+            optionId = 2L,
+            title = "민초 극불호",
+            imageUrl = "",
+            isCorrect = false,
+            voteCount = 818,
+            ratio = 35.0f,
+            stance = "CON"
+        )
+    )
+
+    val dummyPerspectives = listOf(
+        PerspectiveUiModel(
+            commentId = "101",
+            profileImageUrl = "",
+            nickname = "나",
+            optionTitle = "민초 극호",
+            optionId = 1L,
+            content = "솔직히 민초만큼 완벽한 디저트가 어디 있나요? 달콤함과 상쾌함을 동시에 느낄 수 있는 궁극의 맛입니다. 반박 안 받습니다.",
+            timeAgo = "방금 전",
+            replyCount = 5,
+            likeCount = 12,
+            isLiked = true,
+            isMine = true
+        ),
+        PerspectiveUiModel(
+            commentId = "102",
+            profileImageUrl = "",
+            nickname = "반민초협회장",
+            optionTitle = "민초 극불호",
+            optionId = 2L,
+            content = "초콜릿에 치약을 섞어 먹는 기분입니다. 돈 주고 사먹는 사람들의 미각이 의심됩니다... 양치를 두 번 하세요 그냥.",
+            timeAgo = "10분 전",
+            replyCount = 24,
+            likeCount = 842,
+            isLiked = false,
+            isMine = false
+        ),
+        PerspectiveUiModel(
+            commentId = "103",
+            profileImageUrl = "",
+            nickname = "쩝쩝박사",
+            optionTitle = "민초 극호",
+            optionId = 1L,
+            content = "아이스크림 가게 가면 무조건 파인트 첫 번째 맛은 민트초코칩 고정이지 ㅋㅋㅋ",
+            timeAgo = "1시간 전",
+            replyCount = 0,
+            likeCount = 45,
+            isLiked = false,
+            isMine = false
+        ),
+        PerspectiveUiModel(
+            commentId = "104",
+            profileImageUrl = "",
+            nickname = "초코파이",
+            optionTitle = "민초 극불호",
+            optionId = 2L,
+            content = "민초단들은 제발 조용히 해주세요.",
+            timeAgo = "3시간 전",
+            replyCount = 2,
+            likeCount = 15,
+            isLiked = true,
+            isMine = false
         )
     )
 }

@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
@@ -166,4 +167,22 @@ private fun PerspectiveItemCardSkeleton() {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PerspectiveHeaderSkeletonPreview() {
+    PickeTheme { PerspectiveHeaderSkeleton() }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PerspectiveTabBarSkeletonPreview() {
+    PickeTheme { PerspectiveTabBarSkeleton() }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PerspectiveListSkeletonPreview() {
+    PickeTheme { PerspectiveListSkeleton() }
 }

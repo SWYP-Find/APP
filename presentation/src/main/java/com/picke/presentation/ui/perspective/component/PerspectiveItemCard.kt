@@ -3,6 +3,7 @@ package com.picke.presentation.ui.perspective.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,11 +33,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.perspective.model.PerspectiveUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun PerspectiveItemCard(
@@ -197,7 +200,7 @@ fun PerspectiveItemCard(
                             style = PickeTheme.typography.b5Medium,
                             color = PickeTheme.colors.textMuted,
                             modifier = Modifier.clickable(
-                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                                interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
                                 if (clickable) onMoreClick()
@@ -211,7 +214,7 @@ fun PerspectiveItemCard(
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.clickable(
-                                interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                                interactionSource = remember { MutableInteractionSource() },
                                 indication = null
                             ) {
                                 onMoreClick()
@@ -244,7 +247,7 @@ fun PerspectiveItemCard(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable(
-                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+                            interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
                             onLikeClick()
@@ -302,5 +305,13 @@ private fun PerspectiveMenuItem(
             style = PickeTheme.typography.labelMedium,
             color = Color.White
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PerspectiveItemCardPreview() {
+    PickeTheme {
+        PerspectiveItemCard(item = DummyData.dummyPerspectives.first())
     }
 }
