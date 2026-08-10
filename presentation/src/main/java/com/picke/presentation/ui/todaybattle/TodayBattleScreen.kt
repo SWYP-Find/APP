@@ -1,11 +1,9 @@
-﻿package com.picke.presentation.ui.todaybattle
+package com.picke.presentation.ui.todaybattle
 
 import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -67,6 +64,9 @@ import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.ShareDialog
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.ui.todaybattle.component.OpinionCard
+import com.picke.presentation.ui.todaybattle.component.TodayBattleSkeleton
+import com.picke.presentation.ui.todaybattle.component.TopIndicatorBar
 import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
@@ -555,84 +555,5 @@ fun BattleContent(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        // 작대기 부분
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            for (i in 0 until totalPages) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(2.dp)
-                        .background(if (i == currentPage) Color.White else Color.White.copy(alpha = 0.3f))
-                )
-            }
-        }
-
-        // 텍스트 부분 (예: 1/4)
-        Text(
-            text = "${currentPage + 1}/$totalPages",
-            style = PickeTheme.typography.labelXSmall,
-            color = Color.White.copy(alpha = 0.3f)
-        )
-    }
-}
-
-@Composable
-fun OpinionCard(
-    name: String,
-    opinion: String,
-    quote: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderColor = if (isSelected) PickeTheme.colors.secondary700 else Color.Transparent
-    val bgColor = if (isSelected) PickeTheme.colors.textPrimary else PickeTheme.colors.textPrimary
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
-            .background(bgColor)
-            .clickable { onClick() }
-            .padding(vertical = 18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = name,
-            style = PickeTheme.typography.labelXSmall,
-            color = PickeTheme.colors.secondary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = opinion,
-            style = PickeTheme.typography.h3SemiBold,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = "\"$quote\"",
-            style = PickeTheme.typography.labelXSmall,
-            color = Color.White.copy(0.3f),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }

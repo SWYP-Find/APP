@@ -8,7 +8,7 @@ import com.picke.domain.feature.share.usecase.ShareUseCases
 import com.picke.domain.feature.todaybattle.usecase.TodayBattleUseCases
 import com.picke.domain.feature.vote.usecase.SubmitVoteResult
 import com.picke.domain.feature.vote.usecase.VoteUseCases
-import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
+import com.picke.presentation.ui.todaybattle.model.TodayBattleUiState
 import com.picke.presentation.ui.todaybattle.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,13 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class TodayBattleUiState(
-    val isLoading: Boolean = true,
-    val isEntering: Boolean = false,
-    val battleList: List<TodayBattleUiModel> = emptyList(),
-    val errorMessage: String? = null
-)
 
 @HiltViewModel
 class TodayBattleViewModel @Inject constructor(

@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.todaybattle
+package com.picke.presentation.ui.todaybattle.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,13 +27,11 @@ import com.picke.presentation.ui.theme.PickeTheme
 // BattleContent와 동일한 weight/padding/spacer 값을 그대로 써서
 // 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
 // 화면 배경이 검은색이라 기본 밝은 shimmer 색 대신 어두운 톤(neutral600/neutral400)을 쓴다.
-private val darkShimmerBase: Color
-    @Composable get() = PickeTheme.colors.neutral600
-private val darkShimmerHighlight: Color
-    @Composable get() = PickeTheme.colors.neutral400
-
 @Composable
 fun TodayBattleSkeleton(modifier: Modifier = Modifier) {
+    val darkShimmerBase = PickeTheme.colors.neutral600
+    val darkShimmerHighlight = PickeTheme.colors.neutral400
+
     Column(modifier = modifier.fillMaxSize()) {
         // 1. 상단 이미지 자리
         Spacer(
@@ -81,6 +79,9 @@ fun TodayBattleSkeleton(modifier: Modifier = Modifier) {
 
 @Composable
 private fun OpinionCardSkeleton() {
+    val darkShimmerBase = PickeTheme.colors.neutral600
+    val darkShimmerHighlight = PickeTheme.colors.neutral400
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
