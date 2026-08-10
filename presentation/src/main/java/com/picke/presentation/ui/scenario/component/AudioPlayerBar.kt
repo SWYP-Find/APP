@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.scenario.component
+﻿package com.picke.presentation.ui.scenario.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -50,13 +50,9 @@ fun AudioPlayerBar(
             .navigationBarsPadding()
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
-        // 1. 슬라이더
-        // Material3의 SliderDefaults.Track은 내부 디자인 토큰 때문에 height 모디파이어를
-        // 줘도 실제로는 그보다 두껍게 그려져서, 트랙을 직접 두 개의 얇은 막대(Box)로 그린다.
-        // thumb/track 모두 슬라이더와 동일한 높이(20dp) 박스로 감싸 중앙 정렬해서
-        // 두 요소의 중심이 항상 일치하도록 맞춘다.
         val sliderHeight = 20.dp
         val trackHeight = 2.dp
+
         Slider(
             value = if (totalDurationMs > 0) currentPositionMs.toFloat() / totalDurationMs else 0f,
             onValueChange = onSeek,
@@ -71,7 +67,10 @@ fun AudioPlayerBar(
                     Box(
                         modifier = Modifier
                             .size(12.dp)
-                            .background(color = PickeTheme.colors.primary, shape = CircleShape)
+                            .background(
+                                color = PickeTheme.colors.primary,
+                                shape = CircleShape
+                            )
                     )
                 }
             },
@@ -82,7 +81,6 @@ fun AudioPlayerBar(
                         .height(sliderHeight),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    // 비활성 트랙 (전체 길이)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -90,7 +88,6 @@ fun AudioPlayerBar(
                             .clip(RoundedCornerShape(50))
                             .background(Color(0xFFE0E0E0))
                     )
-                    // 활성 트랙 (재생된 만큼)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(fraction = sliderState.value.coerceIn(0f, 1f))
@@ -102,7 +99,6 @@ fun AudioPlayerBar(
             }
         )
 
-        // 2. 시간 표시 영역
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,14 +118,11 @@ fun AudioPlayerBar(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // 3. 메인 컨트롤 영역
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 15초 뒤로 가기
             ControlSkipButton(
                 iconResId = R.drawable.ic_play_back,
                 label = "15초",
@@ -137,8 +130,6 @@ fun AudioPlayerBar(
             )
 
             Spacer(modifier = Modifier.width(20.dp))
-
-            // 재생/일시정지 버튼 (시안처럼 크게)
             IconButton(
                 onClick = onPlayPauseClick,
                 modifier = Modifier.size(56.dp)
@@ -149,13 +140,11 @@ fun AudioPlayerBar(
                     ),
                     contentDescription = null,
                     tint = PickeTheme.colors.primaryDarkest,
-                    modifier = Modifier.size(36.dp) // 아이콘 자체 크기 키움
+                    modifier = Modifier.size(36.dp)
                 )
             }
 
             Spacer(modifier = Modifier.width(20.dp))
-
-            // 15초 앞으로 가기
             ControlSkipButton(
                 iconResId = R.drawable.ic_play_forward,
                 label = "15초",
@@ -166,7 +155,11 @@ fun AudioPlayerBar(
 }
 
 @Composable
-private fun ControlSkipButton(iconResId: Int, label: String, onClick: () -> Unit) {
+private fun ControlSkipButton(
+    iconResId: Int,
+    label: String,
+    onClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
@@ -181,6 +174,7 @@ private fun ControlSkipButton(iconResId: Int, label: String, onClick: () -> Unit
             tint = PickeTheme.colors.primaryDarkest,
             modifier = Modifier.size(20.dp)
         )
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,

@@ -35,8 +35,11 @@ fun InteractiveOptionsUI(
     selectedNodeId: String?,
     onOptionClick: (String) -> Unit
 ) {
-    var pendingSelectedId by remember(options) {
-        mutableStateOf<String?>(null)
+    var pendingSelectedId by remember(options) { mutableStateOf<String?>(null) }
+    val selectGuideText = if (selectedNodeId == null) {
+        "이제 당신의 입장을 선택해주세요"
+    } else {
+        "아래가 당신의 선택입니다."
     }
 
     Column(
@@ -46,18 +49,23 @@ fun InteractiveOptionsUI(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            HorizontalDivider(modifier = Modifier.weight(1f), color = PickeTheme.colors.neutral200)
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = PickeTheme.colors.neutral200
+            )
             Text(
-                text = if (selectedNodeId == null) "이제 당신의 입장을 선택해주세요" else "아래가 당신의 선택입니다.",
+                text = selectGuideText,
                 style = PickeTheme.typography.labelMedium.copy(fontStyle = FontStyle.Italic),
                 color = PickeTheme.colors.textTertiary,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-            HorizontalDivider(modifier = Modifier.weight(1f), color = PickeTheme.colors.neutral200)
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                color = PickeTheme.colors.neutral200
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
         options.forEach { option ->
             val isCommitted = selectedNodeId == option.nextNodeId
             val isPending = pendingSelectedId == option.nextNodeId
@@ -75,6 +83,7 @@ fun InteractiveOptionsUI(
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
+
         if (selectedNodeId == null) {
             OptionConfirmButton(
                 text = "입장 선택하기",
@@ -98,13 +107,19 @@ fun OptionSelectionCard(
         if (isSelected) PickeTheme.colors.secondary else PickeTheme.colors.borderSubtle
     val bgColor =
         if (isSelected) PickeTheme.colors.surfaceTertiary else PickeTheme.colors.surfaceTertiary
+    val textColor =
+        if (isSelected) PickeTheme.colors.textPrimary else PickeTheme.colors.textTertiary
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
             .background(bgColor)
-            .border(1.dp, borderColor, RoundedCornerShape(2.dp))
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(2.dp)
+            )
             .clickable(enabled = isEnabled) { onClick() }
             .padding(vertical = 20.dp, horizontal = 16.dp),
         contentAlignment = Alignment.Center
@@ -112,7 +127,7 @@ fun OptionSelectionCard(
         Text(
             text = text,
             style = PickeTheme.typography.b5Medium,
-            color = if (isSelected) PickeTheme.colors.textPrimary else PickeTheme.colors.textTertiary,
+            color = textColor,
             textAlign = TextAlign.Center
         )
     }

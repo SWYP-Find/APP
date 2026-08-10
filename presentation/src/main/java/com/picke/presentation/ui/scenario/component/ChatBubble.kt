@@ -1,5 +1,12 @@
 ﻿package com.picke.presentation.ui.scenario.component
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.StartOffset
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -25,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.presentation.R
-import com.picke.presentation.ui.component.ChattingLoadingAnimation
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
 import com.picke.presentation.ui.theme.PickeTheme
@@ -58,16 +65,20 @@ fun ChatBubble(
                 modifier = Modifier.clickable { onClick() }
             )
         }
+
         return
     }
 
     val isLeft = script.speakerType == SpeakerType.A
-    val bubbleBgColor = if (isLeft) Color.White else PickeTheme.colors.borderDisabled
-    val bubbleBorderColor =
-        if (isLeft) PickeTheme.colors.borderDisabled else PickeTheme.colors.borderSubtle
     val imageModel = script.profileImageUrl ?: R.drawable.illust_mengzi
 
-    // 구조: [왼쪽 슬롯(36dp)] + [말풍선 영역(남은공간 전부)] + [오른쪽 슬롯(36dp)]
+    val bubbleBgColor =
+        if (isLeft) Color.White else PickeTheme.colors.borderDisabled
+    val bubbleBorderColor =
+        if (isLeft) PickeTheme.colors.borderDisabled else PickeTheme.colors.borderSubtle
+    val textColor =
+        if (isActive) PickeTheme.colors.textSecondary else PickeTheme.colors.textMuted
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -75,8 +86,6 @@ fun ChatBubble(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-
-        // 🔹 [왼쪽 슬롯] : 왼쪽 화자면 아바타, 오른쪽 화자면 애니메이션
         Box(
             modifier = Modifier
                 .width(36.dp)
@@ -84,19 +93,17 @@ fun ChatBubble(
             contentAlignment = Alignment.TopCenter
         ) {
             if (isLeft && showAvatarAndName) {
-                ProfileImage(model = imageModel, modifier = Modifier.size(32.dp))
+                ProfileImage(
+                    model = imageModel,
+                    modifier = Modifier.size(32.dp)
+                )
             } else if (!isLeft && isActive) {
                 ChattingLoadingAnimation()
             }
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-
-        // 🔹 [가운데 영역] : 텍스트 말풍선
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            // 이름
+        Column(modifier = Modifier.weight(1f)) {
             if (showAvatarAndName) {
                 Text(
                     text = script.speakerName,
@@ -109,27 +116,31 @@ fun ChatBubble(
                 )
             }
 
-            // 말풍선 본체 (hug: 내용 길이만큼만 너비를 차지하고, 화자 쪽으로 정렬된다)
             Box(
                 modifier = Modifier
                     .align(if (isLeft) Alignment.Start else Alignment.End)
                     .clickable { onClick() }
-                    .background(bubbleBgColor, RoundedCornerShape(2.dp))
-                    .border(1.dp, bubbleBorderColor, RoundedCornerShape(2.dp))
+                    .background(
+                        color = bubbleBgColor,
+                        shape = RoundedCornerShape(2.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = bubbleBorderColor,
+                        shape = RoundedCornerShape(2.dp)
+                    )
                     .padding(12.dp)
             ) {
                 Text(
                     text = script.displayText,
                     style = PickeTheme.typography.b5Medium,
-                    color = if (isActive) PickeTheme.colors.textSecondary else PickeTheme.colors.textMuted,
+                    color = textColor,
                     textAlign = TextAlign.Start
                 )
             }
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-
-        // 🔹 [오른쪽 슬롯] : 오른쪽 화자면 아바타, 왼쪽 화자면 애니메이션
         Box(
             modifier = Modifier
                 .width(36.dp)
@@ -137,10 +148,60 @@ fun ChatBubble(
             contentAlignment = Alignment.TopCenter
         ) {
             if (!isLeft && showAvatarAndName) {
-                ProfileImage(model = imageModel, modifier = Modifier.size(32.dp))
+                ProfileImage(
+                    model = imageModel,
+                    modifier = Modifier.size(32.dp)
+                )
             } else if (isLeft && isActive) {
                 ChattingLoadingAnimation()
             }
+        }
+    }
+}
+
+@Composable
+private fun ChattingLoadingAnimation(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "audio_bars_5")
+    val baseHeights = listOf(6.dp, 10.dp, 15.dp, 10.dp, 6.dp)
+    val maxScales = listOf(1.1f, 1.3f, 1.6f, 1.3f, 1.1f)
+
+    val animations = (0 until 5).map { index ->
+        infiniteTransition.animateFloat(
+            initialValue = 0.6f,
+            targetValue = maxScales[index],
+            animationSpec = infiniteRepeatable(
+                animation = tween(
+                    durationMillis = 400,
+                    easing = LinearEasing
+                ),
+                repeatMode = RepeatMode.Reverse,
+                initialStartOffset = StartOffset(offsetMillis = index * 120)
+            ),
+            label = "scale_${index + 1}"
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = modifier
+    ) {
+        repeat(5) { index ->
+            Box(
+                modifier = Modifier
+                    .size(
+                        width = 2.5.dp,
+                        height = baseHeights[index]
+                    )
+                    .scale(
+                        scaleX = 1f,
+                        scaleY = animations[index].value
+                    )
+                    .background(
+                        color = Color(0xFF8D4B38),
+                        shape = RoundedCornerShape(50)
+                    )
+            )
         }
     }
 }

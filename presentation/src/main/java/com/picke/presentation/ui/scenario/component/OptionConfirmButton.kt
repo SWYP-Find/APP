@@ -22,8 +22,11 @@ fun OptionConfirmButton(
     isEnabled: Boolean,
     onClick: () -> Unit
 ) {
-    val bgColor =
-        if (isEnabled) PickeTheme.colors.buttonPrimaryBackground else PickeTheme.colors.buttonPrimaryBackgroundDisabled
+    val bgColor = if (isEnabled) {
+        PickeTheme.colors.buttonPrimaryBackground
+    } else {
+        PickeTheme.colors.buttonPrimaryBackgroundDisabled
+    }
     val textColor = PickeTheme.colors.buttonPrimaryText
 
     Box(
