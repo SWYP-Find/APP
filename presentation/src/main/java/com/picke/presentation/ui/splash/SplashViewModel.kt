@@ -8,6 +8,7 @@ import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.analytics.AnalyticsScreen
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.OnboardingStep
+import com.picke.presentation.ui.splash.model.SplashUiState
 import com.picke.presentation.util.AppLifecycleObserver
 import com.picke.presentation.util.DeepLinkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,20 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-sealed class SplashUiState {
-    object Loading : SplashUiState() // 로딩중
-    object NavigateToLogin : SplashUiState() // 소셜로그인
-    object NavigateToOnboarding : SplashUiState() // 온보딩
-    data class NavigateToMain(val needsTermsAgreement: Boolean = false) : SplashUiState() // 메인화면
-    data class NavigateToOtherPhilosopher(
-        val reportId: String,
-        val needsTermsAgreement: Boolean = false
-    ) : SplashUiState()
-
-    data class NavigateToBattle(val battleId: String, val needsTermsAgreement: Boolean = false) :
-        SplashUiState()
-}
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(

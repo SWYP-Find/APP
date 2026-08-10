@@ -9,8 +9,8 @@ import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import com.picke.presentation.notification.FCMService
-import com.picke.presentation.ui.splash.SplashUiState
 import com.picke.presentation.ui.splash.SplashViewModel
+import com.picke.presentation.ui.splash.model.SplashUiState
 import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager

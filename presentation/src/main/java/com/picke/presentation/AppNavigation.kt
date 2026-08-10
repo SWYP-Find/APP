@@ -1,6 +1,5 @@
 package com.picke.presentation
 
-import com.picke.presentation.ui.scenario.ScenarioScreen
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -52,14 +51,15 @@ import com.picke.presentation.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.presentation.ui.onboarding.OnboardingScreen
 import com.picke.presentation.ui.perspective.PerspectiveScreen
 import com.picke.presentation.ui.recommend.RecommendScreen
+import com.picke.presentation.ui.scenario.ScenarioScreen
+import com.picke.presentation.ui.splash.SplashViewModel
+import com.picke.presentation.ui.splash.model.SplashUiState
 import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.todaybattle.TodayBattleScreen
 import com.picke.presentation.ui.vote.VoteRoute
+import com.picke.presentation.ui.vote.VoteType
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager
-import com.picke.presentation.ui.splash.SplashUiState
-import com.picke.presentation.ui.splash.SplashViewModel
-import com.picke.presentation.ui.vote.VoteType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
