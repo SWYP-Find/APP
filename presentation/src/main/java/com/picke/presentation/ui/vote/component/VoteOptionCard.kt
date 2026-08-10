@@ -39,7 +39,11 @@ fun VoteOptionCard(
         modifier = modifier
             .alpha(contentAlpha)
             .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, borderColor, RoundedCornerShape(2.dp))
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(2.dp)
+            )
             .background(PickeTheme.colors.surfaceSubtle)
             .clickable { onClick() }
             .padding(vertical = 24.dp, horizontal = 16.dp),
@@ -50,6 +54,7 @@ fun VoteOptionCard(
             model = option.imageUrl,
             modifier = Modifier.size(40.dp),
         )
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = option.title,
@@ -57,6 +62,7 @@ fun VoteOptionCard(
             color = PickeTheme.colors.textPrimary,
             textAlign = TextAlign.Center
         )
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = option.representative,

@@ -1,5 +1,6 @@
-package com.picke.presentation.ui.vote
+﻿package com.picke.presentation.ui.vote
 
+import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -40,15 +41,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
 import coil.imageLoader
+import coil.request.ImageRequest
 import com.picke.presentation.R
 import com.picke.presentation.analytics.ShareChannel
 import com.picke.presentation.ui.component.CustomButton
@@ -66,7 +72,9 @@ import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.shareBattleToInstagramStoryBrightMode
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun VoteRoute(
@@ -76,10 +84,11 @@ fun VoteRoute(
     onNavigateToExplore: () -> Unit,
     viewModel: VoteViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     BackHandler {
         onBackClick()
     }
-    val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
         VoteSkeleton(voteType = voteType, modifier = Modifier.fillMaxSize())
@@ -133,34 +142,35 @@ fun VoteScreen(
     onGetShareLink: (Int, (String) -> Unit, (String) -> Unit) -> Unit,
     onDismissPointDialog: () -> Unit
 ) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+
+    var showShareDialog by remember { mutableStateOf(false) }
+    var isSharing by remember { mutableStateOf(false) }
+    var selectedOptionId by remember { mutableStateOf<String?>(null) }
+
     val isPreVote = voteType == VoteType.PRE
     val battleInfo = battleDetail.battleInfo
 
+    val backgroundColor =
+        if (selectedOptionId != null) PickeTheme.colors.primary else PickeTheme.colors.primaryDisabled
     val bgColor = if (isPreVote) PickeTheme.colors.surface else Color.Black
     val titleColor = if (isPreVote) PickeTheme.colors.textPrimary else PickeTheme.colors.surface
     val descColor = if (isPreVote) PickeTheme.colors.textSecondary else PickeTheme.colors.neutral400
 
-    var selectedOptionId by remember { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null
-
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
-    val graphicsLayer = androidx.compose.ui.graphics.rememberGraphicsLayer()
-    var showShareDialog by remember { mutableStateOf(false) }
-    var isSharing by remember { mutableStateOf(false) }
-
-    // 공유하기 함수
     val onKakaoShareClick = {
         isSharing = true
         coroutineScope.launch {
             try {
-                val request = coil.request.ImageRequest.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .data(battleInfo.thumbnailUrl)
                     .allowHardware(false)
                     .build()
                 val result = context.imageLoader.execute(request)
-                val bitmap = (result.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
 
                 if (bitmap != null) {
                     shareBattleToKakao(
@@ -173,24 +183,25 @@ fun VoteScreen(
                     )
                 } else {
                     isSharing = false
-                    android.widget.Toast.makeText(
+                    Toast.makeText(
                         context,
                         "이미지 로드 실패",
-                        android.widget.Toast.LENGTH_SHORT
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isSharing = false
-                android.widget.Toast.makeText(context, "공유 실패", android.widget.Toast.LENGTH_SHORT)
+                Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT)
                     .show()
             }
         }
     }
+
     val onInstaShareClick = {
         isSharing = true
         coroutineScope.launch {
             try {
-                kotlinx.coroutines.delay(100)
+                delay(100.milliseconds)
 
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
 
@@ -208,7 +219,7 @@ fun VoteScreen(
                     )
                 }
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isSharing = false
                 Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
@@ -263,7 +274,7 @@ fun VoteScreen(
                             }
                         },
                         modifier = Modifier.padding(20.dp),
-                        backgroundColor = if (isButtonEnabled) PickeTheme.colors.primary else PickeTheme.colors.primaryDisabled,
+                        backgroundColor = backgroundColor,
                         textColor = PickeTheme.colors.surfaceDefault
                     )
                 }
@@ -348,12 +359,14 @@ fun VoteScreen(
                                 }
                             }
                         }
+
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = battleInfo.title.replace(", ", ",\n"),
                             style = PickeTheme.typography.h1SemiBold,
                             color = titleColor
                         )
+
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = battleDetail.description,
@@ -364,7 +377,6 @@ fun VoteScreen(
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -404,7 +416,7 @@ fun VoteScreen(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                "VS",
+                                text = "VS",
                                 style = PickeTheme.typography.labelMedium,
                                 color = PickeTheme.colors.textPrimary
                             )
@@ -414,7 +426,7 @@ fun VoteScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
-        // 공유하기 다이얼로그
+
         if (showShareDialog) {
             ShareDialog(
                 onDismiss = { showShareDialog = false },

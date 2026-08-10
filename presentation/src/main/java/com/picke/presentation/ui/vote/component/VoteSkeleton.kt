@@ -29,11 +29,11 @@ import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.vote.model.VoteType
 
-// VoteScreen의 실제 weight/padding/spacer 값을 그대로 써서
-// 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
-// 사전투표(밝은 배경)는 기본 shimmer 톤을, 사후투표(검은 배경)는 어두운 톤을 쓴다.
 @Composable
-fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
+fun VoteSkeleton(
+    voteType: VoteType,
+    modifier: Modifier = Modifier
+) {
     val isPreVote = voteType == VoteType.PRE
     val bgColor = if (isPreVote) PickeTheme.colors.surface else Color.Black
     val shimmerBase = if (isPreVote) null else PickeTheme.colors.neutral600
@@ -44,7 +44,6 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(bgColor)
     ) {
-        // 1. 상단 이미지 + 태그/제목/설명 자리
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -53,8 +52,12 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
             Spacer(
                 modifier = Modifier
                     .fillMaxSize()
-                    .shimmer(shimmerBase, shimmerHighlight)
+                    .shimmer(
+                        baseColor = shimmerBase,
+                        highlightColor = shimmerHighlight
+                    )
             )
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,6 +80,7 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
                         highlightColor = shimmerHighlight
                     )
                 }
+
                 Spacer(modifier = Modifier.height(16.dp))
                 SkeletonLine(
                     width = 220.dp,
@@ -84,6 +88,7 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
                     baseColor = shimmerBase,
                     highlightColor = shimmerHighlight
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
                 SkeletonLine(
                     width = 160.dp,
@@ -91,6 +96,7 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
                     baseColor = shimmerBase,
                     highlightColor = shimmerHighlight
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
                 SkeletonLine(
                     width = 240.dp,
@@ -102,8 +108,6 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
         }
 
         Spacer(modifier = Modifier.height(24.dp))
-
-        // 2. 옵션 카드 자리
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -128,7 +132,6 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
                 )
             }
 
-            // VS 뱃지도 실제 이미지가 그대로 노출되지 않도록 shimmer 처리한다.
             Spacer(
                 modifier = Modifier
                     .size(36.dp)
@@ -136,9 +139,8 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
                     .shimmer(shimmerBase, shimmerHighlight)
             )
         }
-        Spacer(modifier = Modifier.height(32.dp))
 
-        // 3. 하단 "투표하기" 버튼 자리 (실제 bottomBar와 동일한 여백)
+        Spacer(modifier = Modifier.height(32.dp))
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,7 +153,6 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
     }
 }
 
-// VoteOptionCard는 테마와 무관하게 항상 밝은 surfaceSubtle 카드라, shimmer도 기본(밝은) 톤을 그대로 쓴다.
 @Composable
 private fun VoteOptionCardSkeleton(modifier: Modifier = Modifier) {
     Column(
