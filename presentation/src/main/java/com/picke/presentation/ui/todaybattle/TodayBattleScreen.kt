@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
@@ -68,6 +69,8 @@ import com.picke.presentation.ui.todaybattle.component.OpinionCard
 import com.picke.presentation.ui.todaybattle.component.TodayBattleSkeleton
 import com.picke.presentation.ui.todaybattle.component.TopIndicatorBar
 import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
+import com.picke.presentation.ui.todaybattle.model.TodayBattleUiState
+import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
 import kotlinx.coroutines.launch
@@ -80,33 +83,71 @@ fun TodayBattleScreen(
     onNavigateToScenario: (String) -> Unit,
     onNavigateToPerspective: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val battleList = uiState.battleList
-
-    val pagerState = rememberPagerState(pageCount = { battleList.size })
-    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null && !uiState.isEntering
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(battleList, initialBattleId) {
-        if (initialBattleId != null && battleList.isNotEmpty()) {
-            val targetPage = battleList.indexOfFirst { it.battleId == initialBattleId }
-            if (targetPage >= 0) pagerState.animateScrollToPage(targetPage)
-        }
-    }
-    val graphicsLayer = rememberGraphicsLayer()
-
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val uiState by viewModel.uiState.collectAsState()
+
+    val analyticsTracker = rememberAnalyticsTracker()
+
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
-    val analyticsTracker = rememberAnalyticsTracker()
+
+    TodayBattleScreen(
+        uiState = uiState,
+        initialBattleId = initialBattleId,
+        onBackClick = onBackClick,
+        onEnterBattle = { currentBattleId, selectedOptionId ->
+            viewModel.enterBattle(
+                battleId = currentBattleId.toLong(),
+                optionId = selectedOptionId!!.toLong(),
+                onNavigateToScenario = onNavigateToScenario,
+                onNavigateToPerspective = onNavigateToPerspective
+            )
+        },
+        onGetShareLink = { currentBattleId ->
+            viewModel.getShareLink(
+                battleId = currentBattleId,
+                onSuccess = { url ->
+                    clipboardManager.setText(AnnotatedString(url))
+                    Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                },
+                onError = { errorMessage ->
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            )
+        },
+        onTrackShareAction = { target, channel ->
+            analyticsTracker.trackShareAction(target, channel)
+        }
+    )
+}
+
+@Composable
+fun TodayBattleScreen(
+    uiState: TodayBattleUiState,
+    initialBattleId: String?,
+    onBackClick: () -> Unit,
+    onEnterBattle: (String, String?) -> Unit,
+    onGetShareLink: (Int) -> Unit,
+    onTrackShareAction: (String, String) -> Unit
+) {
+    val context = LocalContext.current
+
+    val battleList = uiState.battleList
+
+    val pagerState = rememberPagerState(pageCount = { battleList.size })
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+
+    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     var showShareDialog by remember { mutableStateOf(false) }
-    val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
-    val clipboardManager = LocalClipboardManager.current
     var isSharing by remember { mutableStateOf(false) }
+
+    val isButtonEnabled = selectedOptionId != null && !uiState.isEntering
+    val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
 
     val onKakaoShareClick = {
         currentBattle?.let { battle ->
@@ -245,12 +286,7 @@ fun TodayBattleScreen(
                     onClick = {
                         if (isButtonEnabled) {
                             val currentBattleId = battleList[pagerState.currentPage].battleId
-                            viewModel.enterBattle(
-                                battleId = currentBattleId.toLong(),
-                                optionId = selectedOptionId!!.toLong(),
-                                onNavigateToScenario = onNavigateToScenario,
-                                onNavigateToPerspective = onNavigateToPerspective
-                            )
+                            onEnterBattle(currentBattleId, selectedOptionId)
                         }
                     },
                     modifier = Modifier
@@ -341,18 +377,12 @@ fun TodayBattleScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
-                    analyticsTracker.trackShareAction(
-                        ShareTarget.BATTLE,
-                        ShareChannel.KAKAO
-                    )
+                    onTrackShareAction(ShareTarget.BATTLE, ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
-                    analyticsTracker.trackShareAction(
-                        ShareTarget.BATTLE,
-                        ShareChannel.INSTAGRAM
-                    )
+                    onTrackShareAction(ShareTarget.BATTLE, ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -360,23 +390,10 @@ fun TodayBattleScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
-                    analyticsTracker.trackShareAction(
-                        ShareTarget.BATTLE,
-                        ShareChannel.LINK
-                    )
+                    onTrackShareAction(ShareTarget.BATTLE, ShareChannel.LINK)
 
                     val currentBattleId = battleList[pagerState.currentPage].battleId.toInt()
-
-                    viewModel.getShareLink(
-                        battleId = currentBattleId,
-                        onSuccess = { url ->
-                            clipboardManager.setText(AnnotatedString(url))
-                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
-                        },
-                        onError = { errorMessage ->
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                        }
-                    )
+                    onGetShareLink(currentBattleId)
                 }
             )
         }
@@ -555,5 +572,22 @@ fun BattleContent(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TodayBattleScreenPreview() {
+    PickeTheme {
+        TodayBattleScreen(
+            uiState = TodayBattleUiState(
+                battleList = DummyData.dummyTodayBattles
+            ),
+            initialBattleId = "",
+            onBackClick = { },
+            onEnterBattle = { _, _ -> },
+            onGetShareLink = { },
+            onTrackShareAction = { _, _ -> }
+        )
     }
 }

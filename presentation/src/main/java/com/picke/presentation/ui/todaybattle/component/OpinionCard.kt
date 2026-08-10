@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.theme.PickeTheme
 
@@ -64,6 +65,20 @@ fun OpinionCard(
             color = Color.White.copy(0.3f),
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OpinionCardPreview() {
+    PickeTheme {
+        OpinionCard(
+            name = "test name",
+            opinion = "test opinion",
+            quote = "test quote",
+            isSelected = false,
+            onClick = {}
         )
     }
 }

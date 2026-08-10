@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.theme.PickeTheme
 
@@ -41,6 +42,17 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
             text = "${currentPage + 1}/$totalPages",
             style = PickeTheme.typography.labelXSmall,
             color = Color.White.copy(alpha = 0.3f)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TopIndicatorBarPreview() {
+    PickeTheme {
+        TopIndicatorBar(
+            currentPage = 1,
+            totalPages = 3
         )
     }
 }

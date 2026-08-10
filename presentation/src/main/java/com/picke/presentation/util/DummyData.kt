@@ -14,6 +14,8 @@ import com.picke.presentation.ui.recommend.model.RecommendUiModel
 import com.picke.presentation.ui.scenario.model.PastChoice
 import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
+import com.picke.presentation.ui.todaybattle.model.BattleOptionUiModel
+import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
 
 object DummyData {
 
@@ -458,6 +460,75 @@ object DummyData {
                 )
             ),
             selectedNextNodeId = "node_conclusion"
+        )
+    )
+
+    val dummyTodayBattles = listOf(
+        TodayBattleUiModel(
+            battleId = "battle_001",
+            imageUrl = "",
+            tags = listOf("음식", "취향", "국룰"),
+            title = "영원한 난제, 탕수육 먹을 때 당신의 선택은?",
+            description = "바삭함이 생명인 찍먹파 vs 소스가 촉촉하게 스며든 부먹파",
+            timeLeft = "02:15:30",
+            options = listOf(
+                BattleOptionUiModel(
+                    optionId = "opt_1",
+                    name = "찍먹",
+                    opinion = "마지막 한 조각까지 바삭함을 잃지 않아야 진짜 탕수육이죠. 눅눅한 고기는 용납할 수 없습니다.",
+                    quote = "바삭함은 생명이다!"
+                ),
+                BattleOptionUiModel(
+                    optionId = "opt_2",
+                    name = "부먹",
+                    opinion = "달콤한 소스가 고기 튀김옷에 촉촉하게 스며들었을 때의 그 부드러움이 진리입니다.",
+                    quote = "촉촉함이 근본이다!"
+                )
+            )
+        ),
+        TodayBattleUiModel(
+            battleId = "battle_002",
+            imageUrl = "",
+            tags = listOf("직장인", "워라밸", "라이프"),
+            title = "회사 복지, 하나만 선택할 수 있다면?",
+            description = "둘 다 포기할 수 없지만... 당신의 출근길을 더 행복하게 만들 복지는?",
+            timeLeft = "14:30:00",
+            options = listOf(
+                BattleOptionUiModel(
+                    optionId = "opt_3",
+                    name = "주 4일제",
+                    opinion = "월급이 10% 줄어들더라도 나만의 휴식과 취미 생활을 즐길 수 있는 시간이 훨씬 소중합니다.",
+                    quote = "월급보단 내 시간!"
+                ),
+                BattleOptionUiModel(
+                    optionId = "opt_4",
+                    name = "주 5일제",
+                    opinion = "어차피 일할 거 20% 더 벌어서 주말을 화려하고 윤택하게 보내는 것이 낫습니다.",
+                    quote = "결국 남는 건 돈이다!"
+                )
+            )
+        ),
+        TodayBattleUiModel(
+            battleId = "battle_003",
+            imageUrl = "",
+            tags = listOf("상상", "초능력", "밸런스게임"),
+            title = "당신에게 초능력이 생긴다면?",
+            description = "누구나 한 번쯤 상상해본 초능력! 실생활에 더 유용한 능력은?",
+            timeLeft = "D-2",
+            options = listOf(
+                BattleOptionUiModel(
+                    optionId = "opt_5",
+                    name = "순간이동",
+                    opinion = "지옥철 출퇴근 시간을 아끼고, 전 세계 어디든 1초 만에 여행 갈 수 있는 최고의 능력입니다.",
+                    quote = "지옥철, 이제 안녕!"
+                ),
+                BattleOptionUiModel(
+                    optionId = "opt_6",
+                    name = "독심술",
+                    opinion = "사람들의 진짜 속마음을 파악하면 직장 생활, 연애, 인간관계 모든 것에서 성공할 수 있습니다.",
+                    quote = "네 속마음 다 보여!"
+                )
+            )
         )
     )
 }
