@@ -9,7 +9,7 @@ data class TodayBattleUiModel(
     val title: String,
     val description: String,
     val timeLeft: String,
-    val options: List<BattleOptionUiModel>
+    val options: List<TodayBattleOptionUiModel>
 )
 
 fun TodayBattleItem.toUiModel(): TodayBattleUiModel {
