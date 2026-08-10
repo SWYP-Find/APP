@@ -3,7 +3,15 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +21,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.presentation.R
@@ -20,6 +29,7 @@ import com.picke.presentation.ui.component.ChattingLoadingAnimation
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun ChatBubble(
@@ -132,5 +142,18 @@ fun ChatBubble(
                 ChattingLoadingAnimation()
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ChatBubblePreview() {
+    PickeTheme {
+        ChatBubble(
+            script = DummyData.dummyScripts.first(),
+            isActive = true,
+            showAvatarAndName = true,
+            onClick = {}
+        )
     }
 }

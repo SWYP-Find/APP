@@ -17,16 +17,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.picke.presentation.ui.component.AudioPlayerBar
 import com.picke.presentation.ui.component.CustomConfirmDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
+import com.picke.presentation.ui.scenario.component.AudioPlayerBar
 import com.picke.presentation.ui.scenario.component.ChatBubble
 import com.picke.presentation.ui.scenario.component.InteractiveOptionsUI
 import com.picke.presentation.ui.scenario.component.OptionConfirmButton
+import com.picke.presentation.ui.scenario.model.ScenarioUiState
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun ScenarioScreen(
@@ -36,11 +40,39 @@ fun ScenarioScreen(
     onNextClick: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val listState = rememberLazyListState()
 
     LaunchedEffect(battleId) {
         viewModel.loadScenario(battleId)
     }
+
+    ScenarioScreen(
+        uiState = uiState,
+        onPlayPauseClick = { viewModel.togglePlayPause() },
+        onSeek = { ratio -> viewModel.seekToPosition(ratio) },
+        onRewindClick = { viewModel.seekRewind() },
+        onForwardClick = { viewModel.seekForward() },
+        onSeekToPosition = { targetRatio -> viewModel.seekToPosition(targetRatio) },
+        onSelectOption = { option -> viewModel.selectOption(option) },
+        onDismissFinalDialog = { viewModel.dismissFinalDialog() },
+        onRestartCurrentAudio = { viewModel.restartCurrentAudio() },
+        onNextClick = onNextClick
+    )
+}
+
+@Composable
+fun ScenarioScreen(
+    uiState: ScenarioUiState,
+    onPlayPauseClick: () -> Unit,
+    onSeek: (Float) -> Unit,
+    onRewindClick: () -> Unit,
+    onForwardClick: () -> Unit,
+    onSeekToPosition: (Float) -> Unit,
+    onSelectOption: (String) -> Unit,
+    onDismissFinalDialog: () -> Unit,
+    onRestartCurrentAudio: () -> Unit,
+    onNextClick: () -> Unit,
+) {
+    val listState = rememberLazyListState()
 
     val visibleScripts = if (uiState.maxRevealedIndex >= 0) {
         val safeIndex = minOf(uiState.maxRevealedIndex + 1, uiState.scripts.size)
@@ -51,7 +83,7 @@ fun ScenarioScreen(
 
     LaunchedEffect(uiState.showOptions) {
         if (uiState.showOptions) {
-            delay(100)
+            delay(100.milliseconds)
             listState.animateScrollToItem(allDisplayScripts.size)
         }
     }
@@ -83,10 +115,10 @@ fun ScenarioScreen(
                 isPlaying = uiState.isPlaying,
                 currentPositionMs = uiState.currentPositionMs,
                 totalDurationMs = uiState.totalDurationMs,
-                onPlayPauseClick = { viewModel.togglePlayPause() },
-                onSeek = { ratio -> viewModel.seekToPosition(ratio) },
-                onRewindClick = { viewModel.seekRewind() },
-                onForwardClick = { viewModel.seekForward() },
+                onPlayPauseClick = onPlayPauseClick,
+                onSeek = onSeek,
+                onRewindClick = onRewindClick,
+                onForwardClick = onForwardClick,
             )
         }
     ) { innerPadding ->
@@ -120,7 +152,7 @@ fun ScenarioScreen(
                         if (!isPastScript && uiState.totalDurationMs > 0) {
                             val targetRatio =
                                 script.startTimeMs.toFloat() / uiState.totalDurationMs.toFloat()
-                            viewModel.seekToPosition(targetRatio)
+                            onSeekToPosition(targetRatio)
                         }
                     }
                 )
@@ -140,7 +172,7 @@ fun ScenarioScreen(
                     InteractiveOptionsUI(
                         options = uiState.interactiveOptions,
                         selectedNodeId = null,
-                        onOptionClick = { viewModel.selectOption(it) }
+                        onOptionClick = onSelectOption
                     )
                 }
             }
@@ -150,7 +182,7 @@ fun ScenarioScreen(
                     OptionConfirmButton(
                         text = "최종투표 하러가기",
                         isEnabled = true,
-                        onClick = { onNextClick() }
+                        onClick = onNextClick
                     )
                 }
             }
@@ -163,13 +195,35 @@ fun ScenarioScreen(
                 dismissText = "최종투표하기",
                 confirmText = "다시 들어볼래요",
                 onDismiss = {
-                    viewModel.dismissFinalDialog()
+                    onDismissFinalDialog()
                     onNextClick()
                 },
-                onConfirm = {
-                    viewModel.restartCurrentAudio()
-                }
+                onConfirm = onRestartCurrentAudio
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ScenarioScreenPreview() {
+    PickeTheme {
+        ScenarioScreen(
+            uiState = ScenarioUiState(
+                pastScripts = DummyData.dummyScripts,
+                pastChoices = DummyData.dummyPastChoices,
+                scripts = DummyData.dummyScripts,
+                interactiveOptions = DummyData.dummyPastChoices.first().options,
+            ),
+            onPlayPauseClick = {},
+            onSeek = {},
+            onRewindClick = {},
+            onForwardClick = {},
+            onSeekToPosition = {},
+            onSelectOption = {},
+            onDismissFinalDialog = {},
+            onRestartCurrentAudio = {},
+            onNextClick = {}
+        )
     }
 }

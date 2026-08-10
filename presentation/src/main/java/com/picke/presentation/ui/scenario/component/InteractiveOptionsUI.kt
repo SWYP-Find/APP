@@ -23,10 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.picke.presentation.ui.scenario.OptionConfirmButton
 import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun InteractiveOptionsUI(
@@ -113,6 +114,18 @@ fun OptionSelectionCard(
             style = PickeTheme.typography.b5Medium,
             color = if (isSelected) PickeTheme.colors.textPrimary else PickeTheme.colors.textTertiary,
             textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun InteractiveOptionsUIPreview() {
+    PickeTheme {
+        InteractiveOptionsUI(
+            options = DummyData.dummyPastChoices.first().options,
+            selectedNodeId = "",
+            onOptionClick = {}
         )
     }
 }

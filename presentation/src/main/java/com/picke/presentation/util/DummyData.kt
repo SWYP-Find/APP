@@ -1,6 +1,7 @@
 package com.picke.presentation.util
 
 import com.picke.domain.feature.alarm.model.AlarmItemBoard
+import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.domain.feature.vote.model.VoteStatsOptionBoard
 import com.picke.presentation.ui.comment.model.CommentUiModel
 import com.picke.presentation.ui.explore.model.ExploreUiModel
@@ -10,6 +11,9 @@ import com.picke.presentation.ui.home.model.PollQuizOptionStatUiModel
 import com.picke.presentation.ui.home.model.TodayPickUiModel
 import com.picke.presentation.ui.perspective.model.PerspectiveUiModel
 import com.picke.presentation.ui.recommend.model.RecommendUiModel
+import com.picke.presentation.ui.scenario.model.PastChoice
+import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
+import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
 
 object DummyData {
 
@@ -368,6 +372,92 @@ object DummyData {
             stanceB = "사무실 출근",
             representativeA = "내 방 데스크셋업",
             representativeB = "강남 오피스"
+        )
+    )
+
+    val dummyScripts = listOf(
+        ScenarioScriptUiModel(
+            scriptId = "script_001",
+            startTimeMs = 0L,
+            speakerType = SpeakerType.NARRATOR,
+            speakerName = "진행자",
+            displayText = "지금부터 '평생 한 가지 음식만 먹어야 한다면?'을 주제로 배틀을 시작하겠습니다.",
+            profileImageUrl = null
+        ),
+        ScenarioScriptUiModel(
+            scriptId = "script_002",
+            startTimeMs = 4500L,
+            speakerType = SpeakerType.A,
+            speakerName = "윤기좔좔 짜장파",
+            displayText = "당연히 짜장면 아닌가요? 달콤하고 짭짤한 춘장 소스에 단무지 하나 올려 먹으면 매일 먹어도 안 질립니다.",
+            profileImageUrl = ""
+        ),
+        ScenarioScriptUiModel(
+            scriptId = "script_003",
+            startTimeMs = 11000L,
+            speakerType = SpeakerType.B,
+            speakerName = "얼큰국물 짬뽕파",
+            displayText = "비 오는 날 짜장면 드실 겁니까? 짬뽕의 얼큰한 국물과 불맛은 절대 포기할 수 없죠.",
+            profileImageUrl = ""
+        ),
+        ScenarioScriptUiModel(
+            scriptId = "script_004",
+            startTimeMs = 17500L,
+            speakerType = SpeakerType.A,
+            speakerName = "윤기좔좔 짜장파",
+            displayText = "짬뽕은 먹고 나면 옷에 국물 튀어서 불편하기만 합니다.",
+            profileImageUrl = ""
+        ),
+        ScenarioScriptUiModel(
+            scriptId = "script_005",
+            startTimeMs = 21000L,
+            speakerType = SpeakerType.USER,
+            speakerName = "나",
+            displayText = "음... 저는 짬짜면으로 합의 보겠습니다.",
+            profileImageUrl = ""
+        ),
+        ScenarioScriptUiModel(
+            scriptId = "script_006",
+            startTimeMs = 24500L,
+            speakerType = SpeakerType.UNKNOWN,
+            speakerName = "익명의 방청객",
+            displayText = "(웅성웅성) 짬짜면은 반칙 아닌가요?",
+            profileImageUrl = null
+        )
+    )
+
+    val dummyPastChoices = listOf(
+        PastChoice(
+            scriptIndex = 5,
+            options = listOf(
+                ScenarioOptionUiModel(
+                    label = "짜장면 측 반론 듣기",
+                    nextNodeId = "node_pro_rebuttal"
+                ),
+                ScenarioOptionUiModel(
+                    label = "짬뽕 측 반론 듣기",
+                    nextNodeId = "node_con_rebuttal"
+                )
+            ),
+            selectedNextNodeId = "node_con_rebuttal"
+        ),
+        PastChoice(
+            scriptIndex = 12,
+            options = listOf(
+                ScenarioOptionUiModel(
+                    label = "최종 결론 듣기",
+                    nextNodeId = "node_conclusion"
+                ),
+                ScenarioOptionUiModel(
+                    label = "전문가 의견 듣기",
+                    nextNodeId = "node_expert"
+                ),
+                ScenarioOptionUiModel(
+                    label = "바로 투표하기",
+                    nextNodeId = "node_vote"
+                )
+            ),
+            selectedNextNodeId = "node_conclusion"
         )
     )
 }
