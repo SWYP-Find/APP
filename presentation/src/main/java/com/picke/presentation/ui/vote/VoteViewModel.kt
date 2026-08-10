@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.feature.battle.model.BattleDetailBoard
 import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.domain.feature.battle.usecase.BattleUseCases
 import com.picke.domain.feature.share.usecase.ShareUseCases
@@ -14,6 +13,9 @@ import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.BattleStepName
 import com.picke.presentation.analytics.ShareTarget
+import com.picke.presentation.ui.vote.model.VoteType
+import com.picke.presentation.ui.vote.model.VoteUiState
+import com.picke.presentation.ui.vote.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,18 +23,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-enum class VoteType {
-    PRE,  // 사전 투표 (밝은 테마)
-    POST  // 사후 투표 (어두운 테마)
-}
-
-data class VoteUiState(
-    val isLoading: Boolean = false, // 로딩 상태
-    val battleDetail: BattleDetailBoard? = null, // 배틀 상세 정보
-    val error: String? = null, // 에러 메시지
-    val isInsufficientPoints: Boolean = false // 포인트 부족 여부 (다이얼로그 트리거)
-)
 
 @HiltViewModel
 class VoteViewModel @Inject constructor(
@@ -77,7 +67,11 @@ class VoteViewModel @Inject constructor(
                 .onSuccess { detailBoard ->
                     Log.i(TAG, "[STATE] 배틀 상세 정보 로드 성공")
                     _uiState.update {
-                        it.copy(isLoading = false, battleDetail = detailBoard, error = null)
+                        it.copy(
+                            isLoading = false,
+                            battleDetail = detailBoard.toUiModel(),
+                            error = null
+                        )
                     }
                 }
                 .onFailure { error ->

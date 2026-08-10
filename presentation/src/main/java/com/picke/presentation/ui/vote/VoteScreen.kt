@@ -3,17 +3,38 @@
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -23,22 +44,23 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
 import coil.imageLoader
-import com.picke.domain.feature.battle.model.BattleDetailBoard
-import com.picke.domain.feature.battle.model.BattleOptionBoard
 import com.picke.presentation.R
 import com.picke.presentation.analytics.ShareChannel
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.CustomSingleActionDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.ShareDialog
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.ui.vote.component.VoteOptionCard
+import com.picke.presentation.ui.vote.component.VoteSkeleton
+import com.picke.presentation.ui.vote.model.BattleDetailUiModel
+import com.picke.presentation.ui.vote.model.VoteType
+import com.picke.presentation.ui.vote.model.VoteUiState
 import com.picke.presentation.util.shareBattleToInstagramStoryBrightMode
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
@@ -120,7 +142,7 @@ private fun BattleNotFoundScreen(onBackClick: () -> Unit) {
 @Composable
 fun VoteScreen(
     voteType: VoteType,
-    battleDetail: BattleDetailBoard,
+    battleDetail: BattleDetailUiModel,
     uiState: VoteUiState,
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit,
@@ -483,47 +505,5 @@ fun VoteScreen(
                 }
             )
         }
-    }
-}
-
-@Composable
-fun VoteOptionCard(
-    modifier: Modifier = Modifier,
-    option: BattleOptionBoard,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderColor =
-        if (isSelected) PickeTheme.colors.secondary else PickeTheme.colors.borderDisabled
-    val contentAlpha = if (isSelected) 1f else 0.8f
-
-    Column(
-        modifier = modifier
-            .alpha(contentAlpha)
-            .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, borderColor, RoundedCornerShape(2.dp))
-            .background(PickeTheme.colors.surfaceSubtle)
-            .clickable { onClick() }
-            .padding(vertical = 24.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        ProfileImage(
-            model = option.imageUrl,
-            modifier = Modifier.size(40.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = option.title,
-            style = PickeTheme.typography.h4SemiBold,
-            color = PickeTheme.colors.textPrimary,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = option.representative,
-            style = PickeTheme.typography.labelXSmall,
-            color = PickeTheme.colors.textTertiary
-        )
     }
 }
