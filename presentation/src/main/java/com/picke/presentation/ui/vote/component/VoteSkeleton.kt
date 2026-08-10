@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
@@ -115,8 +116,16 @@ fun VoteSkeleton(voteType: VoteType, modifier: Modifier = Modifier) {
                     .height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                VoteOptionCardSkeleton(modifier = Modifier.weight(0.5f).fillMaxHeight())
-                VoteOptionCardSkeleton(modifier = Modifier.weight(0.5f).fillMaxHeight())
+                VoteOptionCardSkeleton(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxHeight()
+                )
+                VoteOptionCardSkeleton(
+                    modifier = Modifier
+                        .weight(0.5f)
+                        .fillMaxHeight()
+                )
             }
 
             // VS 뱃지도 실제 이미지가 그대로 노출되지 않도록 shimmer 처리한다.
@@ -164,5 +173,13 @@ private fun VoteOptionCardSkeleton(modifier: Modifier = Modifier) {
         SkeletonLine(width = 60.dp, height = 20.dp)
         Spacer(modifier = Modifier.height(4.dp))
         SkeletonLine(width = 40.dp, height = 14.dp)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun VoteSkeletonPreview() {
+    PickeTheme {
+        VoteSkeleton(voteType = VoteType.PRE)
     }
 }

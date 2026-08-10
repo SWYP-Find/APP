@@ -1,6 +1,7 @@
 package com.picke.presentation.util
 
 import com.picke.domain.feature.alarm.model.AlarmItemBoard
+import com.picke.domain.feature.battle.model.BattleTagBoard
 import com.picke.domain.feature.scenario.model.SpeakerType
 import com.picke.domain.feature.vote.model.VoteStatsOptionBoard
 import com.picke.presentation.ui.comment.model.CommentUiModel
@@ -14,8 +15,12 @@ import com.picke.presentation.ui.recommend.model.RecommendUiModel
 import com.picke.presentation.ui.scenario.model.PastChoice
 import com.picke.presentation.ui.scenario.model.ScenarioOptionUiModel
 import com.picke.presentation.ui.scenario.model.ScenarioScriptUiModel
-import com.picke.presentation.ui.todaybattle.model.BattleOptionUiModel
+import com.picke.presentation.ui.todaybattle.model.TodayBattleOptionUiModel
 import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
+import com.picke.presentation.ui.vote.model.BattleDetailUiModel
+import com.picke.presentation.ui.vote.model.BattleInfoUiModel
+import com.picke.presentation.ui.vote.model.BattleOptionUiModel
+import com.picke.presentation.ui.vote.model.BattleTagUiModel
 
 object DummyData {
 
@@ -349,7 +354,7 @@ object DummyData {
             battleId = "rec_002",
             title = "태블릿 PC, 정말 필수일까?",
             summary = "생산성 향상을 위한 필수템 vs 스마트폰과 노트북으로 충분하다",
-            audioDuration = 340, // 5분 40초
+            audioDuration = 340,
             viewCount = 8230,
             participantsCount = 3120,
             tags = listOf("IT", "전자기기", "소비"),
@@ -364,7 +369,7 @@ object DummyData {
             battleId = "rec_003",
             title = "가장 이상적인 근무 형태는?",
             summary = "출퇴근 시간 아끼는 재택근무 vs 동료들과 소통하는 사무실 출근",
-            audioDuration = 275, // 4분 35초
+            audioDuration = 275,
             viewCount = 21050,
             participantsCount = 12500,
             tags = listOf("직장인", "워라밸", "라이프스타일"),
@@ -472,13 +477,13 @@ object DummyData {
             description = "바삭함이 생명인 찍먹파 vs 소스가 촉촉하게 스며든 부먹파",
             timeLeft = "02:15:30",
             options = listOf(
-                BattleOptionUiModel(
+                TodayBattleOptionUiModel(
                     optionId = "opt_1",
                     name = "찍먹",
                     opinion = "마지막 한 조각까지 바삭함을 잃지 않아야 진짜 탕수육이죠. 눅눅한 고기는 용납할 수 없습니다.",
                     quote = "바삭함은 생명이다!"
                 ),
-                BattleOptionUiModel(
+                TodayBattleOptionUiModel(
                     optionId = "opt_2",
                     name = "부먹",
                     opinion = "달콤한 소스가 고기 튀김옷에 촉촉하게 스며들었을 때의 그 부드러움이 진리입니다.",
@@ -494,13 +499,13 @@ object DummyData {
             description = "둘 다 포기할 수 없지만... 당신의 출근길을 더 행복하게 만들 복지는?",
             timeLeft = "14:30:00",
             options = listOf(
-                BattleOptionUiModel(
+                TodayBattleOptionUiModel(
                     optionId = "opt_3",
                     name = "주 4일제",
                     opinion = "월급이 10% 줄어들더라도 나만의 휴식과 취미 생활을 즐길 수 있는 시간이 훨씬 소중합니다.",
                     quote = "월급보단 내 시간!"
                 ),
-                BattleOptionUiModel(
+                TodayBattleOptionUiModel(
                     optionId = "opt_4",
                     name = "주 5일제",
                     opinion = "어차피 일할 거 20% 더 벌어서 주말을 화려하고 윤택하게 보내는 것이 낫습니다.",
@@ -516,18 +521,125 @@ object DummyData {
             description = "누구나 한 번쯤 상상해본 초능력! 실생활에 더 유용한 능력은?",
             timeLeft = "D-2",
             options = listOf(
-                BattleOptionUiModel(
+                TodayBattleOptionUiModel(
                     optionId = "opt_5",
                     name = "순간이동",
                     opinion = "지옥철 출퇴근 시간을 아끼고, 전 세계 어디든 1초 만에 여행 갈 수 있는 최고의 능력입니다.",
                     quote = "지옥철, 이제 안녕!"
                 ),
-                BattleOptionUiModel(
+                TodayBattleOptionUiModel(
                     optionId = "opt_6",
                     name = "독심술",
                     opinion = "사람들의 진짜 속마음을 파악하면 직장 생활, 연애, 인간관계 모든 것에서 성공할 수 있습니다.",
                     quote = "네 속마음 다 보여!"
                 )
+            )
+        )
+    )
+
+    val dummyBattleDetailList = listOf(
+        BattleDetailUiModel(
+            battleInfo = BattleInfoUiModel(
+                battleId = "battle_detail_001",
+                title = "브레이크가 고장 난 트롤리, 당신의 선택은?",
+                summary = "다수를 위한 소수의 희생은 정당한가?",
+                thumbnailUrl = "",
+                viewCount = 45210,
+                participantsCount = 12500,
+                audioDuration = 180,
+                tags = listOf(
+                    BattleTagBoard("board_tag_1", "철학", "PHILOSOPHER"),
+                    BattleTagBoard("board_tag_2", "윤리", "VALUE")
+                ),
+                options = listOf(
+                    BattleOptionUiModel(
+                        optionId = "opt_1",
+                        title = "레버를 당긴다 (1명 희생)",
+                        stance = "PRO",
+                        representative = "공리주의",
+                        imageUrl = "",
+                        tags = listOf(
+                            BattleTagUiModel("opt_tag_1", "제러미 벤담", "PHILOSOPHER"),
+                            BattleTagUiModel("opt_tag_2", "최대 다수의 최대 행복", "VALUE")
+                        )
+                    ),
+                    BattleOptionUiModel(
+                        optionId = "opt_2",
+                        title = "개입하지 않는다 (5명 희생)",
+                        stance = "CON",
+                        representative = "의무론",
+                        imageUrl = "",
+                        tags = listOf(
+                            BattleTagUiModel("opt_tag_3", "임마누엘 칸트", "PHILOSOPHER"),
+                            BattleTagUiModel("opt_tag_4", "인간은 수단이 아닌 목적", "VALUE")
+                        )
+                    )
+                )
+            ),
+            description = "브레이크가 고장 난 트롤리가 질주하고 있습니다. 이대로면 선로 위에 묶인 5명의 인부가 목숨을 잃게 됩니다. 당신은 선로를 바꿀 수 있는 레버 앞에 서 있습니다. 레버를 당기면 5명을 살릴 수 있지만, 다른 선로에 있는 1명의 인부가 희생됩니다. 당신은 어떤 선택을 내리시겠습니까?",
+            shareUrl = "https://picke.com/battle/001",
+            userVoteStatus = "VOTED_A",
+            currentStep = "PERSPECTIVE",
+            categoryTags = listOf(
+                BattleTagUiModel("cat_1", "철학", "CATEGORY")
+            ),
+            philosopherTags = listOf(
+                BattleTagUiModel("phil_1", "제러미 벤담", "PHILOSOPHER"),
+                BattleTagUiModel("phil_2", "임마누엘 칸트", "PHILOSOPHER")
+            ),
+            valueTags = listOf(
+                BattleTagUiModel("val_1", "공리주의", "VALUE"),
+                BattleTagUiModel("val_2", "의무론", "VALUE")
+            )
+        ),
+        BattleDetailUiModel(
+            battleInfo = BattleInfoUiModel(
+                battleId = "battle_detail_002",
+                title = "인공지능(AI) 판사, 도입해야 할까?",
+                summary = "감정 없는 공정한 판결 vs 인간에 의한 맥락적 이해",
+                thumbnailUrl = "",
+                viewCount = 38900,
+                participantsCount = 9800,
+                audioDuration = 240,
+                tags = listOf(
+                    BattleTagBoard("board_tag_3", "사회", "SOCIAL"),
+                    BattleTagBoard("board_tag_4", "과학", "SCIENCE")
+                ),
+                options = listOf(
+                    BattleOptionUiModel(
+                        optionId = "opt_3",
+                        title = "도입 찬성 (AI 판사)",
+                        stance = "PRO",
+                        representative = "객관성과 효율성",
+                        imageUrl = "",
+                        tags = listOf(
+                            BattleTagUiModel("opt_tag_5", "데이터 기반 판결", "VALUE")
+                        )
+                    ),
+                    BattleOptionUiModel(
+                        optionId = "opt_4",
+                        title = "도입 반대 (인간 판사)",
+                        stance = "CON",
+                        representative = "인간적 맥락 이해",
+                        imageUrl = "",
+                        tags = listOf(
+                            BattleTagUiModel("opt_tag_6", "법적 안정성", "VALUE")
+                        )
+                    )
+                )
+            ),
+            description = "인공지능 기술이 발전하면서 법률 분야에도 AI가 도입되고 있습니다. 과거의 판례를 분석하여 편향 없이 객관적이고 일관된 판결을 내릴 수 있다는 찬성 의견과, 법은 수학 공식이 아니며 피고인의 반성 태도나 정황 등 인간만이 이해할 수 있는 맥락을 고려해야 한다는 반대 의견이 맞서고 있습니다.",
+            shareUrl = "https://picke.com/battle/002",
+            userVoteStatus = "NONE",
+            currentStep = "SCENARIO",
+            categoryTags = listOf(
+                BattleTagUiModel("cat_2", "사회", "CATEGORY"),
+                BattleTagUiModel("cat_3", "과학", "CATEGORY")
+            ),
+            philosopherTags = emptyList(),
+            valueTags = listOf(
+                BattleTagUiModel("val_3", "공정성", "VALUE"),
+                BattleTagUiModel("val_4", "인도주의", "VALUE")
             )
         )
     )

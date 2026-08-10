@@ -17,17 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.vote.model.BattleOptionUiModel
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun VoteOptionCard(
-    modifier: Modifier = Modifier,
     option: BattleOptionUiModel,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val borderColor =
         if (isSelected) PickeTheme.colors.secondary else PickeTheme.colors.borderDisabled
@@ -60,6 +62,18 @@ fun VoteOptionCard(
             text = option.representative,
             style = PickeTheme.typography.labelXSmall,
             color = PickeTheme.colors.textTertiary
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun VoteOptionCardPreview() {
+    PickeTheme {
+        VoteOptionCard(
+            option = DummyData.dummyBattleDetailList.first().battleInfo.options.first(),
+            isSelected = true,
+            onClick = { }
         )
     }
 }

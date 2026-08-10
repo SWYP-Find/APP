@@ -1,4 +1,4 @@
-﻿package com.picke.presentation.ui.vote
+package com.picke.presentation.ui.vote
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -44,6 +44,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
@@ -61,6 +62,7 @@ import com.picke.presentation.ui.vote.component.VoteSkeleton
 import com.picke.presentation.ui.vote.model.BattleDetailUiModel
 import com.picke.presentation.ui.vote.model.VoteType
 import com.picke.presentation.ui.vote.model.VoteUiState
+import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.shareBattleToInstagramStoryBrightMode
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
@@ -91,50 +93,29 @@ fun VoteRoute(
                 onBackClick = onBackClick,
                 onVoteSubmit = onVoteSubmit,
                 onNavigateToExplore = onNavigateToExplore,
-                viewModel = viewModel
+                onSubmitVote = { selectedOptionId, onSuccess ->
+                    viewModel.submitVote(
+                        voteType = voteType,
+                        selectedOptionId = selectedOptionId,
+                        onSuccess = onSuccess
+                    )
+                },
+                onTrackShare = { channel ->
+                    viewModel.trackShare(channel)
+                },
+                onGetShareLink = { battleId, onSuccess, onError ->
+                    viewModel.getShareLink(
+                        battleId = battleId,
+                        onSuccess = onSuccess,
+                        onError = onError
+                    )
+                },
+                onDismissPointDialog = {
+                    viewModel.dismissPointDialog()
+                }
             )
         } else {
             BattleNotFoundScreen(onBackClick = onBackClick)
-        }
-    }
-}
-
-// 존재하지 않거나 삭제된 배틀 id로 진입했을 때 보여주는 빈 화면
-// (관점 화면의 빈 목록 상태와 동일한 Picke 로고 + 안내 문구 UI를 재사용)
-@Composable
-private fun BattleNotFoundScreen(onBackClick: () -> Unit) {
-    Scaffold(
-        containerColor = PickeTheme.colors.backgroundBrand,
-        contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            Box(modifier = Modifier.statusBarsPadding()) {
-                CustomTopAppBar(
-                    showBackButton = true,
-                    onBackClick = onBackClick,
-                    backgroundColor = PickeTheme.colors.backgroundBrand,
-                )
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.logo_picke),
-                contentDescription = "빈 화면 로고",
-                modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = PickeTheme.colors.borderDefault
-            )
-            // Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "해당 배틀은 존재하지 않습니다",
-                style = PickeTheme.typography.b3Regular,
-                color = PickeTheme.colors.beige800
-            )
         }
     }
 }
@@ -147,7 +128,10 @@ fun VoteScreen(
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit,
     onNavigateToExplore: () -> Unit,
-    viewModel: VoteViewModel
+    onSubmitVote: (String, () -> Unit) -> Unit,
+    onTrackShare: (String) -> Unit,
+    onGetShareLink: (Int, (String) -> Unit, (String) -> Unit) -> Unit,
+    onDismissPointDialog: () -> Unit
 ) {
     val isPreVote = voteType == VoteType.PRE
     val battleInfo = battleDetail.battleInfo
@@ -263,11 +247,8 @@ fun VoteScreen(
                         text = if (isPreVote) stringResource(R.string.prevote) else "최종 투표하기",
                         onClick = {
                             if (selectedOptionId != null) {
-                                viewModel.submitVote(
-                                    voteType = voteType,
-                                    selectedOptionId = selectedOptionId!!,
-                                    onSuccess = {
-                                        /*val props = JSONObject().apply {
+                                onSubmitVote(selectedOptionId!!) {
+                                    /*val props = JSONObject().apply {
                                         put("battle_id", battleInfo.battleId.toString())
                                         put("battle_title", battleInfo.title)
                                     }
@@ -277,10 +258,8 @@ fun VoteScreen(
                                     } else {
                                         SwypApplication.mixpanel.track("post_vote", props) // 기획서 명칭 일치
                                     }*/
-
-                                        onVoteSubmit(battleInfo.battleId.toString())
-                                    }
-                                )
+                                    onVoteSubmit(battleInfo.battleId)
+                                }
                             }
                         },
                         modifier = Modifier.padding(20.dp),
@@ -441,12 +420,12 @@ fun VoteScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
-                    viewModel.trackShare(ShareChannel.KAKAO)
+                    onTrackShare(ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
-                    viewModel.trackShare(ShareChannel.INSTAGRAM)
+                    onTrackShare(ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -454,27 +433,15 @@ fun VoteScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
-                    viewModel.trackShare(ShareChannel.LINK)
-                    viewModel.getShareLink(
-                        battleId = battleInfo.battleId.toInt(),
-                        onSuccess = { url ->
-                            clipboardManager.setText(
-                                androidx.compose.ui.text.AnnotatedString(
-                                    url
-                                )
-                            )
-                            android.widget.Toast.makeText(
-                                context,
-                                "링크가 클립보드에 복사되었습니다.",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
+                    onTrackShare(ShareChannel.LINK)
+                    onGetShareLink(
+                        battleInfo.battleId.toInt(),
+                        { url ->
+                            clipboardManager.setText(AnnotatedString(url))
+                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
                         },
-                        onError = { errorMessage ->
-                            android.widget.Toast.makeText(
-                                context,
-                                errorMessage,
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
+                        { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                         }
                     )
                 }
@@ -498,12 +465,68 @@ fun VoteScreen(
                 message = "컨텐츠를 시청하기 위한\n포인트가 부족해요!",
                 subMessage = "매일 출석체크만 해도 5P를 받을 수 있어요!",
                 buttonText = "배틀 주제 구경하러 가기",
-                onDismiss = { viewModel.dismissPointDialog() },
+                onDismiss = { onDismissPointDialog() },
                 onConfirm = {
-                    viewModel.dismissPointDialog()
+                    onDismissPointDialog()
                     onNavigateToExplore()
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun BattleNotFoundScreen(onBackClick: () -> Unit) {
+    Scaffold(
+        containerColor = PickeTheme.colors.backgroundBrand,
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            Box(modifier = Modifier.statusBarsPadding()) {
+                CustomTopAppBar(
+                    showBackButton = true,
+                    onBackClick = onBackClick,
+                    backgroundColor = PickeTheme.colors.backgroundBrand,
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.logo_picke),
+                contentDescription = "빈 화면 로고",
+                modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                tint = PickeTheme.colors.borderDefault
+            )
+            Text(
+                text = "해당 배틀은 존재하지 않습니다",
+                style = PickeTheme.typography.b3Regular,
+                color = PickeTheme.colors.beige800
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun VoteScreenPreview() {
+    PickeTheme {
+        VoteScreen(
+            voteType = VoteType.PRE,
+            battleDetail = DummyData.dummyBattleDetailList.first(),
+            uiState = VoteUiState(),
+            onBackClick = {},
+            onVoteSubmit = {},
+            onNavigateToExplore = {},
+            onSubmitVote = { _, _ -> },
+            onTrackShare = { },
+            onGetShareLink = { _, _, _ -> },
+            onDismissPointDialog = {}
+        )
     }
 }
