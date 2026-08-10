@@ -22,7 +22,6 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        // 작대기 부분
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -37,7 +36,6 @@ fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
             }
         }
 
-        // 텍스트 부분 (예: 1/4)
         Text(
             text = "${currentPage + 1}/$totalPages",
             style = PickeTheme.typography.labelXSmall,

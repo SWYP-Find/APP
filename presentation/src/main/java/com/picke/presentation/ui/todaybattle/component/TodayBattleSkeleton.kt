@@ -25,25 +25,20 @@ import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
 
-// BattleContent와 동일한 weight/padding/spacer 값을 그대로 써서
-// 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
-// 화면 배경이 검은색이라 기본 밝은 shimmer 색 대신 어두운 톤(neutral600/neutral400)을 쓴다.
 @Composable
 fun TodayBattleSkeleton(modifier: Modifier = Modifier) {
     val darkShimmerBase = PickeTheme.colors.neutral600
     val darkShimmerHighlight = PickeTheme.colors.neutral400
 
     Column(modifier = modifier.fillMaxSize()) {
-        // 1. 상단 이미지 자리
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .shimmer(darkShimmerBase, darkShimmerHighlight)
         )
-        Spacer(modifier = Modifier.height(20.dp))
 
-        // 2. VS 카드 자리
+        Spacer(modifier = Modifier.height(20.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -51,11 +46,16 @@ fun TodayBattleSkeleton(modifier: Modifier = Modifier) {
             contentAlignment = Alignment.Center
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                OpinionCardSkeleton()
-                OpinionCardSkeleton()
+                OpinionCardSkeleton(
+                    darkShimmerBase = darkShimmerBase,
+                    darkShimmerHighlight = darkShimmerHighlight
+                )
+                OpinionCardSkeleton(
+                    darkShimmerBase = darkShimmerBase,
+                    darkShimmerHighlight = darkShimmerHighlight
+                )
             }
 
-            // 정중앙 VS 뱃지도 실제 이미지가 그대로 노출되지 않도록 shimmer 처리한다.
             Spacer(
                 modifier = Modifier
                     .size(40.dp)
@@ -63,9 +63,8 @@ fun TodayBattleSkeleton(modifier: Modifier = Modifier) {
                     .shimmer(darkShimmerBase, darkShimmerHighlight)
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // 3. 하단 "배틀 시작하기" 버튼 자리 (실제 bottomBar와 동일한 여백)
+        Spacer(modifier = Modifier.height(16.dp))
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,10 +78,10 @@ fun TodayBattleSkeleton(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun OpinionCardSkeleton() {
-    val darkShimmerBase = PickeTheme.colors.neutral600
-    val darkShimmerHighlight = PickeTheme.colors.neutral400
-
+private fun OpinionCardSkeleton(
+    darkShimmerBase: Color,
+    darkShimmerHighlight: Color
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,6 +98,7 @@ private fun OpinionCardSkeleton() {
             baseColor = darkShimmerBase,
             highlightColor = darkShimmerHighlight
         )
+
         Spacer(modifier = Modifier.height(4.dp))
         SkeletonLine(
             width = 120.dp,
@@ -106,6 +106,7 @@ private fun OpinionCardSkeleton() {
             baseColor = darkShimmerBase,
             highlightColor = darkShimmerHighlight
         )
+
         Spacer(modifier = Modifier.height(6.dp))
         SkeletonLine(
             width = 160.dp,

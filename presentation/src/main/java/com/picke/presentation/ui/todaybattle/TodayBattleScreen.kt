@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.todaybattle
+﻿package com.picke.presentation.ui.todaybattle
 
 import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
@@ -73,7 +73,9 @@ import com.picke.presentation.ui.todaybattle.model.TodayBattleUiState
 import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun TodayBattleScreen(
@@ -174,7 +176,7 @@ fun TodayBattleScreen(
                         isSharing = false
                         Toast.makeText(context, "이미지 로드 실패", Toast.LENGTH_SHORT).show()
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     isSharing = false
                     Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT).show()
                 }
@@ -186,22 +188,27 @@ fun TodayBattleScreen(
         isSharing = true
         coroutineScope.launch {
             try {
-                kotlinx.coroutines.delay(100)
+                delay(100.milliseconds)
 
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-
                 shareBattleToInstagramStoryDarkMode(
                     context = context,
                     bitmap = bitmap,
                     onComplete = { isSharing = false }
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isSharing = false
-                Toast.makeText(context, "캡처 실패", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    LaunchedEffect(battleList, initialBattleId) {
+        if (initialBattleId != null && battleList.isNotEmpty()) {
+            val targetPage = battleList.indexOfFirst { it.battleId == initialBattleId }
+            if (targetPage >= 0) pagerState.animateScrollToPage(targetPage)
+        }
+    }
 
     if (uiState.isLoading) {
         Box(
@@ -211,7 +218,6 @@ fun TodayBattleScreen(
         ) {
             TodayBattleSkeleton(modifier = Modifier.fillMaxSize())
 
-            // 상단 뒤로가기 버튼 (실제 로드된 화면과 동일하게 40dp 터치영역 + 20dp 아이콘으로 맞춘다)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -228,6 +234,7 @@ fun TodayBattleScreen(
                 }
             }
         }
+
         return
     }
 
@@ -237,7 +244,6 @@ fun TodayBattleScreen(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            // 상단 뒤로가기 버튼
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -253,7 +259,6 @@ fun TodayBattleScreen(
                 }
             }
 
-            // 정중앙 안내 문구
             Column(
                 modifier = Modifier.align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -273,6 +278,7 @@ fun TodayBattleScreen(
                 )
             }
         }
+
         return
     }
 
@@ -322,21 +328,17 @@ fun TodayBattleScreen(
                     )
                 }
 
-                // 상단 UI (인디케이터 & 뒤로가기 버튼 & 공유하기 버튼)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .statusBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    // 빠른 배틀이 여러 개일 때만 상단 인디케이터(1/1 등)를 노출한다.
-                    // 현재는 하루 1개만 노출하므로 사실상 숨겨진다.
                     if (battleList.size > 1) {
                         TopIndicatorBar(
                             currentPage = pagerState.currentPage,
                             totalPages = battleList.size
                         )
-
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
@@ -402,7 +404,7 @@ fun TodayBattleScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)) // 반투명 검은색 배경
+                    .background(Color.Black.copy(alpha = 0.5f))
                     .pointerInput(Unit) {},
                 contentAlignment = Alignment.Center
             ) {
@@ -419,7 +421,6 @@ fun BattleContent(
     onOptionSelect: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        // [상단] 배경 이미지 + 그라데이션 페이드 아웃
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -456,7 +457,6 @@ fun BattleContent(
                 }
             )
 
-            // 텍스트 정보들 (이미지 위에 오버레이)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -465,7 +465,6 @@ fun BattleContent(
                     .padding(bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 해시태그
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item.tags.forEach { tag ->
                         Surface(
@@ -483,13 +482,13 @@ fun BattleContent(
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
-
                 Text(
                     text = item.title,
                     style = PickeTheme.typography.h1SemiBold,
                     color = PickeTheme.colors.surface,
                     textAlign = TextAlign.Center
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = item.description,
@@ -497,9 +496,8 @@ fun BattleContent(
                     color = PickeTheme.colors.neutral400,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                // 시간 테두리 박스
+                Spacer(modifier = Modifier.height(16.dp))
                 Surface(
                     color = Color.Transparent,
                     shape = RoundedCornerShape(2.dp),
@@ -510,9 +508,9 @@ fun BattleContent(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painterResource(R.drawable.ic_clock),
-                            null,
-                            Modifier.size(12.dp),
+                            painter = painterResource(R.drawable.ic_clock),
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
                             tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(6.dp))
@@ -527,8 +525,6 @@ fun BattleContent(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        // [하단] VS 카드 영역
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -542,12 +538,12 @@ fun BattleContent(
                         name = optionA.name,
                         opinion = optionA.opinion,
                         quote = optionA.quote,
-                        isSelected = selectedOptionId == optionA.optionId, // 이제 둘 다 String이라 비교가 잘 됩니다!
+                        isSelected = selectedOptionId == optionA.optionId,
                         onClick = { onOptionSelect(optionA.optionId) }
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
 
+                Spacer(modifier = Modifier.height(12.dp))
                 if (item.options.size > 1) {
                     val optionB = item.options[1]
                     OpinionCard(
@@ -560,7 +556,6 @@ fun BattleContent(
                 }
             }
 
-            // 정중앙 VS 원형 뱃지
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,

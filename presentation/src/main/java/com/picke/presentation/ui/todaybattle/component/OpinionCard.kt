@@ -50,6 +50,7 @@ fun OpinionCard(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = opinion,
@@ -58,6 +59,7 @@ fun OpinionCard(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = "\"$quote\"",
