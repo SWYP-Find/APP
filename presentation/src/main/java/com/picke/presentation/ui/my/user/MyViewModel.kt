@@ -1,6 +1,5 @@
 package com.picke.presentation.ui.my.user
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.domain.common.local.LocalPreferencesUseCases
@@ -21,7 +20,7 @@ import javax.inject.Inject
 class MyViewModel @Inject constructor(
     private val myPageUseCases: MyPageUseCases,
     private val alarmUseCases: AlarmUseCases,
-    private val localPreferencesUseCases: LocalPreferencesUseCases,
+    localPreferencesUseCases: LocalPreferencesUseCases,
     val adMobManager: AdMobManager
 ) : ViewModel() {
 
@@ -33,14 +32,11 @@ class MyViewModel @Inject constructor(
     }
 
     fun fetchMyInfo() {
-        // 화면이 다시 보이는 시점에 즉시(동기적으로) 로딩 상태로 전환해야
-        // 이전에 로드된 UI가 한 프레임이라도 먼저 그려지는 깜빡임을 막을 수 있다.
         _uiState.update { it.copy(isLoading = true) }
 
         viewModelScope.launch {
             myPageUseCases.getMyPageInfoUseCase()
                 .onSuccess { infoBoard ->
-                    Log.d("MyPageFlow", "🟢 마이페이지 정보 로드 성공: ${infoBoard}")
                     _uiState.update {
                         it.copy(
                             profile = infoBoard.profile.toUiModel(),
@@ -50,8 +46,7 @@ class MyViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure { error ->
-                    Log.e("MyPageFlow", "🔴 마이페이지 로드 실패: ${error.message}", error)
+                .onFailure {
                     _uiState.update { it.copy(isLoading = false) }
                 }
         }
@@ -71,9 +66,7 @@ class MyViewModel @Inject constructor(
         fetchMyInfo()
     }
 
-    // 미읽음 알림 존재 여부 조회 (탑바 벨 아이콘 빨간 점 배지)
     fun fetchUnreadAlarmStatus() {
-        // 재진입 시에도 배지 여부가 확정되기 전까지 아이콘을 shimmer로 유지한다.
         _uiState.update { it.copy(isAlarmStatusLoading = true) }
 
         viewModelScope.launch {
@@ -86,11 +79,9 @@ class MyViewModel @Inject constructor(
                         )
                     }
                 }
-                .onFailure { error ->
-                    Log.e("MyPageFlow", "🔴 미읽음 알림 여부 조회 실패!", error)
+                .onFailure {
                     _uiState.update { it.copy(isAlarmStatusLoading = false) }
                 }
         }
     }
-
 }

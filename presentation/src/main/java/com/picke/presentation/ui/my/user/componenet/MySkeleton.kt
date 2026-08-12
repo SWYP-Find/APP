@@ -25,8 +25,6 @@ import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.theme.PickeTheme
 
-// MyScreen의 실제 Column과 동일한 padding/spacer 값을 그대로 써서
-// 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
 @Composable
 fun MySkeleton(modifier: Modifier = Modifier) {
     Column(
@@ -36,10 +34,13 @@ fun MySkeleton(modifier: Modifier = Modifier) {
     ) {
         Spacer(modifier = Modifier.height(24.dp))
         ProfileSectionSkeleton()
+
         Spacer(modifier = Modifier.height(20.dp))
         CreditCardSkeleton()
+
         Spacer(modifier = Modifier.height(16.dp))
         PhilosopherTypeCardSkeleton()
+
         Spacer(modifier = Modifier.height(24.dp))
         repeat(3) {
             MyPageMenuItemSkeleton()
@@ -68,8 +69,6 @@ private fun ProfileSectionSkeleton() {
     }
 }
 
-// 크레딧 카드는 안에 있는 텍스트 하나하나를 shimmer로 쪼개지 않고,
-// 실제 카드와 같은 높이(padding 20dp*2 + 콘텐츠 24dp)의 박스 하나를 통째로 반짝이게 한다.
 @Composable
 private fun CreditCardSkeleton() {
     Spacer(

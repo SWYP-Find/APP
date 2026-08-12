@@ -1,6 +1,5 @@
 package com.picke.presentation.ui.my.user
 
-import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,11 +62,10 @@ fun MyScreen(
     onNavigateToPoint: () -> Unit,
     viewModel: MyViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val activity = context as? Activity
-
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -76,6 +73,7 @@ fun MyScreen(
                 viewModel.fetchUnreadAlarmStatus()
             }
         }
+
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
@@ -114,8 +112,6 @@ fun MyScreen(
                 backgroundColor = PickeTheme.colors.backgroundBrand,
                 centerTitle = false,
                 actions = {
-                    // 벨 배지(미읽음 여부)는 API 응답 후에야 확정되므로,
-                    // 그 전까지는 아이콘 자리도 스켈레톤과 동일하게 shimmer로 보여준다.
                     if (uiState.isLoading || uiState.isAlarmStatusLoading) {
                         repeat(2) {
                             Box(
@@ -131,8 +127,6 @@ fun MyScreen(
                             }
                         }
                     } else {
-                        // 배지는 서버의 미읽음 여부 응답으로만 갱신한다.
-                        // (여기서 임의로 숨기면 알림함에서 돌아올 때 배지가 다시 나타나는 깜빡임이 생긴다)
                         IconButton(onClick = onNavigateToAlarm, modifier = Modifier.size(36.dp)) {
                             BadgedBox(
                                 badge = {
@@ -145,20 +139,18 @@ fun MyScreen(
                                 }
                             ) {
                                 Icon(
-                                    painterResource(R.drawable.ic_alarm),
+                                    painter = painterResource(R.drawable.ic_alarm),
                                     contentDescription = stringResource(R.string.alarm),
                                     tint = PickeTheme.colors.textPrimary
                                 )
                             }
                         }
                         IconButton(
-                            onClick = {
-                                onNavigateToSetting()
-                            },
+                            onClick = onNavigateToSetting,
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
-                                painterResource(R.drawable.ic_setting),
+                                painter = painterResource(R.drawable.ic_setting),
                                 contentDescription = stringResource(R.string.setting),
                                 tint = PickeTheme.colors.textPrimary
                             )
@@ -182,7 +174,6 @@ fun MyScreen(
                     .padding(horizontal = 16.dp)
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
-
                 ProfileSection(
                     nickname = uiState.profile?.nickname ?: "사용자",
                     userHandle = uiState.profile?.userTag?.let { "@$it" } ?: "",
@@ -190,12 +181,9 @@ fun MyScreen(
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
-
                 CreditCard(
                     credit = uiState.tier?.currentPoint ?: 0,
-                    onClick = {
-                        onNavigateToPoint()
-                    },
+                    onClick = onNavigateToPoint,
                     onChargeClick = {
                         // AdMob 광고 로직 비활성화 (추후 재사용 예정)
                         // activity?.let {
@@ -223,14 +211,12 @@ fun MyScreen(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-
-                PhilosopherTypeCard(
+                PhilosopherTypeSection(
                     philosopher = uiState.philosopher,
                     onClick = { onNavigateToPhilosopher() }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
                 MyPageMenuItem(
                     title = stringResource(R.string.my_menu_discussion),
                     onClick = { onNavigateToDiscussion() }
@@ -245,13 +231,12 @@ fun MyScreen(
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
-                // 카카오 애드핏 배너 광고 (마이 탭 최하단)
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -268,15 +253,15 @@ fun ProfileSection(
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 프로필 이미지
         ProfileImage(
             model = profileImage ?: R.drawable.illust_mengzi,
             modifier = Modifier.size(52.dp),
         )
+
         Spacer(modifier = Modifier.width(12.dp))
-        // 이름 & 유형 & ID
         Column {
             Text(text = nickname, style = PickeTheme.typography.h4SemiBold)
+
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = userHandle,
@@ -288,7 +273,7 @@ fun ProfileSection(
 }
 
 @Composable
-fun PhilosopherTypeCard(
+fun PhilosopherTypeSection(
     philosopher: MyPhilosopherUiModel?,
     onClick: () -> Unit
 ) {
@@ -306,21 +291,19 @@ fun PhilosopherTypeCard(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // [왼쪽] 철학자 아이콘
         ProfileImage(
             model = displayImage,
             modifier = Modifier.size(40.dp),
         )
 
         Spacer(modifier = Modifier.width(12.dp))
-
-        // [가운데] 텍스트 영역
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(R.string.my_menu_philosopher),
                 style = PickeTheme.typography.caption2Medium,
                 color = PickeTheme.colors.textTertiary
             )
+
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = if (isLocked) displayName else "$displayName ",
@@ -329,7 +312,6 @@ fun PhilosopherTypeCard(
             )
         }
 
-        // [오른쪽] 화살표
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right_a),
             contentDescription = null,
