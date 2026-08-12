@@ -46,6 +46,7 @@ import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.shimmer
+import com.picke.presentation.ui.my.user.componenet.CreditCard
 import com.picke.presentation.ui.my.user.componenet.MyPageMenuItem
 import com.picke.presentation.ui.my.user.componenet.MySkeleton
 import com.picke.presentation.ui.my.user.model.MyPhilosopherUiModel
@@ -335,74 +336,6 @@ fun PhilosopherTypeCard(
             modifier = Modifier.size(12.dp),
             tint = PickeTheme.colors.textPrimary
         )
-    }
-}
-
-@Composable
-fun CreditCard(
-    credit: Int,
-    onClick: () -> Unit,
-    onChargeClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(2.dp))
-            .background(PickeTheme.colors.primaryDark)
-            .clickable { onClick() }
-            .padding(horizontal = 20.dp, vertical = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // C 아이콘 + 내 크레딧 정보
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            // 1. 'C' 동그라미 아이콘
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .background(color = PickeTheme.colors.secondary300, shape = CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "P",
-                    style = PickeTheme.typography.b5Medium,
-                    color = PickeTheme.colors.textSecondary
-                )
-            }
-
-            // 텍스트 영역
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = stringResource(R.string.my_point),
-                    style = PickeTheme.typography.b3Regular,
-                    color = PickeTheme.colors.surfaceDefault
-                )
-                Text(
-                    text = credit.toString(),
-                    style = PickeTheme.typography.b3Regular,
-                    color = PickeTheme.colors.secondary700
-                )
-            }
-        }
-
-        // [오른쪽] 무료 충전 버튼 (UI 비활성화)
-        // Box(
-        //     modifier = Modifier
-        //         .clip(RoundedCornerShape(4.dp))
-        //         .background(SwypTheme.colors.secondary300)
-        //         .clickable { onChargeClick() }
-        //         .padding(horizontal = 6.dp, vertical = 4.dp),
-        //     contentAlignment = Alignment.Center
-        // ) {
-        //     Text(
-        //         text = stringResource(R.string.my_charge_free),
-        //         style = SwypTheme.typography.label,
-        //         color = SwypTheme.colors.textPrimary
-        //     )
-        // }
     }
 }
 
