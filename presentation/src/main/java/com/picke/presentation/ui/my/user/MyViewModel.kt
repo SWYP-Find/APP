@@ -3,14 +3,12 @@ package com.picke.presentation.ui.my.user
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.feature.mypage.model.MyPhilosopher
-import com.picke.domain.feature.mypage.model.MyProfile
-import com.picke.domain.feature.mypage.model.MyTier
 import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.domain.feature.alarm.usecase.AlarmUseCases
 import com.picke.domain.feature.mypage.usecase.MyPageUseCases
 import com.picke.presentation.ads.AdMobManager
 import com.picke.presentation.ui.my.user.model.MyUiState
+import com.picke.presentation.ui.my.user.model.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,9 +43,9 @@ class MyViewModel @Inject constructor(
                     Log.d("MyPageFlow", "🟢 마이페이지 정보 로드 성공: ${infoBoard}")
                     _uiState.update {
                         it.copy(
-                            profile = infoBoard.profile,
-                            philosopher = infoBoard.philosopher,
-                            tier = infoBoard.tier,
+                            profile = infoBoard.profile.toUiModel(),
+                            philosopher = infoBoard.philosopher.toUiModel(),
+                            tier = infoBoard.tier.toUiModel(),
                             isLoading = false
                         )
                     }

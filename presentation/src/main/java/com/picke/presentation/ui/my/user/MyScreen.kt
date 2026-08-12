@@ -49,6 +49,7 @@ import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.my.user.componenet.MyPageMenuItem
 import com.picke.presentation.ui.my.user.componenet.MySkeleton
+import com.picke.presentation.ui.my.user.model.MyPhilosopherUiModel
 import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
@@ -263,7 +264,7 @@ fun ProfileSection(
 
 @Composable
 fun PhilosopherTypeCard(
-    philosopher: MyPhilosopher?,
+    philosopher: MyPhilosopherUiModel?,
     onClick: () -> Unit
 ) {
     val isLocked = philosopher == null || philosopher.philosopherType == "UNKNOWN"
