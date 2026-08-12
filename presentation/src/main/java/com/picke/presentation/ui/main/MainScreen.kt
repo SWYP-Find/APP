@@ -26,7 +26,7 @@ import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.component.CustomBottomNavigationBar
 import com.picke.presentation.ui.explore.ExploreScreen
 import com.picke.presentation.ui.home.HomeScreen
-import com.picke.presentation.ui.my.MyScreen
+import com.picke.presentation.ui.my.user.MyScreen
 import com.picke.presentation.ui.my.content.ContentActivityScreen
 import com.picke.presentation.ui.my.discussion.DiscussionHistoryScreen
 import com.picke.presentation.ui.my.makebattle.MakeBattleScreen

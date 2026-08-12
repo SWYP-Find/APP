@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.my
+package com.picke.presentation.ui.my.user
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-﻿package com.picke.presentation.ui.my
+package com.picke.presentation.ui.my.user
 
 import android.app.Activity
 import androidx.compose.foundation.background
