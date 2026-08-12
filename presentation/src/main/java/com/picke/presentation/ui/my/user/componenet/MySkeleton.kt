@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
@@ -120,4 +121,10 @@ private fun MyPageMenuItemSkeleton() {
         }
         HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 1.dp)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MySkeletonPreview() {
+    PickeTheme { MySkeleton() }
 }

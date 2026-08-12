@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -34,13 +33,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.picke.domain.feature.mypage.model.MyPhilosopher
 import com.picke.presentation.BuildConfig
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.AdFitBannerAd
@@ -50,6 +49,7 @@ import com.picke.presentation.ui.component.shimmer
 import com.picke.presentation.ui.my.user.componenet.MyPageMenuItem
 import com.picke.presentation.ui.my.user.componenet.MySkeleton
 import com.picke.presentation.ui.my.user.model.MyPhilosopherUiModel
+import com.picke.presentation.ui.my.user.model.MyUiState
 import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
@@ -81,6 +81,30 @@ fun MyScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
+
+    MyScreen(
+        uiState = uiState,
+        onNavigateToAlarm = onNavigateToAlarm,
+        onNavigateToSetting = onNavigateToSetting,
+        onNavigateToDiscussion = onNavigateToDiscussion,
+        onNavigateToPhilosopher = onNavigateToPhilosopher,
+        onNavigateToContent = onNavigateToContent,
+        onNavigateToNotice = onNavigateToNotice,
+        onNavigateToPoint = onNavigateToPoint,
+    )
+}
+
+@Composable
+fun MyScreen(
+    uiState: MyUiState,
+    onNavigateToAlarm: () -> Unit,
+    onNavigateToSetting: () -> Unit,
+    onNavigateToDiscussion: () -> Unit,
+    onNavigateToPhilosopher: () -> Unit,
+    onNavigateToContent: () -> Unit,
+    onNavigateToNotice: () -> Unit,
+    onNavigateToPoint: () -> Unit,
+) {
 
     Scaffold(
         containerColor = PickeTheme.colors.backgroundBrand,
@@ -379,5 +403,22 @@ fun CreditCard(
         //         color = SwypTheme.colors.textPrimary
         //     )
         // }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MyScreenPreview() {
+    PickeTheme {
+        MyScreen(
+            uiState = MyUiState(),
+            onNavigateToAlarm = { },
+            onNavigateToSetting = { },
+            onNavigateToDiscussion = { },
+            onNavigateToPhilosopher = { },
+            onNavigateToContent = { },
+            onNavigateToNotice = { },
+            onNavigateToPoint = { }
+        )
     }
 }
