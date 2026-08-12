@@ -1,11 +1,9 @@
 package com.picke.presentation
 
-import com.picke.presentation.ui.scenario.ScenarioScreen
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresExtension
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
@@ -53,18 +51,18 @@ import com.picke.presentation.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.presentation.ui.onboarding.OnboardingScreen
 import com.picke.presentation.ui.perspective.PerspectiveScreen
 import com.picke.presentation.ui.recommend.RecommendScreen
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.scenario.ScenarioScreen
+import com.picke.presentation.ui.splash.SplashViewModel
+import com.picke.presentation.ui.splash.model.SplashUiState
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.todaybattle.TodayBattleScreen
 import com.picke.presentation.ui.vote.VoteRoute
+import com.picke.presentation.ui.vote.model.VoteType
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager
-import com.picke.presentation.ui.splash.SplashUiState
-import com.picke.presentation.ui.splash.SplashViewModel
-import com.picke.presentation.ui.vote.VoteType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun AppNavigation(splashViewModel: SplashViewModel) {
     val rootNavController = rememberNavController()
@@ -133,7 +131,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = SwypTheme.colors.backgroundBrand
+        color = PickeTheme.colors.backgroundBrand
     ) {
         LaunchedEffect(Unit) {
             DeepLinkManager.deepLinkEvent.collect { event ->
@@ -200,7 +198,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(SwypTheme.colors.primary),
+                        .background(PickeTheme.colors.primary),
                     contentAlignment = Alignment.Center
                 ) { }
             }

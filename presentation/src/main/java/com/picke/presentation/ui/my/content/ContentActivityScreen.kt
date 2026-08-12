@@ -40,7 +40,7 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTabBar
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.toRelativeTimeText
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,7 @@ fun ContentActivityScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 title = stringResource(R.string.my_menu_content),
@@ -66,7 +66,7 @@ fun ContentActivityScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.backgroundBrand
+                backgroundColor = PickeTheme.colors.backgroundBrand
             )
         }
     ) { innerPadding ->
@@ -137,12 +137,12 @@ fun ContentActivityList(
                 painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = SwypTheme.colors.borderDefault
+                tint = PickeTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
-                style = SwypTheme.typography.b3Regular,
-                color = SwypTheme.colors.beige800
+                style = PickeTheme.typography.b3Regular,
+                color = PickeTheme.colors.beige800
             )
         }
     } else {
@@ -174,8 +174,8 @@ fun ContentActivityCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surface)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
+            .background(PickeTheme.colors.surface)
+            .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -195,8 +195,8 @@ fun ContentActivityCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = item.author.nickname,
-                        style = SwypTheme.typography.labelMedium,
-                        color = SwypTheme.colors.textTertiary
+                        style = PickeTheme.typography.labelMedium,
+                        color = PickeTheme.colors.textTertiary
                     )
                     Spacer(modifier = Modifier.width(6.dp))
 
@@ -204,13 +204,13 @@ fun ContentActivityCard(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(2.dp))
-                                .background(SwypTheme.colors.surfaceTertiary)
+                                .background(PickeTheme.colors.surfaceTertiary)
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 text = item.optionTitle ?: "",
-                                style = SwypTheme.typography.b5Medium,
-                                color = SwypTheme.colors.primary
+                                style = PickeTheme.typography.b5Medium,
+                                color = PickeTheme.colors.primary
                             )
                         }
                     }
@@ -218,8 +218,8 @@ fun ContentActivityCard(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = item.createdAt.toRelativeTimeText(),
-                    style = SwypTheme.typography.b4Regular,
-                    color = SwypTheme.colors.textMuted
+                    style = PickeTheme.typography.b4Regular,
+                    color = PickeTheme.colors.textMuted
                 )
             }
         }
@@ -229,8 +229,8 @@ fun ContentActivityCard(
         // [중단] 본문
         Text(
             text = item.content,
-            style = SwypTheme.typography.b3Regular,
-            color = SwypTheme.colors.neutral600,
+            style = PickeTheme.typography.b3Regular,
+            color = PickeTheme.colors.neutral600,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis
         )
@@ -247,13 +247,13 @@ fun ContentActivityCard(
                 painter = painterResource(id = R.drawable.ic_heart_plus),
                 contentDescription = "좋아요",
                 modifier = Modifier.size(16.dp),
-                tint = SwypTheme.colors.textMuted
+                tint = PickeTheme.colors.textMuted
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = item.likeCount.toString(),
-                style = SwypTheme.typography.labelMedium,
-                color = SwypTheme.colors.textMuted
+                style = PickeTheme.typography.labelMedium,
+                color = PickeTheme.colors.textMuted
             )
         }
     }

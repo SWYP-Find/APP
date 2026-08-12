@@ -1,25 +1,23 @@
 ﻿package com.picke.presentation.ui.recommend
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,35 +25,51 @@ import com.picke.presentation.BuildConfig
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.home.BattleOpinionBox
-import com.picke.presentation.ui.theme.SwypTheme
-
+import com.picke.presentation.ui.recommend.component.RecommendItemCard
+import com.picke.presentation.ui.recommend.component.RecommendListSkeleton
+import com.picke.presentation.ui.recommend.model.RecommendUiState
+import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.util.DummyData
 
 @Composable
 fun RecommendScreen(
-    viewModel: RecommendViewModel = hiltViewModel(),
+    onBackClick: () -> Unit,
+    onCloseClick: () -> Unit,
+    onItemClick: (String) -> Unit,
+    viewModel: RecommendViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    RecommendScreen(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onCloseClick = onCloseClick,
+        onItemClick = onItemClick
+    )
+}
+
+@Composable
+fun RecommendScreen(
+    uiState: RecommendUiState,
     onBackClick: () -> Unit,
     onCloseClick: () -> Unit,
     onItemClick: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val recommendList = uiState.recommendList
-
     Scaffold(
-        containerColor = SwypTheme.colors.surface,
+        containerColor = PickeTheme.colors.surface,
         topBar = {
             Box(modifier = Modifier.statusBarsPadding()) {
                 CustomTopAppBar(
                     title = "더 흥미로운 배틀도 있어요!",
                     showBackButton = true,
                     onBackClick = onBackClick,
-                    backgroundColor = SwypTheme.colors.surface,
+                    backgroundColor = PickeTheme.colors.surface,
                     actions = {
                         IconButton(onClick = onCloseClick) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_x),
                                 contentDescription = "닫기",
-                                tint = SwypTheme.colors.textPrimary
+                                tint = PickeTheme.colors.textPrimary
                             )
                         }
                     }
@@ -82,14 +96,13 @@ fun RecommendScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 카카오 애드핏 배너 광고 (리스트 맨 위)
                 item {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
                     }
                 }
 
-                items(recommendList) { item ->
+                items(uiState.recommendList) { item ->
                     RecommendItemCard(
                         item = item,
                         modifier = Modifier.fillMaxWidth(),
@@ -103,121 +116,17 @@ fun RecommendScreen(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun RecommendItemCard(
-    item: RecommendUiModel,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surface)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
-            .clickable { onClick() }
-            .padding(12.dp)
-    ) {
-        // 1. 최상단: 태그 및 시간/조회수 영역
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Surface(color = SwypTheme.colors.borderDefault, shape = RoundedCornerShape(2.dp)) {
-                Text(
-                    text = "#${item.tags.firstOrNull() ?: "이슈"}",
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                    style = SwypTheme.typography.label,
-                    color = SwypTheme.colors.primary
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painterResource(R.drawable.ic_clock),
-                    null,
-                    Modifier.size(12.dp),
-                    tint = SwypTheme.colors.neutral400
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${item.audioDuration}분",
-                    style = SwypTheme.typography.label,
-                    color = SwypTheme.colors.neutral400
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Icon(
-                    painterResource(R.drawable.ic_eye),
-                    null,
-                    Modifier.size(12.dp),
-                    tint = SwypTheme.colors.neutral400
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${item.viewCount}",
-                    style = SwypTheme.typography.label,
-                    color = SwypTheme.colors.neutral400
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 2. 제목 및 요약
-        Text(
-            text = item.title,
-            style = SwypTheme.typography.b3SemiBold,
-            color = SwypTheme.colors.textPrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+fun RecommendScreenPreview() {
+    PickeTheme {
+        RecommendScreen(
+            uiState = RecommendUiState(
+                recommendList = DummyData.dummyRecommends
+            ),
+            onBackClick = { },
+            onCloseClick = { },
+            onItemClick = { }
         )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = item.summary,
-            style = SwypTheme.typography.label,
-            color = SwypTheme.colors.neutral400,
-            maxLines = 2,
-            minLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // 3. VS 영역
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            BattleOpinionBox(
-                modifier = Modifier.weight(1f),
-                opinion = item.stanceA,
-                name = item.representativeA,
-                imageUrl = item.imageA
-            )
-            Surface(
-                modifier = Modifier
-                    .size(40.dp)
-                    .padding(6.dp),
-                shape = CircleShape,
-                color = SwypTheme.colors.secondaryLight
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "VS",
-                        style = SwypTheme.typography.labelXSmall,
-                        color = SwypTheme.colors.textPrimary
-                    )
-                }
-            }
-            BattleOpinionBox(
-                modifier = Modifier.weight(1f),
-                opinion = item.stanceB,
-                name = item.representativeB,
-                imageUrl = item.imageB
-            )
-        }
     }
 }

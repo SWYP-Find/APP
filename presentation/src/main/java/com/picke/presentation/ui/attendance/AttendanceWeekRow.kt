@@ -27,8 +27,7 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.theme.Beige900
 import com.picke.presentation.ui.theme.Gray600
 import com.picke.presentation.ui.theme.Primary500
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.theme.White
 import com.picke.presentation.ui.theme.tokens.BrandColorTokens
 import com.picke.presentation.ui.theme.tokens.SemanticColorTokens
@@ -55,7 +54,7 @@ fun AttendanceWeekRow(
             ) {
                 Text(
                     text = day.label,
-                    style = SwypTheme.typography.b5Medium,
+                    style = PickeTheme.typography.b5Medium,
                     color = Gray600
                 )
                 AttendanceDayCell(status = day.status, points = day.points)
@@ -83,7 +82,7 @@ fun AttendanceDayCell(
         ) {
             Text(
                 text = "+${points}P",
-                style = SwypTheme.typography.caption2SemiBold,
+                style = PickeTheme.typography.caption2SemiBold,
                 color = White
             )
         }
@@ -138,7 +137,7 @@ private fun Modifier.dashedCircleBorder(
 @Preview(showBackground = true)
 @Composable
 private fun AttendanceWeekRowPreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceWeekRow(
             days = listOf(
                 AttendanceDayUiState("월", AttendanceDayStatus.FAIL),

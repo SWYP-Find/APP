@@ -45,7 +45,7 @@ import com.picke.presentation.ui.my.notice.model.NoticeEventItem
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomTabBar
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -76,7 +76,7 @@ fun NoticeEventScreen(
     }
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         topBar = {
             CustomTopAppBar(
                 title = tabs[pagerState.currentPage],
@@ -90,7 +90,7 @@ fun NoticeEventScreen(
                         onBackClick()
                     }
                 },
-                backgroundColor = SwypTheme.colors.backgroundBrand
+                backgroundColor = PickeTheme.colors.backgroundBrand
             )
         }
     ) { innerPadding ->
@@ -181,20 +181,20 @@ fun NoticeEventDetailContent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SwypTheme.colors.surface)
+                .background(PickeTheme.colors.surface)
                 .padding(horizontal = 24.dp, vertical = 32.dp)
         ) {
             // [뱃지]
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(2.dp))
-                    .background(SwypTheme.colors.borderDefault)
+                    .background(PickeTheme.colors.borderDefault)
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = item.type,
-                    style = SwypTheme.typography.b5Medium,
-                    color = SwypTheme.colors.primary
+                    style = PickeTheme.typography.b5Medium,
+                    color = PickeTheme.colors.primary
                 )
             }
 
@@ -203,8 +203,8 @@ fun NoticeEventDetailContent(
             // [제목]
             Text(
                 text = item.title,
-                style = SwypTheme.typography.labelMedium,
-                color = SwypTheme.colors.textTertiary
+                style = PickeTheme.typography.labelMedium,
+                color = PickeTheme.colors.textTertiary
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -212,8 +212,8 @@ fun NoticeEventDetailContent(
             // [날짜]
             Text(
                 text = item.date,
-                style = SwypTheme.typography.b5Medium,
-                color = SwypTheme.colors.textMuted
+                style = PickeTheme.typography.b5Medium,
+                color = PickeTheme.colors.textMuted
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -221,8 +221,8 @@ fun NoticeEventDetailContent(
             // [본문] (Domain 모델에 content 필드를 꼭 추가해주세요!)
             Text(
                 text = item.content,
-                style = SwypTheme.typography.b4Regular,
-                color = SwypTheme.colors.neutral400
+                style = PickeTheme.typography.b4Regular,
+                color = PickeTheme.colors.neutral400
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -235,14 +235,14 @@ fun NoticeEventDetailContent(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(2.dp))
-                        .background(SwypTheme.colors.primary)
+                        .background(PickeTheme.colors.primary)
                         .clickable { onGoToList() }
                         .padding(horizontal = 32.dp, vertical = 10.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "목록",
-                        style = SwypTheme.typography.b3SemiBold,
+                        style = PickeTheme.typography.b3SemiBold,
                         color = Color.White
                     )
                 }
@@ -267,12 +267,12 @@ fun NoticeEventList(
                 painter = painterResource(id = R.drawable.logo_picke),
                 contentDescription = "빈 화면 로고",
                 modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = SwypTheme.colors.borderDefault
+                tint = PickeTheme.colors.borderDefault
             )
             Text(
                 text = emptyMessage,
-                style = SwypTheme.typography.b3Regular,
-                color = SwypTheme.colors.beige800
+                style = PickeTheme.typography.b3Regular,
+                color = PickeTheme.colors.beige800
             )
         }
     } else {
@@ -301,8 +301,8 @@ fun NoticeEventCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surface)
-            .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(2.dp))
+            .background(PickeTheme.colors.surface)
+            .border(1.dp, PickeTheme.colors.surfaceTertiary, RoundedCornerShape(2.dp))
             .clickable { onClick() }
             .padding(16.dp)
     ) {
@@ -316,13 +316,13 @@ fun NoticeEventCard(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(2.dp))
-                    .background(SwypTheme.colors.borderDefault)
+                    .background(PickeTheme.colors.borderDefault)
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = item.type,
-                    style = SwypTheme.typography.b5Medium,
-                    color = SwypTheme.colors.primary
+                    style = PickeTheme.typography.b5Medium,
+                    color = PickeTheme.colors.primary
                 )
             }
 
@@ -341,8 +341,8 @@ fun NoticeEventCard(
         // [중단] 제목
         Text(
             text = item.title,
-            style = SwypTheme.typography.labelMedium,
-            color = SwypTheme.colors.textTertiary,
+            style = PickeTheme.typography.labelMedium,
+            color = PickeTheme.colors.textTertiary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -352,8 +352,8 @@ fun NoticeEventCard(
         // [중단] 내용 미리보기
         Text(
             text = item.content,
-            style = SwypTheme.typography.label,
-            color = SwypTheme.colors.textMuted,
+            style = PickeTheme.typography.label,
+            color = PickeTheme.colors.textMuted,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -363,8 +363,8 @@ fun NoticeEventCard(
         // [하단] 날짜
         Text(
             text = item.date,
-            style = SwypTheme.typography.b5Medium,
-            color = SwypTheme.colors.textMuted
+            style = PickeTheme.typography.b5Medium,
+            color = PickeTheme.colors.textMuted
         )
     }
 }

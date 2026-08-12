@@ -1,48 +1,80 @@
 ﻿package com.picke.presentation.ui.vote
 
+import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
 import coil.imageLoader
-import com.picke.domain.feature.battle.model.BattleDetailBoard
-import com.picke.domain.feature.battle.model.BattleOptionBoard
+import coil.request.ImageRequest
 import com.picke.presentation.R
 import com.picke.presentation.analytics.ShareChannel
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.CustomSingleActionDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.ShareDialog
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.ui.vote.component.VoteOptionCard
+import com.picke.presentation.ui.vote.component.VoteSkeleton
+import com.picke.presentation.ui.vote.model.BattleDetailUiModel
+import com.picke.presentation.ui.vote.model.VoteType
+import com.picke.presentation.ui.vote.model.VoteUiState
+import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.shareBattleToInstagramStoryBrightMode
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun VoteRoute(
@@ -52,10 +84,11 @@ fun VoteRoute(
     onNavigateToExplore: () -> Unit,
     viewModel: VoteViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     BackHandler {
         onBackClick()
     }
-    val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
         VoteSkeleton(voteType = voteType, modifier = Modifier.fillMaxSize())
@@ -69,7 +102,26 @@ fun VoteRoute(
                 onBackClick = onBackClick,
                 onVoteSubmit = onVoteSubmit,
                 onNavigateToExplore = onNavigateToExplore,
-                viewModel = viewModel
+                onSubmitVote = { selectedOptionId, onSuccess ->
+                    viewModel.submitVote(
+                        voteType = voteType,
+                        selectedOptionId = selectedOptionId,
+                        onSuccess = onSuccess
+                    )
+                },
+                onTrackShare = { channel ->
+                    viewModel.trackShare(channel)
+                },
+                onGetShareLink = { battleId, onSuccess, onError ->
+                    viewModel.getShareLink(
+                        battleId = battleId,
+                        onSuccess = onSuccess,
+                        onError = onError
+                    )
+                },
+                onDismissPointDialog = {
+                    viewModel.dismissPointDialog()
+                }
             )
         } else {
             BattleNotFoundScreen(onBackClick = onBackClick)
@@ -77,84 +129,48 @@ fun VoteRoute(
     }
 }
 
-// 존재하지 않거나 삭제된 배틀 id로 진입했을 때 보여주는 빈 화면
-// (관점 화면의 빈 목록 상태와 동일한 Picke 로고 + 안내 문구 UI를 재사용)
-@Composable
-private fun BattleNotFoundScreen(onBackClick: () -> Unit) {
-    Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
-        contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            Box(modifier = Modifier.statusBarsPadding()) {
-                CustomTopAppBar(
-                    showBackButton = true,
-                    onBackClick = onBackClick,
-                    backgroundColor = SwypTheme.colors.backgroundBrand,
-                )
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.logo_picke),
-                contentDescription = "빈 화면 로고",
-                modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                tint = SwypTheme.colors.borderDefault
-            )
-            // Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "해당 배틀은 존재하지 않습니다",
-                style = SwypTheme.typography.b3Regular,
-                color = SwypTheme.colors.beige800
-            )
-        }
-    }
-}
-
 @Composable
 fun VoteScreen(
     voteType: VoteType,
-    battleDetail: BattleDetailBoard,
+    battleDetail: BattleDetailUiModel,
     uiState: VoteUiState,
     onBackClick: () -> Unit,
     onVoteSubmit: (String) -> Unit,
     onNavigateToExplore: () -> Unit,
-    viewModel: VoteViewModel
+    onSubmitVote: (String, () -> Unit) -> Unit,
+    onTrackShare: (String) -> Unit,
+    onGetShareLink: (Int, (String) -> Unit, (String) -> Unit) -> Unit,
+    onDismissPointDialog: () -> Unit
 ) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+
+    var showShareDialog by remember { mutableStateOf(false) }
+    var isSharing by remember { mutableStateOf(false) }
+    var selectedOptionId by remember { mutableStateOf<String?>(null) }
+
     val isPreVote = voteType == VoteType.PRE
     val battleInfo = battleDetail.battleInfo
 
-    val bgColor = if (isPreVote) SwypTheme.colors.surface else Color.Black
-    val titleColor = if (isPreVote) SwypTheme.colors.textPrimary else SwypTheme.colors.surface
-    val descColor = if (isPreVote) SwypTheme.colors.textSecondary else SwypTheme.colors.neutral400
+    val backgroundColor =
+        if (selectedOptionId != null) PickeTheme.colors.primary else PickeTheme.colors.primaryDisabled
+    val bgColor = if (isPreVote) PickeTheme.colors.surface else Color.Black
+    val titleColor = if (isPreVote) PickeTheme.colors.textPrimary else PickeTheme.colors.surface
+    val descColor = if (isPreVote) PickeTheme.colors.textSecondary else PickeTheme.colors.neutral400
 
-    var selectedOptionId by remember { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null
-
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
-    val graphicsLayer = androidx.compose.ui.graphics.rememberGraphicsLayer()
-    var showShareDialog by remember { mutableStateOf(false) }
-    var isSharing by remember { mutableStateOf(false) }
-
-    // 공유하기 함수
     val onKakaoShareClick = {
         isSharing = true
         coroutineScope.launch {
             try {
-                val request = coil.request.ImageRequest.Builder(context)
+                val request = ImageRequest.Builder(context)
                     .data(battleInfo.thumbnailUrl)
                     .allowHardware(false)
                     .build()
                 val result = context.imageLoader.execute(request)
-                val bitmap = (result.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
 
                 if (bitmap != null) {
                     shareBattleToKakao(
@@ -167,24 +183,25 @@ fun VoteScreen(
                     )
                 } else {
                     isSharing = false
-                    android.widget.Toast.makeText(
+                    Toast.makeText(
                         context,
                         "이미지 로드 실패",
-                        android.widget.Toast.LENGTH_SHORT
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isSharing = false
-                android.widget.Toast.makeText(context, "공유 실패", android.widget.Toast.LENGTH_SHORT)
+                Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT)
                     .show()
             }
         }
     }
+
     val onInstaShareClick = {
         isSharing = true
         coroutineScope.launch {
             try {
-                kotlinx.coroutines.delay(100)
+                delay(100.milliseconds)
 
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
 
@@ -202,7 +219,7 @@ fun VoteScreen(
                     )
                 }
 
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isSharing = false
                 Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
@@ -241,11 +258,8 @@ fun VoteScreen(
                         text = if (isPreVote) stringResource(R.string.prevote) else "최종 투표하기",
                         onClick = {
                             if (selectedOptionId != null) {
-                                viewModel.submitVote(
-                                    voteType = voteType,
-                                    selectedOptionId = selectedOptionId!!,
-                                    onSuccess = {
-                                        /*val props = JSONObject().apply {
+                                onSubmitVote(selectedOptionId!!) {
+                                    /*val props = JSONObject().apply {
                                         put("battle_id", battleInfo.battleId.toString())
                                         put("battle_title", battleInfo.title)
                                     }
@@ -255,15 +269,13 @@ fun VoteScreen(
                                     } else {
                                         SwypApplication.mixpanel.track("post_vote", props) // 기획서 명칭 일치
                                     }*/
-
-                                        onVoteSubmit(battleInfo.battleId.toString())
-                                    }
-                                )
+                                    onVoteSubmit(battleInfo.battleId)
+                                }
                             }
                         },
                         modifier = Modifier.padding(20.dp),
-                        backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
-                        textColor = SwypTheme.colors.surfaceDefault
+                        backgroundColor = backgroundColor,
+                        textColor = PickeTheme.colors.surfaceDefault
                     )
                 }
             }
@@ -314,8 +326,8 @@ fun VoteScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .shimmer(
-                                        baseColor = if (isPreVote) null else SwypTheme.colors.neutral600,
-                                        highlightColor = if (isPreVote) null else SwypTheme.colors.neutral400
+                                        baseColor = if (isPreVote) null else PickeTheme.colors.neutral600,
+                                        highlightColor = if (isPreVote) null else PickeTheme.colors.neutral400
                                     )
                             )
                         }
@@ -341,29 +353,30 @@ fun VoteScreen(
                                             horizontal = 8.dp,
                                             vertical = 2.dp
                                         ),
-                                        style = SwypTheme.typography.label,
-                                        color = SwypTheme.colors.primary
+                                        style = PickeTheme.typography.label,
+                                        color = PickeTheme.colors.primary
                                     )
                                 }
                             }
                         }
+
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = battleInfo.title.replace(", ", ",\n"),
-                            style = SwypTheme.typography.h1SemiBold,
+                            style = PickeTheme.typography.h1SemiBold,
                             color = titleColor
                         )
+
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = battleDetail.description,
-                            style = SwypTheme.typography.b3Regular,
+                            style = PickeTheme.typography.b3Regular,
                             color = descColor
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -403,9 +416,9 @@ fun VoteScreen(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Text(
-                                "VS",
-                                style = SwypTheme.typography.labelMedium,
-                                color = SwypTheme.colors.textPrimary
+                                text = "VS",
+                                style = PickeTheme.typography.labelMedium,
+                                color = PickeTheme.colors.textPrimary
                             )
                         }
                     }
@@ -413,18 +426,18 @@ fun VoteScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
-        // 공유하기 다이얼로그
+
         if (showShareDialog) {
             ShareDialog(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
-                    viewModel.trackShare(ShareChannel.KAKAO)
+                    onTrackShare(ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
-                    viewModel.trackShare(ShareChannel.INSTAGRAM)
+                    onTrackShare(ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -432,27 +445,15 @@ fun VoteScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
-                    viewModel.trackShare(ShareChannel.LINK)
-                    viewModel.getShareLink(
-                        battleId = battleInfo.battleId.toInt(),
-                        onSuccess = { url ->
-                            clipboardManager.setText(
-                                androidx.compose.ui.text.AnnotatedString(
-                                    url
-                                )
-                            )
-                            android.widget.Toast.makeText(
-                                context,
-                                "링크가 클립보드에 복사되었습니다.",
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
+                    onTrackShare(ShareChannel.LINK)
+                    onGetShareLink(
+                        battleInfo.battleId.toInt(),
+                        { url ->
+                            clipboardManager.setText(AnnotatedString(url))
+                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
                         },
-                        onError = { errorMessage ->
-                            android.widget.Toast.makeText(
-                                context,
-                                errorMessage,
-                                android.widget.Toast.LENGTH_SHORT
-                            ).show()
+                        { errorMessage ->
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                         }
                     )
                 }
@@ -467,7 +468,7 @@ fun VoteScreen(
                     .pointerInput(Unit) {},
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
             }
         }
 
@@ -476,9 +477,9 @@ fun VoteScreen(
                 message = "컨텐츠를 시청하기 위한\n포인트가 부족해요!",
                 subMessage = "매일 출석체크만 해도 5P를 받을 수 있어요!",
                 buttonText = "배틀 주제 구경하러 가기",
-                onDismiss = { viewModel.dismissPointDialog() },
+                onDismiss = { onDismissPointDialog() },
                 onConfirm = {
-                    viewModel.dismissPointDialog()
+                    onDismissPointDialog()
                     onNavigateToExplore()
                 }
             )
@@ -487,43 +488,57 @@ fun VoteScreen(
 }
 
 @Composable
-fun VoteOptionCard(
-    modifier: Modifier = Modifier,
-    option: BattleOptionBoard,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderColor =
-        if (isSelected) SwypTheme.colors.secondary else SwypTheme.colors.borderDisabled
-    val contentAlpha = if (isSelected) 1f else 0.8f
+private fun BattleNotFoundScreen(onBackClick: () -> Unit) {
+    Scaffold(
+        containerColor = PickeTheme.colors.backgroundBrand,
+        contentWindowInsets = WindowInsets(0.dp),
+        topBar = {
+            Box(modifier = Modifier.statusBarsPadding()) {
+                CustomTopAppBar(
+                    showBackButton = true,
+                    onBackClick = onBackClick,
+                    backgroundColor = PickeTheme.colors.backgroundBrand,
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.logo_picke),
+                contentDescription = "빈 화면 로고",
+                modifier = Modifier.size(width = 160.dp, height = 120.dp),
+                tint = PickeTheme.colors.borderDefault
+            )
+            Text(
+                text = "해당 배틀은 존재하지 않습니다",
+                style = PickeTheme.typography.b3Regular,
+                color = PickeTheme.colors.beige800
+            )
+        }
+    }
+}
 
-    Column(
-        modifier = modifier
-            .alpha(contentAlpha)
-            .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, borderColor, RoundedCornerShape(2.dp))
-            .background(SwypTheme.colors.surfaceSubtle)
-            .clickable { onClick() }
-            .padding(vertical = 24.dp, horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        ProfileImage(
-            model = option.imageUrl,
-            modifier = Modifier.size(40.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = option.title,
-            style = SwypTheme.typography.h4SemiBold,
-            color = SwypTheme.colors.textPrimary,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = option.representative,
-            style = SwypTheme.typography.labelXSmall,
-            color = SwypTheme.colors.textTertiary
+@Preview(showBackground = true)
+@Composable
+fun VoteScreenPreview() {
+    PickeTheme {
+        VoteScreen(
+            voteType = VoteType.PRE,
+            battleDetail = DummyData.dummyBattleDetailList.first(),
+            uiState = VoteUiState(),
+            onBackClick = {},
+            onVoteSubmit = {},
+            onNavigateToExplore = {},
+            onSubmitVote = { _, _ -> },
+            onTrackShare = { },
+            onGetShareLink = { _, _, _ -> },
+            onDismissPointDialog = {}
         )
     }
 }

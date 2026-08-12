@@ -45,7 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.picke.presentation.R
 import com.picke.presentation.ui.component.CustomReverseConfirmDialog
 import com.picke.presentation.ui.component.CustomTopAppBar
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 data class PointHistoryUiModel(
     val title: String,
@@ -67,7 +67,7 @@ fun PointScreen(
     val pullToRefreshState = rememberPullToRefreshState()
 
     Scaffold(
-        containerColor = SwypTheme.colors.backgroundBrand,
+        containerColor = PickeTheme.colors.backgroundBrand,
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             CustomTopAppBar(
@@ -76,7 +76,7 @@ fun PointScreen(
                 showLogo = false,
                 showBackButton = true,
                 onBackClick = { onBackClick() },
-                backgroundColor = SwypTheme.colors.backgroundBrand,
+                backgroundColor = PickeTheme.colors.backgroundBrand,
                 actions = {
                     IconButton(
                         onClick = {
@@ -85,7 +85,7 @@ fun PointScreen(
                         Icon(
                             painterResource(R.drawable.ic_point),
                             contentDescription = stringResource(R.string.setting),
-                            tint = SwypTheme.colors.primary
+                            tint = PickeTheme.colors.primary
                         )
                     }
                 }
@@ -106,7 +106,7 @@ fun PointScreen(
                     state = pullToRefreshState,
                     isRefreshing = uiState.isRefreshing,
                     containerColor = Color.White,
-                    color = SwypTheme.colors.primary,
+                    color = PickeTheme.colors.primary,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
             }
@@ -128,12 +128,12 @@ fun PointScreen(
                         painter = painterResource(id = R.drawable.logo_picke),
                         contentDescription = "빈 화면 로고",
                         modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                        tint = SwypTheme.colors.borderDefault
+                        tint = PickeTheme.colors.borderDefault
                     )
                     Text(
                         text = "아직 포인트 내역이 없습니다",
-                        style = SwypTheme.typography.b3Regular,
-                        color = SwypTheme.colors.beige800
+                        style = PickeTheme.typography.b3Regular,
+                        color = PickeTheme.colors.beige800
                     )
                 }
             }
@@ -165,7 +165,7 @@ fun PointScreen(
                                     .padding(16.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
                             }
                         }
                     }
@@ -199,7 +199,7 @@ fun PointHistoryItem(
     item: PointHistoryUiModel
 ) {
     val isEarned = item.point > 0
-    val pointColor = if (isEarned) SwypTheme.colors.primary else SwypTheme.colors.textTertiary
+    val pointColor = if (isEarned) PickeTheme.colors.primary else PickeTheme.colors.textTertiary
     val pointText = if (isEarned) "+ ${item.point}P" else "${item.point}P"
 
     Box(
@@ -207,7 +207,7 @@ fun PointHistoryItem(
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
             .background(Color.White)
-            .border(1.dp, SwypTheme.colors.borderDefault, RoundedCornerShape(2.dp))
+            .border(1.dp, PickeTheme.colors.borderDefault, RoundedCornerShape(2.dp))
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Row(
@@ -219,14 +219,14 @@ fun PointHistoryItem(
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
                     text = item.title,
-                    color = SwypTheme.colors.textPrimary,
-                    style = SwypTheme.typography.b3SemiBold
+                    color = PickeTheme.colors.textPrimary,
+                    style = PickeTheme.typography.b3SemiBold
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = item.date,
-                    color = SwypTheme.colors.textMuted,
-                    style = SwypTheme.typography.caption2Medium
+                    color = PickeTheme.colors.textMuted,
+                    style = PickeTheme.typography.caption2Medium
                 )
             }
 
@@ -235,13 +235,13 @@ fun PointHistoryItem(
                 Text(
                     text = pointText,
                     color = pointColor,
-                    style = SwypTheme.typography.b3SemiBold
+                    style = PickeTheme.typography.b3SemiBold
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = item.type,
-                    color = SwypTheme.colors.textMuted,
-                    style = SwypTheme.typography.caption2Medium
+                    color = PickeTheme.colors.textMuted,
+                    style = PickeTheme.typography.caption2Medium
                 )
             }
         }

@@ -17,8 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.R
 import com.picke.presentation.ui.theme.Gray500
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.theme.tokens.BrandColorTokens
 
 /**
@@ -51,7 +50,7 @@ fun AttendanceStreakBadge(
             val stateLabel = if (isStreakAchieved) "달성" else "중"
             Text(
                 text = "${streakDays}일 연속 출석 $stateLabel",
-                style = SwypTheme.typography.b4Medium,
+                style = PickeTheme.typography.b4Medium,
                 color = BrandColorTokens.primary700
             )
         }
@@ -62,7 +61,7 @@ fun AttendanceStreakBadge(
         ) {
             Text(
                 text = "+${earnedPoints}P 획득",
-                style = SwypTheme.typography.b4Medium,
+                style = PickeTheme.typography.b4Medium,
                 color = Gray500
             )
             Image(
@@ -77,7 +76,7 @@ fun AttendanceStreakBadge(
 @Preview(showBackground = true)
 @Composable
 private fun AttendanceStreakBadgePreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceStreakBadge(
             streakDays = 4,
             isStreakAchieved = false,

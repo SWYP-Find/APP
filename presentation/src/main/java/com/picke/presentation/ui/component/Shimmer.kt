@@ -26,7 +26,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // 로딩 스켈레톤에 좌->우로 흐르는 반짝임 효과를 입히는 Modifier.
 // 뷰의 실제 크기(size)를 알아야 그라데이션이 뷰 폭에 맞게 흐르므로, onGloballyPositioned로 크기를 잰다.
@@ -47,8 +47,8 @@ fun Modifier.shimmer(
         ),
         label = "shimmerTranslate"
     )
-    val resolvedBase = baseColor ?: SwypTheme.colors.surfaceTertiary
-    val resolvedHighlight = highlightColor ?: SwypTheme.colors.surfaceDefault
+    val resolvedBase = baseColor ?: PickeTheme.colors.surfaceTertiary
+    val resolvedHighlight = highlightColor ?: PickeTheme.colors.surfaceDefault
 
     this
         .background(

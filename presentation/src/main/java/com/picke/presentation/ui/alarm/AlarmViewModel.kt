@@ -3,10 +3,11 @@ package com.picke.presentation.ui.alarm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picke.domain.feature.alarm.model.AlarmItemBoard
 import com.picke.domain.feature.alarm.usecase.AlarmUseCases
 import com.picke.presentation.analytics.AnalyticsTracker
 import com.picke.presentation.analytics.NotificationActionType
+import com.picke.presentation.ui.alarm.model.AlarmUiEvent
+import com.picke.presentation.ui.alarm.model.AlarmUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,19 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class AlarmUiState(
-    val alarmList: List<AlarmItemBoard> = emptyList(),
-    val selectedCategory: String = "ALL",
-    val isLoading: Boolean = false,
-    val page: Int = 0,
-    val hasNext: Boolean = true,
-    val isPagingLoading: Boolean = false
-)
-
-sealed class AlarmUiEvent {
-    data class ShowToast(val message: String) : AlarmUiEvent()
-}
 
 @HiltViewModel
 class AlarmViewModel @Inject constructor(

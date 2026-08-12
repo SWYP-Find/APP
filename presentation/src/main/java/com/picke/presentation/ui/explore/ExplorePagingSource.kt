@@ -3,6 +3,8 @@ package com.picke.presentation.ui.explore
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.picke.domain.feature.explore.usecase.SearchBattlesUseCase
+import com.picke.presentation.ui.explore.model.ExploreUiModel
+import com.picke.presentation.ui.explore.model.toUiModel
 
 class ExplorePagingSource(
     private val searchBattlesUseCase: SearchBattlesUseCase,

@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun CustomConfirmDialog(
@@ -35,8 +35,8 @@ fun CustomConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    val modalBackgroundColor = SwypTheme.colors.borderDisabled
-    val pointColor = SwypTheme.colors.primary
+    val modalBackgroundColor = PickeTheme.colors.borderDisabled
+    val pointColor = PickeTheme.colors.primary
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -57,7 +57,7 @@ fun CustomConfirmDialog(
                 ) {
                     Text(
                         text = message,
-                        style = SwypTheme.typography.b3SemiBold,
+                        style = PickeTheme.typography.b3SemiBold,
                         color = pointColor,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
@@ -82,7 +82,7 @@ fun CustomConfirmDialog(
                     ) {
                         Text(
                             text = confirmText,
-                            style = SwypTheme.typography.b3SemiBold,
+                            style = PickeTheme.typography.b3SemiBold,
                             color = pointColor
                         )
                     }
@@ -101,7 +101,7 @@ fun CustomConfirmDialog(
                     ) {
                         Text(
                             text = dismissText,
-                            style = SwypTheme.typography.b3SemiBold,
+                            style = PickeTheme.typography.b3SemiBold,
                             color = Color.White
                         )
                     }
@@ -120,8 +120,8 @@ fun CustomReverseConfirmDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    val modalBackgroundColor = SwypTheme.colors.borderDisabled
-    val pointColor = SwypTheme.colors.primary
+    val modalBackgroundColor = PickeTheme.colors.borderDisabled
+    val pointColor = PickeTheme.colors.primary
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -144,7 +144,7 @@ fun CustomReverseConfirmDialog(
                     if (title != null) {
                         Text(
                             text = title,
-                            style = SwypTheme.typography.labelLarge,
+                            style = PickeTheme.typography.labelLarge,
                             color = pointColor,
                             textAlign = TextAlign.Center
                         )
@@ -153,7 +153,7 @@ fun CustomReverseConfirmDialog(
                     // 본문
                     Text(
                         text = message,
-                        style = if (title != null) SwypTheme.typography.b3Regular else SwypTheme.typography.b3SemiBold,
+                        style = if (title != null) PickeTheme.typography.b3Regular else PickeTheme.typography.b3SemiBold,
                         color = pointColor,
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
@@ -179,7 +179,7 @@ fun CustomReverseConfirmDialog(
                     ) {
                         Text(
                             text = dismissText,
-                            style = SwypTheme.typography.b3SemiBold,
+                            style = PickeTheme.typography.b3SemiBold,
                             color = pointColor
                         )
                     }
@@ -198,7 +198,7 @@ fun CustomReverseConfirmDialog(
                     ) {
                         Text(
                             text = confirmText,
-                            style = SwypTheme.typography.b3SemiBold,
+                            style = PickeTheme.typography.b3SemiBold,
                             color = Color.White
                         )
                     }
@@ -225,8 +225,8 @@ fun CustomSingleActionDialog(
         ) {
             Surface(
                 shape = RoundedCornerShape(2.dp),
-                color = SwypTheme.colors.borderDisabled,
-                border = BorderStroke(1.dp, SwypTheme.colors.primary),
+                color = PickeTheme.colors.borderDisabled,
+                border = BorderStroke(1.dp, PickeTheme.colors.primary),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = if (imageResId != null) 16.dp else 0.dp)
@@ -241,8 +241,8 @@ fun CustomSingleActionDialog(
                     ) {
                         Text(
                             text = message,
-                            style = SwypTheme.typography.h4SemiBold,
-                            color = SwypTheme.colors.primary,
+                            style = PickeTheme.typography.h4SemiBold,
+                            color = PickeTheme.colors.primary,
                             textAlign = TextAlign.Center,
                             lineHeight = 24.sp
                         )
@@ -251,28 +251,28 @@ fun CustomSingleActionDialog(
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = subMessage,
-                                style = SwypTheme.typography.b4Regular,
-                                color = SwypTheme.colors.primary,
+                                style = PickeTheme.typography.b4Regular,
+                                color = PickeTheme.colors.primary,
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
 
                     // 가로 구분선
-                    HorizontalDivider(thickness = 1.dp, color = SwypTheme.colors.primary)
+                    HorizontalDivider(thickness = 1.dp, color = PickeTheme.colors.primary)
 
                     // 버튼 영역
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(SwypTheme.colors.primary)
+                            .background(PickeTheme.colors.primary)
                             .clickable { onConfirm() }
                             .padding(vertical = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = buttonText,
-                            style = SwypTheme.typography.b3SemiBold,
+                            style = PickeTheme.typography.b3SemiBold,
                             color = Color.White
                         )
                     }

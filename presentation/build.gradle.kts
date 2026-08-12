@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.compose.animation.core)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    debugImplementation(libs.androidx.ui.tooling)
 
     // [Navigation]
     implementation(libs.androidx.navigation.compose)

@@ -11,13 +11,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.SubcomposeAsyncImage
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
 fun ProfileImage(
     model: Any?,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = SwypTheme.colors.borderDefault
+    backgroundColor: Color = PickeTheme.colors.borderDefault
 ) {
     Box(
         modifier = modifier

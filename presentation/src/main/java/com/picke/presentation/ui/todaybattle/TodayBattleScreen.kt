@@ -4,8 +4,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +37,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -54,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
@@ -66,11 +64,18 @@ import com.picke.presentation.analytics.rememberAnalyticsTracker
 import com.picke.presentation.ui.component.CustomButton
 import com.picke.presentation.ui.component.ShareDialog
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
+import com.picke.presentation.ui.todaybattle.component.OpinionCard
+import com.picke.presentation.ui.todaybattle.component.TodayBattleSkeleton
+import com.picke.presentation.ui.todaybattle.component.TopIndicatorBar
 import com.picke.presentation.ui.todaybattle.model.TodayBattleUiModel
+import com.picke.presentation.ui.todaybattle.model.TodayBattleUiState
+import com.picke.presentation.util.DummyData
 import com.picke.presentation.util.shareBattleToInstagramStoryDarkMode
 import com.picke.presentation.util.shareBattleToKakao
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun TodayBattleScreen(
@@ -80,33 +85,71 @@ fun TodayBattleScreen(
     onNavigateToScenario: (String) -> Unit,
     onNavigateToPerspective: (String) -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val battleList = uiState.battleList
-
-    val pagerState = rememberPagerState(pageCount = { battleList.size })
-    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null && !uiState.isEntering
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(battleList, initialBattleId) {
-        if (initialBattleId != null && battleList.isNotEmpty()) {
-            val targetPage = battleList.indexOfFirst { it.battleId == initialBattleId }
-            if (targetPage >= 0) pagerState.animateScrollToPage(targetPage)
-        }
-    }
-    val graphicsLayer = rememberGraphicsLayer()
-
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val uiState by viewModel.uiState.collectAsState()
+
+    val analyticsTracker = rememberAnalyticsTracker()
+
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
     }
-    val analyticsTracker = rememberAnalyticsTracker()
+
+    TodayBattleScreen(
+        uiState = uiState,
+        initialBattleId = initialBattleId,
+        onBackClick = onBackClick,
+        onEnterBattle = { currentBattleId, selectedOptionId ->
+            viewModel.enterBattle(
+                battleId = currentBattleId.toLong(),
+                optionId = selectedOptionId!!.toLong(),
+                onNavigateToScenario = onNavigateToScenario,
+                onNavigateToPerspective = onNavigateToPerspective
+            )
+        },
+        onGetShareLink = { currentBattleId ->
+            viewModel.getShareLink(
+                battleId = currentBattleId,
+                onSuccess = { url ->
+                    clipboardManager.setText(AnnotatedString(url))
+                    Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                },
+                onError = { errorMessage ->
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                }
+            )
+        },
+        onTrackShareAction = { target, channel ->
+            analyticsTracker.trackShareAction(target, channel)
+        }
+    )
+}
+
+@Composable
+fun TodayBattleScreen(
+    uiState: TodayBattleUiState,
+    initialBattleId: String?,
+    onBackClick: () -> Unit,
+    onEnterBattle: (String, String?) -> Unit,
+    onGetShareLink: (Int) -> Unit,
+    onTrackShareAction: (String, String) -> Unit
+) {
+    val context = LocalContext.current
+
+    val battleList = uiState.battleList
+
+    val pagerState = rememberPagerState(pageCount = { battleList.size })
+    val coroutineScope = rememberCoroutineScope()
+    val graphicsLayer = rememberGraphicsLayer()
+
+    var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
     var showShareDialog by remember { mutableStateOf(false) }
-    val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
-    val clipboardManager = LocalClipboardManager.current
     var isSharing by remember { mutableStateOf(false) }
+
+    val isButtonEnabled = selectedOptionId != null && !uiState.isEntering
+    val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
 
     val onKakaoShareClick = {
         currentBattle?.let { battle ->
@@ -133,7 +176,7 @@ fun TodayBattleScreen(
                         isSharing = false
                         Toast.makeText(context, "이미지 로드 실패", Toast.LENGTH_SHORT).show()
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     isSharing = false
                     Toast.makeText(context, "공유 실패", Toast.LENGTH_SHORT).show()
                 }
@@ -145,22 +188,27 @@ fun TodayBattleScreen(
         isSharing = true
         coroutineScope.launch {
             try {
-                kotlinx.coroutines.delay(100)
+                delay(100.milliseconds)
 
                 val bitmap = graphicsLayer.toImageBitmap().asAndroidBitmap()
-
                 shareBattleToInstagramStoryDarkMode(
                     context = context,
                     bitmap = bitmap,
                     onComplete = { isSharing = false }
                 )
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 isSharing = false
-                Toast.makeText(context, "캡처 실패", android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "캡처 실패", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    LaunchedEffect(battleList, initialBattleId) {
+        if (initialBattleId != null && battleList.isNotEmpty()) {
+            val targetPage = battleList.indexOfFirst { it.battleId == initialBattleId }
+            if (targetPage >= 0) pagerState.animateScrollToPage(targetPage)
+        }
+    }
 
     if (uiState.isLoading) {
         Box(
@@ -170,7 +218,6 @@ fun TodayBattleScreen(
         ) {
             TodayBattleSkeleton(modifier = Modifier.fillMaxSize())
 
-            // 상단 뒤로가기 버튼 (실제 로드된 화면과 동일하게 40dp 터치영역 + 20dp 아이콘으로 맞춘다)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,6 +234,7 @@ fun TodayBattleScreen(
                 }
             }
         }
+
         return
     }
 
@@ -196,7 +244,6 @@ fun TodayBattleScreen(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            // 상단 뒤로가기 버튼
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -212,7 +259,6 @@ fun TodayBattleScreen(
                 }
             }
 
-            // 정중앙 안내 문구
             Column(
                 modifier = Modifier.align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -222,16 +268,17 @@ fun TodayBattleScreen(
                     painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "빈 화면 로고",
                     modifier = Modifier.size(width = 160.dp, height = 120.dp),
-                    tint = SwypTheme.colors.borderDefault
+                    tint = PickeTheme.colors.borderDefault
                 )
                 Text(
                     text = "아직 빠른 배틀이 선정되지 않았어요\n조금만 기다려주세요!",
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.surfaceTertiary,
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.surfaceTertiary,
                     textAlign = TextAlign.Center
                 )
             }
         }
+
         return
     }
 
@@ -245,19 +292,14 @@ fun TodayBattleScreen(
                     onClick = {
                         if (isButtonEnabled) {
                             val currentBattleId = battleList[pagerState.currentPage].battleId
-                            viewModel.enterBattle(
-                                battleId = currentBattleId.toLong(),
-                                optionId = selectedOptionId!!.toLong(),
-                                onNavigateToScenario = onNavigateToScenario,
-                                onNavigateToPerspective = onNavigateToPerspective
-                            )
+                            onEnterBattle(currentBattleId, selectedOptionId)
                         }
                     },
                     modifier = Modifier
                         .navigationBarsPadding()
                         .padding(20.dp),
-                    backgroundColor = if (isButtonEnabled) SwypTheme.colors.primary else SwypTheme.colors.primaryDisabled,
-                    textColor = SwypTheme.colors.surfaceDefault
+                    backgroundColor = if (isButtonEnabled) PickeTheme.colors.primary else PickeTheme.colors.primaryDisabled,
+                    textColor = PickeTheme.colors.surfaceDefault
                 )
             }
         ) { innerPadding ->
@@ -286,21 +328,17 @@ fun TodayBattleScreen(
                     )
                 }
 
-                // 상단 UI (인디케이터 & 뒤로가기 버튼 & 공유하기 버튼)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .statusBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    // 빠른 배틀이 여러 개일 때만 상단 인디케이터(1/1 등)를 노출한다.
-                    // 현재는 하루 1개만 노출하므로 사실상 숨겨진다.
                     if (battleList.size > 1) {
                         TopIndicatorBar(
                             currentPage = pagerState.currentPage,
                             totalPages = battleList.size
                         )
-
                         Spacer(modifier = Modifier.height(16.dp))
                     }
 
@@ -341,18 +379,12 @@ fun TodayBattleScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
-                    analyticsTracker.trackShareAction(
-                        ShareTarget.BATTLE,
-                        ShareChannel.KAKAO
-                    )
+                    onTrackShareAction(ShareTarget.BATTLE, ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
-                    analyticsTracker.trackShareAction(
-                        ShareTarget.BATTLE,
-                        ShareChannel.INSTAGRAM
-                    )
+                    onTrackShareAction(ShareTarget.BATTLE, ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -360,23 +392,10 @@ fun TodayBattleScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
-                    analyticsTracker.trackShareAction(
-                        ShareTarget.BATTLE,
-                        ShareChannel.LINK
-                    )
+                    onTrackShareAction(ShareTarget.BATTLE, ShareChannel.LINK)
 
                     val currentBattleId = battleList[pagerState.currentPage].battleId.toInt()
-
-                    viewModel.getShareLink(
-                        battleId = currentBattleId,
-                        onSuccess = { url ->
-                            clipboardManager.setText(AnnotatedString(url))
-                            Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
-                        },
-                        onError = { errorMessage ->
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                        }
-                    )
+                    onGetShareLink(currentBattleId)
                 }
             )
         }
@@ -385,11 +404,11 @@ fun TodayBattleScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f)) // 반투명 검은색 배경
+                    .background(Color.Black.copy(alpha = 0.5f))
                     .pointerInput(Unit) {},
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
+                CircularProgressIndicator(color = PickeTheme.colors.primaryDarkest)
             }
         }
     }
@@ -402,7 +421,6 @@ fun BattleContent(
     onOptionSelect: (String) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        // [상단] 배경 이미지 + 그라데이션 페이드 아웃
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -434,12 +452,11 @@ fun BattleContent(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .shimmer(SwypTheme.colors.neutral600, SwypTheme.colors.neutral400)
+                            .shimmer(PickeTheme.colors.neutral600, PickeTheme.colors.neutral400)
                     )
                 }
             )
 
-            // 텍스트 정보들 (이미지 위에 오버레이)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -448,7 +465,6 @@ fun BattleContent(
                     .padding(bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 해시태그
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     item.tags.forEach { tag ->
                         Surface(
@@ -458,50 +474,49 @@ fun BattleContent(
                             Text(
                                 text = "#$tag",
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                                style = SwypTheme.typography.label,
-                                color = SwypTheme.colors.primary
+                                style = PickeTheme.typography.label,
+                                color = PickeTheme.colors.primary
                             )
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
-
                 Text(
                     text = item.title,
-                    style = SwypTheme.typography.h1SemiBold,
-                    color = SwypTheme.colors.surface,
+                    style = PickeTheme.typography.h1SemiBold,
+                    color = PickeTheme.colors.surface,
                     textAlign = TextAlign.Center
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = item.description,
-                    style = SwypTheme.typography.b3Regular,
-                    color = SwypTheme.colors.neutral400,
+                    style = PickeTheme.typography.b3Regular,
+                    color = PickeTheme.colors.neutral400,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                // 시간 테두리 박스
+                Spacer(modifier = Modifier.height(16.dp))
                 Surface(
                     color = Color.Transparent,
                     shape = RoundedCornerShape(2.dp),
-                    border = BorderStroke(1.dp, SwypTheme.colors.textSecondary)
+                    border = BorderStroke(1.dp, PickeTheme.colors.textSecondary)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painterResource(R.drawable.ic_clock),
-                            null,
-                            Modifier.size(12.dp),
+                            painter = painterResource(R.drawable.ic_clock),
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
                             tint = Color.Gray
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             item.timeLeft,
-                            style = SwypTheme.typography.labelXSmall,
+                            style = PickeTheme.typography.labelXSmall,
                             color = Color.LightGray
                         )
                     }
@@ -510,8 +525,6 @@ fun BattleContent(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
-        // [하단] VS 카드 영역
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -525,12 +538,12 @@ fun BattleContent(
                         name = optionA.name,
                         opinion = optionA.opinion,
                         quote = optionA.quote,
-                        isSelected = selectedOptionId == optionA.optionId, // 이제 둘 다 String이라 비교가 잘 됩니다!
+                        isSelected = selectedOptionId == optionA.optionId,
                         onClick = { onOptionSelect(optionA.optionId) }
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
 
+                Spacer(modifier = Modifier.height(12.dp))
                 if (item.options.size > 1) {
                     val optionB = item.options[1]
                     OpinionCard(
@@ -543,14 +556,13 @@ fun BattleContent(
                 }
             }
 
-            // 정중앙 VS 원형 뱃지
             Surface(
                 modifier = Modifier.size(40.dp),
                 shape = CircleShape,
-                color = SwypTheme.colors.secondaryLight
+                color = PickeTheme.colors.secondaryLight
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Text("VS", style = SwypTheme.typography.b3SemiBold, color = Color.Black)
+                    Text("VS", style = PickeTheme.typography.b3SemiBold, color = Color.Black)
                 }
             }
         }
@@ -558,81 +570,19 @@ fun BattleContent(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun TopIndicatorBar(currentPage: Int, totalPages: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        // 작대기 부분
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            for (i in 0 until totalPages) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(2.dp)
-                        .background(if (i == currentPage) Color.White else Color.White.copy(alpha = 0.3f))
-                )
-            }
-        }
-
-        // 텍스트 부분 (예: 1/4)
-        Text(
-            text = "${currentPage + 1}/$totalPages",
-            style = SwypTheme.typography.labelXSmall,
-            color = Color.White.copy(alpha = 0.3f)
-        )
-    }
-}
-
-@Composable
-fun OpinionCard(
-    name: String,
-    opinion: String,
-    quote: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderColor = if (isSelected) SwypTheme.colors.secondary700 else Color.Transparent
-    val bgColor = if (isSelected) SwypTheme.colors.textPrimary else SwypTheme.colors.textPrimary
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(2.dp))
-            .border(1.dp, borderColor, RoundedCornerShape(4.dp))
-            .background(bgColor)
-            .clickable { onClick() }
-            .padding(vertical = 18.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = name,
-            style = SwypTheme.typography.labelXSmall,
-            color = SwypTheme.colors.secondary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = opinion,
-            style = SwypTheme.typography.h3SemiBold,
-            color = Color.White,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        Text(
-            text = "\"$quote\"",
-            style = SwypTheme.typography.labelXSmall,
-            color = Color.White.copy(0.3f),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+fun TodayBattleScreenPreview() {
+    PickeTheme {
+        TodayBattleScreen(
+            uiState = TodayBattleUiState(
+                battleList = DummyData.dummyTodayBattles
+            ),
+            initialBattleId = "",
+            onBackClick = { },
+            onEnterBattle = { _, _ -> },
+            onGetShareLink = { },
+            onTrackShareAction = { _, _ -> }
         )
     }
 }

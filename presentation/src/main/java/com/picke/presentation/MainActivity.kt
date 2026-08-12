@@ -1,19 +1,17 @@
 package com.picke.presentation
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.annotation.RequiresExtension
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import com.picke.presentation.notification.FCMService
-import com.picke.presentation.ui.splash.SplashUiState
 import com.picke.presentation.ui.splash.SplashViewModel
-import com.picke.presentation.ui.theme.SwypAppTheme
+import com.picke.presentation.ui.splash.model.SplashUiState
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.util.DeepLinkEvent
 import com.picke.presentation.util.DeepLinkManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +28,6 @@ class MainActivity : FragmentActivity() {
         private const val TAG = "MainActivity_Picke"
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -45,7 +42,7 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            SwypAppTheme {
+            PickeTheme {
                 AppNavigation(splashViewModel)
             }
         }

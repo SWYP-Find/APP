@@ -90,6 +90,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 # [Navigation & DI]
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 

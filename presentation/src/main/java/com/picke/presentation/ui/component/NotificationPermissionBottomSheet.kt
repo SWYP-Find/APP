@@ -31,8 +31,7 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.theme.Gray100
 import com.picke.presentation.ui.theme.Gray300
 import com.picke.presentation.ui.theme.Gray900
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.theme.White
 import com.picke.presentation.ui.theme.tokens.BrandColorTokens
 
@@ -82,7 +81,7 @@ fun NotificationPermissionBottomSheet(
                 modifier = Modifier
                     .border(1.dp, BrandColorTokens.neutral50, RoundedCornerShape(50))
                     .background(
-                        color = SwypTheme.colors.backgroundBrand,
+                        color = PickeTheme.colors.backgroundBrand,
                         shape = RoundedCornerShape(50)
                     )
                     .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -101,7 +100,7 @@ fun NotificationPermissionBottomSheet(
 
             Text(
                 text = "푸시 알림 설정",
-                style = SwypTheme.typography.h3SemiBold,
+                style = PickeTheme.typography.h3SemiBold,
                 color = Gray900
             )
 
@@ -109,7 +108,7 @@ fun NotificationPermissionBottomSheet(
 
             Text(
                 text = "픽케의 매일 새로운 배틀 소식을 알려드려요",
-                style = SwypTheme.typography.b3Regular,
+                style = PickeTheme.typography.b3Regular,
                 color = Gray300
             )
 
@@ -117,7 +116,7 @@ fun NotificationPermissionBottomSheet(
 
             Text(
                 text = "설정 > 앱 > 픽케에서\n알림설정 변경이 가능합니다.",
-                style = SwypTheme.typography.b4Regular,
+                style = PickeTheme.typography.b4Regular,
                 color = Gray300,
                 textAlign = TextAlign.Center
             )
@@ -132,14 +131,14 @@ fun NotificationPermissionBottomSheet(
                     text = "동의하지 않음",
                     onClick = onDisagree,
                     modifier = Modifier.weight(1f),
-                    backgroundColor = SwypTheme.colors.buttonPrimaryBackgroundDisabled,
+                    backgroundColor = PickeTheme.colors.buttonPrimaryBackgroundDisabled,
                     textColor = White
                 )
                 CustomButton(
                     text = "동의함",
                     onClick = onAgree,
                     modifier = Modifier.weight(1f),
-                    backgroundColor = SwypTheme.colors.buttonPrimaryBackgroundPressed,
+                    backgroundColor = PickeTheme.colors.buttonPrimaryBackgroundPressed,
                     textColor = White
                 )
             }
@@ -150,7 +149,7 @@ fun NotificationPermissionBottomSheet(
 @Preview(showBackground = true, showSystemUi = true, name = "알림 권한 바텀시트")
 @Composable
 private fun NotificationPermissionBottomSheetPreview() {
-    SwypAppTheme {
+    PickeTheme {
         NotificationPermissionBottomSheet(
             onDismiss = {},
             onAgree = {},

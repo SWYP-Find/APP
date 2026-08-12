@@ -20,8 +20,7 @@ import com.picke.presentation.R
 import com.picke.presentation.ui.theme.Beige200
 import com.picke.presentation.ui.theme.Primary50
 import com.picke.presentation.ui.theme.Primary900
-import com.picke.presentation.ui.theme.SwypAppTheme
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 import com.picke.presentation.ui.theme.tokens.SemanticColorTokens
 
 /**
@@ -53,14 +52,14 @@ fun AttendanceRewardFooter(
             )
             Text(
                 text = title,
-                style = SwypTheme.typography.b3SemiBold,
+                style = PickeTheme.typography.b3SemiBold,
                 color = Primary900
             )
         }
 
         Text(
             text = caption,
-            style = SwypTheme.typography.b5Medium,
+            style = PickeTheme.typography.b5Medium,
             color = SemanticColorTokens.textMuted
         )
     }
@@ -69,7 +68,7 @@ fun AttendanceRewardFooter(
 @Preview(showBackground = true)
 @Composable
 private fun AttendanceRewardFooterPreview() {
-    SwypAppTheme {
+    PickeTheme {
         AttendanceRewardFooter(
             title = "7일 연속 출석 시 +7P",
             caption = "실패해도 다음 주 월요일에 다시 도전해요"

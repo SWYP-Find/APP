@@ -25,7 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.picke.presentation.ui.component.SkeletonLine
 import com.picke.presentation.ui.component.shimmer
-import com.picke.presentation.ui.theme.SwypTheme
+import com.picke.presentation.ui.theme.PickeTheme
 
 // PhilosopherHeaderSection/TraitAnalysisSection/TasteReportSection/ChemistrySection과
 // 동일한 padding/spacer 값을 그대로 써서 로딩이 끝나고 실제 콘텐츠로 바뀔 때 레이아웃이 튀지 않도록 맞춘다.
@@ -51,10 +51,10 @@ private fun HeaderCardSkeleton() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SwypTheme.colors.surface, cardShape)
-            .border(1.dp, SwypTheme.colors.surfaceTertiary, cardShape)
+            .background(PickeTheme.colors.surface, cardShape)
+            .border(1.dp, PickeTheme.colors.surfaceTertiary, cardShape)
     ) {
-        Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(SwypTheme.colors.primary))
+        Box(modifier = Modifier.fillMaxWidth().height(4.dp).background(PickeTheme.colors.primary))
 
         Column(
             modifier = Modifier.fillMaxWidth().padding(24.dp),
@@ -86,8 +86,8 @@ private fun TraitAnalysisCardSkeleton() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SwypTheme.colors.surface, RoundedCornerShape(4.dp))
-                .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
+                .background(PickeTheme.colors.surface, RoundedCornerShape(4.dp))
+                .border(1.dp, PickeTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
                 .padding(vertical = 24.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -109,7 +109,7 @@ private fun TraitAnalysisCardSkeleton() {
 private fun ScoreBarSkeleton(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
-            .background(SwypTheme.colors.beige100, RoundedCornerShape(4.dp))
+            .background(PickeTheme.colors.beige100, RoundedCornerShape(4.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -136,21 +136,21 @@ private fun TasteReportCardSkeleton() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(SwypTheme.colors.surface, RoundedCornerShape(4.dp))
-                .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
+                .background(PickeTheme.colors.surface, RoundedCornerShape(4.dp))
+                .border(1.dp, PickeTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 ReportStatItemSkeleton()
-                Box(modifier = Modifier.height(40.dp).width(1.dp).background(SwypTheme.colors.surfaceTertiary))
+                Box(modifier = Modifier.height(40.dp).width(1.dp).background(PickeTheme.colors.surfaceTertiary))
                 ReportStatItemSkeleton()
-                Box(modifier = Modifier.height(40.dp).width(1.dp).background(SwypTheme.colors.surfaceTertiary))
+                Box(modifier = Modifier.height(40.dp).width(1.dp).background(PickeTheme.colors.surfaceTertiary))
                 ReportStatItemSkeleton()
             }
 
-            HorizontalDivider(color = SwypTheme.colors.surfaceTertiary)
+            HorizontalDivider(color = PickeTheme.colors.surfaceTertiary)
 
             repeat(3) { index ->
                 Row(
@@ -160,7 +160,7 @@ private fun TasteReportCardSkeleton() {
                     SkeletonLine(width = 80.dp, height = 16.dp)
                     SkeletonLine(width = 40.dp, height = 14.dp)
                 }
-                if (index < 2) HorizontalDivider(color = SwypTheme.colors.beige100)
+                if (index < 2) HorizontalDivider(color = PickeTheme.colors.beige100)
             }
         }
     }
@@ -206,8 +206,8 @@ private fun ChemistrySectionSkeleton() {
 private fun ChemistryCardSkeleton(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .background(SwypTheme.colors.surface, RoundedCornerShape(4.dp))
-            .border(1.dp, SwypTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
+            .background(PickeTheme.colors.surface, RoundedCornerShape(4.dp))
+            .border(1.dp, PickeTheme.colors.surfaceTertiary, RoundedCornerShape(4.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
