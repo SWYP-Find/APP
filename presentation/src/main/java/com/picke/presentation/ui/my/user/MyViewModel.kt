@@ -10,6 +10,7 @@ import com.picke.domain.common.local.LocalPreferencesUseCases
 import com.picke.domain.feature.alarm.usecase.AlarmUseCases
 import com.picke.domain.feature.mypage.usecase.MyPageUseCases
 import com.picke.presentation.ads.AdMobManager
+import com.picke.presentation.ui.my.user.model.MyUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,16 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class MyUiState(
-    val profile: MyProfile? = null,
-    val philosopher: MyPhilosopher? = null,
-    val tier: MyTier? = null,
-    val hasNewNotice: Boolean = false,
-    val isLoading: Boolean = false,
-    // 미읽음 알림 여부 조회가 끝나기 전까지 탑바 아이콘을 shimmer로 보여주기 위한 플래그
-    val isAlarmStatusLoading: Boolean = true
-)
 
 @HiltViewModel
 class MyViewModel @Inject constructor(

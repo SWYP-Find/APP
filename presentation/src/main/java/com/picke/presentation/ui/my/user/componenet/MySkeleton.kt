@@ -1,4 +1,4 @@
-package com.picke.presentation.ui.my.user
+package com.picke.presentation.ui.my.user.componenet
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

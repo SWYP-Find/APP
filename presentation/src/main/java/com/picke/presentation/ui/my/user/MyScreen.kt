@@ -47,6 +47,8 @@ import com.picke.presentation.ui.component.AdFitBannerAd
 import com.picke.presentation.ui.component.CustomTopAppBar
 import com.picke.presentation.ui.component.ProfileImage
 import com.picke.presentation.ui.component.shimmer
+import com.picke.presentation.ui.my.user.componenet.MyPageMenuItem
+import com.picke.presentation.ui.my.user.componenet.MySkeleton
 import com.picke.presentation.ui.theme.PickeTheme
 
 @Composable
@@ -376,38 +378,5 @@ fun CreditCard(
         //         color = SwypTheme.colors.textPrimary
         //     )
         // }
-    }
-}
-
-@Composable
-fun MyPageMenuItem(
-    title: String,
-    onClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .clickable { onClick() }
-            .fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                style = PickeTheme.typography.b3SemiBold,
-                color = PickeTheme.colors.textSecondary
-            )
-            Icon(
-                painterResource(R.drawable.ic_arrow_right_a),
-                contentDescription = null,
-                modifier = Modifier.size(12.dp),
-                tint = PickeTheme.colors.textPrimary
-            )
-        }
-        HorizontalDivider(color = PickeTheme.colors.borderDefault, thickness = 1.dp)
     }
 }
