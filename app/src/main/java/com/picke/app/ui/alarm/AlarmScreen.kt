@@ -56,6 +56,7 @@ fun AlarmScreen(
     onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
     onNavigateToPoint: () -> Unit,
     onNavigateToNotice: (Long) -> Unit,
+    onNavigateToTodayBattle: () -> Unit,
     viewModel: AlarmViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -186,7 +187,7 @@ fun AlarmScreen(
                                         "POLICY_CHANGE" ->
                                             onNavigateToNotice(item.referenceId)
                                         "DAILY_MESSAGE" ->
-                                            onNavigateToPreVote(item.referenceId.toString())
+                                            onNavigateToTodayBattle()
                                         // PROMOTION, VOTE_RESULT: 이동 없음
                                     }
                                 }

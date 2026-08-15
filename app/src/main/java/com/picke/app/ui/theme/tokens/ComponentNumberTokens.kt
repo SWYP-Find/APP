@@ -4,6 +4,7 @@ package com.picke.app.ui.theme.tokens
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-object ComponentNumberTokens {
+object
+ComponentNumberTokens {
     val buttonRadius: Dp = 2.dp
 }

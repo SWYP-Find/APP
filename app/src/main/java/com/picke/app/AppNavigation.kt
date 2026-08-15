@@ -285,6 +285,10 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     },
                     onNavigateToNotice = { noticeId ->
                         rootNavController.navigate(AppRoute.NoticeEvent.createRoute(noticeId))
+                    },
+                    onNavigateToTodayBattle = {
+                        DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
+                        rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
                     }
                 )
             }
