@@ -6,7 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.AlarmDetailBoard
 import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.domain.model.NoticeEventItem
-import com.picke.app.domain.repository.AlarmRepository
+import com.picke.app.domain.usecase.alarm.GetAlarmDetailUseCase
+import com.picke.app.domain.usecase.alarm.GetAlarmsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,6 @@ import javax.inject.Inject
 data class NoticeEventUiState(
     val noticeList: List<NoticeEventItem> = emptyList(),
     val eventList: List<NoticeEventItem> = emptyList(),
-    val contentList: List<NoticeEventItem> = emptyList(),
     val isLoading: Boolean = false,
     val isRead: Boolean = false,
     val initialDetailItem: NoticeEventItem? = null
@@ -27,7 +27,8 @@ data class NoticeEventUiState(
 
 @HiltViewModel
 class NoticeEventViewModel @Inject constructor(
-    private val alarmRepository: AlarmRepository
+    private val getAlarmsUseCase: GetAlarmsUseCase,
+    private val getAlarmDetailUseCase: GetAlarmDetailUseCase
 ) : ViewModel(){
     private val _uiState = MutableStateFlow(NoticeEventUiState())
     val uiState: StateFlow<NoticeEventUiState> = _uiState.asStateFlow()
@@ -40,15 +41,13 @@ class NoticeEventViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
 
-            Log.d("NoticeEventFlow", "🚀 [목록 API 호출] 공지사항, 이벤트, 콘텐츠 요청 시작")
+            Log.d("NoticeEventFlow", "🚀 [목록 API 호출] 공지사항, 이벤트 요청 시작")
 
-            val noticeDeferred = async { alarmRepository.getAlarms(category = "NOTICE", page = 0, size = 50) }
-            val eventDeferred = async { alarmRepository.getAlarms(category = "EVENT", page = 0, size = 50) }
-            val contentDeferred = async { alarmRepository.getAlarms(category = "CONTENT", page = 0, size = 50) }
+            val noticeDeferred = async { getAlarmsUseCase(category = "NOTICE", page = 0, size = 50) }
+            val eventDeferred = async { getAlarmsUseCase(category = "EVENT", page = 0, size = 50) }
 
             val noticeResult = noticeDeferred.await()
             val eventResult = eventDeferred.await()
-            val contentResult = contentDeferred.await()
 
             noticeResult.onSuccess { data ->
                 Log.d("NoticeEventFlow", "✅ [목록 성공] 공지사항 수신: ${data.items.size}개")
@@ -62,21 +61,13 @@ class NoticeEventViewModel @Inject constructor(
                 Log.e("NoticeEventFlow", "❌ [목록 실패] 이벤트 에러: ${error.message}")
             }
 
-            contentResult.onSuccess { data ->
-                Log.d("NoticeEventFlow", "✅ [목록 성공] 콘텐츠 수신: ${data.items.size}개")
-            }.onFailure { error ->
-                Log.e("NoticeEventFlow", "❌ [목록 실패] 콘텐츠 에러: ${error.message}")
-            }
-
             val notices = noticeResult.getOrNull()?.items?.map { it.toNoticeEventItem("공지사항") } ?: emptyList()
             val events = eventResult.getOrNull()?.items?.map { it.toNoticeEventItem("이벤트") } ?: emptyList()
-            val contents = contentResult.getOrNull()?.items?.map { it.toNoticeEventItem("콘텐츠") } ?: emptyList()
 
             _uiState.update {
                 it.copy(
                     noticeList = notices,
                     eventList = events,
-                    contentList = contents,
                     isLoading = false
                 )
             }
@@ -91,12 +82,11 @@ class NoticeEventViewModel @Inject constructor(
                 val targetId = notificationId.toString()
                 state.copy(
                     noticeList = state.noticeList.map { if (it.id == targetId) it.copy(isRead = true) else it },
-                    eventList = state.eventList.map { if (it.id == targetId) it.copy(isRead = true) else it },
-                    contentList = state.contentList.map { if (it.id == targetId) it.copy(isRead = true) else it }
+                    eventList = state.eventList.map { if (it.id == targetId) it.copy(isRead = true) else it }
                 )
             }
 
-            val result = alarmRepository.getAlarmDetail(notificationId)
+            val result = getAlarmDetailUseCase(notificationId)
 
             result.onSuccess { detailData ->
                 Log.d("NoticeEventFlow", "✅ [상세 성공] 받아온 데이터: $detailData")
@@ -109,7 +99,7 @@ class NoticeEventViewModel @Inject constructor(
     fun fetchInitialDetail(noticeId: Long) {
         viewModelScope.launch {
             Log.d("NoticeEventFlow", "🚀 [알림 진입] ID($noticeId) 상세 요청 시작")
-            val result = alarmRepository.getAlarmDetail(noticeId)
+            val result = getAlarmDetailUseCase(noticeId)
             result.onSuccess { detailData ->
                 Log.d("NoticeEventFlow", "✅ [알림 진입 성공] $detailData")
                 _uiState.update { it.copy(initialDetailItem = detailData.toNoticeEventItem()) }

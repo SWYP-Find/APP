@@ -5,7 +5,6 @@ enum class SpeakerType {
 }
 
 data class ScenarioPhilosopher(
-    val label: String,
     val name: String,
     val stance: String,
     val quote: String,

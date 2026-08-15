@@ -6,7 +6,9 @@ import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.BuildConfig
-import com.picke.app.domain.repository.ScenarioRepository
+import com.picke.app.analytics.AnalyticsTracker
+import com.picke.app.analytics.BattleStepName
+import com.picke.app.domain.usecase.scenario.FetchBattleScenarioUseCase
 import com.picke.app.ui.scenario.model.*
 import com.picke.app.util.ScenarioAudioKey
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,8 +49,9 @@ data class ScenarioUiState(
 
 @HiltViewModel
 class ScenarioViewModel @Inject constructor(
-    private val scenarioRepository: ScenarioRepository,
-    private val audioPlayerManager: AudioPlayerManager
+    private val fetchBattleScenarioUseCase: FetchBattleScenarioUseCase,
+    private val audioPlayerManager: AudioPlayerManager,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScenarioUiState())
@@ -57,6 +60,8 @@ class ScenarioViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var fullScenario: ScenarioUiModel? = null
     private var currentAudioKey: String? = null
+    private var currentBattleId: String = ""
+    private var isAudioEndTracked = false
 
     init {
         audioPlayerManager.onPlaybackEnded = { handleNodeEnd() }
@@ -65,9 +70,10 @@ class ScenarioViewModel @Inject constructor(
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun loadScenario(battleId: String) {
         Log.d("TTSFlow", "▶️ loadScenario() 실행 - 요청된 battleId: $battleId")
+        currentBattleId = battleId
         viewModelScope.launch {
             _uiState.update { it.copy(pastScripts = emptyList(), pastChoices = emptyList(), maxListenedPositionMs = 0L) }
-            scenarioRepository.fetchBattleScenario(battleId)
+            fetchBattleScenarioUseCase(battleId)
                 .onSuccess { board ->
                     Log.d("TTSFlow", "▶️ loadScenario() 성공 - 서버에서 데이터 받아옴")
                     fullScenario = board.toUiModel()
@@ -171,6 +177,10 @@ class ScenarioViewModel @Inject constructor(
             _uiState.update { it.copy(interactiveOptions = currentNode.interactiveOptions) }
         } else {
             Log.d("TTSFlow", "▶️ handleNodeEnd() - 시나리오 최종 완료, 투표 다이얼로그 띄우기")
+            if (!isAudioEndTracked && currentBattleId.isNotEmpty()) {
+                isAudioEndTracked = true
+                analyticsTracker.trackBattleStep(BattleStepName.AUDIO_END, currentBattleId)
+            }
             _uiState.update { it.copy(showFinalVoteDialog = true) }
         }
     }
@@ -264,37 +274,6 @@ class ScenarioViewModel @Inject constructor(
         _uiState.update { it.copy(pastChoices = it.pastChoices + newChoice) }
         loadNode(nextNodeId)
         playAudio()
-    }
-
-    private fun splitScriptsBySentence(
-        originalScripts: List<ScenarioScriptUiModel>,
-        totalNodeDurationMs: Long
-    ): List<ScenarioScriptUiModel> {
-        Log.d("TTSFlow", "▶️ splitScriptsBySentence() 실행 - 스크립트를 문장 단위로 분할")
-        val result = mutableListOf<ScenarioScriptUiModel>()
-
-        for (i in originalScripts.indices) {
-            val current = originalScripts[i]
-            val nextTimeMs = if (i < originalScripts.lastIndex) originalScripts[i + 1].startTimeMs else totalNodeDurationMs
-
-            val sentences = current.displayText
-                .split(Regex("(?<=[.!?])\\s+"))
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-
-            if (sentences.isEmpty()) continue
-
-            val totalChars = sentences.sumOf { it.length }
-            val blockDuration = maxOf(0L, nextTimeMs - current.startTimeMs)
-            var accumulatedTime = current.startTimeMs
-
-            sentences.forEach { sentence ->
-                result.add(current.copy(startTimeMs = accumulatedTime, displayText = sentence))
-                val durationForThisSentence = if (totalChars > 0) (blockDuration * sentence.length) / totalChars else 0L
-                accumulatedTime += durationForThisSentence
-            }
-        }
-        return result
     }
 
     override fun onCleared() {

@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.picke.app.R
 import com.picke.app.ui.theme.SwypTheme
@@ -65,7 +67,8 @@ fun CustomTopAppBar(
                 Icon(
                     painter = painterResource(id = R.drawable.logo_picke),
                     contentDescription = "Picke 로고",
-                    tint = Color.Unspecified,
+                    // 상단 Picke 로고를 갈색(원본) 대신 검정색으로 표시 (홈/탐색탭)
+                    tint = Color.Black,
                 )
             }
 
@@ -83,7 +86,13 @@ fun CustomTopAppBar(
                 text = title,
                 style = SwypTheme.typography.h4SemiBold,
                 color = SwypTheme.colors.textPrimary,
-                modifier = Modifier.align(Alignment.Center)
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp)
             )
         }
 

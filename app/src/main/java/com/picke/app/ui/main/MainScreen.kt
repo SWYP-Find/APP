@@ -13,12 +13,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.picke.app.AppRoute
+import com.picke.app.analytics.ContentActionType
+import com.picke.app.analytics.TrackScreenViews
+import com.picke.app.analytics.rememberAnalyticsTracker
 import com.picke.app.ui.component.CustomBottomNavigationBar
 import com.picke.app.ui.explore.ExploreScreen
 import com.picke.app.ui.home.HomeScreen
@@ -32,12 +36,24 @@ import com.picke.app.ui.my.point.PointScreen
 import com.picke.app.ui.my.setting.SettingScreen
 import com.picke.app.ui.my.setting.withdraw.WithdrawScreen
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.DeepLinkManager
 
 @Composable
 fun MainScreen(
-    rootNavController : NavController
+    rootNavController : NavController,
+    isNotificationSheetPending: Boolean = false,
 ){
     val mainNavController = rememberNavController()
+    val analyticsTracker = rememberAnalyticsTracker()
+
+    // 배틀 화면 등에서 "탐색 탭으로 이동" 같은 특정 탭 지정 진입이 예약되어 있으면 그 탭에서 시작하고,
+    // 소비 즉시 리셋해서 이후의 일반적인 Main 진입에는 영향을 주지 않는다.
+    val initialTabRoute = remember {
+        DeepLinkManager.pendingTab?.also { DeepLinkManager.pendingTab = null } ?: BottomNavItem.Home.route
+    }
+
+    // 탭 NavHost 내부 화면들의 screen_view 자동 전송
+    TrackScreenViews(mainNavController)
 
     var homeScrollTrigger by remember { mutableIntStateOf(0) }
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
@@ -55,7 +71,7 @@ fun MainScreen(
     ){ innerPadding ->
         NavHost(
             navController = mainNavController,
-            startDestination = BottomNavItem.Home.route,
+            startDestination = initialTabRoute,
             modifier = Modifier.fillMaxSize()
                 .padding(innerPadding)
                 .background(SwypTheme.colors.surface),
@@ -67,10 +83,12 @@ fun MainScreen(
             composable(BottomNavItem.Home.route){
                 HomeScreen(
                     scrollToTopTrigger = homeScrollTrigger,
+                    isNotificationSheetPending = isNotificationSheetPending,
                     onNavigateToAlarm = {
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { contentId->
+                        analyticsTracker.trackContentAction(ContentActionType.BATTLE_CARD_TAP, contentId)
                         rootNavController.navigate(AppRoute.BattleRouting.createRoute(contentId))
                     },
                     onNavigateToTrendingBattle = { },
@@ -86,6 +104,7 @@ fun MainScreen(
                         rootNavController.navigate(AppRoute.Alarm.route)
                     },
                     onNavigateToVote = { battleId ->
+                        analyticsTracker.trackContentAction(ContentActionType.BATTLE_CARD_TAP, battleId)
                         rootNavController.navigate(AppRoute.BattleRouting.createRoute(battleId))
                     }
                 )
@@ -125,7 +144,16 @@ fun MainScreen(
 
             composable(AppRoute.MakeBattle.route){
                 MakeBattleScreen(
-                    onBackClick = { mainNavController.popBackStack() }
+                    onBackClick = { mainNavController.popBackStack() },
+                    onNavigateToExplore = {
+                        mainNavController.navigate(BottomNavItem.Explore.route) {
+                            popUpTo(mainNavController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
 

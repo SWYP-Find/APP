@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,6 +41,7 @@ import com.picke.app.ui.component.CustomTabBar
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.toRelativeTimeText
 import kotlinx.coroutines.launch
 
 @Composable
@@ -51,7 +51,7 @@ fun ContentActivityScreen(
     modifier: Modifier = Modifier,
     viewModel: ContentActivityViewModel = hiltViewModel()
 ) {
-    val tabs = listOf("내 댓글", "좋아요")
+    val tabs = listOf("내 댓글·관점", "좋아요")
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(pageCount = { tabs.size })
@@ -89,12 +89,7 @@ fun ContentActivityScreen(
             )
 
             if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-                }
+                ContentActivitySkeleton(modifier = Modifier.fillMaxSize())
             } else {
                 // 페이지 내용
                 HorizontalPager(
@@ -105,7 +100,7 @@ fun ContentActivityScreen(
                         0 -> ContentActivityList(
                             items = uiState.commentList,
                             activityType = "COMMENT",
-                            emptyMessage = "아직 작성한 댓글이 없습니다",
+                            emptyMessage = "아직 작성한 댓글이나 관점이 없습니다",
                             onItemClick = onNavigateToComment,
                             onLoadMore = { viewModel.loadMore("COMMENT") }
                         )
@@ -221,7 +216,7 @@ fun ContentActivityCard(
                 }
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = item.createdAt,
+                    text = item.createdAt.toRelativeTimeText(),
                     style = SwypTheme.typography.b4Regular,
                     color = SwypTheme.colors.textMuted
                 )

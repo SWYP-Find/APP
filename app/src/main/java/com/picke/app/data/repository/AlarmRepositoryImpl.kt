@@ -22,6 +22,16 @@ class AlarmRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun hasUnreadAlarms(category: String?): Result<Boolean> {
+        return try {
+            alarmApi.getUnreadExists(category)
+                .toResult("미읽음 알림 여부를 불러오지 못했습니다.")
+                .map { it.hasUnread ?: false }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun getAlarmDetail(notificationId: Long): Result<AlarmDetailBoard> {
         return try {
             alarmApi.getAlarmDetail(notificationId)
@@ -47,12 +57,12 @@ class AlarmRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun readAllAlarms(): Result<String> {
+    override suspend fun readAllAlarms(): Result<Unit> {
         return try {
             val response = alarmApi.readAllAlarms()
 
             if (response.statusCode == 200) {
-                Result.success(response.data ?: "Success")
+                Result.success(Unit)
             } else {
                 val errorMessage = response.error?.message ?: "알림 전체 읽음 처리에 실패했습니다."
                 Result.failure(Exception(errorMessage))

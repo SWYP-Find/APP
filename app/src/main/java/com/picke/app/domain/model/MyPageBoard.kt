@@ -27,7 +27,7 @@ data class MyContentActivityAuthor(
 
 data class MyContentActivityItem(
     val activityId: String,
-    val activityType: String, // "COMMENT" or "LIKE"
+    val activityType: String, // "COMMENT", "PERSPECTIVE" or "LIKE" (activity_type=COMMENT 조회 시 댓글과 관점이 함께 내려온다)
     val perspectiveId: String,
     val battleId: String,
     val battleTitle: String,

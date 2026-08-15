@@ -21,6 +21,10 @@ data class AlarmPageDto(
     val hasNext: Boolean?
 )
 
+data class AlarmUnreadDto(
+    val hasUnread: Boolean?
+)
+
 data class AlarmDetailDto(
     val notificationId: Long?,
     val perspectiveId: Long?,
@@ -57,7 +61,7 @@ fun AlarmItemDto.toDomainModel() = AlarmItemBoard(
     referenceId = this.referenceId ?: 0L,
     perspectiveId = this.perspectiveId ?: 0L,
     isRead = this.isRead ?: false,
-    createdAt = this.createdAt?.take(10) ?: ""
+    createdAt = this.createdAt ?: ""
 )
 
 fun AlarmPageDto.toDomainModel() = AlarmPageBoard(

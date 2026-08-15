@@ -1,6 +1,7 @@
 package com.picke.app.di
 
 import com.picke.app.data.repository.AlarmRepositoryImpl
+import com.picke.app.data.repository.AttendanceRepositoryImpl
 import com.picke.app.data.repository.AuthRepositoryImpl
 import com.picke.app.data.repository.DeviceRepositoryImpl
 import com.picke.app.data.repository.BattleRepositoryImpl
@@ -16,8 +17,8 @@ import com.picke.app.data.repository.ScenarioRepositoryImpl
 import com.picke.app.data.repository.ShareRepositoryImpl
 import com.picke.app.data.repository.TodayBattleRepositoryImpl
 import com.picke.app.data.repository.VoteRepositoryImpl
-import com.picke.app.data.repository.VoteStreamRepositoryImpl
 import com.picke.app.domain.repository.AlarmRepository
+import com.picke.app.domain.repository.AttendanceRepository
 import com.picke.app.domain.repository.AuthRepository
 import com.picke.app.domain.repository.DeviceRepository
 import com.picke.app.domain.repository.BattleRepository
@@ -33,7 +34,6 @@ import com.picke.app.domain.repository.ScenarioRepository
 import com.picke.app.domain.repository.ShareRepository
 import com.picke.app.domain.repository.TodayBattleRepository
 import com.picke.app.domain.repository.VoteRepository
-import com.picke.app.domain.repository.VoteStreamRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -129,12 +129,6 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindVoteStreamRepository(
-        voteStreamRepositoryImpl: VoteStreamRepositoryImpl
-    ): VoteStreamRepository
-
-    @Binds
-    @Singleton
     abstract fun bindProposalRepository(
         proposalRepositoryImpl: ProposalRepositoryImpl
     ): ProposalRepository
@@ -144,4 +138,10 @@ abstract class RepositoryModule {
     abstract fun bindDeviceRepository(
         deviceRepositoryImpl: DeviceRepositoryImpl
     ): DeviceRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAttendanceRepository(
+        attendanceRepositoryImpl: AttendanceRepositoryImpl
+    ): AttendanceRepository
 }

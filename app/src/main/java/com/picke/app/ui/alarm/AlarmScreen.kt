@@ -20,11 +20,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +42,8 @@ import com.picke.app.domain.model.AlarmItemBoard
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.SortFilterChip
 import com.picke.app.ui.theme.SwypTheme
+import com.picke.app.util.toRelativeTimeText
+import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,7 +52,7 @@ import java.util.TimeZone
 @Composable
 fun AlarmScreen(
     onBackClick: () -> Unit,
-    onNavigateToTodayBattle: (battleId: String) -> Unit,
+    onNavigateToPreVote: (battleId: String) -> Unit,
     onNavigateToComment: (perspectiveId: String, commentId: String) -> Unit,
     onNavigateToPoint: () -> Unit,
     onNavigateToNotice: (Long) -> Unit,
@@ -58,6 +60,17 @@ fun AlarmScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collectLatest { event ->
+            when (event) {
+                is AlarmUiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     val tabs = listOf(
         "전체" to "ALL",
         "콘텐츠" to "CONTENT",
@@ -117,14 +130,11 @@ fun AlarmScreen(
 
             // 로딩중 일때
             if (uiState.isLoading) {
-                Box(
+                AlarmListSkeleton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-                }
+                        .weight(1f)
+                )
             } else {
                 if (uiState.alarmList.isEmpty()) {
                     Column(
@@ -167,7 +177,7 @@ fun AlarmScreen(
 
                                     when (item.detailCode) {
                                         "NEW_BATTLE" ->
-                                            onNavigateToTodayBattle(item.referenceId.toString())
+                                            onNavigateToPreVote(item.referenceId.toString())
                                         "COMMENT_LIKE", "NEW_COMMENT" ->
                                             if (item.perspectiveId != 0L)
                                                 onNavigateToComment(item.perspectiveId.toString(), item.referenceId.toString())
@@ -255,7 +265,7 @@ fun AlarmCard(
                     modifier = Modifier.alignByBaseline()
                 ) {
                     Text(
-                        text = item.createdAt,
+                        text = item.createdAt.toRelativeTimeText(),
                         style = SwypTheme.typography.caption2Medium,
                         color = SwypTheme.colors.neutral200
                     )

@@ -213,6 +213,7 @@ fun CustomSingleActionDialog(
     message: String,
     buttonText: String,
     imageResId: Int? = null,
+    subMessage: String? = null,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -232,11 +233,11 @@ fun CustomSingleActionDialog(
             ) {
                 Column {
                     // 텍스트 영역
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp, vertical = 32.dp),
-                        contentAlignment = Alignment.Center
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = message,
@@ -245,6 +246,16 @@ fun CustomSingleActionDialog(
                             textAlign = TextAlign.Center,
                             lineHeight = 24.sp
                         )
+
+                        if (subMessage != null) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = subMessage,
+                                style = SwypTheme.typography.b4Regular,
+                                color = SwypTheme.colors.primary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
 
                     // 가로 구분선

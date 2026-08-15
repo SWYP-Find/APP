@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.data.local.TokenManager
-import com.picke.app.domain.repository.DeviceRepository
-import com.picke.app.domain.usecase.LoginUseCase
+import com.picke.app.domain.usecase.auth.LoginUseCase
+import com.picke.app.domain.usecase.device.RegisterDeviceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +26,8 @@ sealed class LoginUiState {
 class LoginViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
     private val tokenManager: TokenManager,
-    private val deviceRepository: DeviceRepository,
-    private val mixpanel: MixpanelAPI
+    private val registerDeviceUseCase: RegisterDeviceUseCase,
+    private val analyticsTracker: AnalyticsTracker
 ) : ViewModel() {
     companion object {
         private const val TAG = "LoginViewModel_Picke"
@@ -66,14 +66,15 @@ class LoginViewModel @Inject constructor(
 
                 val userTag = authToken.userTag ?: "unknown_user"
                 tokenManager.saveUserTag(userTag)
-                mixpanel.identify(userTag)
+                tokenManager.saveLoginProvider(provider)
+                analyticsTracker.onLogin(userTag, provider, authToken.isNewUser)
 
                 FirebaseMessaging.getInstance().token
                     .addOnSuccessListener { fcmToken ->
                         Log.d(TAG, "[FCM] 토큰 발급 완료: ${fcmToken.take(20)}...")
                         tokenManager.saveFcmToken(fcmToken)
                         viewModelScope.launch {
-                            deviceRepository.registerDevice(fcmToken)
+                            registerDeviceUseCase(fcmToken)
                                 .onSuccess { Log.d(TAG, "[FCM] 서버 등록 완료") }
                                 .onFailure { Log.w(TAG, "[FCM] 서버 등록 실패", it) }
                         }

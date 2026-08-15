@@ -63,6 +63,7 @@ import coil.request.ImageRequest
 import com.picke.app.R
 import com.picke.app.ui.component.CustomButton
 import com.picke.app.ui.component.ShareDialog
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.todaybattle.model.TodayBattleUiModel
 import com.picke.app.util.shareBattleToInstagramStoryDarkMode
@@ -74,14 +75,15 @@ fun TodayBattleScreen(
     viewModel: TodayBattleViewModel = hiltViewModel(),
     initialBattleId: String? = null,
     onBackClick: () -> Unit,
-    onEnterBattle: (String) -> Unit
+    onNavigateToScenario: (String) -> Unit,
+    onNavigateToPerspective: (String) -> Unit
 ){
     val uiState by viewModel.uiState.collectAsState()
     val battleList = uiState.battleList
 
     val pagerState = rememberPagerState(pageCount = { battleList.size })
     var selectedOptionId by remember(pagerState.currentPage) { mutableStateOf<String?>(null) }
-    val isButtonEnabled = selectedOptionId != null
+    val isButtonEnabled = selectedOptionId != null && !uiState.isEntering
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(battleList, initialBattleId) {
@@ -93,6 +95,12 @@ fun TodayBattleScreen(
     val graphicsLayer = rememberGraphicsLayer()
 
     val context = LocalContext.current
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+    val analyticsTracker = com.picke.app.analytics.rememberAnalyticsTracker()
     var showShareDialog by remember { mutableStateOf(false) }
     val currentBattle = if (battleList.isNotEmpty()) battleList[pagerState.currentPage] else null
     val clipboardManager = LocalClipboardManager.current
@@ -156,26 +164,24 @@ fun TodayBattleScreen(
         Box(
             modifier = Modifier.fillMaxSize().background(Color.Black)
         ) {
-            // 상단 뒤로가기 버튼
+            TodayBattleSkeleton(modifier = Modifier.fillMaxSize())
+
+            // 상단 뒤로가기 버튼 (실제 로드된 화면과 동일하게 40dp 터치영역 + 20dp 아이콘으로 맞춘다)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
-                IconButton(onClick = onBackClick, modifier = Modifier.size(20.dp)) {
+                IconButton(onClick = onBackClick, modifier = Modifier.size(40.dp)) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_left),
                         contentDescription = "뒤로가기",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
-            // 정중앙 스피너
-            CircularProgressIndicator(
-                color = SwypTheme.colors.backgroundBrand,
-                modifier = Modifier.align(Alignment.Center)
-            )
         }
         return
     }
@@ -233,12 +239,11 @@ fun TodayBattleScreen(
                     onClick = {
                         if (isButtonEnabled) {
                             val currentBattleId = battleList[pagerState.currentPage].battleId
-                            viewModel.submitPreVote(
+                            viewModel.enterBattle(
                                 battleId = currentBattleId.toLong(),
                                 optionId = selectedOptionId!!.toLong(),
-                                onSuccess = {
-                                    onEnterBattle(currentBattleId)
-                                }
+                                onNavigateToScenario = onNavigateToScenario,
+                                onNavigateToPerspective = onNavigateToPerspective
                             )
                         }
                     },
@@ -281,12 +286,16 @@ fun TodayBattleScreen(
                         .statusBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    TopIndicatorBar(
-                        currentPage = pagerState.currentPage,
-                        totalPages = battleList.size
-                    )
+                    // 빠른 배틀이 여러 개일 때만 상단 인디케이터(1/1 등)를 노출한다.
+                    // 현재는 하루 1개만 노출하므로 사실상 숨겨진다.
+                    if (battleList.size > 1) {
+                        TopIndicatorBar(
+                            currentPage = pagerState.currentPage,
+                            totalPages = battleList.size
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -325,10 +334,18 @@ fun TodayBattleScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
+                    analyticsTracker.trackShareAction(
+                        com.picke.app.analytics.ShareTarget.BATTLE,
+                        com.picke.app.analytics.ShareChannel.KAKAO
+                    )
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
+                    analyticsTracker.trackShareAction(
+                        com.picke.app.analytics.ShareTarget.BATTLE,
+                        com.picke.app.analytics.ShareChannel.INSTAGRAM
+                    )
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -336,6 +353,10 @@ fun TodayBattleScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
+                    analyticsTracker.trackShareAction(
+                        com.picke.app.analytics.ShareTarget.BATTLE,
+                        com.picke.app.analytics.ShareChannel.LINK
+                    )
 
                     val currentBattleId = battleList[pagerState.currentPage].battleId.toInt()
 
@@ -403,14 +424,10 @@ fun BattleContent(
                 contentScale = ContentScale.Crop,
                 loading = {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = SwypTheme.colors.primary, // 테마 색상에 맞게 조절 가능
-                            modifier = Modifier.size(44.dp)
-                        )
-                    }
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shimmer(SwypTheme.colors.neutral600, SwypTheme.colors.neutral400)
+                    )
                 }
             )
 

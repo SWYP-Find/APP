@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.picke.app.domain.model.RecommendBoard
-import com.picke.app.domain.repository.RecommendRepository
+import com.picke.app.domain.usecase.recommend.GetInterestingRecommendationsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +39,7 @@ data class RecommendUiState(
 @HiltViewModel
 class RecommendViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val recommendRepository: RecommendRepository
+    private val getInterestingRecommendationsUseCase: GetInterestingRecommendationsUseCase
 ) : ViewModel() {
 
     private val receivedBattleId: String = checkNotNull(savedStateHandle["battleId"])
@@ -56,7 +56,7 @@ class RecommendViewModel @Inject constructor(
 
         viewModelScope.launch {
             val battleIdLong = receivedBattleId.toLongOrNull() ?: 0L
-            recommendRepository.getInterestingRecommendations(battleIdLong)
+            getInterestingRecommendationsUseCase(battleIdLong)
                 .onSuccess { page ->
                     Log.d("RecommendFlow", "🟢 추천 배틀 목록 조회 성공: ${page.items.size}개")
 

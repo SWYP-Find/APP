@@ -10,7 +10,6 @@ enum class ContentUiType {
 }
 
 data class HomeBoardUiModel(
-    val hasNewNotice: Boolean,
     val editorPicks: List<HomeContentUiModel>,
     val trendingBattles: List<HomeContentUiModel>,
     val bestBattles: List<HomeContentUiModel>,
@@ -81,7 +80,6 @@ sealed class TodayPickUiModel {
 // Mappers
 fun HomeBoard.toUiModel(): HomeBoardUiModel {
     return HomeBoardUiModel(
-        hasNewNotice = this.hasNewNotice,
         editorPicks = this.editorPicks.map { it.toUiModel() },
         trendingBattles = this.trendingBattles.map { it.toUiModel() },
         bestBattles = this.bestBattles.map { it.toUiModel() },

@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -25,6 +24,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.picke.app.BuildConfig
+import com.picke.app.ui.component.AdFitBannerAd
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.ui.home.BattleOpinionBox
@@ -63,9 +64,11 @@ fun RecommendScreen(
         }
     ) { innerPadding ->
         if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-            }
+            RecommendListSkeleton(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = innerPadding.calculateTopPadding())
+            )
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -74,6 +77,13 @@ fun RecommendScreen(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 80.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                // 카카오 애드핏 배너 광고 (리스트 맨 위)
+                item {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
+                    }
+                }
+
                 items(recommendList) { item ->
                     RecommendItemCard(
                         item = item,

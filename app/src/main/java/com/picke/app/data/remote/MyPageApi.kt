@@ -28,7 +28,7 @@ interface MyPageApi {
     suspend fun getMyContentActivities(
         @Query("offset") offset: Int? = null,
         @Query("size") size: Int = 10,
-        @Query("activity_type") activityType: String? = null // "COMMENT" or "LIKE"
+        @Query("activity_type") activityType: String? = null // "COMMENT", "LIKE" or "PERSPECTIVE"
     ): BaseResponse<MyContentActivityPageDto>
 
     // 3. 마이페이지 메인 조회

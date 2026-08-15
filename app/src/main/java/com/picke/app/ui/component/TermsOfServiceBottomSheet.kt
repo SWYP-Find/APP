@@ -48,8 +48,8 @@ import com.picke.app.ui.theme.White
 import com.picke.app.ui.theme.tokens.BrandColorTokens.neutral50
 import com.picke.app.ui.theme.tokens.BrandColorTokens.primary600
 
-private const val URL_SERVICE_TERMS = "https://www.notion.so/3566effee51c8184bdc2e8595bfead27"
-private const val URL_PRIVACY_POLICY = "https://www.notion.so/3566effee51c81898de5f91d52ab7391"
+private const val URL_SERVICE_TERMS = "https://picke.store/terms"
+private const val URL_PRIVACY_POLICY = "https://picke.store/privacy-policy"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

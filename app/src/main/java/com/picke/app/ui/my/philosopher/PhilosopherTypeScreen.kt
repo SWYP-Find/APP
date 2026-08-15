@@ -24,7 +24,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -184,14 +183,11 @@ fun PhilosopherTypeScreen(
         }
     ) { innerPadding ->
         if (uiState.isLoading) {
-            Box(
+            PhilosopherTypeSkeleton(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-            }
+                    .padding(top = innerPadding.calculateTopPadding())
+            )
         }
         else {
             Column(
@@ -218,28 +214,32 @@ fun PhilosopherTypeScreen(
 
                     TraitAnalysisSection(recapBoard.scores)
                     TasteReportSection(recapBoard.preferenceReport)
-                    ChemistrySection(best = recapBoard.bestMatchCard, worst = recapBoard.worstMatchCard)
+                    // 궁합 카드와 하단 버튼을 한 그룹으로 묶어 그 사이 간격을 24dp로 고정한다.
+                    // (바깥 Column은 spacedBy(32)라 카드-버튼 간격이 과하게 벌어져 있었음)
+                    Column {
+                        ChemistrySection(best = recapBoard.bestMatchCard, worst = recapBoard.worstMatchCard)
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    // 하단: 공유하기 버튼
-                    if (isMyReport) {
-                        CustomButton(
-                            text = stringResource(R.string.my_share),
-                            onClick = { showShareDialog = true },
-                            modifier = Modifier.padding(bottom = 24.dp),
-                            backgroundColor = SwypTheme.colors.primary,
-                            textColor = Color.White,
-                        )
-                    } else {
-                        CustomButton(
-                            text = "나의 철학자 유형 알아보기",
-                            onClick = { onGoToSplashClick() },
-                            modifier = Modifier.padding(bottom = 24.dp),
-                            backgroundColor = SwypTheme.colors.primary,
-                            textColor = Color.White
-                        )
-                        Spacer(modifier = Modifier.height(20.dp))
+                        // 하단: 공유하기 버튼
+                        if (isMyReport) {
+                            CustomButton(
+                                text = stringResource(R.string.my_share),
+                                onClick = { showShareDialog = true },
+                                modifier = Modifier.padding(bottom = 24.dp),
+                                backgroundColor = SwypTheme.colors.primary,
+                                textColor = Color.White,
+                            )
+                        } else {
+                            CustomButton(
+                                text = "나의 철학자 유형 알아보기",
+                                onClick = { onGoToSplashClick() },
+                                modifier = Modifier.padding(bottom = 24.dp),
+                                backgroundColor = SwypTheme.colors.primary,
+                                textColor = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
                     }
                 }
             }
@@ -250,10 +250,12 @@ fun PhilosopherTypeScreen(
                 onDismiss = { showShareDialog = false },
                 onKakaoClick = {
                     showShareDialog = false
+                    viewModel.trackRecapShare(com.picke.app.analytics.ShareChannel.KAKAO)
                     onKakaoShareClick()
                 },
                 onInstaClick = {
                     showShareDialog = false
+                    viewModel.trackRecapShare(com.picke.app.analytics.ShareChannel.INSTAGRAM)
                     onInstaShareClick()
                 },
                 onFacebookClick = {
@@ -261,6 +263,7 @@ fun PhilosopherTypeScreen(
                 },
                 onCopyLinkClick = {
                     showShareDialog = false
+                    viewModel.trackRecapShare(com.picke.app.analytics.ShareChannel.LINK)
 
                     viewModel.getRecapShareKey(
                         onSuccess = { shareKey ->
@@ -309,7 +312,7 @@ fun LockedPhilosopherHeaderSection() {
             Box(
                 modifier = Modifier
                     .size(80.dp)
-                    .background(Color(0xFFEBEBEB), CircleShape),
+                    .background(SwypTheme.colors.backgroundTertiary, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -479,7 +482,7 @@ fun TraitAnalysisSection(analysis: RecapScores) {
                         analysis.inner / 100f,
                         analysis.ideal / 100f
                     ),
-                    labels = listOf("원칙", "이성", "개인", "변화", "내면", "직관")
+                    labels = listOf("원칙", "이성", "개인", "변화", "내면", "이상")
                 )
             }
 

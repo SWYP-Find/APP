@@ -48,6 +48,8 @@ import com.picke.app.ui.component.TermsOfServiceBottomSheet
 import com.picke.app.ui.theme.SwypTheme
 import com.kakao.sdk.auth.AuthCodeClient
 import com.picke.app.BuildConfig
+import com.picke.app.analytics.OnboardingStep
+import com.picke.app.analytics.rememberAnalyticsTracker
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.graphics.fromColorLong
 import com.kakao.sdk.auth.model.Prompt
@@ -61,8 +63,13 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
+    val analyticsTracker = rememberAnalyticsTracker()
     var showTermsSheet by rememberSaveable { mutableStateOf(false) }
     var pendingIsNewUser by rememberSaveable { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        analyticsTracker.trackOnboardingStep(OnboardingStep.LOGIN_SHOWN)
+    }
 
     // 뒤로가기 -> 앱 종료
     BackHandler {
@@ -101,6 +108,7 @@ fun LoginScreen(
                     Log.i(TAG, "[NAV] 로그인 성공 -> 약관 동의 필요, 바텀시트 표시 (신규 유저: ${state.isNewUser})")
                     pendingIsNewUser = state.isNewUser
                     showTermsSheet = true
+                    analyticsTracker.trackOnboardingStep(OnboardingStep.TERMS_SHOWN)
                 } else {
                     Log.i(TAG, "[NAV] 로그인 성공 -> 메인으로 이동 (신규 유저: ${state.isNewUser})")
                     onNavigateToMain(state.isNewUser)
@@ -119,6 +127,7 @@ fun LoginScreen(
         TermsOfServiceBottomSheet(
             onConfirm = {
                 viewModel.markTermsAgreed()
+                analyticsTracker.trackOnboardingStep(OnboardingStep.TERMS_AGREED)
                 showTermsSheet = false
                 Log.i(TAG, "[NAV] 약관 동의 완료 -> 메인으로 이동 (신규 유저: $pendingIsNewUser)")
                 onNavigateToMain(pendingIsNewUser)
@@ -129,6 +138,7 @@ fun LoginScreen(
     LoginScreenContent(
         isLoading = uiState is LoginUiState.Loading,
         onKakaoClick = {
+            analyticsTracker.trackOnboardingStep(OnboardingStep.KAKAO_START, method = "kakao")
             loginWithKakaoForAuthCode(context, viewModel) { token ->
                 if (BuildConfig.DEBUG) Log.d(TAG, "[FLOW] 카카오 인가 코드 획득 완료 -> ViewModel 전달")
                 viewModel.handleSocialLoginSuccess("kakao", token)

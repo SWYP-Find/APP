@@ -50,6 +50,7 @@ import com.picke.app.ui.theme.SwypTheme
 fun MakeBattleScreen(
     modifier: Modifier = Modifier,
     onBackClick : ()->Unit,
+    onNavigateToExplore: () -> Unit,
     viewModel: MakeBattleViewModel = hiltViewModel()
 ) {
     val categories = listOf("철학", "문학", "예술", "과학", "사회", "역사")
@@ -57,7 +58,6 @@ fun MakeBattleScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    val activity = context as? android.app.Activity
     var topic by remember { mutableStateOf("") }
     var stanceA by remember { mutableStateOf("") }
     var stanceB by remember { mutableStateOf("") }
@@ -214,28 +214,12 @@ fun MakeBattleScreen(
         if (showPointDialog) {
             CustomSingleActionDialog(
                 message = "배틀 주제를 제안하기 위한\n포인트가 부족해요!",
-                buttonText = "무료충전 하러 가기",
+                subMessage = "매일 출석체크만 해도 5P를 받을 수 있어요!",
+                buttonText = "배틀 주제 구경하러 가기",
                 onDismiss = { showPointDialog = false },
                 onConfirm = {
                     showPointDialog = false
-
-                    activity?.let { act ->
-                        val isAdReady = viewModel.adMobManager.showAd(
-                            activity = act,
-                            onRewardEarned = {
-                                // 1. 보상 획득 시 토스트 표시
-                                Toast.makeText(context, "20포인트가 충전되었습니다", Toast.LENGTH_SHORT).show()
-
-                                // 2. 다음 광고를 위해 미리 로드
-                                viewModel.reloadAd()
-                            }
-                        )
-
-                        if (!isAdReady) {
-                            Toast.makeText(context, "광고가 아직 준비되지 않았습니다.\n잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-                            viewModel.reloadAd()
-                        }
-                    }
+                    onNavigateToExplore()
                 }
             )
         }

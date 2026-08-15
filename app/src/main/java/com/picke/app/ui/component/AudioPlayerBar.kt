@@ -35,35 +35,55 @@ fun AudioPlayerBar(
             .navigationBarsPadding()
             .padding(horizontal = 24.dp, vertical = 20.dp)
     ) {
-        // 1. 슬라이더 (트랙을 얇게, Thumb 패딩 제거)
+        // 1. 슬라이더
+        // Material3의 SliderDefaults.Track은 내부 디자인 토큰 때문에 height 모디파이어를
+        // 줘도 실제로는 그보다 두껍게 그려져서, 트랙을 직접 두 개의 얇은 막대(Box)로 그린다.
+        // thumb/track 모두 슬라이더와 동일한 높이(20dp) 박스로 감싸 중앙 정렬해서
+        // 두 요소의 중심이 항상 일치하도록 맞춘다.
+        val sliderHeight = 20.dp
+        val trackHeight = 2.dp
         Slider(
             value = if (totalDurationMs > 0) currentPositionMs.toFloat() / totalDurationMs else 0f,
             onValueChange = onSeek,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(20.dp),
-            colors = SliderDefaults.colors(
-                thumbColor = SwypTheme.colors.primary,
-                activeTrackColor = SwypTheme.colors.primary,
-                inactiveTrackColor = SwypTheme.colors.textMuted
-            ),
+                .height(sliderHeight),
             thumb = {
                 Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(color = SwypTheme.colors.primary, shape = CircleShape)
-                )
+                    modifier = Modifier.height(sliderHeight),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(12.dp)
+                            .background(color = SwypTheme.colors.primary, shape = CircleShape)
+                    )
+                }
             },
             track = { sliderState ->
-                SliderDefaults.Track(
-                    sliderState = sliderState,
-                    colors = SliderDefaults.colors(
-                        activeTrackColor = SwypTheme.colors.primary,
-                        inactiveTrackColor = Color(0xFFE0E0E0)
-                    ),
-                    modifier = Modifier.height(2.dp),
-                    drawStopIndicator = {}
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(sliderHeight),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    // 비활성 트랙 (전체 길이)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(trackHeight)
+                            .clip(RoundedCornerShape(50))
+                            .background(Color(0xFFE0E0E0))
+                    )
+                    // 활성 트랙 (재생된 만큼)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = sliderState.value.coerceIn(0f, 1f))
+                            .height(trackHeight)
+                            .clip(RoundedCornerShape(50))
+                            .background(SwypTheme.colors.primary)
+                    )
+                }
             }
         )
 

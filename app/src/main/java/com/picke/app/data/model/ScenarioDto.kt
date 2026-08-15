@@ -8,7 +8,6 @@ import com.picke.app.domain.model.ScenarioScript
 import com.picke.app.domain.model.SpeakerType
 
 data class ScenarioPhilosopherDto(
-    val label: String?,
     val name: String?,
     val stance: String?,
     val quote: String?,
@@ -54,7 +53,6 @@ fun ScenarioResponseDto.toDomainModel(): ScenarioBoard {
         title = title ?: "",
         philosophers = philosophers?.map { dto ->
             ScenarioPhilosopher(
-                label = dto.label ?: "",
                 name = dto.name ?: "",
                 stance = dto.stance ?: "",
                 quote = dto.quote ?: "",

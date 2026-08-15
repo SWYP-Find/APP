@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,10 +43,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.picke.app.BuildConfig
 import com.picke.app.R
 import com.picke.app.domain.model.MyPhilosopher
+import com.picke.app.ui.component.AdFitBannerAd
 import com.picke.app.ui.component.CustomTopAppBar
 import com.picke.app.ui.component.ProfileImage
+import com.picke.app.ui.component.shimmer
 import com.picke.app.ui.theme.SwypTheme
 import com.picke.app.di.AdMobManager
 
@@ -68,6 +73,7 @@ fun MyScreen(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.fetchMyInfo()
+                viewModel.fetchUnreadAlarmStatus()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -84,53 +90,66 @@ fun MyScreen(
                 backgroundColor = SwypTheme.colors.backgroundBrand,
                 centerTitle = false,
                 actions = {
-                    /*IconButton(
-                        onClick = {
-                            onNavigateToAlarm()
-                            viewModel.readNotice()
-                        }
-                    ) {
-                        Box {
-                            Icon(
-                                painterResource(R.drawable.ic_alarm),
-                                contentDescription = stringResource(R.string.alarm),
-                                tint = SwypTheme.colors.textPrimary
-                            )
-
-                            if (uiState.hasNewNotice) {
-                                Box(
+                    // 벨 배지(미읽음 여부)는 API 응답 후에야 확정되므로,
+                    // 그 전까지는 아이콘 자리도 스켈레톤과 동일하게 shimmer로 보여준다.
+                    if (uiState.isLoading || uiState.isAlarmStatusLoading) {
+                        repeat(2) {
+                            Box(
+                                modifier = Modifier.size(36.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Spacer(
                                     modifier = Modifier
-                                        .size(5.dp)
-                                        .align(Alignment.TopEnd)
-                                        .offset(x = 2.dp, y = (-2).dp)
-                                        .background(Color(0xFFFF5454), CircleShape)
+                                        .size(24.dp)
+                                        .clip(CircleShape)
+                                        .shimmer()
                                 )
                             }
                         }
-                    }*/
-                    IconButton(
-                        onClick = {
-                            onNavigateToSetting()
-                        }) {
-                        Icon(
-                            painterResource(R.drawable.ic_setting),
-                            contentDescription =  stringResource(R.string.setting),
-                            tint = SwypTheme.colors.textPrimary
-                        )
+                    } else {
+                        // 배지는 서버의 미읽음 여부 응답으로만 갱신한다.
+                        // (여기서 임의로 숨기면 알림함에서 돌아올 때 배지가 다시 나타나는 깜빡임이 생긴다)
+                        IconButton(onClick = onNavigateToAlarm, modifier = Modifier.size(36.dp)) {
+                            BadgedBox(
+                                badge = {
+                                    if (uiState.hasNewNotice) {
+                                        Badge(
+                                            containerColor = SwypTheme.colors.primary,
+                                            modifier = Modifier.offset(x = 4.dp, y = (-4).dp)
+                                        )
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    painterResource(R.drawable.ic_alarm),
+                                    contentDescription = stringResource(R.string.alarm),
+                                    tint = SwypTheme.colors.textPrimary
+                                )
+                            }
+                        }
+                        IconButton(
+                            onClick = {
+                                onNavigateToSetting()
+                            },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_setting),
+                                contentDescription =  stringResource(R.string.setting),
+                                tint = SwypTheme.colors.textPrimary
+                            )
+                        }
                     }
                 }
             )
         },
     ) { innerPadding ->
         if (uiState.isLoading) {
-            Box(
+            MySkeleton(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-            }
+                    .padding(top = innerPadding.calculateTopPadding())
+            )
         }
         else {
             Column(
@@ -155,26 +174,28 @@ fun MyScreen(
                         onNavigateToPoint()
                     },
                     onChargeClick = {
-                        activity?.let {
-                        val isAdReady = viewModel.adMobManager.showAd(
-                            activity = it,
-                            onRewardEarned = {
-                                viewModel.refreshPointsAfterAd()
-                                uiState.profile?.userTag?.let { tag -> viewModel.adMobManager.loadAd(userId = tag) }
-                                Toast.makeText(context, "20포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-
-                        if (!isAdReady) {
-                            Toast.makeText(
-                                context,
-                                "아직 광고가 준비되지 않았습니다.\n잠시 후 다시 시도해주세요.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } ?: run {
-                        Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
-                    }
+                        // AdMob 광고 로직 비활성화 (추후 재사용 예정)
+                        // activity?.let {
+                        // val isAdReady = viewModel.adMobManager.showAd(
+                        //     activity = it,
+                        //     placement = "mypage_charge",
+                        //     onRewardEarned = {
+                        //         viewModel.refreshPointsAfterAd()
+                        //         uiState.profile?.userTag?.let { tag -> viewModel.adMobManager.loadAd(userId = tag) }
+                        //         Toast.makeText(context, "20포인트가 지급되었습니다.", Toast.LENGTH_SHORT).show()
+                        //     }
+                        // )
+                        //
+                        // if (!isAdReady) {
+                        //     Toast.makeText(
+                        //         context,
+                        //         "아직 광고가 준비되지 않았습니다.\n잠시 후 다시 시도해주세요.",
+                        //         Toast.LENGTH_SHORT
+                        //     ).show()
+                        // }
+                        // } ?: run {
+                        //     Toast.makeText(context, "광고를 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                        // }
                     }
                 )
 
@@ -199,6 +220,15 @@ fun MyScreen(
                     title = stringResource(R.string.my_menu_notice),
                     onClick = { onNavigateToNotice() }
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 카카오 애드핏 배너 광고 (마이 탭 최하단)
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
@@ -238,7 +268,6 @@ fun PhilosopherTypeCard(
     val isLocked = philosopher == null || philosopher.philosopherType == "UNKNOWN"
     val displayImage = if (isLocked) R.drawable.img_lock else philosopher?.imageUrl
     val displayName = if (isLocked) "??형" else philosopher?.philosopherLabel ?: ""
-    val displayDesc = if (isLocked) "나만의 철학자를 찾아보세요" else philosopher?.description ?: ""
 
     Row(
         modifier = Modifier
@@ -270,12 +299,6 @@ fun PhilosopherTypeCard(
                 text = if (isLocked) displayName else "$displayName ",
                 style = SwypTheme.typography.b3SemiBold,
                 color = SwypTheme.colors.textSecondary
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = if (isLocked) displayName else "$displayDesc",
-                style = SwypTheme.typography.labelXSmall,
-                color = SwypTheme.colors.textMuted
             )
         }
 
@@ -339,21 +362,21 @@ fun CreditCard(
             }
         }
 
-        // [오른쪽] 무료 충전 버튼
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(SwypTheme.colors.secondary300)
-                .clickable { onChargeClick() }
-                .padding(horizontal = 6.dp, vertical = 4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(R.string.my_charge_free),
-                style = SwypTheme.typography.label,
-                color = SwypTheme.colors.textPrimary
-            )
-        }
+        // [오른쪽] 무료 충전 버튼 (UI 비활성화)
+        // Box(
+        //     modifier = Modifier
+        //         .clip(RoundedCornerShape(4.dp))
+        //         .background(SwypTheme.colors.secondary300)
+        //         .clickable { onChargeClick() }
+        //         .padding(horizontal = 6.dp, vertical = 4.dp),
+        //     contentAlignment = Alignment.Center
+        // ) {
+        //     Text(
+        //         text = stringResource(R.string.my_charge_free),
+        //         style = SwypTheme.typography.label,
+        //         color = SwypTheme.colors.textPrimary
+        //     )
+        // }
     }
 }
 

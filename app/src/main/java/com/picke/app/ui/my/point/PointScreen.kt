@@ -120,12 +120,7 @@ fun PointScreen(
         ) {
             // 1. 초기 로딩 상태 처리 (새로고침 중에는 표시 안 함)
             if (uiState.isLoading && uiState.pointList.isEmpty() && !uiState.isRefreshing) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = SwypTheme.colors.primaryDarkest)
-                }
+                PointHistorySkeleton(modifier = Modifier.fillMaxSize())
             }
             // 2. 빈 내역
             else if (uiState.pointList.isEmpty()) {
