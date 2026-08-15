@@ -4,10 +4,12 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 // AdMob 미사용으로 SDK import 비활성화 (추후 재사용 예정)
 // import com.google.android.gms.ads.MobileAds
 import com.kakao.sdk.common.KakaoSdk
+import com.picke.app.data.local.TokenManager
 import com.picke.app.di.AdMobManager
 import com.picke.app.notification.FCMService
 import com.picke.app.util.AppLifecycleObserver
@@ -23,6 +25,9 @@ class SwypApplication : Application() {
     @Inject
     lateinit var appLifecycleObserver: AppLifecycleObserver
 
+    @Inject
+    lateinit var tokenManager: TokenManager
+
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, BuildConfig.KAKAO_DEBUG_APPKEY)
@@ -30,6 +35,11 @@ class SwypApplication : Application() {
         // MobileAds.initialize(this) { adMobManager.onMobileAdsInitialized() }
         createNotificationChannel()
         ProcessLifecycleOwner.get().lifecycle.addObserver(appLifecycleObserver)
+
+        val fcmToken = tokenManager.getFcmToken()
+        if (!fcmToken.isNullOrEmpty()) {
+            Log.d("SwypApplication", "현재 FCM 토큰: $fcmToken")
+        }
     }
 
     private fun createNotificationChannel() {

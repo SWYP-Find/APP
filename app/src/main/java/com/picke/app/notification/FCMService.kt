@@ -35,7 +35,7 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        if (BuildConfig.DEBUG) Log.d(TAG, "FCM 토큰 갱신: ${token.take(10)}...")
+        Log.d(TAG, "FCM 토큰 갱신: $token")
 
         tokenManager.saveFcmToken(token)
 
