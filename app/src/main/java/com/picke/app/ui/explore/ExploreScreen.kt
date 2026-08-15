@@ -218,57 +218,41 @@ fun ExploreList(
                 modifier = Modifier.fillMaxSize(),
                 //verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                val topCount = minOf(3, pagingItems.itemCount)
+                val adCount = pagingItems.itemCount / 3
+                val totalCount = pagingItems.itemCount + adCount
 
-                // 상위 3개 배틀
-                items(count = topCount) { index ->
-                    pagingItems[index]?.let { item ->
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = SwypTheme.colors.borderDefault,
-                        )
-                        ExploreCard(
-                            item = item,
-                            onClick = { id -> onNavigateToVote(id) }
-                        )
-                        if (index == pagingItems.itemCount - 1) {
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = SwypTheme.colors.borderDefault,
-                            )
+                items(count = totalCount) { displayIndex ->
+                    val cycleIndex = displayIndex % 4
+                    val cycleNumber = displayIndex / 4
+
+                    if (cycleIndex < 3) {
+                        val battleIndex = cycleNumber * 3 + cycleIndex
+                        if (battleIndex < pagingItems.itemCount) {
+                            pagingItems[battleIndex]?.let { item ->
+                                HorizontalDivider(
+                                    thickness = 1.dp,
+                                    color = SwypTheme.colors.borderDefault,
+                                )
+                                ExploreCard(
+                                    item = item,
+                                    onClick = { id -> onNavigateToVote(id) }
+                                )
+                                if (battleIndex == pagingItems.itemCount - 1) {
+                                    HorizontalDivider(
+                                        thickness = 1.dp,
+                                        color = SwypTheme.colors.borderDefault,
+                                    )
+                                }
+                            }
                         }
-                    }
-                }
-
-                // 카카오 애드핏 배너 광고 (상위 3개 배틀 다음)
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
-                    }
-                }
-
-                // 나머지 배틀 (4번째 이후)
-                items(count = pagingItems.itemCount - topCount) { offset ->
-                    val index = topCount + offset
-                    pagingItems[index]?.let { item ->
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = SwypTheme.colors.borderDefault,
-                        )
-                        ExploreCard(
-                            item = item,
-                            onClick = { id -> onNavigateToVote(id) }
-                        )
-                        if (index == pagingItems.itemCount - 1) {
-                            HorizontalDivider(
-                                thickness = 1.dp,
-                                color = SwypTheme.colors.borderDefault,
-                            )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AdFitBannerAd(adUnitId = BuildConfig.ADFIT_BANNER_320X100)
                         }
                     }
                 }
