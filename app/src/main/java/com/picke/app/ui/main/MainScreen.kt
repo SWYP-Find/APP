@@ -60,7 +60,7 @@ fun MainScreen(
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
 
     // pendingTab 감지해서 해당 탭으로 네비게이션
-    LaunchedEffect(Unit) {
+    LaunchedEffect(DeepLinkManager.pendingTab) {
         DeepLinkManager.pendingTab?.let { tab ->
             mainNavController.navigate(tab) {
                 popUpTo(mainNavController.graph.startDestinationId) {
