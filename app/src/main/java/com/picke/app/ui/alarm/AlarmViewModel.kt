@@ -30,19 +30,6 @@ data class AlarmUiState(
     val isPagingLoading: Boolean = false
 )
 
-// [테스트용] DAILY_MESSAGE 더미 데이터
-private val DUMMY_DAILY_MESSAGE = AlarmItemBoard(
-    notificationId = 999999L,
-    perspectiveId = 0L,
-    category = "NOTICE",
-    detailCode = "DAILY_MESSAGE",
-    title = "오늘의 알림",
-    body = "[테스트] DAILY_MESSAGE 알림 - 빠른배틀 탭이 활성화되는지 확인하세요",
-    referenceId = 0L,
-    isRead = false,
-    createdAt = "2026-08-16T12:00:00"
-)
-
 sealed class AlarmUiEvent {
     data class ShowToast(val message: String) : AlarmUiEvent()
 }
@@ -100,15 +87,9 @@ class AlarmViewModel @Inject constructor(
             )
 
             result.onSuccess { data ->
-                Log.d("AlarmFlow", "✅ [호출 성공] 아이템 개수: ${data.items.size}, 다음 페이지 존재: ${data.hasNext}")
                 _uiState.update { state ->
                     state.copy(
-                        alarmList = if (isRefresh) {
-                            // [테스트] 더미 데이터 + 서버 데이터
-                            listOf(DUMMY_DAILY_MESSAGE) + data.items
-                        } else {
-                            state.alarmList + data.items
-                        },
+                        alarmList = if (isRefresh) data.items else state.alarmList + data.items,
                         page = targetPage + 1,
                         hasNext = data.hasNext,
                         isLoading = false,

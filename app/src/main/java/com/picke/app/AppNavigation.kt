@@ -149,13 +149,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 when (event) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
                     is DeepLinkEvent.GoToTodayBattle -> {
-                        if (event.battleId.isEmpty()) {
-                            // DAILY_MESSAGE: 빠른배틀 탭으로 이동
-                            DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
-                        } else {
-                            // NEW_BATTLE: 특정 배틀로 이동
-                            rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
-                        }
+                        rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
                     }
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
                     is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
@@ -295,11 +289,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         rootNavController.navigate(AppRoute.NoticeEvent.createRoute(noticeId))
                     },
                     onNavigateToTodayBattle = {
-                        android.util.Log.d("AlarmScreen", "onNavigateToTodayBattle 호출됨")
-                        DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
-                        android.util.Log.d("AlarmScreen", "pendingTab 설정: ${BottomNavItem.TodayBattle.route}")
-                        rootNavController.popBackStack()
-                        android.util.Log.d("AlarmScreen", "popBackStack 실행됨")
+                        rootNavController.navigate(AppRoute.TodayBattle.createRoute(""))
                     }
                 )
             }

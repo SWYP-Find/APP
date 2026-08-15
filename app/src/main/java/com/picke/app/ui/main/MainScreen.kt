@@ -47,33 +47,14 @@ fun MainScreen(
     val mainNavController = rememberNavController()
     val analyticsTracker = rememberAnalyticsTracker()
 
-    // 배틀 화면 등에서 "탐색 탭으로 이동" 같은 특정 탭 지정 진입이 예약되어 있으면 그 탭에서 시작하고,
-    // 소비 즉시 리셋해서 이후의 일반적인 Main 진입에는 영향을 주지 않는다.
-    val initialTabRoute = remember {
-        DeepLinkManager.pendingTab?.also { DeepLinkManager.pendingTab = null } ?: BottomNavItem.Home.route
-    }
+    // 항상 Home에서 시작, LaunchedEffect에서 pendingTab을 처리
+    val initialTabRoute = BottomNavItem.Home.route
 
     // 탭 NavHost 내부 화면들의 screen_view 자동 전송
     TrackScreenViews(mainNavController)
 
     var homeScrollTrigger by remember { mutableIntStateOf(0) }
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
-
-    // pendingTab 감지해서 해당 탭으로 네비게이션
-    LaunchedEffect(DeepLinkManager.pendingTab) {
-        DeepLinkManager.pendingTab?.let { tab ->
-            android.util.Log.d("MainScreen", "pendingTab 감지됨: $tab")
-            mainNavController.navigate(tab) {
-                popUpTo(mainNavController.graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-            android.util.Log.d("MainScreen", "탭 이동 완료: $tab")
-            DeepLinkManager.pendingTab = null
-        }
-    }
 
     Scaffold(
         containerColor = SwypTheme.colors.backgroundBrand,

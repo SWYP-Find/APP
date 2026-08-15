@@ -91,7 +91,7 @@ class MainActivity : FragmentActivity() {
                 DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToAlarm)
             }
             FCMService.TYPE_DAILY_MESSAGE -> {
-                DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
+                DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToTodayBattle(""))
             }
         }
 
