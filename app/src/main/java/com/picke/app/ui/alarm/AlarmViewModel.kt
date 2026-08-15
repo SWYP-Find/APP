@@ -22,7 +22,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class AlarmUiState(
-    val alarmList: List<AlarmItemBoard> = emptyList(),
+    val alarmList: List<AlarmItemBoard> = listOf(
+        // [테스트용] DAILY_MESSAGE 더미 데이터
+        AlarmItemBoard(
+            notificationId = 999999L,
+            perspectiveId = 0L,
+            category = "NOTICE",
+            detailCode = "DAILY_MESSAGE",
+            title = "오늘의 알림",
+            body = "[테스트] DAILY_MESSAGE 알림 - 빠른배틀 탭이 활성화되는지 확인하세요",
+            referenceId = 0L,
+            isRead = false,
+            createdAt = "2026-08-16T12:00:00"
+        )
+    ),
     val selectedCategory: String = "ALL",
     val isLoading: Boolean = false,
     val page: Int = 0,
