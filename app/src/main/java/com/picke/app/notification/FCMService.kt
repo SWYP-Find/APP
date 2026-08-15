@@ -111,5 +111,6 @@ class FCMService : FirebaseMessagingService() {
         const val TYPE_BATTLE = "BATTLE"
         const val TYPE_COMMENT = "COMMENT"
         const val TYPE_ALARM = "ALARM"
+        const val TYPE_DAILY_MESSAGE = "DAILY_MESSAGE"
     }
 }
