@@ -62,6 +62,7 @@ fun MainScreen(
     // pendingTab 감지해서 해당 탭으로 네비게이션
     LaunchedEffect(DeepLinkManager.pendingTab) {
         DeepLinkManager.pendingTab?.let { tab ->
+            android.util.Log.d("MainScreen", "pendingTab 감지됨: $tab")
             mainNavController.navigate(tab) {
                 popUpTo(mainNavController.graph.startDestinationId) {
                     saveState = true
@@ -69,6 +70,7 @@ fun MainScreen(
                 launchSingleTop = true
                 restoreState = true
             }
+            android.util.Log.d("MainScreen", "탭 이동 완료: $tab")
             DeepLinkManager.pendingTab = null
         }
     }

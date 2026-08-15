@@ -295,8 +295,11 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                         rootNavController.navigate(AppRoute.NoticeEvent.createRoute(noticeId))
                     },
                     onNavigateToTodayBattle = {
+                        android.util.Log.d("AlarmScreen", "onNavigateToTodayBattle 호출됨")
                         DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
+                        android.util.Log.d("AlarmScreen", "pendingTab 설정: ${BottomNavItem.TodayBattle.route}")
                         rootNavController.popBackStack()
+                        android.util.Log.d("AlarmScreen", "popBackStack 실행됨")
                     }
                 )
             }
