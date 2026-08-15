@@ -148,7 +148,15 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                 kotlinx.coroutines.delay(100)
                 when (event) {
                     is DeepLinkEvent.GoToBattle -> rootNavController.navigate(AppRoute.BattleRouting.createRoute(event.battleId))
-                    is DeepLinkEvent.GoToTodayBattle -> rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
+                    is DeepLinkEvent.GoToTodayBattle -> {
+                        if (event.battleId.isEmpty()) {
+                            // DAILY_MESSAGE: 빠른배틀 탭으로 이동
+                            DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
+                        } else {
+                            // NEW_BATTLE: 특정 배틀로 이동
+                            rootNavController.navigate(AppRoute.TodayBattle.createRoute(event.battleId))
+                        }
+                    }
                     is DeepLinkEvent.GoToReport -> rootNavController.navigate(AppRoute.OtherPhilosopher.createRoute(event.reportId))
                     is DeepLinkEvent.GoToAlarm -> rootNavController.navigate(AppRoute.Alarm.route)
                     is DeepLinkEvent.GoToPerspective -> {
@@ -288,7 +296,7 @@ fun AppNavigation(splashViewModel: SplashViewModel) {
                     },
                     onNavigateToTodayBattle = {
                         DeepLinkManager.pendingTab = BottomNavItem.TodayBattle.route
-                        rootNavController.navigate(AppRoute.Main.route) { popUpTo(0) }
+                        rootNavController.popBackStack()
                     }
                 )
             }

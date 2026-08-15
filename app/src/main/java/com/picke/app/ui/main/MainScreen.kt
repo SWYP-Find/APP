@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +58,20 @@ fun MainScreen(
 
     var homeScrollTrigger by remember { mutableIntStateOf(0) }
     var exploreScrollTrigger by remember { mutableIntStateOf(0) }
+
+    // pendingTab 감지해서 해당 탭으로 네비게이션
+    LaunchedEffect(Unit) {
+        DeepLinkManager.pendingTab?.let { tab ->
+            mainNavController.navigate(tab) {
+                popUpTo(mainNavController.graph.startDestinationId) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+            DeepLinkManager.pendingTab = null
+        }
+    }
 
     Scaffold(
         containerColor = SwypTheme.colors.backgroundBrand,
