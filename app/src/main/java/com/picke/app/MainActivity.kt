@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import com.picke.app.BuildConfig
 import com.picke.app.data.local.TokenManager
 import com.picke.app.notification.FCMService
+import com.picke.app.ui.main.BottomNavItem
 import com.picke.app.ui.splash.SplashUiState
 import com.picke.app.ui.splash.SplashViewModel
 import com.picke.app.ui.theme.SwypAppTheme
@@ -46,7 +47,7 @@ class MainActivity : FragmentActivity() {
             splashViewModel.uiState.value is SplashUiState.Loading
         }
 
-        if (BuildConfig.DEBUG) Log.d(TAG, "저장된 FCM 토큰: ${tokenManager.getFcmToken()}")
+        if (BuildConfig.DEBUG) Log.d(TokenManager.TAG, "[LOCAL] 저장된 FCM 토큰: ${tokenManager.getFcmToken()}")
 
         handleFcmIntent(intent)
         handleDeepLink(intent)
@@ -88,6 +89,9 @@ class MainActivity : FragmentActivity() {
             }
             FCMService.TYPE_ALARM -> {
                 DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToAlarm)
+            }
+            FCMService.TYPE_DAILY_MESSAGE -> {
+                DeepLinkManager.deepLinkEvent.tryEmit(DeepLinkEvent.GoToTodayBattle(""))
             }
         }
 

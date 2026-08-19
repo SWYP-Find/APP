@@ -236,7 +236,7 @@ private fun fetchFcmToken() {
             if (BuildConfig.DEBUG) Log.d("FCM", "토큰 발급 완료: ${token.take(10)}...")
             // TODO: 서버 FCM 토큰 등록 API 연동
         } else {
-            Log.w("FCM", "토큰 발급 실패", task.exception)
+            if (BuildConfig.DEBUG) Log.w("FCM", "토큰 발급 실패", task.exception)
         }
     }
 }

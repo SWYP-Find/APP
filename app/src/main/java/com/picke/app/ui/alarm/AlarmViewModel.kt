@@ -87,7 +87,6 @@ class AlarmViewModel @Inject constructor(
             )
 
             result.onSuccess { data ->
-                Log.d("AlarmFlow", "✅ [호출 성공] 아이템 개수: ${data.items.size}, 다음 페이지 존재: ${data.hasNext}")
                 _uiState.update { state ->
                     state.copy(
                         alarmList = if (isRefresh) data.items else state.alarmList + data.items,

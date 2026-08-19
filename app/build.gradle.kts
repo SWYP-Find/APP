@@ -49,9 +49,9 @@ android {
     defaultConfig {
         applicationId = "com.picke.app"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 22
-        versionName = "1.1.7"
+        targetSdk = 36
+        versionCode = 31
+        versionName = "1.1.9"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // [4. 코드 및 매니페스트로 값 전달]

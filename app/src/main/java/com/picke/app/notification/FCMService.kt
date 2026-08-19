@@ -3,6 +3,7 @@ package com.picke.app.notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.picke.app.BuildConfig
@@ -42,14 +43,14 @@ class FCMService : FirebaseMessagingService() {
         if (tokenManager.getAccessToken() != null) {
             serviceScope.launch {
                 deviceRepository.registerDevice(token)
-                    .onFailure { Log.e(TAG, "FCM 토큰 서버 등록 실패", it) }
+                    .onFailure { if (BuildConfig.DEBUG) Log.e(TAG, "FCM 토큰 서버 등록 실패", it) }
             }
         }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        Log.d(TAG, "FCM 메시지 수신 - from: ${message.from}, data: ${message.data}")
+        if (BuildConfig.DEBUG) Log.d(TAG, "FCM 메시지 수신 - from: ${message.from}, data: ${message.data}")
 
         // 서버는 data-only 메시지로 전송 (notification 블록 없음)
         val data = message.data
@@ -86,8 +87,11 @@ class FCMService : FirebaseMessagingService() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val largeIcon = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
+
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_bell)
+            .setLargeIcon(largeIcon)
             .setContentTitle(title)
             .setContentText(body)
             .setStyle(NotificationCompat.BigTextStyle().bigText(body))
@@ -111,5 +115,6 @@ class FCMService : FirebaseMessagingService() {
         const val TYPE_BATTLE = "BATTLE"
         const val TYPE_COMMENT = "COMMENT"
         const val TYPE_ALARM = "ALARM"
+        const val TYPE_DAILY_MESSAGE = "DAILY_MESSAGE"
     }
 }
