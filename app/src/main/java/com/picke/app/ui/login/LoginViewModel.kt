@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
+import com.picke.app.BuildConfig
 import com.picke.app.analytics.AnalyticsTracker
 import com.picke.app.data.local.TokenManager
 import com.picke.app.domain.usecase.auth.LoginUseCase
@@ -71,15 +72,15 @@ class LoginViewModel @Inject constructor(
 
                 FirebaseMessaging.getInstance().token
                     .addOnSuccessListener { fcmToken ->
-                        Log.d(TAG, "[FCM] 토큰 발급 완료: ${fcmToken.take(20)}...")
+                        if (BuildConfig.DEBUG) Log.d(TAG, "[FCM] 토큰 발급 완료: ${fcmToken.take(20)}...")
                         tokenManager.saveFcmToken(fcmToken)
                         viewModelScope.launch {
                             registerDeviceUseCase(fcmToken)
-                                .onSuccess { Log.d(TAG, "[FCM] 서버 등록 완료") }
-                                .onFailure { Log.w(TAG, "[FCM] 서버 등록 실패", it) }
+                                .onSuccess { if (BuildConfig.DEBUG) Log.d(TAG, "[FCM] 서버 등록 완료") }
+                                .onFailure { if (BuildConfig.DEBUG) Log.w(TAG, "[FCM] 서버 등록 실패", it) }
                         }
                     }
-                    .addOnFailureListener { Log.w(TAG, "[FCM] 토큰 발급 실패", it) }
+                    .addOnFailureListener { if (BuildConfig.DEBUG) Log.w(TAG, "[FCM] 토큰 발급 실패", it) }
             }.onFailure { error ->
                 Log.w(TAG, "[FLOW] ${provider} 로그인 실패: ${error.message}")
                 _uiState.value = LoginUiState.Error(error.message ?: "로그인에 실패했습니다.")

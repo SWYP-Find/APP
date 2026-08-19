@@ -47,7 +47,7 @@ class MainActivity : FragmentActivity() {
             splashViewModel.uiState.value is SplashUiState.Loading
         }
 
-        if (BuildConfig.DEBUG) Log.d(TAG, "저장된 FCM 토큰: ${tokenManager.getFcmToken()}")
+        if (BuildConfig.DEBUG) Log.d(TokenManager.TAG, "[LOCAL] 저장된 FCM 토큰: ${tokenManager.getFcmToken()}")
 
         handleFcmIntent(intent)
         handleDeepLink(intent)
