@@ -58,7 +58,7 @@ app/src/main/java/com/picke/app/
 **언어 / 빌드**
 - Kotlin 2.0.21 (JVM target 17)
 - AGP 9.0.1, Gradle 9.1.0
-- compileSdk 36 / minSdk 26 / targetSdk 35
+- compileSdk 36 / minSdk 26 / targetSdk 36
 
 **UI**
 - Jetpack Compose (Compose BOM 2024.10.01), Material3 — XML 뷰 미사용

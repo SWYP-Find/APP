@@ -49,7 +49,7 @@ android {
     defaultConfig {
         applicationId = "com.picke.app"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 31
         versionName = "1.1.9"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
